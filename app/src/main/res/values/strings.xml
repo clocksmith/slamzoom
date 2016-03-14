@@ -1,0 +1,5 @@
+<resources>
+  <string name="app_name">slamzoom</string>
+  <string name="action_done">done</string>
+  <string name="action_share">share</string>
+</resources>
