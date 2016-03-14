@@ -50,13 +50,107 @@ public class GifUtils {
     createGifTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
+  private static byte[] createGifSyncNew(
+      final Bitmap selectedBitmap,
+      final EffectModel effectModel,
+      final int gifSize) {
+    Log.d(TAG, "start createGifSyncNew()");
+    long start = System.currentTimeMillis();
+
+    final GifEncoder gifEncoder = new GifEncoder();
+
+    List<FutureTask<Void>> addFrameFutureTasks = Lists.newArrayList();
+    EffectStep previousStep = null;
+    for (final EffectStep step : effectModel.getEffectSteps()) {
+      final Rect startRect = previousStep == null ?
+          new Rect(0, 0, selectedBitmap.getWidth(), selectedBitmap.getHeight()) :
+          previousStep.getHotspot();
+      previousStep = step;
+      Rect endRect = step.getHotspot();
+
+      SingleOutputInterpolator scaleInterpolator = step.getScaleInterpolator();
+      MultiOutputInterpolator translateInterpolator = step.getTranslateInterpolator();
+
+      float aspectRatio = (float) selectedBitmap.getWidth() / selectedBitmap.getHeight();
+      final int gifWidth = aspectRatio > 1 ? gifSize : (int) (gifSize * aspectRatio);
+      final int gifHeight = aspectRatio > 1 ? (int) (gifSize / aspectRatio) : gifSize;
+
+      float dx = endRect.left + endRect.left * endRect.width() / (startRect.width() - endRect.width());
+      float dy = endRect.top + endRect.top * endRect.height() / (startRect.height() - endRect.height());
+
+      float startScale = 1;
+      float endScale = (float) startRect.height() / endRect.height();
+      scaleInterpolator.setDomain(startScale, endScale);
+
+      final int numFrames = (int) (gifEncoder.getFps() * step.getDurationSeconds());
+      for (int i = 0; i < numFrames; i++) {
+        float percent = ((float) i / (numFrames - 1));
+        float scale = (float) scaleInterpolator.getInterpolation(percent);
+        float x = 0;
+        float y = 0;
+        if (translateInterpolator != null) {
+          double[] translate = translateInterpolator.getInterpolation(percent);
+          x = (float) translate[0] * startRect.width() / scale;
+          y = (float) translate[1] * startRect.height() / scale;
+        }
+
+        final Matrix matrix = new Matrix();
+        matrix.postScale(scale, scale, dx + x, dy + y);
+
+        final int frameIndex = i;
+        addFrameFutureTasks.add(new FutureTask<>(new Callable<Void>() {
+          @Override
+          public Void call() throws Exception {
+            Bitmap targetBitmap = Bitmap.createBitmap(
+                selectedBitmap.getWidth(), selectedBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(targetBitmap);
+            Paint paint = new Paint();
+            paint.setAntiAlias(true);
+            paint.setDither(true);
+            canvas.drawBitmap(selectedBitmap, matrix, paint);
+            Bitmap scaledBitmap = Bitmap.createScaledBitmap(targetBitmap, gifWidth, gifHeight, true);
+
+            int extraDelayMillis = 0;
+            if (frameIndex == 0) {
+              extraDelayMillis = (int) step.getStartPauseSeconds();
+            } else if (frameIndex == numFrames - 1) {
+              extraDelayMillis = (int) step.getEndPauseSeconds();
+            }
+
+            gifEncoder.addFrame(scaledBitmap, extraDelayMillis);
+            return null;
+          }
+        }));
+      }
+    }
+
+    ExecutorService executor = Executors.newFixedThreadPool(Constants.DEFAULT_THREAD_POOL_SIZE);
+    for (FutureTask<Void> futureTask : addFrameFutureTasks) {
+      executor.execute(futureTask);
+    }
+
+    for (FutureTask<Void> futureTask : addFrameFutureTasks) {
+      try {
+        futureTask.get();
+      } catch (ExecutionException | InterruptedException e) {
+        Log.e(TAG, "Could not get futureTask", e);
+      }
+    }
+
+    try {
+      byte[] gif = gifEncoder.encode();
+      Log.d(TAG, "end getAllFrames(). duration: " + ((System.currentTimeMillis() - start)) + "ms");
+      return gif;
+    } catch (IOException e) {
+      Log.e(TAG, "Could not encode gif", e);
+      return null;
+    }
+  }
+
   private static byte[] createGifSync(final Bitmap selectedBitmap, EffectModel effectModel, int gifSize) {
     List<List<Bitmap>> allFrames = getAllFrames(selectedBitmap, effectModel, gifSize);
     try {
-//      byte[] gifOld = encodeGifOld(effectModel, allFrames);
-      byte[] gif = encodeGif(effectModel, allFrames);
-
-      return gif;
+      return encodeGif(effectModel, allFrames);
     } catch (IOException e) {
       Log.e(TAG, "Could not encode gif", e);
       return null;
@@ -107,9 +201,8 @@ public class GifUtils {
     return allFrames;
   }
 
-  private static byte[] encodeGif(EffectModel effectModel, List<List<Bitmap>> allFrames)
-      throws IOException, InvalidObjectException {
-    GifEncoder gifEncoder = new GifEncoder();
+  private static byte[] encodeGif(EffectModel effectModel, List<List<Bitmap>> allFrames) throws IOException {
+    GifEncoder gifEncoder = new GifEncoder(true);
 
     int stepIndex = 0;
     for (final EffectStep step : effectModel.getEffectSteps()) {
@@ -133,42 +226,6 @@ public class GifUtils {
     return gifEncoder.encode();
   }
 
-  private static byte[] encodeGifOld(EffectModel effectModel, List<List<Bitmap>> allFrames)
-      throws IOException, InvalidObjectException {
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    GifEncoderOld gifEncoderOld = new GifEncoderOld();
-    gifEncoderOld.start(out);
-    Bitmap firstFrame = allFrames.get(0).get(0);
-    gifEncoderOld.setSize(firstFrame.getWidth(), firstFrame.getHeight());
-    gifEncoderOld.setQuality(20);
-    gifEncoderOld.setRepeat(0);
-
-    int fps = 15;
-    int delay = Math.round(1000f / fps);
-    int stepIndex = 0;
-    for (final EffectStep step : effectModel.getEffectSteps()) {
-      List<Bitmap> stepFrames = allFrames.get(stepIndex);
-
-      gifEncoderOld.setDelay(delay + (int) step.getStartPauseSeconds() * 1000);
-      gifEncoderOld.addFrame(stepFrames.get(0));
-
-      if (stepFrames.size() > 2) {
-        for (int frameIndex = 1; frameIndex < stepFrames.size() - 1; frameIndex++) {
-          gifEncoderOld.setDelay(delay);
-          gifEncoderOld.addFrame(stepFrames.get(frameIndex));
-        }
-      }
-
-      gifEncoderOld.setDelay(delay + (int) step.getEndPauseSeconds() * 1000);
-      gifEncoderOld.addFrame(stepFrames.get(stepFrames.size() - 1));
-
-      stepIndex++;
-    }
-
-    return out.toByteArray();
-  }
-
-
   private static List<Bitmap> getFrames(Bitmap selectedBitmap, Rect startRect, EffectStep step, int gifSize) {
     Log.d(TAG, "start getFrames()");
     long start = System.currentTimeMillis();
@@ -189,7 +246,7 @@ public class GifUtils {
     scaleInterpolator.setDomain(startScale, endScale);
 
     List<Bitmap> frames = Lists.newArrayList();
-    int numFrames = (int) (GifEncoder.DEFAULT_FPS * step.getDurationSeconds());
+    int numFrames = (int) (Constants.DEFAULT_FPS* step.getDurationSeconds());
     for (int i = 0; i < numFrames; i++) {
       float percent = ((float) i / (numFrames - 1));
       float scale = (float) scaleInterpolator.getInterpolation(percent);
@@ -197,8 +254,8 @@ public class GifUtils {
       float y = 0;
       if (translateInterpolator != null) {
         double[] translate = translateInterpolator.getInterpolation(percent);
-        x = (float) translate[0] * startRect.width() / scale / 16;
-        y = (float) translate[1] * startRect.height() / scale / 16;
+        x = (float) translate[0] * startRect.width() / scale;
+        y = (float) translate[1] * startRect.height() / scale;
       }
 
       Matrix matrix = new Matrix();
@@ -242,6 +299,7 @@ public class GifUtils {
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
       }
       return createGifSync(mSelectedBitmap, mEffectModel, mGifSize);
+//      return createGifSyncNew(mSelectedBitmap, mEffectModel, mGifSize);
     }
 
     @Override

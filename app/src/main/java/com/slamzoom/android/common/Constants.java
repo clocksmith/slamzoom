@@ -13,7 +13,8 @@ public class Constants {
   public static final int MAX_SELECTED_DIMEN_PX = 1024;
   public static final int DEFAULT_THREAD_POOL_SIZE = 6;
 
-  public static final int DEFAULT_GIF_SIZE_PX = 320;
+  public static final int DEFAULT_FPS = 30;
+  public static final int DEFAULT_GIF_SIZE_PX = 240;
   public static final int DEFAULT_GIF_PREVIEW_SIZE_PX = 48;
 
   public static final float DEFAULT_DURATION_SECONDS = 2;

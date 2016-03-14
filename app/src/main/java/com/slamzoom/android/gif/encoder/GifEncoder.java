@@ -24,24 +24,34 @@ import java.util.concurrent.FutureTask;
 public class GifEncoder {
   private static final String TAG = GifEncoder.class.getSimpleName();
 
-  public static final int DEFAULT_FPS = 15;
-
   private static final int COLOR_DEPTH = 8; // number of bit planes
   private static final int PAL_SIZE = 7; // color table size (bits-1)
   private static final int SAMPLE = 30;
 
-  private ByteArrayOutputStream mOut;
-  private List<Frame> mFrames;
-
-  private int mFps = DEFAULT_FPS;
+  private int mFps = Constants.DEFAULT_FPS;
   private int mDelayHundreths = Math.round(100f / mFps);
 
   private int mWidth;
   private int mHeight;
 
+  private ByteArrayOutputStream mOut;
+  private List<Frame> mFrames;
+  private boolean mUserLocalColorTables;
+  private NeuQuant mGloabalNq;
+  private byte[] mGlobalColorTable;
+
   public GifEncoder() {
+    this(false);
+  }
+
+  public GifEncoder(boolean useLocalColorTables) {
     mOut = new ByteArrayOutputStream();
     mFrames = Lists.newArrayList();
+    mUserLocalColorTables = useLocalColorTables;
+  }
+
+  public int getFps() {
+    return mFps;
   }
 
   public void addFrame(Bitmap bitmap) throws InvalidObjectException {
@@ -116,8 +126,21 @@ public class GifEncoder {
     int len = pixelBytes.length;
     int nPix = len / 3;
     final byte[] indexedPixels = new byte[nPix];
-    NeuQuant nq = new NeuQuant(pixelBytes, len, SAMPLE);
-    final byte[] colorTable = nq.process(); // create reduced palette
+
+    final NeuQuant nq;
+    final byte[] colorTable;
+    if (mUserLocalColorTables || firstFrame) {
+      nq = new NeuQuant(pixelBytes, len, SAMPLE);
+      colorTable = nq.process(); // create reduced palette
+      if (firstFrame) {
+        mGloabalNq = nq;
+        mGlobalColorTable = colorTable;
+      }
+    } else {
+      nq = mGloabalNq;
+      colorTable = mGlobalColorTable;
+    }
+
 
     for (int i = 0; i < colorTable.length; i += 3) {
       byte temp = colorTable[i];

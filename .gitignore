@@ -1,11 +1,5 @@
-*.iml
-.gradle
-/local.properties
-/.idea/workspace.xml
-/.idea/libraries
+# mac
 .DS_Store
-/build
-/captures
 
 # Built application files
 *.apk
@@ -43,6 +37,7 @@ captures/
 
 # Intellij
 *.iml
+.idea/
 
 #Keystore files
 *.jks
