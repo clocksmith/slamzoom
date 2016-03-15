@@ -6,6 +6,8 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.google.common.base.Function;
@@ -15,11 +17,8 @@ import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.effect.EffectModel;
 import com.slamzoom.android.effect.EffectStep;
 import com.slamzoom.android.gif.encoder.GifEncoder;
-import com.slamzoom.android.gif.encoder.GifEncoderOld;
-import com.slamzoom.android.interpolate.base.SingleOutputInterpolator;
-import com.slamzoom.android.interpolate.base.MultiOutputInterpolator;
+import com.slamzoom.android.interpolate.scale.AbstractScaleInterpolator;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.util.List;
@@ -28,6 +27,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by clocksmith on 3/7/16.
@@ -50,14 +50,15 @@ public class GifUtils {
     createGifTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
-  private static byte[] createGifSyncNew(
+  private static byte[] createGifWithMultipleAsyncTasks(
       final Bitmap selectedBitmap,
       final EffectModel effectModel,
-      final int gifSize) {
-    Log.d(TAG, "start createGifSyncNew()");
+      final int gifSize,
+      final CreateGifCallback callback) {
+    Log.d(TAG, "start createGifWithMultipleAsyncTasks()");
     long start = System.currentTimeMillis();
 
-    final GifEncoder gifEncoder = new GifEncoder();
+    final GifEncoder gifEncoder = new GifEncoder(true);
 
     List<FutureTask<Void>> addFrameFutureTasks = Lists.newArrayList();
     EffectStep previousStep = null;
@@ -68,8 +69,8 @@ public class GifUtils {
       previousStep = step;
       Rect endRect = step.getHotspot();
 
-      SingleOutputInterpolator scaleInterpolator = step.getScaleInterpolator();
-      MultiOutputInterpolator translateInterpolator = step.getTranslateInterpolator();
+      AbstractScaleInterpolator scaleInterpolator = step.getScaleInterpolator();
+      AbstractMultiOutputInterpolator translateInterpolator = step.getTranslateInterpolator();
 
       float aspectRatio = (float) selectedBitmap.getWidth() / selectedBitmap.getHeight();
       final int gifWidth = aspectRatio > 1 ? gifSize : (int) (gifSize * aspectRatio);
@@ -82,10 +83,11 @@ public class GifUtils {
       float endScale = (float) startRect.height() / endRect.height();
       scaleInterpolator.setDomain(startScale, endScale);
 
-      final int numFrames = (int) (gifEncoder.getFps() * step.getDurationSeconds());
-      for (int i = 0; i < numFrames; i++) {
-        float percent = ((float) i / (numFrames - 1));
-        float scale = (float) scaleInterpolator.getInterpolation(percent);
+      final int totalNumFrames = (int) (gifEncoder.getFps() * step.getDurationSeconds());
+      final AtomicInteger numFramesAdded = new AtomicInteger(0);
+      for (int i = 0; i < totalNumFrames; i++) {
+        float percent = ((float) i / (totalNumFrames - 1));
+        float scale = (float) scaleInterpolator.getScaleInterpolation(percent);
         float x = 0;
         float y = 0;
         if (translateInterpolator != null) {
@@ -98,9 +100,9 @@ public class GifUtils {
         matrix.postScale(scale, scale, dx + x, dy + y);
 
         final int frameIndex = i;
-        addFrameFutureTasks.add(new FutureTask<>(new Callable<Void>() {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
           @Override
-          public Void call() throws Exception {
+          public void run() {
             Bitmap targetBitmap = Bitmap.createBitmap(
                 selectedBitmap.getWidth(), selectedBitmap.getHeight(), Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(targetBitmap);
@@ -113,14 +115,29 @@ public class GifUtils {
             int extraDelayMillis = 0;
             if (frameIndex == 0) {
               extraDelayMillis = (int) step.getStartPauseSeconds();
-            } else if (frameIndex == numFrames - 1) {
+            } else if (frameIndex == totalNumFrames - 1) {
               extraDelayMillis = (int) step.getEndPauseSeconds();
             }
 
-            gifEncoder.addFrame(scaledBitmap, extraDelayMillis);
-            return null;
+            try {
+              gifEncoder.addFrame(scaledBitmap, extraDelayMillis);
+              if (numFramesAdded.incrementAndGet() == totalNumFrames) {
+                final byte[] gif = gifEncoder.encode();
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                  @Override
+                  public void run() {
+                    callback.onCreateGif(gif);
+                  }
+                });
+              }
+            } catch (InvalidObjectException e) {
+              Log.e(TAG, "Could not add frame", e);
+            } catch (IOException e) {
+              Log.e(TAG, "Could not encode gif", e);
+            }
           }
-        }));
+        });
+
       }
     }
 
@@ -231,8 +248,8 @@ public class GifUtils {
     long start = System.currentTimeMillis();
 
     Rect endRect = step.getHotspot();
-    SingleOutputInterpolator scaleInterpolator = step.getScaleInterpolator();
-    MultiOutputInterpolator translateInterpolator = step.getTranslateInterpolator();
+    AbstractScaleInterpolator scaleInterpolator = step.getScaleInterpolator();
+    AbstractMultiOutputInterpolator translateInterpolator = step.getTranslateInterpolator();
 
     float aspectRatio = (float) selectedBitmap.getWidth() / selectedBitmap.getHeight();
     final int gifWidth = aspectRatio > 1 ? gifSize : (int) (gifSize * aspectRatio);
@@ -249,7 +266,7 @@ public class GifUtils {
     int numFrames = (int) (Constants.DEFAULT_FPS* step.getDurationSeconds());
     for (int i = 0; i < numFrames; i++) {
       float percent = ((float) i / (numFrames - 1));
-      float scale = (float) scaleInterpolator.getInterpolation(percent);
+      float scale = (float) scaleInterpolator.getScaleInterpolation(percent);
       float x = 0;
       float y = 0;
       if (translateInterpolator != null) {
@@ -295,16 +312,20 @@ public class GifUtils {
 
     @Override
     protected byte[] doInBackground(Void... params) {
+      Log.d(TAG, "CreateGifTask doInBackground()");
       if (mImportant) {
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
       }
-      return createGifSync(mSelectedBitmap, mEffectModel, mGifSize);
-//      return createGifSyncNew(mSelectedBitmap, mEffectModel, mGifSize);
+
+//      return createGifSync(mSelectedBitmap, mEffectModel, mGifSize);
+
+      createGifWithMultipleAsyncTasks(mSelectedBitmap, mEffectModel, mGifSize, mCallback);
+      return null;
     }
 
     @Override
     protected void onPostExecute(byte[] gifBytes) {
-      mCallback.onCreateGif(gifBytes);
+//      mCallback.onCreateGif(gifBytes);
     }
   }
 }

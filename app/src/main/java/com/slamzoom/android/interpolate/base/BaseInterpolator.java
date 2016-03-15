@@ -4,25 +4,30 @@ package com.slamzoom.android.interpolate.base;
  * Created by clocksmith on 3/11/16.
  */
 public abstract class BaseInterpolator {
-  private double start;
-  private double end;
+  private float start;
+  private float end;
 
-  public BaseInterpolator() {}
+  public BaseInterpolator() {
+    setDomain(0, 1);
+  }
 
-  public void setDomain(double start, double end) {
+  public void setDomain(float start, float end) {
     this.start = start;
     this.end = end;
   }
 
-  public double getStart() {
+  public float getStart() {
     return start;
   }
 
-  public double getEnd() {
+  public float getEnd() {
     return end;
   }
 
-  protected double getValue(double x) {
-    return getStart() + x * (getEnd() - getStart());
+  public float getInterpolation(float input) {
+    return getStart() + getValue(input) * (getEnd() - getStart());
   }
+
+
+  protected abstract float getValue(float input);
 }

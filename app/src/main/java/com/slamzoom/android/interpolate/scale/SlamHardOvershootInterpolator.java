@@ -1,11 +1,9 @@
-package com.slamzoom.android.interpolate.single;
-
-import com.slamzoom.android.interpolate.base.SingleOutputInterpolator;
+package com.slamzoom.android.interpolate.scale;
 
 /**
  * Created by clocksmith on 3/12/16.
  */
-public class SlamHardOvershootInterpolator extends SingleOutputInterpolator {
+public class SlamHardOvershootInterpolator extends AbstractScaleInterpolator {
   @Override
   protected double getX(double input) {
     if (input < 0.95) {
