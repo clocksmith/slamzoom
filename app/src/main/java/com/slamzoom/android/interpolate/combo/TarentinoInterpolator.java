@@ -1,31 +1,38 @@
 package com.slamzoom.android.interpolate.combo;
 
+import android.graphics.PointF;
+
+import com.slamzoom.android.interpolate.base.BaseInterpolator;
 import com.slamzoom.android.interpolate.base.CubicSplineInterpolator;
+
+import java.util.List;
 
 /**
  * Created by clocksmith on 3/12/16.
  */
-public class TarentinoInterpolator extends CubicSplineInterpolator {
+public class TarentinoInterpolator extends AbstractScaleAndTranslateInterpolator {
 
   @Override
-  protected float getX1(float input) {
-    if (input < 0.2308) {
-      return 0.3f * input;
-    } else if (input < 0.3){
-      return (float) (0.1 / input * Math.cos(Math.PI * 40 * input));
-    } else {
-      return 0;
-    }
+  protected BaseInterpolator getScaleInterpolator() {
+    return new CubicSplineInterpolator(CubicSplineInterpolator.newPointListBuilder()
+        .add(0, 0)
+        .add(1, 1)
+        .build());
   }
 
   @Override
-  protected float getX2(float input) {
-    if (input < 0.2308) {
-      return 0.3f * input;
-    } else if (input < 0.3){
-      return (float) (0.2 / input * Math.cos(Math.PI * 40 * input));
-    } else {
-      return 0;
-    }
+  protected BaseInterpolator getXInterpolator() {
+    return new CubicSplineInterpolator(CubicSplineInterpolator.newPointListBuilder()
+        .add(0, 0)
+        .add(1, 1)
+        .build());
+  }
+
+  @Override
+  protected BaseInterpolator getYInterpolator() {
+    return new CubicSplineInterpolator(CubicSplineInterpolator.newPointListBuilder()
+        .add(0, 0)
+        .add(1, 1)
+        .build());
   }
 }
