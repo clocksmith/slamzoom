@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by clocksmith on 3/15/16.
  */
-public class CubicSplineInterpolator extends BaseInterpolator {
+public class CubicSplineInterpolator extends Interpolator {
   PolynomialSplineFunction mPolynomialSplineFunction;
 
   public CubicSplineInterpolator(List<PointF> pointList) {
@@ -36,26 +36,5 @@ public class CubicSplineInterpolator extends BaseInterpolator {
   @Override
   protected float getValue(float input) {
     return (float) mPolynomialSplineFunction.value(input);
-  }
-
-  public static PointListBuilder newPointListBuilder() {
-    return new PointListBuilder();
-  }
-
-  public static class PointListBuilder {
-    private List<PointF> mPointList;
-
-    public PointListBuilder() {
-      mPointList = Lists.newArrayList();
-    }
-
-    public PointListBuilder add(float x, float y) {
-      mPointList.add(new PointF(x, y));
-      return this;
-    }
-
-    public List<PointF> build() {
-      return mPointList;
-    }
   }
 }

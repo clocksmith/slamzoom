@@ -1,11 +1,11 @@
 package com.slamzoom.android.interpolate.translate;
 
-import com.slamzoom.android.interpolate.base.BaseInterpolator;
+import com.slamzoom.android.interpolate.base.Interpolator;
 
 /**
  * Created by clocksmith on 3/14/16.
  */
-public abstract class AbstractShakeInterpolator extends AbstractTranslateInterpolator {
+public class BaseShakeInterpolatorProvider implements TranslateInterpolatorProvider {
   private static final float PHASE_SHIFT_MULTIPLIER = 1.3f;
 
   private float mIntensity;
@@ -13,15 +13,15 @@ public abstract class AbstractShakeInterpolator extends AbstractTranslateInterpo
   private int mShiftedFrequency;
 
   // intesnity and frequency should be 1-100
-  public AbstractShakeInterpolator(int intensity, int frequency) {
+  public BaseShakeInterpolatorProvider(int intensity, int frequency) {
     mIntensity = (float) intensity / 100;
     mFrequency = frequency;
     mShiftedFrequency = Math.round(mFrequency * PHASE_SHIFT_MULTIPLIER);
   }
 
   @Override
-  protected BaseInterpolator getXInterpolator() {
-    return new BaseInterpolator() {
+  public Interpolator getXInterpolator() {
+    return new Interpolator() {
       @Override
       protected float getValue(float input) {
         return (float) (mIntensity * Math.sin(mFrequency * Math.PI * input) +
@@ -31,8 +31,8 @@ public abstract class AbstractShakeInterpolator extends AbstractTranslateInterpo
   }
 
   @Override
-  protected BaseInterpolator getYInterpolator() {
-    return new BaseInterpolator() {
+  public Interpolator getYInterpolator() {
+    return new Interpolator() {
       @Override
       protected float getValue(float input) {
         return (float) (mIntensity * Math.sin(mShiftedFrequency * Math.PI * input) +

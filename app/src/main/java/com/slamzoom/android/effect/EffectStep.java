@@ -4,8 +4,9 @@ import android.graphics.Rect;
 
 import com.google.common.base.Objects;
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.interpolate.base.BaseInterpolator;
-import com.slamzoom.android.interpolate.scale.AbstractScaleInterpolator;
+import com.slamzoom.android.interpolate.combo.ScaleAndTranslateInterpolatorProvider;
+import com.slamzoom.android.interpolate.scale.ScaleInterpolatorProvider;
+import com.slamzoom.android.interpolate.translate.TranslateInterpolatorProvider;
 
 /**
  * Created by clocksmith on 2/21/16.
@@ -13,8 +14,8 @@ import com.slamzoom.android.interpolate.scale.AbstractScaleInterpolator;
 public class EffectStep {
   private Rect mHotspot;
 
-  private AbstractScaleInterpolator mScaleInterpolator;
-  private AbstractMultiOutputInterpolator mTranslateInterpolator;
+  private ScaleInterpolatorProvider mScaleInterpolatorProvider;
+  private TranslateInterpolatorProvider mTranslateInterpolatorProvider;
   private float mDurationSeconds;
   private float mStartPauseSeconds;
   private float mEndPauseSeconds;
@@ -24,13 +25,13 @@ public class EffectStep {
   }
 
   public EffectStep(
-      AbstractScaleInterpolator scaleInterpolator,
-      AbstractMultiOutputInterpolator translateInterpolator,
+      ScaleInterpolatorProvider scaleInterpolatorProvider,
+      TranslateInterpolatorProvider translateInterpolatorProvider,
       float durationSeconds,
       float startPauseSeconds,
       float endPauseSeconds) {
-    mScaleInterpolator = scaleInterpolator;
-    mTranslateInterpolator = translateInterpolator;
+    mScaleInterpolatorProvider = scaleInterpolatorProvider;
+    mTranslateInterpolatorProvider = translateInterpolatorProvider;
     mDurationSeconds = durationSeconds;
     mStartPauseSeconds = startPauseSeconds;
     mEndPauseSeconds = endPauseSeconds;
@@ -44,12 +45,12 @@ public class EffectStep {
     mHotspot = hotspot;
   }
 
-  public AbstractScaleInterpolator getScaleInterpolator() {
-    return mScaleInterpolator;
+  public ScaleInterpolatorProvider getScaleInterpolatorProvider() {
+    return mScaleInterpolatorProvider;
   }
 
-  public AbstractMultiOutputInterpolator getTranslateInterpolator() {
-    return mTranslateInterpolator;
+  public TranslateInterpolatorProvider getTranslateInterpolatorProvider() {
+    return mTranslateInterpolatorProvider;
   }
 
   public float getDurationSeconds() {
@@ -68,8 +69,8 @@ public class EffectStep {
   public int hashCode() {
     return Objects.hashCode(
         mHotspot,
-        getName(mScaleInterpolator),
-        getName(mTranslateInterpolator),
+        getName(mScaleInterpolatorProvider),
+        getName(mTranslateInterpolatorProvider),
         mDurationSeconds,
         mStartPauseSeconds,
         mEndPauseSeconds);
@@ -87,31 +88,39 @@ public class EffectStep {
 
     final EffectStep other = (EffectStep) obj;
     return Objects.equal(mHotspot, other.getHotspot())
-        && Objects.equal(getName(mScaleInterpolator), getName(other.getScaleInterpolator()))
-        && Objects.equal(getName(mTranslateInterpolator), getName(other.getTranslateInterpolator()))
+        && Objects.equal(getName(mScaleInterpolatorProvider), getName(other.getScaleInterpolatorProvider()))
+        && Objects.equal(getName(mTranslateInterpolatorProvider), getName(other.getTranslateInterpolatorProvider()))
         && Objects.equal(mDurationSeconds, other.getDurationSeconds())
         && Objects.equal(mStartPauseSeconds, other.getStartPauseSeconds())
         && Objects.equal(mEndPauseSeconds, other.getEndPauseSeconds());
   }
 
-  private String getName(BaseInterpolator interpolator) {
-    return interpolator == null ? "null" : interpolator.getClass().getSimpleName();
+  // TODO(clocksmith): should be getClassNameOrNull in utility class.
+  private String getName(Object object) {
+    return object == null ? "null" : object.getClass().getSimpleName();
   }
 
   public static class Builder {
-    private AbstractScaleInterpolator mScaleInterpolator;
-    private AbstractMultiOutputInterpolator mTranslateInterpolator;
+    private ScaleInterpolatorProvider mScaleInterpolatorProvider;
+    private TranslateInterpolatorProvider mTranslateInterpolatorProvider;
     private float mDurationSeconds = Constants.DEFAULT_DURATION_SECONDS;
     private float mStartPauseSeconds = Constants.DEFAULT_START_PAUSE_SECONDS;
     private float mEndPauseSeconds = Constants.DEFAULT_END_PAUSE_SECONDS;
 
-    public Builder withScaleInterpolator(AbstractScaleInterpolator interpolator) {
-      mScaleInterpolator = interpolator;
+    public Builder withScaleInterpolatorProvider(ScaleInterpolatorProvider interpolatorProvider) {
+      mScaleInterpolatorProvider = interpolatorProvider;
       return this;
     }
 
-    public Builder withTranslateInterpolator(AbstractMultiOutputInterpolator interpolator) {
-      mTranslateInterpolator = interpolator;
+    public Builder withTranslateInterpolatorProvider(TranslateInterpolatorProvider interpolatorProvider) {
+      mTranslateInterpolatorProvider = interpolatorProvider;
+      return this;
+    }
+
+    public Builder withScaleAndTranslateInterpolatorProvider(
+        ScaleAndTranslateInterpolatorProvider interpolatorsProvider) {
+      mScaleInterpolatorProvider = interpolatorsProvider;
+      mTranslateInterpolatorProvider = interpolatorsProvider;
       return this;
     }
 
@@ -132,8 +141,8 @@ public class EffectStep {
 
     public EffectStep build() {
       return new EffectStep(
-          mScaleInterpolator,
-          mTranslateInterpolator,
+          mScaleInterpolatorProvider,
+          mTranslateInterpolatorProvider,
           mDurationSeconds,
           mStartPauseSeconds,
           mEndPauseSeconds);

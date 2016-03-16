@@ -3,7 +3,7 @@ package com.slamzoom.android.interpolate.base;
 /**
  * Created by antrob on 2/24/16.
  */
-public class BinomialInterpolator extends BaseInterpolator {
+public class BinomialInterpolator extends Interpolator {
   private float c1;
   private float c2;
   private float e1;

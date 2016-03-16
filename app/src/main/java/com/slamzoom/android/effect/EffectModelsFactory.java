@@ -1,7 +1,9 @@
 package com.slamzoom.android.effect;
 
 import com.google.common.collect.Lists;
-import com.slamzoom.android.interpolate.scale.SlamHardInterpolator;
+import com.slamzoom.android.interpolate.combo.Crash2InterpolatorProvider;
+import com.slamzoom.android.interpolate.combo.Crash3InterpolatorProvider;
+import com.slamzoom.android.interpolate.combo.CrashInterpolatorProvider;
 
 import java.util.List;
 
@@ -18,30 +20,30 @@ public class EffectModelsFactory {
 //          .withName("simple")
 //          .addEffectStep(EffectStep.newBuilder()
 //              .withEndPauseSeconds(1)
-//              .withScaleInterpolator(new LinearInterpolator())
+//              .withScaleInterpolatorProvider(new LinearInterpolator())
 //              .build())
 //          .build());
 //      mModels.add(EffectModel.newBuilder()
 //          .withName("soft")
 //          .addEffectStep(EffectStep.newBuilder()
 //              .withEndPauseSeconds(1)
-//              .withScaleInterpolator(new SlamSoftInterpolator())
+//              .withScaleInterpolatorProvider(new SlamSoftInterpolator())
 //              .build())
 //          .build());
-      mModels.add(EffectModel.newBuilder()
-          .withName("slam")
-          .addEffectStep(EffectStep.newBuilder()
-              .withEndPauseSeconds(1)
-              .withScaleInterpolator(new SlamHardInterpolator())
-              .build())
-          .build());
+//      mModels.add(EffectModel.newBuilder()
+//          .withName("slam")
+//          .addEffectStep(EffectStep.newBuilder()
+//              .withEndPauseSeconds(1)
+//              .withScaleInterpolatorProvider(new SlamHardInterpolatorProvider())
+//              .build())
+//          .build());
 //      mModels.add(EffectModel.newBuilder()
 //          .withName("ghist")
 //          .addEffectStep(EffectStep.newBuilder()
 //              .withStartPauseSeconds(1)
 //              .withEndPauseSeconds(1)
-//              .withScaleInterpolator(new EaseInSlamHardInterpolator())
-//              .withTranslateInterpolator(new ShakeInterpolator())
+//              .withScaleInterpolatorProvider(new EaseInSlamHardInterpolator())
+//              .withTranslateInterpolatorProvider(new ShakeInterpolator())
 //              .build())
 //          .build());
 //      mModels.add(EffectModel.newBuilder()
@@ -49,44 +51,65 @@ public class EffectModelsFactory {
 //          .addEffectStep(EffectStep.newBuilder()
 //              .withStartPauseSeconds(1)
 //              .withEndPauseSeconds(1)
-//              .withScaleInterpolator(new EaseInSlamHardInterpolator())
-//              .withTranslateInterpolator(new SuperShakeInterpolator())
+//              .withScaleInterpolatorProvider(new EaseInSlamHardInterpolator())
+//              .withTranslateInterpolatorProvider(new SuperShakeInterpolator())
 //              .build())
 //          .build());
 //      mModels.add(EffectModel.newBuilder()
 //          .withName("megaghist")
 //          .addEffectStep(EffectStep.newBuilder()
-//              .withScaleInterpolator(new EaseInSlamHardInterpolator())
-//              .withTranslateInterpolator(new MegaShakeInterpolator())
+//              .withScaleInterpolatorProvider(new EaseInSlamHardInterpolator())
+//              .withTranslateInterpolatorProvider(new MegaShakeInterpolator())
 //              .build())
 //          .build());
 //      mModels.add(EffectModel.newBuilder()
 //          .withName("reverse")
 //          .addEffectStep(EffectStep.newBuilder()
-//              .withScaleInterpolator(new ReverseLinearInterpolator())
+//              .withScaleInterpolatorProvider(new ReverseLinearInterpolator())
 //              .build())
 //          .build());
 //      mModels.add(EffectModel.newBuilder()
 //          .withName("quake")
 //          .addEffectStep(EffectStep.newBuilder()
-//              .withScaleInterpolator(new ReverseLinearInterpolator())
-//              .withTranslateInterpolator(new ShakeInterpolator())
+//              .withScaleInterpolatorProvider(new ReverseLinearInterpolator())
+//              .withTranslateInterpolatorProvider(new ShakeInterpolator())
 //              .build())
 //          .build());
 //      mModels.add(EffectModel.newBuilder()
 //          .withName("superquake")
 //          .addEffectStep(EffectStep.newBuilder()
-//              .withScaleInterpolator(new ReverseLinearInterpolator())
-//              .withTranslateInterpolator(new SuperShakeInterpolator())
+//              .withScaleInterpolatorProvider(new ReverseLinearInterpolator())
+//              .withTranslateInterpolatorProvider(new SuperShakeInterpolator())
 //              .build())
 //          .build());
 //      mModels.add(EffectModel.newBuilder()
 //          .withName("megaquake")
 //          .addEffectStep(EffectStep.newBuilder()
-//              .withScaleInterpolator(new ReverseLinearInterpolator())
-//              .withTranslateInterpolator(new MegaShakeInterpolator())
+//              .withScaleInterpolatorProvider(new ReverseLinearInterpolator())
+//              .withTranslateInterpolatorProvider(new MegaShakeInterpolator())
 //              .build())
 //          .build());
+      mModels.add(EffectModel.newBuilder()
+          .withName("crash")
+          .addEffectStep(EffectStep.newBuilder()
+              .withDurationSeconds(1f)
+              .withScaleAndTranslateInterpolatorProvider(new CrashInterpolatorProvider())
+              .build())
+          .build());
+      mModels.add(EffectModel.newBuilder()
+          .withName("crash2")
+          .addEffectStep(EffectStep.newBuilder()
+              .withDurationSeconds(1f)
+              .withScaleAndTranslateInterpolatorProvider(new Crash2InterpolatorProvider())
+              .build())
+          .build());
+      mModels.add(EffectModel.newBuilder()
+          .withName("crash3")
+          .addEffectStep(EffectStep.newBuilder()
+              .withDurationSeconds(1f)
+              .withScaleAndTranslateInterpolatorProvider(new Crash3InterpolatorProvider())
+              .build())
+          .build());
     }
 
     return mModels;

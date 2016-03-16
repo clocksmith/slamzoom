@@ -17,7 +17,7 @@ import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.effect.EffectModel;
 import com.slamzoom.android.effect.EffectStep;
 import com.slamzoom.android.gif.encoder.GifEncoder;
-import com.slamzoom.android.interpolate.scale.AbstractScaleInterpolator;
+import com.slamzoom.android.interpolate.base.Interpolator;
 
 import java.io.IOException;
 import java.io.InvalidObjectException;
@@ -69,8 +69,9 @@ public class GifUtils {
       previousStep = step;
       Rect endRect = step.getHotspot();
 
-      AbstractScaleInterpolator scaleInterpolator = step.getScaleInterpolator();
-      AbstractMultiOutputInterpolator translateInterpolator = step.getTranslateInterpolator();
+      Interpolator scaleInterpolator = step.getScaleInterpolatorProvider().getScaleInterpolator();
+      Interpolator xInterpolator = step.getTranslateInterpolatorProvider().getXInterpolator();
+      Interpolator yInterpolator = step.getTranslateInterpolatorProvider().getYInterpolator();
 
       float aspectRatio = (float) selectedBitmap.getWidth() / selectedBitmap.getHeight();
       final int gifWidth = aspectRatio > 1 ? gifSize : (int) (gifSize * aspectRatio);
@@ -87,13 +88,12 @@ public class GifUtils {
       final AtomicInteger numFramesAdded = new AtomicInteger(0);
       for (int i = 0; i < totalNumFrames; i++) {
         float percent = ((float) i / (totalNumFrames - 1));
-        float scale = (float) scaleInterpolator.getScaleInterpolation(percent);
+        float scale = scaleInterpolator.getInterpolation(percent);
         float x = 0;
         float y = 0;
-        if (translateInterpolator != null) {
-          double[] translate = translateInterpolator.getInterpolation(percent);
-          x = (float) translate[0] * startRect.width() / scale;
-          y = (float) translate[1] * startRect.height() / scale;
+        if (xInterpolator != null && yInterpolator != null) {
+          x = xInterpolator.getInterpolation(percent) * startRect.width() / scale;
+          y = yInterpolator.getInterpolation(percent) * startRect.width() / scale;
         }
 
         final Matrix matrix = new Matrix();
@@ -248,8 +248,14 @@ public class GifUtils {
     long start = System.currentTimeMillis();
 
     Rect endRect = step.getHotspot();
-    AbstractScaleInterpolator scaleInterpolator = step.getScaleInterpolator();
-    AbstractMultiOutputInterpolator translateInterpolator = step.getTranslateInterpolator();
+
+    Interpolator scaleInterpolator = step.getScaleInterpolatorProvider().getScaleInterpolator();
+    Interpolator xInterpolator = null;
+    Interpolator yInterpolator = null;
+    if (step.getTranslateInterpolatorProvider() != null) {
+      xInterpolator = step.getTranslateInterpolatorProvider().getXInterpolator();
+      yInterpolator = step.getTranslateInterpolatorProvider().getYInterpolator();
+    }
 
     float aspectRatio = (float) selectedBitmap.getWidth() / selectedBitmap.getHeight();
     final int gifWidth = aspectRatio > 1 ? gifSize : (int) (gifSize * aspectRatio);
@@ -262,22 +268,21 @@ public class GifUtils {
     float endScale = (float) startRect.height() / endRect.height();
     scaleInterpolator.setDomain(startScale, endScale);
 
+
     List<Bitmap> frames = Lists.newArrayList();
-    int numFrames = (int) (Constants.DEFAULT_FPS* step.getDurationSeconds());
-    for (int i = 0; i < numFrames; i++) {
-      float percent = ((float) i / (numFrames - 1));
-      float scale = (float) scaleInterpolator.getScaleInterpolation(percent);
+    int totalNumFrames = (int) (Constants.DEFAULT_FPS* step.getDurationSeconds());
+    for (int i = 0; i < totalNumFrames; i++) {
+      float percent = ((float) i / (totalNumFrames - 1));
+      float scale = scaleInterpolator.getInterpolation(percent);
       float x = 0;
       float y = 0;
-      if (translateInterpolator != null) {
-        double[] translate = translateInterpolator.getInterpolation(percent);
-        x = (float) translate[0] * startRect.width() / scale;
-        y = (float) translate[1] * startRect.height() / scale;
+      if (xInterpolator != null && yInterpolator != null) {
+        x = xInterpolator.getInterpolation(percent) * startRect.width() / scale;
+        y = yInterpolator.getInterpolation(percent) * startRect.width() / scale;
       }
 
       Matrix matrix = new Matrix();
       matrix.postScale(scale, scale, dx + x , dy + y);
-//      matrix.postTranslate(50 * x1, 50 * x2);
 
       Bitmap targetBitmap = Bitmap.createBitmap(
           selectedBitmap.getWidth(), selectedBitmap.getHeight(), Bitmap.Config.ARGB_8888);
@@ -317,15 +322,15 @@ public class GifUtils {
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
       }
 
-//      return createGifSync(mSelectedBitmap, mEffectModel, mGifSize);
+      return createGifSync(mSelectedBitmap, mEffectModel, mGifSize);
 
-      createGifWithMultipleAsyncTasks(mSelectedBitmap, mEffectModel, mGifSize, mCallback);
-      return null;
+//      createGifWithMultipleAsyncTasks(mSelectedBitmap, mEffectModel, mGifSize, mCallback);
+//      return null;
     }
 
     @Override
     protected void onPostExecute(byte[] gifBytes) {
-//      mCallback.onCreateGif(gifBytes);
+      mCallback.onCreateGif(gifBytes);
     }
   }
 }
