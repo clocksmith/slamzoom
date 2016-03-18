@@ -3,7 +3,7 @@ package com.slamzoom.android.interpolate.base;
 /**
  * Created by clocksmith on 3/12/16.
  */
-public class ReverseLinearInterpolator extends Interpolator {
+public class ReverseIdentityInterpolator extends Interpolator {
   @Override
   protected float getValue(float input) {
     if (input < 0.5) {

@@ -24,7 +24,10 @@ public class EffectViewHolder extends RecyclerView.ViewHolder {
   private static final String TAG = EffectViewHolder.class.getSimpleName();
 
   public class ItemClickEvent {
-//    public final String effectName;
+    public final String effectName;
+    public ItemClickEvent(String effectName) {
+      this.effectName = effectName;
+    }
   }
 
   @Bind(R.id.nameTextView) TextView mNameTextView;
@@ -42,7 +45,7 @@ public class EffectViewHolder extends RecyclerView.ViewHolder {
     itemView.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        GifService.getInstance().updateGif(model.getName());
+        BusProvider.getInstance().post(new ItemClickEvent(model.getName()));
       }
     });
 
@@ -54,7 +57,7 @@ public class EffectViewHolder extends RecyclerView.ViewHolder {
         Log.e(TAG, "Could not set gif", e);
       }
     } else {
-      Log.e(TAG, "gif bytes are null");
+//      Log.e(TAG, "gif bytes are null");
       mProgressBar.setVisibility(View.VISIBLE);
       mGifImageView.setImageBitmap(null);
     }

@@ -9,12 +9,21 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Queues;
 import com.slamzoom.android.common.BusProvider;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.effect.EffectModel;
 import com.slamzoom.android.effect.EffectStep;
+import com.squareup.otto.Subscribe;
 
+import java.io.IOException;
+import java.util.Deque;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
+import pl.droidsonroids.gif.GifDrawable;
 
 /**
  * Created by clocksmith on 2/27/16.
@@ -45,25 +54,43 @@ public class GifService {
     }
   }
 
+  public class ProgressUpdateEvent{
+    public final String effectName;
+    public final int progress;
+    public ProgressUpdateEvent(String effectName, int progress) {
+      this.effectName = effectName;
+      this.progress = progress;
+    }
+  }
+
   private static final int PREVIEW_CACHE_SIZE = 200;
-  private static final int CACHE_SIZE = 50;
+  private static final int CACHE_SIZE = 20;
 
   private static GifService mGifService = new GifService();
 
+  private Deque<Runnable> mCreateGifPreviewQueue;
+  private Deque<Runnable> mCreateGifQueue;
+  private boolean mIsCreatingGif;
   private Cache<EffectModel, byte[]> mGifPreviewCache;
   private Cache<EffectModel, byte[]> mGifCache;
+  private Map<EffectModel, Double> mGifProgresses;
   private List<EffectModel> mEffectModels;
   private Bitmap mSelectedBitmap;
   private Rect mCropRect;
 
   private GifService() {
+    mCreateGifPreviewQueue = Queues.newLinkedBlockingDeque();
+    mCreateGifQueue = Queues.newLinkedBlockingDeque();;
     mGifPreviewCache = CacheBuilder.newBuilder()
         .maximumSize(PREVIEW_CACHE_SIZE)
         .build();
     mGifCache = CacheBuilder.newBuilder()
         .maximumSize(CACHE_SIZE)
         .build();
+    mGifProgresses = Maps.newHashMap();
     mEffectModels = Lists.newArrayList();
+
+    BusProvider.getInstance().register(this);
   }
 
   public static GifService getInstance() {
@@ -76,7 +103,6 @@ public class GifService {
   }
 
   public void setSelectedBitmap(Bitmap bitmap) {
-    mGifCache.asMap().clear();
     mSelectedBitmap = bitmap;
     updateGifPreviewsIfPossible();
   }
@@ -90,62 +116,86 @@ public class GifService {
     }
 
     mCropRect = cropRect;
-    updateGif(selectedEffectName);
     updateGifPreviewsIfPossible();
+//    updateGifIfPossible(selectedEffectName);
   }
 
   // TODO(clocksmith) refactor this to share for updateGIfIfPossible
   private void updateGifPreviewsIfPossible() {
     if (mEffectModels != null && mSelectedBitmap != null && mCropRect != null) {
+      mGifCache.invalidateAll();
+      mCreateGifQueue.clear();
+      mCreateGifPreviewQueue.clear();
       for (final EffectModel effectModel : mEffectModels) {
-        if (mGifPreviewCache.asMap().containsKey(effectModel)) {
-          fireGifPreviewReadyEvent(effectModel);
-        } else {
-          GifUtils.createGif(
-              mSelectedBitmap,
-              effectModel,
-              Constants.DEFAULT_GIF_PREVIEW_SIZE_PX,
-              false,
-              new GifUtils.CreateGifCallback() {
-                @Override
-                public void onCreateGif(byte[] gifBytes) {
-                  if (gifBytes != null) {
-                    mGifPreviewCache.asMap().put(effectModel, gifBytes);
-                    fireGifPreviewReadyEvent(effectModel);
-                  }
-                }
-              });
-        }
+        mCreateGifPreviewQueue.addLast(new Runnable() {
+          @Override
+          public void run() {
+            if (mGifPreviewCache.asMap().containsKey(effectModel)) {
+              fireGifPreviewReadyEvent(effectModel);
+            } else {
+              new GifCreator(
+                  mSelectedBitmap,
+                  effectModel,
+                  Constants.DEFAULT_GIF_PREVIEW_SIZE_PX,
+                  false,
+                  new GifCreator.CreateGifCallback() {
+                    @Override
+                    public void onCreateGif(byte[] gifBytes) {
+                      if (gifBytes != null) {
+                        mGifPreviewCache.asMap().put(effectModel, gifBytes);
+                        fireGifPreviewReadyEvent(effectModel);
+                      }
+                      if (mCreateGifPreviewQueue.peek() != null) {
+                        mCreateGifPreviewQueue.pollFirst().run();
+                      } else {
+                        mIsCreatingGif = false;
+                      }
+                    }
+                  }).createAsync();
+            }
+          }
+        });
+      }
+      if (mCreateGifPreviewQueue.peek() != null) {
+        mCreateGifPreviewQueue.pollFirst().run();
+        mIsCreatingGif = true;
       }
     }
   }
 
-  public void updateGif(final String effectName) {
+
+  public void updateGifIfPossible(final String effectName) {
     if (mEffectModels != null && mSelectedBitmap != null && mCropRect != null) {
-      final EffectModel effectModel = Iterables.filter(mEffectModels, new Predicate<EffectModel>() {
+      Iterator<EffectModel> iterator = Iterables.filter(mEffectModels, new Predicate<EffectModel>() {
         @Override
         public boolean apply(EffectModel input) {
           return input.getName().equals(effectName);
         }
-      }).iterator().next();
+      }).iterator();
 
-      if (mGifCache.asMap().containsKey(effectModel)) {
-        fireGifReadyEvent(effectModel);
-      } else {
-        GifUtils.createGif(
-            mSelectedBitmap,
-            effectModel,
-            Constants.DEFAULT_GIF_SIZE_PX,
-            true,
-            new GifUtils.CreateGifCallback() {
-              @Override
-              public void onCreateGif(byte[] gifBytes) {
-                if (gifBytes != null) {
-                  mGifCache.asMap().put(effectModel, gifBytes);
-                  fireGifReadyEvent(effectModel);
+      if (iterator.hasNext()) {
+        final EffectModel effectModel = iterator.next();
+
+        if (mGifCache.asMap().containsKey(effectModel)) {
+          fireGifReadyEvent(effectModel);
+        } else {
+          final long start = System.currentTimeMillis();
+          new GifCreator(
+              mSelectedBitmap,
+              effectModel,
+              Constants.DEFAULT_GIF_SIZE_PX,
+              true,
+              new GifCreator.CreateGifCallback() {
+                @Override
+                public void onCreateGif(byte[] gifBytes) {
+                  if (gifBytes != null) {
+                    Log.wtf(TAG, "gif took " + (System.currentTimeMillis() - start) + "ms to make");
+                    mGifCache.asMap().put(effectModel, gifBytes);
+                    fireGifReadyEvent(effectModel);
+                  }
                 }
-              }
-            });
+              }).createAsync();
+        }
       }
     }
   }
@@ -157,5 +207,16 @@ public class GifService {
 
   private void fireGifReadyEvent(EffectModel effectModel) {
     BusProvider.getInstance().post(new GifReadyEvent(effectModel.getName(), mGifCache.asMap().get(effectModel)));
+  }
+
+  @Subscribe
+  public void on(GifCreator.ProgressUpdateEvent event) throws IOException {
+    if (!mGifProgresses.containsKey(event.effectModel)) {
+      mGifProgresses.put(event.effectModel, 0d);
+    }
+
+    mGifProgresses.put(event.effectModel, mGifProgresses.get(event.effectModel) + event.amountToUpdate);
+    BusProvider.getInstance().post(new ProgressUpdateEvent(event.effectModel.getName(),
+        (int) Math.round(100 * mGifProgresses.get(event.effectModel))));
   }
 }

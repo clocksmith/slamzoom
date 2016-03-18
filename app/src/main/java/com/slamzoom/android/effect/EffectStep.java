@@ -5,8 +5,10 @@ import android.graphics.Rect;
 import com.google.common.base.Objects;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.interpolate.combo.ScaleAndTranslateInterpolatorProvider;
+import com.slamzoom.android.interpolate.scale.OneScaleInterpolatorProvider;
 import com.slamzoom.android.interpolate.scale.ScaleInterpolatorProvider;
 import com.slamzoom.android.interpolate.translate.TranslateInterpolatorProvider;
+import com.slamzoom.android.interpolate.translate.ZeroTranslateInterpolatorProvider;
 
 /**
  * Created by clocksmith on 2/21/16.
@@ -141,8 +143,12 @@ public class EffectStep {
 
     public EffectStep build() {
       return new EffectStep(
-          mScaleInterpolatorProvider,
-          mTranslateInterpolatorProvider,
+          mScaleInterpolatorProvider == null ?
+              new OneScaleInterpolatorProvider() :
+              mScaleInterpolatorProvider,
+          mTranslateInterpolatorProvider == null ?
+              new ZeroTranslateInterpolatorProvider() :
+              mTranslateInterpolatorProvider,
           mDurationSeconds,
           mStartPauseSeconds,
           mEndPauseSeconds);

@@ -26,6 +26,8 @@ import com.slamzoom.android.cropper.CropperActivity;
 import com.slamzoom.android.effect.EffectChooser;
 import com.slamzoom.android.effect.EffectModel;
 import com.slamzoom.android.effect.EffectModelsFactory;
+import com.slamzoom.android.effect.EffectViewHolder;
+import com.slamzoom.android.gif.GifCreator;
 import com.slamzoom.android.gif.GifService;
 import com.squareup.otto.Subscribe;
 
@@ -112,7 +114,6 @@ public class MainActivity extends AppCompatActivity {
     } else if (requestCode == Constants.REQUEST_CROP_IMAGE) {
       if (resultCode == RESULT_OK) {
         Rect cropRect = data.getParcelableExtra(Constants.CROP_RECT);
-        mProgressBar.setVisibility(View.VISIBLE);
         GifService.getInstance().setCropRect(cropRect, mSelectedEffectName);
         mEffectChooser.clearGifsAndShowSpinners();
         mSelectedGifBytes = null;
@@ -122,16 +123,33 @@ public class MainActivity extends AppCompatActivity {
   }
 
   @Subscribe
+  public void on(EffectViewHolder.ItemClickEvent event) throws IOException {
+    mSelectedEffectName = event.effectName;
+    mProgressBar.setProgress(0);
+    mProgressBar.setVisibility(View.VISIBLE);
+    mGifImageView.setImageBitmap(null);
+    GifService.getInstance().updateGifIfPossible(event.effectName);
+  }
+
+  @Subscribe
   public void on(GifService.GifPreviewReadyEvent event) throws IOException {
     mEffectChooser.setGifPreview(event.effectName, event.gifBytes);
   }
 
   @Subscribe
   public void on(GifService.GifReadyEvent event) throws IOException {
-    mProgressBar.setVisibility(View.GONE);
-    mSelectedGifBytes = event.gifBytes;
-    mSelectedEffectName = event.effectName;
-    mGifImageView.setImageDrawable(new GifDrawable(mSelectedGifBytes));
+    if (mSelectedEffectName.equals(event.effectName)) {
+      mSelectedGifBytes = event.gifBytes;
+      mProgressBar.setVisibility(View.GONE);
+      mGifImageView.setImageDrawable(new GifDrawable(mSelectedGifBytes));
+    }
+  }
+
+  @Subscribe
+  public void on(GifService.ProgressUpdateEvent event) throws IOException {
+    if (event.effectName.equals(mSelectedEffectName)) {
+      mProgressBar.setProgress(event.progress);
+    }
   }
 
   private void shareCurrentGif() {

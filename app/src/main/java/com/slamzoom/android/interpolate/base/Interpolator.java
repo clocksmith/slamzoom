@@ -17,6 +17,10 @@ public abstract class Interpolator {
     setDomain(0, 1);
   }
 
+  public Interpolator(float start, float end) {
+    setDomain(start, end);
+  }
+
   public void setDomain(float start, float end) {
     this.start = start;
     this.end = end;

@@ -12,31 +12,28 @@ public class CrashInterpolatorProvider implements ScaleAndTranslateInterpolatorP
   public Interpolator getScaleInterpolator() {
     return new LinearInterpolator(Interpolator.newPointListBuilder()
         .add(0, 0)
-        .add(0.2f, 1)
+        .add(0.4f, 1)
         .add(1, 1)
         .build());
   }
 
   @Override
   public Interpolator getXInterpolator() {
-    return new CubicSplineInterpolator(Interpolator.newPointListBuilder()
+    return new LinearInterpolator(Interpolator.newPointListBuilder()
         .add(0, 0)
-        .add(0.3f, 0.25f)
-        .add(0.45f, 0.1f)
-        .add(0.75f, 0)
+        .add(0.37f, -0.35f)
+        .add(0.52f, 0.05f)
         .add(1, 0)
         .build());
   }
 
   @Override
   public Interpolator getYInterpolator() {
-    return new CubicSplineInterpolator(CubicSplineInterpolator.newPointListBuilder()
+    return new LinearInterpolator(CubicSplineInterpolator.newPointListBuilder()
         .add(0, 0)
-        .add(0.2f, 0.1f)
-        .add(0.45f, 0)
-        .add(0.6f, 0)
+        .add(0.4f, -0.05f)
+        .add(0.55f, 0.05f)
         .add(1, 0)
         .build());
-
   }
 }

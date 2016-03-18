@@ -1,4 +1,4 @@
-package com.slamzoom.android.gif.encoder;
+package com.slamzoom.android.gif;
 
 import java.io.OutputStream;
 import java.io.IOException;

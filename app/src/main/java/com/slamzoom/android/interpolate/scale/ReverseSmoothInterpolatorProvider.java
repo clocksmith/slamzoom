@@ -1,7 +1,7 @@
 package com.slamzoom.android.interpolate.scale;
 
 import com.slamzoom.android.interpolate.base.Interpolator;
-import com.slamzoom.android.interpolate.base.ReverseLinearInterpolator;
+import com.slamzoom.android.interpolate.base.ReverseIdentityInterpolator;
 
 /**
  * Created by clocksmith on 3/15/16.
@@ -9,6 +9,6 @@ import com.slamzoom.android.interpolate.base.ReverseLinearInterpolator;
 public class ReverseSmoothInterpolatorProvider implements ScaleInterpolatorProvider {
   @Override
   public Interpolator getScaleInterpolator() {
-    return new ReverseLinearInterpolator();
+    return new ReverseIdentityInterpolator();
   }
 }

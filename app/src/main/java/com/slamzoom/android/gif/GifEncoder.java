@@ -1,22 +1,18 @@
-package com.slamzoom.android.gif.encoder;
+package com.slamzoom.android.gif;
 
-import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.common.collect.Lists;
-import com.slamzoom.android.common.ByteUtils;
 import com.slamzoom.android.common.Constants;
+import com.slamzoom.android.common.ExecutorProvider;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InvalidObjectException;
-import java.nio.ByteBuffer;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by clocksmith on 3/9/16.
@@ -24,12 +20,13 @@ import java.util.concurrent.FutureTask;
 public class GifEncoder {
   private static final String TAG = GifEncoder.class.getSimpleName();
 
+  public interface ProgressUpdateListener {
+    void onProgressUpdate(double amountToUpdate);
+  }
+
   private static final int COLOR_DEPTH = 8; // number of bit planes
   private static final int PAL_SIZE = 7; // color table size (bits-1)
-  private static final int SAMPLE = 30;
-
-  private int mFps = Constants.DEFAULT_FPS;
-  private int mDelayHundreths = Math.round(100f / mFps);
+  private static final int SAMPLE = 10;
 
   private int mWidth;
   private int mHeight;
@@ -40,8 +37,15 @@ public class GifEncoder {
   private NeuQuant mGloabalNq;
   private byte[] mGlobalColorTable;
 
+  private List<Runnable> mFrameWriters;
+  private AtomicInteger mTotalNumFrameWritersToAdd;
+  private long mEncodeStart;
+  private GifCreator.CreateGifCallback mCallback;
+
+  private ProgressUpdateListener mProgressUpdateListener;
+
   public GifEncoder() {
-    this(false);
+    this(Constants.DEFAULT_USE_LOCAL_COLOR_PALETTE);
   }
 
   public GifEncoder(boolean useLocalColorTables) {
@@ -50,114 +54,87 @@ public class GifEncoder {
     mUserLocalColorTables = useLocalColorTables;
   }
 
-  public int getFps() {
-    return mFps;
+  public void setProgressUpdateListener(ProgressUpdateListener listener) {
+    mProgressUpdateListener = listener;
   }
 
-  public void addFrame(Bitmap bitmap) throws InvalidObjectException {
-    addFrame(bitmap, 0);
-  }
-
-  public void addFrame(Bitmap bitmap, int extraDelayMillis) throws InvalidObjectException {
-    setOrVerifyGifDimensions(bitmap);
-    mFrames.add(new Frame(bitmap, mDelayHundreths + Math.round(extraDelayMillis / 10f)));
-  }
-
-  public byte[] encode() throws IOException {
-    long start = System.currentTimeMillis();
-    Log.d(TAG, "Starting GIF encode...");
-
-    writeString("GIF89a");
-
-    List<FutureTask<Runnable>> getPixelsFutureTasks = Lists.newArrayList();
-    getPixelsFutureTasks.add(new FutureTask<>(new Callable<Runnable>() {
-      @Override
-      public Runnable call() throws Exception {
-        return getFrameWriter(mFrames.get(0), true);
-      }
-    }));
-    for (final Frame frame : mFrames.subList(1, mFrames.size())) {
-      getPixelsFutureTasks.add(new FutureTask<>(new Callable<Runnable>() {
-        @Override
-        public Runnable call() throws Exception {
-          return getFrameWriter(frame, false);
-        }
-      }));
+  public void addFrames(Iterable<Frame> frames) throws InvalidObjectException {
+    for (Frame frame : frames) {
+      addFrame(frame);
     }
-
-    ExecutorService executorService = Executors.newFixedThreadPool(Constants.DEFAULT_THREAD_POOL_SIZE);
-    for (FutureTask<Runnable> futureTask : getPixelsFutureTasks) {
-      executorService.execute(futureTask);
-    }
-
-    for (FutureTask<Runnable> futureTask : getPixelsFutureTasks) {
-      try {
-        futureTask.get().run();
-      } catch (ExecutionException | InterruptedException e) {
-        Log.e(TAG, "Could not get runnable from future");
-      }
-    }
-
-    mOut.write(0x3b); // gif trailer
-    mOut.flush();
-
-    Log.d(TAG, "Finished GIF encode in " + (System.currentTimeMillis() - start) + "ms");
-    return mOut.toByteArray();
   }
 
+  public void addFrame(Frame frame) throws InvalidObjectException {
+    setOrVerifyGifDimensions(frame);
+    mFrames.add(frame);
+  }
 
-  private void setOrVerifyGifDimensions(Bitmap bitmap) throws InvalidObjectException {
+  public void encodeAsync(GifCreator.CreateGifCallback callback) throws IOException {
+    mCallback = callback;
+    mEncodeStart = System.currentTimeMillis();
+
+//    Log.d(TAG, "Starting GIF encode...");
+
+    mFrameWriters = Lists.newArrayListWithCapacity(mFrames.size());
+    for (int frameIndex = 0; frameIndex < mFrames.size(); frameIndex++) {
+      mFrameWriters.add(null);
+    }
+    mTotalNumFrameWritersToAdd = new AtomicInteger(mFrameWriters.size());
+
+    GetFrameWriterTask getStartFrameWriterTask = new GetFrameWriterTask(0);
+    getStartFrameWriterTask.executeOnExecutor(Executors.newSingleThreadExecutor());
+  }
+
+  private void setOrVerifyGifDimensions(Frame frame) throws InvalidObjectException {
     if (mWidth < 1 && mHeight < 1) {
-      mWidth = bitmap.getWidth();
-      mHeight = bitmap.getHeight();
+      mWidth = frame.width;
+      mHeight = frame.height;
     }
-    if (mWidth > 0 && mWidth != bitmap.getWidth() || mHeight > 0 & mHeight != bitmap.getHeight()) {
+    if (mWidth > 0 && mWidth != frame.width || mHeight > 0 & mHeight != frame.height) {
       throw new InvalidObjectException("Bitmap does not have same dimensions as previous frames");
     }
   }
 
-  private Runnable getFrameWriter(final Frame frame, final boolean firstFrame) {
-    int[] pixelInts = new int[mWidth * mHeight * 3];
-    frame.bitmap.getPixels(pixelInts, 0, mWidth, 0, 0, mWidth, mHeight);
-//    frame.bitmap.recycle();
-//    frame.bitmap = null;
-    byte[] pixelBytes = getPixelBytes(pixelInts);
+  private Runnable getFrameWriter(final Frame frame, final int frameIndex) {
+    final boolean firstFrame = frameIndex == 0;
 
-    int len = pixelBytes.length;
+    int len = frame.pixelBytes.length;
     int nPix = len / 3;
     final byte[] indexedPixels = new byte[nPix];
 
     final NeuQuant nq;
     final byte[] colorTable;
     if (mUserLocalColorTables || firstFrame) {
-      nq = new NeuQuant(pixelBytes, len, SAMPLE);
+      nq = new NeuQuant(frame.pixelBytes, len, SAMPLE);
       colorTable = nq.process(); // create reduced palette
       if (firstFrame) {
         mGloabalNq = nq;
         mGlobalColorTable = colorTable;
+      }
+
+      for (int i = 0; i < colorTable.length; i += 3) {
+        byte temp = colorTable[i];
+        colorTable[i] = colorTable[i + 2];
+        colorTable[i + 2] = temp;
       }
     } else {
       nq = mGloabalNq;
       colorTable = mGlobalColorTable;
     }
 
-
-    for (int i = 0; i < colorTable.length; i += 3) {
-      byte temp = colorTable[i];
-      colorTable[i] = colorTable[i + 2];
-      colorTable[i + 2] = temp;
-    }
-
+//    Log.d(TAG, "mapping pixels...");
+    long start = System.currentTimeMillis();
     int k = 0;
     for (int i = 0; i < nPix; i++) {
       int index =
-          nq.map(pixelBytes[k++] & 0xff,
-              pixelBytes[k++] & 0xff,
-              pixelBytes[k++] & 0xff);
+          nq.map(frame.pixelBytes[k++] & 0xff,
+              frame.pixelBytes[k++] & 0xff,
+              frame.pixelBytes[k++] & 0xff);
       indexedPixels[i] = (byte) index;
     }
+//    Log.d(TAG, "finished mapping pixels in " + (System.currentTimeMillis() - start) + "ms");
 
-    return new Runnable() {
+    Runnable runnable = new Runnable() {
       @Override
       public void run() {
         try {
@@ -166,7 +143,7 @@ public class GifEncoder {
             writePalette(colorTable);
             writeNetscapeExt();
           }
-          writeGraphicCtrlExt(frame.delay);
+          writeGraphicCtrlExt((int) (frame.delayMillis / 10f)); // delay is in hundredths
           writeImageDesc(firstFrame);
           if (!firstFrame) {
             writePalette(colorTable);
@@ -178,22 +155,14 @@ public class GifEncoder {
         }
       }
     };
-  }
 
-  private byte[] getPixelBytes(int[] pixelInts) {
-    byte[] bytes = new byte[pixelInts.length * 3];
-
-    int byteIdx = 0;
-    for(int i=0; i < pixelInts.length; i++) {
-      int thisPixel = pixelInts[i];
-      byte[] theseBytes = ByteBuffer.allocate(4).putInt(thisPixel).array();
-      // RGB --> BGR
-      bytes[byteIdx] = theseBytes[3];
-      bytes[byteIdx+1] = theseBytes[2];
-      bytes[byteIdx+2] = theseBytes[1];
-      byteIdx += 3;
+//    Log.d(TAG, "Finished getting frameWriter for frame "
+//        + frameIndex + " in " + (System.currentTimeMillis() - start) + "ms");
+    if (mProgressUpdateListener != null) {
+      mProgressUpdateListener.onProgressUpdate(1.0 / 3 / mFrames.size());
     }
-    return bytes;
+
+    return runnable;
   }
 
   /**
@@ -307,6 +276,62 @@ public class GifEncoder {
   protected void writeString(String s) throws IOException {
     for (int i = 0; i < s.length(); i++) {
       mOut.write((byte) s.charAt(i));
+    }
+  }
+
+  private class GetFrameWriterTask extends AsyncTask<Void, Void, Runnable> {
+    private int mFrameIndex;
+
+    public GetFrameWriterTask(int frameIndex) {
+      mFrameIndex = frameIndex;
+    }
+
+
+    @Override
+    protected Runnable doInBackground(Void... params) {
+      return getFrameWriter(mFrames.get(mFrameIndex), mFrameIndex);
+    }
+
+    @Override
+    protected void onPostExecute(Runnable frameWriter) {
+      mFrameWriters.set(mFrameIndex, frameWriter);
+      if (mFrameIndex == 0) {
+        for (int frameIndex = 1; frameIndex < mFrames.size(); frameIndex++) {
+          GetFrameWriterTask getFrameWriterTask = new GetFrameWriterTask(frameIndex);
+          getFrameWriterTask.executeOnExecutor(ExecutorProvider.getInstance());
+        }
+      }
+
+      if (mTotalNumFrameWritersToAdd.decrementAndGet() == 0) {
+        Log.wtf(TAG, "Finished adding frame writers in " + (System.currentTimeMillis() - mEncodeStart) + "ms");
+
+        long start = System.currentTimeMillis();
+//        Log.d(TAG, "Starting to write frames...");
+
+        try {
+          writeString("GIF89a");
+        } catch (IOException e) {
+          Log.e(TAG, "Could not write gif header", e);
+        }
+
+        for (Runnable frameWriterToRun : mFrameWriters) {
+          frameWriterToRun.run();
+          if (mProgressUpdateListener != null) {
+            mProgressUpdateListener.onProgressUpdate(1.0 / 3 / mFrameWriters.size());
+          }
+        }
+
+        mOut.write(0x3b); // gif trailer
+        try {
+          mOut.flush();
+        } catch (IOException e) {
+          Log.e(TAG, "Unable to flush output stream", e);
+        }
+
+        byte[] gifBytes = mOut.toByteArray();
+        Log.wtf(TAG, "Finished writing frames in " + (System.currentTimeMillis() - start) + "ms");
+        mCallback.onCreateGif(gifBytes);
+      }
     }
   }
 }

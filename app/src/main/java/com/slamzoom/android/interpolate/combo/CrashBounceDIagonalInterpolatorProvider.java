@@ -7,7 +7,7 @@ import com.slamzoom.android.interpolate.base.LinearInterpolator;
 /**
  * Created by clocksmith on 3/16/16.
  */
-public class Crash2InterpolatorProvider implements ScaleAndTranslateInterpolatorProvider {
+public class CrashBounceDIagonalInterpolatorProvider implements ScaleAndTranslateInterpolatorProvider {
   @Override
   public Interpolator getScaleInterpolator() {
     return new LinearInterpolator(Interpolator.newPointListBuilder()
