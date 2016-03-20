@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black"
-    tools:context=".main.MainActivity">
+    tools:context=".ui.main.MainActivity">
 
   <FrameLayout
       android:layout_width="match_parent"
@@ -27,10 +27,10 @@
         android:layout_gravity="center"/>
   </FrameLayout>
 
-  <com.slamzoom.android.effect.EffectChooser
+  <com.slamzoom.android.ui.effect.EffectChooser
       android:id="@+id/effectChooser"
       android:layout_width="match_parent"
       android:layout_height="@dimen/effect_chooser_height">
-  </com.slamzoom.android.effect.EffectChooser>
+  </com.slamzoom.android.ui.effect.EffectChooser>
 </LinearLayout>
 

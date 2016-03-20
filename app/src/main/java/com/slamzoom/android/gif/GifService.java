@@ -11,10 +11,10 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
-import com.slamzoom.android.common.BusProvider;
+import com.slamzoom.android.common.providers.BusProvider;
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.effect.EffectModel;
-import com.slamzoom.android.effect.EffectStep;
+import com.slamzoom.android.ui.effect.EffectModel;
+import com.slamzoom.android.ui.effect.EffectStep;
 import com.squareup.otto.Subscribe;
 
 import java.io.IOException;
@@ -22,8 +22,6 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import pl.droidsonroids.gif.GifDrawable;
 
 /**
  * Created by clocksmith on 2/27/16.

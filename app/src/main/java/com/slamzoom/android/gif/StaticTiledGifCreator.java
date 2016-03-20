@@ -5,7 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 
-import com.slamzoom.android.effect.EffectModel;
+import com.slamzoom.android.ui.effect.EffectModel;
 
 /**
  * Created by clocksmith on 3/18/16.

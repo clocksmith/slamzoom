@@ -5,7 +5,7 @@ import android.util.Log;
 
 import com.google.common.collect.Lists;
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.common.ExecutorProvider;
+import com.slamzoom.android.common.providers.ExecutorProvider;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

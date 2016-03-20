@@ -10,12 +10,12 @@ import android.util.Log;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.slamzoom.android.common.BusProvider;
+import com.slamzoom.android.common.providers.BusProvider;
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.common.ExecutorProvider;
-import com.slamzoom.android.effect.EffectModel;
-import com.slamzoom.android.effect.EffectStep;
-import com.slamzoom.android.interpolate.base.Interpolator;
+import com.slamzoom.android.common.providers.ExecutorProvider;
+import com.slamzoom.android.ui.effect.EffectModel;
+import com.slamzoom.android.ui.effect.EffectStep;
+import com.slamzoom.android.interpolate.Interpolator;
 
 import java.io.IOException;
 import java.io.InvalidObjectException;
