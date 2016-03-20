@@ -12,14 +12,16 @@ public class EffectModel {
   private String mName;
   private List<EffectStep> mEffectSteps;
   private byte[] mGifBytes;
+  private int mNumTilesInRow;
 
   public static Builder newBuilder() {
     return new Builder();
   }
 
-  private EffectModel(String name, List<EffectStep> effectSteps) {
+  private EffectModel(String name, List<EffectStep> effectSteps, int numTilesInRow) {
     mName = name;
     mEffectSteps = effectSteps;
+    mNumTilesInRow = numTilesInRow;
   }
 
   public String getName() {
@@ -36,6 +38,10 @@ public class EffectModel {
 
   public void setGifBytes(byte[] gifBytes) {
     mGifBytes = gifBytes;
+  }
+
+  public int getNumTilesInRow() {
+    return mNumTilesInRow;
   }
 
   @Override
@@ -59,7 +65,7 @@ public class EffectModel {
   public static class Builder {
     private String mName;
     private List<EffectStep> mEffectSteps;
-    private byte[] mGifBytes;
+    private int mNumTilesInRow = 1;
 
     public Builder() {
       mEffectSteps = Lists.newArrayList();
@@ -75,8 +81,13 @@ public class EffectModel {
       return this;
     }
 
+    public Builder withNumTilesInRow(int numTilesInRow) {
+      mNumTilesInRow = numTilesInRow;
+      return this;
+    }
+
     public EffectModel build() {
-      return new EffectModel(mName, mEffectSteps);
+      return new EffectModel(mName, mEffectSteps, mNumTilesInRow);
     }
   }
 }

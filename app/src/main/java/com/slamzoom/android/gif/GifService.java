@@ -133,7 +133,7 @@ public class GifService {
             if (mGifPreviewCache.asMap().containsKey(effectModel)) {
               fireGifPreviewReadyEvent(effectModel);
             } else {
-              new GifCreator(
+              GifCreator.newInstance(
                   mSelectedBitmap,
                   effectModel,
                   Constants.DEFAULT_GIF_PREVIEW_SIZE_PX,
@@ -180,7 +180,7 @@ public class GifService {
           fireGifReadyEvent(effectModel);
         } else {
           final long start = System.currentTimeMillis();
-          new GifCreator(
+          GifCreator.newInstance(
               mSelectedBitmap,
               effectModel,
               Constants.DEFAULT_GIF_SIZE_PX,

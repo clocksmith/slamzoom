@@ -108,6 +108,7 @@ public class EffectStep {
     private float mDurationSeconds = Constants.DEFAULT_DURATION_SECONDS;
     private float mStartPauseSeconds = Constants.DEFAULT_START_PAUSE_SECONDS;
     private float mEndPauseSeconds = Constants.DEFAULT_END_PAUSE_SECONDS;
+    private int mNumTilesInRow = 1;
 
     public Builder withScaleInterpolatorProvider(ScaleInterpolatorProvider interpolatorProvider) {
       mScaleInterpolatorProvider = interpolatorProvider;

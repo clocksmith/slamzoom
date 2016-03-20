@@ -42,23 +42,40 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
     }
   }
 
-  private long mStart;
-  private List<List<Frame>> mAllFrames;
-  private AtomicInteger mTotalNumFramesToAdd;
-  private int mGifWidth;
-  private int mGifHeight;
-  private int mTotalNumFrames;
+  protected long mStart;
+  protected List<List<Frame>> mAllFrames;
+  protected AtomicInteger mTotalNumFramesToAdd;
+  protected int mGifWidth;
+  protected int mGifHeight;
+  protected int mTotalNumFrames;
 
-  private Bitmap mSelectedBitmap;
-  private EffectModel mEffectModel;
-  private boolean mIsFinalGif;
-  private CreateGifCallback mCallback;
+  protected Bitmap mSelectedBitmap;
+  protected EffectModel mEffectModel;
+  protected boolean mIsFinalGif;
+  protected CreateGifCallback mCallback;
 
   public interface CreateGifCallback {
     void onCreateGif(byte[] gifBytes);
   }
 
-  public GifCreator(Bitmap selectedBitmap, EffectModel effectModel, int gifSize, boolean isFinalGif, CreateGifCallback callback) {
+  public static GifCreator newInstance(Bitmap selectedBitmap,
+      EffectModel effectModel,
+      int gifSize,
+      boolean isFinalGif,
+      CreateGifCallback callback) {
+    if (effectModel.getNumTilesInRow() > 1) {
+      return new StaticTiledGifCreator(selectedBitmap, effectModel, gifSize, isFinalGif, callback);
+    } else {
+      return new GifCreator(selectedBitmap, effectModel, gifSize, isFinalGif, callback);
+    }
+  }
+
+  public GifCreator(
+      Bitmap selectedBitmap,
+      EffectModel effectModel,
+      int gifSize,
+      boolean isFinalGif,
+      CreateGifCallback callback) {
     mSelectedBitmap = selectedBitmap;
     mEffectModel = effectModel;
     mIsFinalGif = isFinalGif;
@@ -89,7 +106,20 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
     collectFrames();
   }
 
-  private void collectFrames() {
+  protected Frame getFrame(Matrix matrix, int delayMillis) {
+    Bitmap targetBitmap = Bitmap.createBitmap(
+        mSelectedBitmap.getWidth(), mSelectedBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+    Canvas canvas = new Canvas(targetBitmap);
+    Paint paint = new Paint();
+    paint.setAntiAlias(true);
+    paint.setDither(true);
+    canvas.drawBitmap(mSelectedBitmap, matrix, paint);
+    Bitmap scaledBitmap = Bitmap.createScaledBitmap(targetBitmap, mGifWidth, mGifHeight, true);
+    Frame frame = new Frame(scaledBitmap, delayMillis);
+    return frame;
+  }
+
+  protected void collectFrames() {
     List<EffectStep> steps = mEffectModel.getEffectSteps();
     EffectStep previousStep = null;
 
@@ -138,7 +168,7 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
     }
   }
 
-  public class CreateFrameTask extends AsyncTask<Void, Void, Frame> {
+  protected class CreateFrameTask extends AsyncTask<Void, Void, Frame> {
     private int mStepIndex;
     private int mFrameIndex;
     private int mDelayMillis;
@@ -161,15 +191,7 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
       final Matrix matrix = new Matrix();
       matrix.postScale(mScale, mScale, mDx, mDy);
 
-      Bitmap targetBitmap = Bitmap.createBitmap(
-          mSelectedBitmap.getWidth(), mSelectedBitmap.getHeight(), Bitmap.Config.ARGB_8888);
-      Canvas canvas = new Canvas(targetBitmap);
-      Paint paint = new Paint();
-      paint.setAntiAlias(true);
-      paint.setDither(true);
-      canvas.drawBitmap(mSelectedBitmap, matrix, paint);
-      Bitmap scaledBitmap = Bitmap.createScaledBitmap(targetBitmap, mGifWidth, mGifHeight, true);
-      Frame frame = new Frame(scaledBitmap, mDelayMillis);
+      Frame frame = getFrame(matrix, mDelayMillis);
 
       if (mIsFinalGif) {
         BusProvider.getInstance().post(new ProgressUpdateEvent(mEffectModel, 1.0 / 3 / mTotalNumFrames));
