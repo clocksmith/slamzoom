@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.google.common.primitives.Doubles;
 import com.slamzoom.android.interpolate.base.Interpolator;
 
+import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 
 import java.util.List;
@@ -30,8 +31,7 @@ public class LinearSplineInterpolator extends Interpolator {
         return (double) input.y;
       }
     }));
-    mPolynomialSplineFunction =
-        new org.apache.commons.math3.analysis.interpolation.LinearInterpolator().interpolate(xArray, yArray);
+    mPolynomialSplineFunction = new LinearInterpolator().interpolate(xArray, yArray);
   }
 
   @Override

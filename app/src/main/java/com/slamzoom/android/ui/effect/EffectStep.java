@@ -1,6 +1,7 @@
 package com.slamzoom.android.ui.effect;
 
 import android.graphics.Rect;
+import android.util.Log;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
@@ -18,8 +19,9 @@ import java.util.List;
  * Created by clocksmith on 2/21/16.
  */
 public class EffectStep {
-  private Rect mHotspot;
+  private static final String TAG = EffectStep.class.getSimpleName();
 
+  private Rect mHotspot;
   private Interpolator mScaleInterpolator;
   private Interpolator mXInterpolator;
   private Interpolator mYInterpolator;
@@ -153,18 +155,24 @@ public class EffectStep {
       if (mScaleInterpolator == null) {
         this.withScaleInterpolator(new NoScaleInterpolator());
       }
-      NoTranslateInterpolatorProvider noTranslateInterpolatorProvider = new NoTranslateInterpolatorProvider();
-      if (mXInterpolator == null) {
-        noTranslateInterpolatorProvider.getXInterpolator();
-      }
-      if (mYInterpolator == null) {
-        noTranslateInterpolatorProvider.getYInterpolator();
+      if (mXInterpolator == null || mYInterpolator == null) {
+        NoTranslateInterpolatorProvider noTranslateInterpolatorProvider = new NoTranslateInterpolatorProvider();
+        if (mXInterpolator == null) {
+          this.withXInterpolator(noTranslateInterpolatorProvider.getXInterpolator());
+        }
+        if (mYInterpolator == null) {
+          this.withYInterpolator(noTranslateInterpolatorProvider.getYInterpolator());
+        }
       }
 
       // If any filter interpolators do not have internal interpolators, match them with scale.
       for (FilterInterpolator filterInterpolator : mFilterInterpolators) {
         if (!filterInterpolator.hasInterpoolator()) {
-          filterInterpolator.setInterpolator(mScaleInterpolator);
+          try {
+            filterInterpolator.setInterpolator(mScaleInterpolator.clone());
+          } catch (CloneNotSupportedException e) {
+            Log.e(TAG, "Could not clone scale interpolator", e);
+          }
         }
       }
 

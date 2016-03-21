@@ -5,7 +5,7 @@ import com.google.common.base.Objects;
 /**
  * Created by clocksmith on 3/11/16.
  */
-public abstract class Interpolator {
+public abstract class Interpolator implements Cloneable {
   private float start;
   private float end;
 
@@ -15,6 +15,13 @@ public abstract class Interpolator {
 
   public Interpolator(float start, float end) {
     setDomain(start, end);
+  }
+
+  @Override
+  public Interpolator clone() throws CloneNotSupportedException {
+    Interpolator clone = (Interpolator) super.clone();
+    clone.setDomain(0, 1);
+    return clone;
   }
 
   public void setDomain(float start, float end) {

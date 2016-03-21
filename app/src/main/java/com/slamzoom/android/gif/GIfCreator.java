@@ -157,9 +157,9 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
       previousStep = step;
       Rect endRect = step.getHotspot();
 
-      Interpolator scaleInterpolator = step.getScaleInterpolatorProvider().getScaleInterpolator();
-      Interpolator xInterpolator = step.getTranslateInterpolatorProvider().getXInterpolator();
-      Interpolator yInterpolator = step.getTranslateInterpolatorProvider().getYInterpolator();
+      Interpolator scaleInterpolator = step.getScaleInterpolator();
+      Interpolator xInterpolator = step.getXInterpolator();
+      Interpolator yInterpolator = step.getYInterpolator();
 
       float pivotX = endRect.left + endRect.left * endRect.width() / (startRect.width() - endRect.width());
       float pivotY = endRect.top + endRect.top * endRect.height() / (startRect.height() - endRect.height());
@@ -172,12 +172,8 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
       for (int frameIndex = 0; frameIndex < numFramesForChunk; frameIndex++) {
         final float percent = ((float) frameIndex / (numFramesForChunk - 1));
         float scale = scaleInterpolator.getInterpolation(percent);
-        float dx = pivotX;
-        float dy = pivotY;
-        if (xInterpolator != null && yInterpolator != null) {
-          dx += xInterpolator.getInterpolation(percent) * startRect.width() / scale;
-          dy += yInterpolator.getInterpolation(percent) * startRect.width() / scale;
-        }
+        float dx = pivotX + xInterpolator.getInterpolation(percent) * startRect.width() / scale;
+        float dy = pivotY + yInterpolator.getInterpolation(percent) * startRect.width() / scale;
 
         List<GPUImageFilter> filters = Lists.transform(step.getFilterInterpolators(),
             new Function<FilterInterpolator, GPUImageFilter>() {
