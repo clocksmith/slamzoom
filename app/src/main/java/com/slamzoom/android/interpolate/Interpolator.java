@@ -1,10 +1,6 @@
 package com.slamzoom.android.interpolate;
 
-import android.graphics.PointF;
-
-import com.google.common.collect.Lists;
-
-import java.util.List;
+import com.google.common.base.Objects;
 
 /**
  * Created by clocksmith on 3/11/16.
@@ -39,25 +35,4 @@ public abstract class Interpolator {
   }
 
   protected abstract float getValue(float input);
-
-  public static PointListBuilder newPointListBuilder() {
-    return new PointListBuilder();
-  }
-
-  public static class PointListBuilder {
-    private List<PointF> mPointList;
-
-    public PointListBuilder() {
-      mPointList = Lists.newArrayList();
-    }
-
-    public PointListBuilder add(float x, float y) {
-      mPointList.add(new PointF(x, y));
-      return this;
-    }
-
-    public List<PointF> build() {
-      return mPointList;
-    }
-  }
 }

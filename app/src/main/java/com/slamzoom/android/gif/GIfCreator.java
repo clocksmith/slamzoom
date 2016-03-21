@@ -8,11 +8,14 @@ import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.common.providers.BusProvider;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.providers.ExecutorProvider;
+import com.slamzoom.android.common.utils.PostProcessorUtils;
+import com.slamzoom.android.interpolate.filter.FilterInterpolator;
 import com.slamzoom.android.ui.effect.EffectModel;
 import com.slamzoom.android.ui.effect.EffectStep;
 import com.slamzoom.android.interpolate.Interpolator;
@@ -21,6 +24,8 @@ import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
 
 /**
  * Created by clocksmith on 3/18/16.
@@ -53,6 +58,7 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
   protected EffectModel mEffectModel;
   protected boolean mIsFinalGif;
   protected CreateGifCallback mCallback;
+  protected int mNumTilesInRow;
 
   public interface CreateGifCallback {
     void onCreateGif(byte[] gifBytes);
@@ -63,11 +69,7 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
       int gifSize,
       boolean isFinalGif,
       CreateGifCallback callback) {
-    if (effectModel.getNumTilesInRow() > 1) {
-      return new StaticTiledGifCreator(selectedBitmap, effectModel, gifSize, isFinalGif, callback);
-    } else {
-      return new GifCreator(selectedBitmap, effectModel, gifSize, isFinalGif, callback);
-    }
+    return new GifCreator(selectedBitmap, effectModel, gifSize, isFinalGif, callback);
   }
 
   public GifCreator(
@@ -80,6 +82,7 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
     mEffectModel = effectModel;
     mIsFinalGif = isFinalGif;
     mCallback = callback;
+    mNumTilesInRow = effectModel.getNumTilesInRow();
 
     float aspectRatio = (float) mSelectedBitmap.getWidth() / mSelectedBitmap.getHeight();
     mGifWidth = aspectRatio > 1 ? gifSize : (int) (gifSize * aspectRatio);
@@ -106,16 +109,38 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
     collectFrames();
   }
 
-  protected Frame getFrame(Matrix matrix, int delayMillis) {
+  protected Frame getFrame(Matrix transformationMatrix, List<GPUImageFilter> filters, int delayMillis) {
+    // Transform the selected bitmap
     Bitmap targetBitmap = Bitmap.createBitmap(
         mSelectedBitmap.getWidth(), mSelectedBitmap.getHeight(), Bitmap.Config.ARGB_8888);
     Canvas canvas = new Canvas(targetBitmap);
     Paint paint = new Paint();
     paint.setAntiAlias(true);
     paint.setDither(true);
-    canvas.drawBitmap(mSelectedBitmap, matrix, paint);
+    canvas.drawBitmap(mSelectedBitmap, transformationMatrix, paint);
+
+    if (mNumTilesInRow > 1) {
+      // Write subframes into new bitmap
+      int tileWidth = targetBitmap.getWidth() / mNumTilesInRow;
+      int tileHeight = targetBitmap.getHeight() / mNumTilesInRow;
+      Bitmap bitmapTile = Bitmap.createScaledBitmap(targetBitmap, tileWidth, tileHeight, true);
+      Bitmap tiledTargetBitmap = Bitmap.createBitmap(
+          targetBitmap.getWidth(), targetBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+      Canvas tiledCanvas = new Canvas(tiledTargetBitmap);
+      for (int i = 0; i < mNumTilesInRow; i++) {
+        for (int j = 0; j < mNumTilesInRow; j++) {
+          tiledCanvas.drawBitmap(bitmapTile, i * tileWidth, j * tileHeight, paint);
+        }
+      }
+      targetBitmap = tiledTargetBitmap;
+    }
+
     Bitmap scaledBitmap = Bitmap.createScaledBitmap(targetBitmap, mGifWidth, mGifHeight, true);
-    Frame frame = new Frame(scaledBitmap, delayMillis);
+
+    // Do post processing
+    Bitmap finalBitmap = PostProcessorUtils.process(scaledBitmap, filters);
+
+    Frame frame = new Frame(finalBitmap, delayMillis);
     return frame;
   }
 
@@ -145,7 +170,7 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
 
       int numFramesForChunk = mAllFrames.get(stepIndex).size();
       for (int frameIndex = 0; frameIndex < numFramesForChunk; frameIndex++) {
-        float percent = ((float) frameIndex / (numFramesForChunk - 1));
+        final float percent = ((float) frameIndex / (numFramesForChunk - 1));
         float scale = scaleInterpolator.getInterpolation(percent);
         float dx = pivotX;
         float dy = pivotY;
@@ -153,6 +178,14 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
           dx += xInterpolator.getInterpolation(percent) * startRect.width() / scale;
           dy += yInterpolator.getInterpolation(percent) * startRect.width() / scale;
         }
+
+        List<GPUImageFilter> filters = Lists.transform(step.getFilterInterpolators(),
+            new Function<FilterInterpolator, GPUImageFilter>() {
+              @Override
+              public GPUImageFilter apply(FilterInterpolator filterInterpolator) {
+                return filterInterpolator.getInterpolationFilter(percent);
+              }
+            });
 
         int extraDelayMillis = 0;
         if (frameIndex == 0) {
@@ -162,7 +195,14 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
         }
         int delayMillis = (int) (1000f / Constants.DEFAULT_FPS) + extraDelayMillis;
 
-        CreateFrameTask createFrameTask = new CreateFrameTask(stepIndex, frameIndex, delayMillis, scale, dx, dy);
+        CreateFrameTask createFrameTask = new CreateFrameTask(
+            stepIndex,
+            frameIndex,
+            delayMillis,
+            scale,
+            dx,
+            dy,
+            filters);
         createFrameTask.executeOnExecutor(ExecutorProvider.getInstance());
       }
     }
@@ -175,8 +215,16 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
     private float mScale;
     private float mDx;
     private float mDy;
+    private List<GPUImageFilter> mFilters;
 
-    CreateFrameTask(int stepIndex, int frameIndex, int delayMillis, float scale, float dx, float dy) {
+    CreateFrameTask(
+        int stepIndex,
+        int frameIndex,
+        int delayMillis,
+        float scale,
+        float dx,
+        float dy,
+        List<GPUImageFilter> filters) {
       super();
       mStepIndex = stepIndex;
       mFrameIndex = frameIndex;
@@ -184,14 +232,15 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
       mScale = scale;
       mDx = dx;
       mDy = dy;
+      mFilters = filters;
     }
 
     @Override
     protected Frame doInBackground(Void... params) {
-      final Matrix matrix = new Matrix();
-      matrix.postScale(mScale, mScale, mDx, mDy);
+      Matrix transformationMatrix = new Matrix();
+      transformationMatrix.postScale(mScale, mScale, mDx, mDy);
 
-      Frame frame = getFrame(matrix, mDelayMillis);
+      Frame frame = getFrame(transformationMatrix, mFilters, mDelayMillis);
 
       if (mIsFinalGif) {
         BusProvider.getInstance().post(new ProgressUpdateEvent(mEffectModel, 1.0 / 3 / mTotalNumFrames));

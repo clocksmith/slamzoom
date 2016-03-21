@@ -3,12 +3,16 @@ package com.slamzoom.android.ui.effect;
 import android.graphics.Rect;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.interpolate.providers.combo.ScaleAndTranslateInterpolatorProvider;
-import com.slamzoom.android.interpolate.providers.scale.OneScaleInterpolatorProvider;
-import com.slamzoom.android.interpolate.providers.scale.ScaleInterpolatorProvider;
-import com.slamzoom.android.interpolate.providers.translate.TranslateInterpolatorProvider;
-import com.slamzoom.android.interpolate.providers.translate.ZeroTranslateInterpolatorProvider;
+import com.slamzoom.android.interpolate.Interpolator;
+import com.slamzoom.android.interpolate.combo.ScaleAndTranslateInterpolatorProvider;
+import com.slamzoom.android.interpolate.filter.FilterInterpolator;
+import com.slamzoom.android.interpolate.single.NoScaleInterpolator;
+import com.slamzoom.android.interpolate.combo.TranslateInterpolatorProvider;
+import com.slamzoom.android.interpolate.combo.translate.NoTranslateInterpolatorProvider;
+
+import java.util.List;
 
 /**
  * Created by clocksmith on 2/21/16.
@@ -16,8 +20,10 @@ import com.slamzoom.android.interpolate.providers.translate.ZeroTranslateInterpo
 public class EffectStep {
   private Rect mHotspot;
 
-  private ScaleInterpolatorProvider mScaleInterpolatorProvider;
-  private TranslateInterpolatorProvider mTranslateInterpolatorProvider;
+  private Interpolator mScaleInterpolator;
+  private Interpolator mXInterpolator;
+  private Interpolator mYInterpolator;
+  private List<FilterInterpolator> mFilternterpolators;
   private float mDurationSeconds;
   private float mStartPauseSeconds;
   private float mEndPauseSeconds;
@@ -27,13 +33,17 @@ public class EffectStep {
   }
 
   public EffectStep(
-      ScaleInterpolatorProvider scaleInterpolatorProvider,
-      TranslateInterpolatorProvider translateInterpolatorProvider,
+      Interpolator scaleInterpolator,
+      Interpolator xInterpolator,
+      Interpolator yInterpolator,
+      List<FilterInterpolator> filterInterpolators,
       float durationSeconds,
       float startPauseSeconds,
       float endPauseSeconds) {
-    mScaleInterpolatorProvider = scaleInterpolatorProvider;
-    mTranslateInterpolatorProvider = translateInterpolatorProvider;
+    mScaleInterpolator = scaleInterpolator;
+    mXInterpolator = xInterpolator;
+    mYInterpolator = yInterpolator;
+    mFilternterpolators = filterInterpolators;
     mDurationSeconds = durationSeconds;
     mStartPauseSeconds = startPauseSeconds;
     mEndPauseSeconds = endPauseSeconds;
@@ -47,12 +57,20 @@ public class EffectStep {
     mHotspot = hotspot;
   }
 
-  public ScaleInterpolatorProvider getScaleInterpolatorProvider() {
-    return mScaleInterpolatorProvider;
+  public Interpolator getScaleInterpolator() {
+    return mScaleInterpolator;
   }
 
-  public TranslateInterpolatorProvider getTranslateInterpolatorProvider() {
-    return mTranslateInterpolatorProvider;
+  public Interpolator getXInterpolator() {
+    return mXInterpolator;
+  }
+
+  public Interpolator getYInterpolator() {
+    return mYInterpolator;
+  }
+
+  public List<FilterInterpolator> getFilterInterpolators() {
+    return mFilternterpolators;
   }
 
   public float getDurationSeconds() {
@@ -67,63 +85,51 @@ public class EffectStep {
     return mEndPauseSeconds;
   }
 
-  @Override
-  public int hashCode() {
-    return Objects.hashCode(
-        mHotspot,
-        getName(mScaleInterpolatorProvider),
-        getName(mTranslateInterpolatorProvider),
-        mDurationSeconds,
-        mStartPauseSeconds,
-        mEndPauseSeconds);
-  }
-
-  @Override
-  public boolean equals(final Object obj) {
-    if (obj == null) {
-      return false;
-    }
-
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-
-    final EffectStep other = (EffectStep) obj;
-    return Objects.equal(mHotspot, other.getHotspot())
-        && Objects.equal(getName(mScaleInterpolatorProvider), getName(other.getScaleInterpolatorProvider()))
-        && Objects.equal(getName(mTranslateInterpolatorProvider), getName(other.getTranslateInterpolatorProvider()))
-        && Objects.equal(mDurationSeconds, other.getDurationSeconds())
-        && Objects.equal(mStartPauseSeconds, other.getStartPauseSeconds())
-        && Objects.equal(mEndPauseSeconds, other.getEndPauseSeconds());
-  }
-
   // TODO(clocksmith): should be getClassNameOrNull in utility class.
   private String getName(Object object) {
     return object == null ? "null" : object.getClass().getSimpleName();
   }
 
   public static class Builder {
-    private ScaleInterpolatorProvider mScaleInterpolatorProvider;
-    private TranslateInterpolatorProvider mTranslateInterpolatorProvider;
+    private Interpolator mScaleInterpolator;
+    private Interpolator mXInterpolator;
+    private Interpolator mYInterpolator;
+    private List<FilterInterpolator> mFilterInterpolators = Lists.newArrayList();
     private float mDurationSeconds = Constants.DEFAULT_DURATION_SECONDS;
     private float mStartPauseSeconds = Constants.DEFAULT_START_PAUSE_SECONDS;
     private float mEndPauseSeconds = Constants.DEFAULT_END_PAUSE_SECONDS;
-    private int mNumTilesInRow = 1;
 
-    public Builder withScaleInterpolatorProvider(ScaleInterpolatorProvider interpolatorProvider) {
-      mScaleInterpolatorProvider = interpolatorProvider;
+    public Builder withScaleInterpolator(Interpolator interpolator) {
+      mScaleInterpolator = interpolator;
       return this;
     }
 
-    public Builder withTranslateInterpolatorProvider(TranslateInterpolatorProvider interpolatorProvider) {
-      mTranslateInterpolatorProvider = interpolatorProvider;
+    public Builder withXInterpolator(Interpolator interpolator) {
+      mXInterpolator = interpolator;
       return this;
+    }
+
+    public Builder withYInterpolator(Interpolator interpolator) {
+      mYInterpolator = interpolator;
+      return this;
+    }
+
+    public Builder withTranslateInterpolator(TranslateInterpolatorProvider interpolatorProvider) {
+      return this
+          .withXInterpolator(interpolatorProvider.getXInterpolator())
+          .withYInterpolator(interpolatorProvider.getYInterpolator());
     }
 
     public Builder withScaleAndTranslateInterpolatorProvider(
-        ScaleAndTranslateInterpolatorProvider interpolatorsProvider) {
-      mScaleInterpolatorProvider = interpolatorsProvider;
-      mTranslateInterpolatorProvider = interpolatorsProvider;
+        ScaleAndTranslateInterpolatorProvider interpolatorProvider) {
+      return this
+          .withScaleInterpolator(interpolatorProvider.getScaleInterpolator())
+          .withXInterpolator(interpolatorProvider.getXInterpolator())
+          .withYInterpolator(interpolatorProvider.getYInterpolator());
+    }
+
+    public Builder withFilterInterpolator(FilterInterpolator filterInterpolator) {
+      mFilterInterpolators.add(filterInterpolator);
       return this;
     }
 
@@ -143,16 +149,65 @@ public class EffectStep {
     }
 
     public EffectStep build() {
+      // Make sure we don't have any null transformation interpolators.
+      if (mScaleInterpolator == null) {
+        this.withScaleInterpolator(new NoScaleInterpolator());
+      }
+      NoTranslateInterpolatorProvider noTranslateInterpolatorProvider = new NoTranslateInterpolatorProvider();
+      if (mXInterpolator == null) {
+        noTranslateInterpolatorProvider.getXInterpolator();
+      }
+      if (mYInterpolator == null) {
+        noTranslateInterpolatorProvider.getYInterpolator();
+      }
+
+      // If any filter interpolators do not have internal interpolators, match them with scale.
+      for (FilterInterpolator filterInterpolator : mFilterInterpolators) {
+        if (!filterInterpolator.hasInterpoolator()) {
+          filterInterpolator.setInterpolator(mScaleInterpolator);
+        }
+      }
+
       return new EffectStep(
-          mScaleInterpolatorProvider == null ?
-              new OneScaleInterpolatorProvider() :
-              mScaleInterpolatorProvider,
-          mTranslateInterpolatorProvider == null ?
-              new ZeroTranslateInterpolatorProvider() :
-              mTranslateInterpolatorProvider,
+          mScaleInterpolator,
+          mXInterpolator,
+          mYInterpolator,
+          mFilterInterpolators,
           mDurationSeconds,
           mStartPauseSeconds,
           mEndPauseSeconds);
     }
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(
+        mHotspot,
+        getName(mScaleInterpolator),
+        getName(mXInterpolator),
+        getName(mYInterpolator),
+        mDurationSeconds,
+        mStartPauseSeconds,
+        mEndPauseSeconds);
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (obj == null) {
+      return false;
+    }
+
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+
+    final EffectStep other = (EffectStep) obj;
+    return Objects.equal(mHotspot, other.getHotspot())
+        && Objects.equal(getName(mScaleInterpolator), getName(other.getScaleInterpolator()))
+        && Objects.equal(getName(mXInterpolator), getName(other.getXInterpolator()))
+        && Objects.equal(getName(mYInterpolator), getName(other.getYInterpolator()))
+        && Objects.equal(mDurationSeconds, other.getDurationSeconds())
+        && Objects.equal(mStartPauseSeconds, other.getStartPauseSeconds())
+        && Objects.equal(mEndPauseSeconds, other.getEndPauseSeconds());
   }
 }
