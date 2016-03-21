@@ -1,7 +1,6 @@
 package com.slamzoom.android.interpolate.single;
 
-import com.slamzoom.android.interpolate.ConstantInterpolator;
-import com.slamzoom.android.interpolate.Interpolator;
+import com.slamzoom.android.interpolate.base.ConstantInterpolator;
 
 /**
  * Created by clocksmith on 3/17/16.

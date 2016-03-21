@@ -1,4 +1,4 @@
-package com.slamzoom.android.interpolate;
+package com.slamzoom.android.interpolate.base.spline;
 
 import android.graphics.PointF;
 

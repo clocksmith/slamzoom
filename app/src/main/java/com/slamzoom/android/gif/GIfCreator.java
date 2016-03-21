@@ -18,7 +18,7 @@ import com.slamzoom.android.common.utils.PostProcessorUtils;
 import com.slamzoom.android.interpolate.filter.FilterInterpolator;
 import com.slamzoom.android.ui.effect.EffectModel;
 import com.slamzoom.android.ui.effect.EffectStep;
-import com.slamzoom.android.interpolate.Interpolator;
+import com.slamzoom.android.interpolate.base.Interpolator;
 
 import java.io.IOException;
 import java.io.InvalidObjectException;

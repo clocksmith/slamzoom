@@ -1,7 +1,6 @@
 package com.slamzoom.android.interpolate.single;
 
-import com.slamzoom.android.interpolate.Interpolator;
-import com.slamzoom.android.interpolate.BinomialInterpolator;
+import com.slamzoom.android.interpolate.base.BinomialInterpolator;
 
 /**
  * Created by antrob on 2/24/16.

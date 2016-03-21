@@ -1,6 +1,6 @@
 package com.slamzoom.android.interpolate.combo;
 
-import com.slamzoom.android.interpolate.Interpolator;
+import com.slamzoom.android.interpolate.base.Interpolator;
 
 /**
  * Created by clocksmith on 3/15/16.

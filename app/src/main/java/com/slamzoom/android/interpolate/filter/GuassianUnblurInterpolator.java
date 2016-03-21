@@ -1,7 +1,5 @@
 package com.slamzoom.android.interpolate.filter;
 
-import com.slamzoom.android.interpolate.Interpolator;
-
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageGaussianBlurFilter;
 

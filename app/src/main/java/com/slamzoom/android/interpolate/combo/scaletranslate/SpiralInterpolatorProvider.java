@@ -1,7 +1,7 @@
 package com.slamzoom.android.interpolate.combo.scaletranslate;
 
-import com.slamzoom.android.interpolate.IdentityInterpolator;
-import com.slamzoom.android.interpolate.Interpolator;
+import com.slamzoom.android.interpolate.single.IdentityInterpolator;
+import com.slamzoom.android.interpolate.base.Interpolator;
 import com.slamzoom.android.interpolate.combo.ScaleAndTranslateInterpolatorProvider;
 
 /**

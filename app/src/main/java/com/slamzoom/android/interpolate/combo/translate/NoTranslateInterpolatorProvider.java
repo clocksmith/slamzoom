@@ -1,7 +1,7 @@
 package com.slamzoom.android.interpolate.combo.translate;
 
-import com.slamzoom.android.interpolate.ConstantInterpolator;
-import com.slamzoom.android.interpolate.Interpolator;
+import com.slamzoom.android.interpolate.base.ConstantInterpolator;
+import com.slamzoom.android.interpolate.base.Interpolator;
 import com.slamzoom.android.interpolate.combo.TranslateInterpolatorProvider;
 
 /**

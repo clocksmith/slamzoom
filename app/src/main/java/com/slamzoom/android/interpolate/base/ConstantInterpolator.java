@@ -1,4 +1,4 @@
-package com.slamzoom.android.interpolate;
+package com.slamzoom.android.interpolate.base;
 
 /**
  * Created by clocksmith on 3/17/16.

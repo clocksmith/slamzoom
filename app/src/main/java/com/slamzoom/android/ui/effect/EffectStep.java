@@ -5,7 +5,7 @@ import android.graphics.Rect;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.interpolate.Interpolator;
+import com.slamzoom.android.interpolate.base.Interpolator;
 import com.slamzoom.android.interpolate.combo.ScaleAndTranslateInterpolatorProvider;
 import com.slamzoom.android.interpolate.filter.FilterInterpolator;
 import com.slamzoom.android.interpolate.single.NoScaleInterpolator;

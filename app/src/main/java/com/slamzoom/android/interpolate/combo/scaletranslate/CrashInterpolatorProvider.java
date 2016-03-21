@@ -1,8 +1,8 @@
 package com.slamzoom.android.interpolate.combo.scaletranslate;
 
-import com.slamzoom.android.interpolate.Interpolator;
-import com.slamzoom.android.interpolate.LinearSplineInterpolator;
-import com.slamzoom.android.interpolate.PointListBuilder;
+import com.slamzoom.android.interpolate.base.Interpolator;
+import com.slamzoom.android.interpolate.base.spline.LinearSplineInterpolator;
+import com.slamzoom.android.interpolate.base.spline.PointListBuilder;
 import com.slamzoom.android.interpolate.combo.ScaleAndTranslateInterpolatorProvider;
 
 /**
