@@ -23,7 +23,7 @@ public class SlamPackProvider {
 
     packModels.add(EffectModel.newBuilder()
         .withPackName("slam pack")
-        .withName("slamzoom")
+        .withName("slamin")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new SlamHardInterpolator())
             .withFilterInterpolator(new ZoomBlurFilterInterpolator(new LinearSplineInterpolator(
@@ -39,7 +39,7 @@ public class SlamPackProvider {
         .build());
     packModels.add(EffectModel.newBuilder()
         .withPackName("slam pack")
-        .withName("sz out")
+        .withName("slamout")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new SlamSoftOutInterpolator())
             .withFilterInterpolator(new ZoomBlurFilterInterpolator(new LinearSplineInterpolator(
@@ -74,14 +74,15 @@ public class SlamPackProvider {
             .build())
         .build());
     packModels.add(EffectModel.newBuilder()
-        .withName("slamblur")
+        .withName("blurslam")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new SlamHardInterpolator())
             .withFilterInterpolator(new GuassianUnblurFilterInterpolator())
+            .withEndPauseSeconds(1f)
             .build())
         .build());
     packModels.add(EffectModel.newBuilder()
-        .withName("slamsaturate")
+        .withName("grayslam")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new SlamHardInterpolator())
             .withFilterInterpolator(new ZoomBlurFilterInterpolator(new LinearSplineInterpolator(
