@@ -6,7 +6,6 @@ import com.slamzoom.android.interpolate.base.spline.PointListBuilder;
 import com.slamzoom.android.interpolate.filter.GuassianUnblurFilterInterpolator;
 import com.slamzoom.android.interpolate.filter.UnsaturateFilterInterpolator;
 import com.slamzoom.android.interpolate.filter.ZoomBlurFilterInterpolator;
-import com.slamzoom.android.interpolate.single.SlamHardInAndOut2Interpolator;
 import com.slamzoom.android.interpolate.single.SlamHardInAndOutInterpolator;
 import com.slamzoom.android.interpolate.single.SlamHardInterpolator;
 import com.slamzoom.android.interpolate.single.SlamSoftOutInterpolator;
@@ -56,32 +55,22 @@ public class SlamPackProvider {
         .build());
     packModels.add(EffectModel.newBuilder()
         .withPackName("slam pack")
-        .withName("slamioio")
+        .withName("slamio")
         .addEffectStep(EffectStep.newBuilder()
-            .withScaleInterpolator(new SlamHardInAndOut2Interpolator())
+            .withScaleInterpolator(new SlamHardInAndOutInterpolator())
             .withFilterInterpolator(new ZoomBlurFilterInterpolator(new LinearSplineInterpolator(
                 PointListBuilder.newPointListBuilder()
                     .add(0, 0)
-                    .add(0.175f, 0)
-                    .add(0.225f, 1f)
-                    .add(0.2499f, 1f)
-                    .add(0.25f, 0)
-
-                    .add(0.425f, 0)
-                    .add(0.475f, 1f)
+                    .add(0.35f, 0)
+                    .add(0.45f, 1f)
                     .add(0.4999f, 1f)
                     .add(0.5f, 0)
-
-                    .add(0.675f, 0)
-                    .add(0.725f, 1f)
-                    .add(0.7499f, 1f)
-                    .add(0.75f, 0f)
-
-                    .add(0.925f, 0)
-                    .add(0.975f, 1f)
+                    .add(0.85f, 0)
+                    .add(0.95f, 1f)
                     .add(0.9999f, 1f)
                     .add(1f, 0)
                     .build())))
+            .withDurationSeconds(1f)
             .build())
         .build());
     packModels.add(EffectModel.newBuilder()

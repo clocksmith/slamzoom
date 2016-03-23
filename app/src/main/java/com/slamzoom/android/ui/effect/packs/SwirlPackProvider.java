@@ -1,22 +1,13 @@
 package com.slamzoom.android.ui.effect.packs;
 
 import com.google.common.collect.Lists;
-import com.slamzoom.android.interpolate.base.spline.LinearSplineInterpolator;
-import com.slamzoom.android.interpolate.base.spline.PointListBuilder;
 import com.slamzoom.android.interpolate.combo.scaletranslate.FlushInterpolatorProvider;
 import com.slamzoom.android.interpolate.combo.scaletranslate.SpiralInterpolatorProvider;
 import com.slamzoom.android.interpolate.combo.translate.ShakeInterpolatorProvider;
-import com.slamzoom.android.interpolate.filter.GuassianUnblurFilterInterpolator;
-import com.slamzoom.android.interpolate.filter.UnsaturateFilterInterpolator;
 import com.slamzoom.android.interpolate.filter.UnswirlFilterInterpolator;
-import com.slamzoom.android.interpolate.filter.ZoomBlurFilterInterpolator;
 import com.slamzoom.android.interpolate.single.IdentityInterpolator;
 import com.slamzoom.android.interpolate.single.InAndOutInterpolator;
-import com.slamzoom.android.interpolate.single.SlamHardInAndOut2Interpolator;
-import com.slamzoom.android.interpolate.single.SlamHardInAndOutInterpolator;
-import com.slamzoom.android.interpolate.single.SlamHardInterpolator;
 import com.slamzoom.android.interpolate.single.SlamSoftInterpolator;
-import com.slamzoom.android.interpolate.single.SlamSoftOutInterpolator;
 import com.slamzoom.android.ui.effect.EffectModel;
 import com.slamzoom.android.ui.effect.EffectStep;
 
