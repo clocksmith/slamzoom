@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -16,6 +17,8 @@ import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.providers.ExecutorProvider;
 import com.slamzoom.android.common.utils.PostProcessorUtils;
 import com.slamzoom.android.interpolate.filter.FilterInterpolator;
+import com.slamzoom.android.interpolate.filter.GPUImageZoomBlurFilter;
+import com.slamzoom.android.interpolate.filter.ZoomBlurFilterInterpolator;
 import com.slamzoom.android.ui.effect.EffectModel;
 import com.slamzoom.android.ui.effect.EffectStep;
 import com.slamzoom.android.interpolate.base.Interpolator;
@@ -26,6 +29,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageSwirlFilter;
 
 /**
  * Created by clocksmith on 3/18/16.
@@ -138,6 +142,16 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
     Bitmap scaledBitmap = Bitmap.createScaledBitmap(targetBitmap, mGifWidth, mGifHeight, true);
 
     // Do post processing
+//    for (GPUImageFilter filter : filters) {
+//      float[] values = new float[9];
+//      transformationMatrix.getValues(values);
+//      float dx = values[2];
+//      float dy = values[5];
+//      if (filter instanceof GPUImageZoomBlurFilter) {
+//        ((GPUImageZoomBlurFilter) filter).setBlurCenter(
+//            new PointF(dx / mSelectedBitmap.getWidth(), dy / mSelectedBitmap.getHeight()));
+//      }
+//    }
     Bitmap finalBitmap = PostProcessorUtils.process(scaledBitmap, filters);
 
     Frame frame = new Frame(finalBitmap, delayMillis);
@@ -155,7 +169,7 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
           new Rect(0, 0, mSelectedBitmap.getWidth(), mSelectedBitmap.getHeight()) :
           previousStep.getHotspot();
       previousStep = step;
-      Rect endRect = step.getHotspot();
+      final Rect endRect = step.getHotspot();
 
       Interpolator scaleInterpolator = step.getScaleInterpolator();
       Interpolator xInterpolator = step.getXInterpolator();
@@ -165,21 +179,32 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
       float pivotY = endRect.top + endRect.top * endRect.height() / (startRect.height() - endRect.height());
 
       float startScale = 1;
-      float endScale = (float) startRect.height() / endRect.height();
+      final float endScale = (float) startRect.height() / endRect.height();
       scaleInterpolator.setDomain(startScale, endScale);
 
       int numFramesForChunk = mAllFrames.get(stepIndex).size();
       for (int frameIndex = 0; frameIndex < numFramesForChunk; frameIndex++) {
         final float percent = ((float) frameIndex / (numFramesForChunk - 1));
-        float scale = scaleInterpolator.getInterpolation(percent);
-        float dx = pivotX + xInterpolator.getInterpolation(percent) * startRect.width() / scale;
-        float dy = pivotY + yInterpolator.getInterpolation(percent) * startRect.width() / scale;
+        final float scale = scaleInterpolator.getInterpolation(percent);
+        final float dx = pivotX + xInterpolator.getInterpolation(percent) * startRect.width() / scale;
+        final float dy = pivotY + yInterpolator.getInterpolation(percent) * startRect.width() / scale;
 
         List<GPUImageFilter> filters = Lists.transform(step.getFilterInterpolators(),
             new Function<FilterInterpolator, GPUImageFilter>() {
               @Override
               public GPUImageFilter apply(FilterInterpolator filterInterpolator) {
-                return filterInterpolator.getInterpolationFilter(percent);
+                GPUImageFilter filter = filterInterpolator.getInterpolationFilter(percent);
+                float c1 = (scale - 1) / endScale;
+                float c2 = 1 - c1;
+                PointF effectCenter = new PointF(
+                    c1 * 0.5f + c2 * endRect.centerX() / mSelectedBitmap.getWidth(),
+                    c1 * 0.5f + c2 * endRect.centerY() / mSelectedBitmap.getHeight());
+                if (filter instanceof GPUImageZoomBlurFilter) {
+                  ((GPUImageZoomBlurFilter) filter).setBlurCenter(effectCenter);
+                }  else if (filter instanceof GPUImageSwirlFilter) {
+                  ((GPUImageSwirlFilter) filter).setCenter(effectCenter);
+                }
+                return filter;
               }
             });
 

@@ -3,15 +3,15 @@ package com.slamzoom.android.interpolate.single;
 import com.slamzoom.android.interpolate.base.Interpolator;
 
 /**
- * Created by clocksmith on 3/22/16.
+ * Created by clocksmith on 3/12/16.
  */
-public class InAndOutInterpolator extends Interpolator {
+public class HalfInAndOutInterpolator extends Interpolator {
   @Override
   protected float getValue(float input) {
     if (input < 0.5) {
-      return 2 * input;
+      return input;
     } else {
-      return 2 * (1 - input);
+      return 1 - input;
     }
   }
 }

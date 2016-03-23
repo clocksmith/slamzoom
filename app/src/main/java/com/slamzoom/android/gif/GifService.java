@@ -62,11 +62,10 @@ public class GifService {
   }
 
   private static final int PREVIEW_CACHE_SIZE = 200;
-  private static final int CACHE_SIZE = 20;
+  private static final int CACHE_SIZE = 40;
 
   private static GifService mGifService = new GifService();
 
-  private Deque<Runnable> mCreateGifPreviewQueue;
   private Deque<Runnable> mCreateGifQueue;
   private boolean mIsCreatingGif;
   private Cache<EffectModel, byte[]> mGifPreviewCache;
@@ -77,8 +76,7 @@ public class GifService {
   private Rect mCropRect;
 
   private GifService() {
-    mCreateGifPreviewQueue = Queues.newLinkedBlockingDeque();
-    mCreateGifQueue = Queues.newLinkedBlockingDeque();;
+    mCreateGifQueue = Queues.newLinkedBlockingDeque();
     mGifPreviewCache = CacheBuilder.newBuilder()
         .maximumSize(PREVIEW_CACHE_SIZE)
         .build();
@@ -123,9 +121,8 @@ public class GifService {
     if (mEffectModels != null && mSelectedBitmap != null && mCropRect != null) {
       mGifCache.invalidateAll();
       mCreateGifQueue.clear();
-      mCreateGifPreviewQueue.clear();
       for (final EffectModel effectModel : mEffectModels) {
-        mCreateGifPreviewQueue.addLast(new Runnable() {
+        mCreateGifQueue.addLast(new Runnable() {
           @Override
           public void run() {
             if (mGifPreviewCache.asMap().containsKey(effectModel)) {
@@ -143,24 +140,16 @@ public class GifService {
                         mGifPreviewCache.asMap().put(effectModel, gifBytes);
                         fireGifPreviewReadyEvent(effectModel);
                       }
-                      if (mCreateGifPreviewQueue.peek() != null) {
-                        mCreateGifPreviewQueue.pollFirst().run();
-                      } else {
-                        mIsCreatingGif = false;
-                      }
+                      resumeQueue();
                     }
                   }).createAsync();
             }
           }
         });
       }
-      if (mCreateGifPreviewQueue.peek() != null) {
-        mCreateGifPreviewQueue.pollFirst().run();
-        mIsCreatingGif = true;
-      }
+      resumeQueue();
     }
   }
-
 
   public void updateGifIfPossible(final String effectName) {
     if (mEffectModels != null && mSelectedBitmap != null && mCropRect != null) {
@@ -178,23 +167,39 @@ public class GifService {
           fireGifReadyEvent(effectModel);
         } else {
           final long start = System.currentTimeMillis();
-          GifCreator.newInstance(
-              mSelectedBitmap,
-              effectModel,
-              Constants.DEFAULT_GIF_SIZE_PX,
-              true,
-              new GifCreator.CreateGifCallback() {
-                @Override
-                public void onCreateGif(byte[] gifBytes) {
-                  if (gifBytes != null) {
-                    Log.wtf(TAG, "gif took " + (System.currentTimeMillis() - start) + "ms to make");
-                    mGifCache.asMap().put(effectModel, gifBytes);
-                    fireGifReadyEvent(effectModel);
-                  }
-                }
-              }).createAsync();
+          mCreateGifQueue.addFirst(new Runnable() {
+            @Override
+            public void run() {
+              GifCreator.newInstance(
+                  mSelectedBitmap,
+                  effectModel,
+                  Constants.DEFAULT_GIF_SIZE_PX,
+                  true,
+                  new GifCreator.CreateGifCallback() {
+                    @Override
+                    public void onCreateGif(byte[] gifBytes) {
+                      if (gifBytes != null) {
+                        Log.wtf(TAG, "gif took " + (System.currentTimeMillis() - start) + "ms to make");
+                        mGifCache.asMap().put(effectModel, gifBytes);
+                        fireGifReadyEvent(effectModel);
+                        resumeQueue();
+                      }
+                    }
+                  }).createAsync();
+            }
+          });
         }
       }
+      resumeQueue();
+    }
+  }
+
+  private void resumeQueue() {
+    if (!mIsCreatingGif && mCreateGifQueue.peek() != null) {
+      mCreateGifQueue.pollFirst().run();
+      mIsCreatingGif = true;
+    } else {
+      mIsCreatingGif = false;
     }
   }
 

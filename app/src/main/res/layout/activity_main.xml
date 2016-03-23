@@ -17,14 +17,25 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitCenter"/>
+    <!--<ProgressBar-->
+        <!--android:id="@+id/progressBar"-->
+        <!--style="?android:attr/progressBarStyleHorizontal"-->
+        <!--android:indeterminate="false"-->
+        <!--android:visibility="gone"-->
+        <!--android:layout_width="64dp"-->
+        <!--android:layout_height="64dp"-->
+        <!--android:layout_gravity="center"/>-->
     <ProgressBar
         android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:indeterminate="false"
         android:visibility="gone"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center"
+        android:indeterminate="false"
+        android:progressDrawable="@drawable/circular_progress_bar"
+        android:background="@drawable/circle_shape"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:max="100"/>
   </FrameLayout>
 
   <com.slamzoom.android.ui.effect.EffectChooser

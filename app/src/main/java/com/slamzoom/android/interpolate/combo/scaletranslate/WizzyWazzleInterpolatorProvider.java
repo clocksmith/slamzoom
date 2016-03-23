@@ -2,7 +2,7 @@ package com.slamzoom.android.interpolate.combo.scaletranslate;
 
 import com.slamzoom.android.interpolate.base.ConstantInterpolator;
 import com.slamzoom.android.interpolate.base.Interpolator;
-import com.slamzoom.android.interpolate.single.InAndOutInterpolator;
+import com.slamzoom.android.interpolate.single.HalfInAndOutInterpolator;
 import com.slamzoom.android.interpolate.combo.ScaleAndTranslateInterpolatorProvider;
 
 /**
@@ -11,7 +11,7 @@ import com.slamzoom.android.interpolate.combo.ScaleAndTranslateInterpolatorProvi
 public class WizzyWazzleInterpolatorProvider implements ScaleAndTranslateInterpolatorProvider {
   @Override
   public Interpolator getScaleInterpolator() {
-    return new InAndOutInterpolator();
+    return new HalfInAndOutInterpolator();
   }
 
   @Override

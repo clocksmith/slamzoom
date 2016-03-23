@@ -9,7 +9,7 @@ import com.slamzoom.android.interpolate.combo.ScaleAndTranslateInterpolatorProvi
 /**
  * Created by clocksmith on 3/16/16.
  */
-public class CrashBounceDIagonalInterpolatorProvider implements ScaleAndTranslateInterpolatorProvider {
+public class CrashBounceDiagonalInterpolatorProvider implements ScaleAndTranslateInterpolatorProvider {
   @Override
   public Interpolator getScaleInterpolator() {
     return new LinearSplineInterpolator(PointListBuilder.newPointListBuilder()

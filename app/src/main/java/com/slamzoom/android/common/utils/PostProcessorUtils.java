@@ -1,8 +1,10 @@
 package com.slamzoom.android.common.utils;
 
 import android.graphics.Bitmap;
+import android.graphics.PointF;
 
 import com.slamzoom.android.SlamzoomApplication;
+import com.slamzoom.android.interpolate.filter.GPUImageZoomBlurFilter;
 
 import java.util.List;
 

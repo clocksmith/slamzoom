@@ -9,6 +9,7 @@ import java.util.List;
  * Created by antrob on 2/21/16.
  */
 public class EffectModel {
+  private String mPackName;
   private String mName;
   private List<EffectStep> mEffectSteps;
   private byte[] mGifBytes;
@@ -18,10 +19,15 @@ public class EffectModel {
     return new Builder();
   }
 
-  private EffectModel(String name, List<EffectStep> effectSteps, int numTilesInRow) {
+  private EffectModel(String packName, String name, List<EffectStep> effectSteps, int numTilesInRow) {
+    mPackName = packName;
     mName = name;
     mEffectSteps = effectSteps;
     mNumTilesInRow = numTilesInRow;
+  }
+
+  public String getPackName() {
+    return mPackName;
   }
 
   public String getName() {
@@ -46,7 +52,7 @@ public class EffectModel {
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(mName, mEffectSteps);
+    return Objects.hashCode(mPackName, mName, mEffectSteps);
   }
 
   @Override
@@ -58,17 +64,24 @@ public class EffectModel {
       return false;
     }
     final EffectModel other = (EffectModel) obj;
-    return Objects.equal(mName, other.getName())
+    return Objects.equal(mPackName, other.getPackName())
+        && Objects.equal(mName, other.getName())
         && Objects.equal(mEffectSteps, other.getEffectSteps());
   }
 
   public static class Builder {
+    private String mPackName;
     private String mName;
     private List<EffectStep> mEffectSteps;
     private int mNumTilesInRow = 1;
 
     public Builder() {
       mEffectSteps = Lists.newArrayList();
+    }
+
+    public Builder withPackName(String packName) {
+      mPackName = packName;
+      return this;
     }
 
     public Builder withName(String name) {
@@ -87,7 +100,7 @@ public class EffectModel {
     }
 
     public EffectModel build() {
-      return new EffectModel(mName, mEffectSteps, mNumTilesInRow);
+      return new EffectModel(mPackName, mName, mEffectSteps, mNumTilesInRow);
     }
   }
 }

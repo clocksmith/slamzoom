@@ -149,8 +149,7 @@ public class GifEncoder {
             writePalette(colorTable);
           }
           writePixels(indexedPixels);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
           Log.e(TAG, "Could not write to output stream", e);
         }
       }
@@ -263,7 +262,7 @@ public class GifEncoder {
   }
 
   /**
-   *    Write 16-bit value to output stream, LSB first
+   * Write 16-bit value to output stream, LSB first
    */
   private void writeShort(int value) throws IOException {
     mOut.write(value & 0xff);
@@ -303,10 +302,14 @@ public class GifEncoder {
       }
 
       if (mTotalNumFrameWritersToAdd.decrementAndGet() == 0) {
-        Log.wtf(TAG, "Finished adding frame writers in " + (System.currentTimeMillis() - mEncodeStart) + "ms");
+        new WriteFramesTask().executeOnExecutor(ExecutorProvider.getInstance());
+      }
+    }
 
+    private class WriteFramesTask extends AsyncTask<Void, Void, Void> {
+      @Override
+      protected Void doInBackground(Void... params) {
         long start = System.currentTimeMillis();
-//        Log.d(TAG, "Starting to write frames...");
 
         try {
           writeString("GIF89a");
@@ -331,6 +334,7 @@ public class GifEncoder {
         byte[] gifBytes = mOut.toByteArray();
         Log.wtf(TAG, "Finished writing frames in " + (System.currentTimeMillis() - start) + "ms");
         mCallback.onCreateGif(gifBytes);
+        return null;
       }
     }
   }
