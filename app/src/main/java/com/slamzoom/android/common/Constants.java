@@ -10,7 +10,7 @@ public class Constants {
   public static final String IMAGE_URI = "imageUri";
   public static final String CROP_RECT = "cropRect";
 
-  public static final int MAX_SELECTED_DIMEN_PX = 1024;
+  public static final int MAX_SELECTED_DIMEN_PX = 1000;
 
   public static final int DEFAULT_FPS = 24;
   public static final int DEFAULT_GIF_SIZE_PX = 240;

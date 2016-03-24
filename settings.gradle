@@ -1,5 +1,2 @@
 include ':app'
-//include ':slamzoom_shared'
-//
-//project(":slamzoom_shared").projectDir = file("../../slamzoom_shared")
 

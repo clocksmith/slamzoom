@@ -1,5 +1,6 @@
 package com.slamzoom.android.common.utils;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
 
@@ -16,10 +17,10 @@ import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
  */
 public class PostProcessorUtils {
   private static final float MAX_GUASSIAN_BLUR = 1;
-  public static Bitmap process(Bitmap original, List<GPUImageFilter> filters) {
+  public static Bitmap process(Context context, Bitmap original, List<GPUImageFilter> filters) {
     Bitmap processedBitmap = original;
     for (GPUImageFilter filter : filters) {
-      GPUImage gpuImage = new GPUImage(SlamzoomApplication.getAppContext());
+      GPUImage gpuImage = new GPUImage(context);
       gpuImage.setFilter(filter);
       processedBitmap = gpuImage.getBitmapWithFilterApplied(processedBitmap);
     }

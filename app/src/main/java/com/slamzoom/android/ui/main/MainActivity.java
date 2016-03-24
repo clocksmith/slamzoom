@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     ButterKnife.bind(this);
     BusProvider.getInstance().register(this);
 
+    GifService.getInstance().setContext(this);
     List<EffectModel> templates = EffectModelsFactory.getTemplates();
     GifService.getInstance().setEffectModels(templates);
     mEffectChooser.setEffectModels(templates);

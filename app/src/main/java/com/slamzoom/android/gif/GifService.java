@@ -1,5 +1,6 @@
 package com.slamzoom.android.gif;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.util.Log;
@@ -66,6 +67,7 @@ public class GifService {
 
   private static GifService mGifService = new GifService();
 
+  private Context mContext;
   private Deque<Runnable> mCreateGifQueue;
   private boolean mIsCreatingGif;
   private Cache<EffectModel, byte[]> mGifPreviewCache;
@@ -93,14 +95,18 @@ public class GifService {
     return mGifService;
   }
 
+  public void setContext(Context context) {
+    mContext = context;
+  }
+
   public void setEffectModels(List<EffectModel> effectModels) {
     mEffectModels = effectModels;
-    updateGifPreviewsIfPossible();
+//    updateGifPreviewsIfPossible();
   }
 
   public void setSelectedBitmap(Bitmap bitmap) {
     mSelectedBitmap = bitmap;
-    updateGifPreviewsIfPossible();
+//    updateGifPreviewsIfPossible();
   }
 
   public void setCropRect(Rect cropRect, String selectedEffectName) {
@@ -112,7 +118,7 @@ public class GifService {
     }
 
     mCropRect = cropRect;
-    updateGifPreviewsIfPossible();
+//    updateGifPreviewsIfPossible();
 //    updateGifIfPossible(selectedEffectName);
   }
 
@@ -129,6 +135,7 @@ public class GifService {
               fireGifPreviewReadyEvent(effectModel);
             } else {
               GifCreator.newInstance(
+                  mContext,
                   mSelectedBitmap,
                   effectModel,
                   Constants.DEFAULT_GIF_PREVIEW_SIZE_PX,
@@ -171,6 +178,7 @@ public class GifService {
             @Override
             public void run() {
               GifCreator.newInstance(
+                  mContext,
                   mSelectedBitmap,
                   effectModel,
                   Constants.DEFAULT_GIF_SIZE_PX,

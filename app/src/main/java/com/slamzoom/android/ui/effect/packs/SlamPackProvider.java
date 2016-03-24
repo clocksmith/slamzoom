@@ -82,7 +82,7 @@ public class SlamPackProvider {
             .build())
         .build());
     packModels.add(EffectModel.newBuilder()
-        .withName("grayslam")
+        .withName("grayslam ")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new SlamHardInterpolator())
             .withFilterInterpolator(new ZoomBlurFilterInterpolator(new LinearSplineInterpolator(

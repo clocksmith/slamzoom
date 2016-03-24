@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black">
-  <com.theartofdev.edmodo.cropper.CropImageView
-      xmlns:custom="http://schemas.android.com/apk/res-auto"
-      android:id="@+id/cropImageView"
+  <com.slamzoom.android.ui.cropper.CropRectProvidingImaeCropView
+      android:id="@+id/imageCropView"
+      xmlns:imagecrop="http://schemas.android.com/apk/res-auto"
       android:layout_width="match_parent"
       android:layout_height="0dp"
       android:layout_weight="1"
-      custom:cropScaleType="fitCenter"
-      custom:cropGuidelines="off"
-      custom:cropFixAspectRatio="true"
-      custom:cropBorderLineThickness="1dp"
-      custom:cropBorderCornerThickness="1dp"
-      custom:cropMinCropWindowWidth="1px"
-      custom:cropMinCropWindowHeight="1px"
-      custom:cropMinCropResultWidthPX="1"
-      custom:cropMinCropResultHeightPX="1"/>
+      android:scaleType="fitCenter"
+      imagecrop:setInnerGridMode="on"
+      imagecrop:gridInnerStroke="1dp"
+      imagecrop:gridInnerColor="#66ffffff"
+      imagecrop:setOuterGridMode="on"
+      imagecrop:gridOuterStroke="1dp"
+      imagecrop:gridOuterColor="#ffffff"/>
   <FrameLayout
       android:layout_width="match_parent"
       android:layout_height="?android:attr/actionBarSize">

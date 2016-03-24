@@ -2,6 +2,8 @@ package com.slamzoom.android.ui.cropper;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -9,10 +11,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.naver.android.helloyako.imagecrop.view.ImageCropView;
 import com.slamzoom.android.common.utils.BitmapUtils;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.R;
-import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.FileNotFoundException;
 
@@ -25,7 +27,7 @@ import butterknife.ButterKnife;
 public class CropperActivity extends AppCompatActivity {
   private static final String TAG = CropperActivity.class.getSimpleName();
 
-  @Bind(R.id.cropImageView) CropImageView mCropImageView;
+  @Bind(R.id.imageCropView) CropRectProvidingImaeCropView mImageCropView;
   @Bind(R.id.doneButton) Button mDoneButton;
 
   @Override
@@ -34,11 +36,12 @@ public class CropperActivity extends AppCompatActivity {
     setContentView(R.layout.activity_cropper);
     ButterKnife.bind(this);
 
+
     Uri uri = getIntent().getParcelableExtra(Constants.IMAGE_URI);
     try {
       Bitmap bitmap = BitmapUtils.readScaledBitmap(uri, this.getContentResolver(), Constants.MAX_SELECTED_DIMEN_PX);
-      mCropImageView.setAspectRatio(bitmap.getWidth(), bitmap.getHeight());
-      mCropImageView.setImageBitmap(bitmap);
+      mImageCropView.setAspectRatio(bitmap.getWidth(), bitmap.getHeight());
+      mImageCropView.setImageBitmap(bitmap);
     } catch (FileNotFoundException e) {
       Log.e(TAG, "Cannot read bitmap", e);
       finish();
@@ -48,7 +51,12 @@ public class CropperActivity extends AppCompatActivity {
       @Override
       public void onClick(View v) {
         Intent returnIntent = new Intent();
-        returnIntent.putExtra(Constants.CROP_RECT, mCropImageView.getActualCropRect());
+
+        Rect rect = new Rect();
+        mImageCropView.getBitmapRect().round(rect);
+        Rect cropRect = mImageCropView.getCropRect();
+
+        returnIntent.putExtra(Constants.CROP_RECT, cropRect);
         setResult(RESULT_OK, returnIntent);
         finish();
       }

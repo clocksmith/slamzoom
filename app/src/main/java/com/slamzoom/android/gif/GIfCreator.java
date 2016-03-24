@@ -1,5 +1,6 @@
 package com.slamzoom.android.gif;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
@@ -58,6 +59,7 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
   protected int mGifHeight;
   protected int mTotalNumFrames;
 
+  protected Context mContext;
   protected Bitmap mSelectedBitmap;
   protected EffectModel mEffectModel;
   protected boolean mIsFinalGif;
@@ -68,20 +70,23 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
     void onCreateGif(byte[] gifBytes);
   }
 
-  public static GifCreator newInstance(Bitmap selectedBitmap,
-      EffectModel effectModel,
-      int gifSize,
-      boolean isFinalGif,
-      CreateGifCallback callback) {
-    return new GifCreator(selectedBitmap, effectModel, gifSize, isFinalGif, callback);
-  }
-
-  public GifCreator(
+  public static GifCreator newInstance(Context context,
       Bitmap selectedBitmap,
       EffectModel effectModel,
       int gifSize,
       boolean isFinalGif,
       CreateGifCallback callback) {
+    return new GifCreator(context, selectedBitmap, effectModel, gifSize, isFinalGif, callback);
+  }
+
+  public GifCreator(
+      Context context,
+      Bitmap selectedBitmap,
+      EffectModel effectModel,
+      int gifSize,
+      boolean isFinalGif,
+      CreateGifCallback callback) {
+    mContext = context;
     mSelectedBitmap = selectedBitmap;
     mEffectModel = effectModel;
     mIsFinalGif = isFinalGif;
@@ -141,18 +146,7 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
 
     Bitmap scaledBitmap = Bitmap.createScaledBitmap(targetBitmap, mGifWidth, mGifHeight, true);
 
-    // Do post processing
-//    for (GPUImageFilter filter : filters) {
-//      float[] values = new float[9];
-//      transformationMatrix.getValues(values);
-//      float dx = values[2];
-//      float dy = values[5];
-//      if (filter instanceof GPUImageZoomBlurFilter) {
-//        ((GPUImageZoomBlurFilter) filter).setBlurCenter(
-//            new PointF(dx / mSelectedBitmap.getWidth(), dy / mSelectedBitmap.getHeight()));
-//      }
-//    }
-    Bitmap finalBitmap = PostProcessorUtils.process(scaledBitmap, filters);
+    Bitmap finalBitmap = PostProcessorUtils.process(mContext, scaledBitmap, filters);
 
     Frame frame = new Frame(finalBitmap, delayMillis);
     return frame;
