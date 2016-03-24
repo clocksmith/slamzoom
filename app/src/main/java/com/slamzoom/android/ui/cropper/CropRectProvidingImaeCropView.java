@@ -64,7 +64,7 @@ public class CropRectProvidingImaeCropView extends ImageCropView {
       }
 
       Rect rect = new Rect();
-      new RectF(x, y, actualCropWidth, actualCropHeight).round(rect);
+      new RectF(x, y, x + actualCropWidth, y + actualCropHeight).round(rect);
       return rect;
     } catch (NoSuchFieldException e) {
       throw new RuntimeException(e);

@@ -23,9 +23,9 @@ public class BitmapUtils {
       int selectedBitmapHeight = options.outHeight;
       float aspectRatio = (float) selectedBitmapWidth / selectedBitmapHeight;
       int scaledSelectedBitmapWidth =
-          aspectRatio > 1 ? maxDimen : (int) (maxDimen * aspectRatio);
+          aspectRatio > 1 ? maxDimen : Math.round(maxDimen * aspectRatio);
       int scaledSelectedBitmapHeight =
-          aspectRatio > 1 ? (int) (maxDimen / aspectRatio) : maxDimen;
+          aspectRatio > 1 ? Math.round(maxDimen / aspectRatio) : maxDimen;
       int inSampleSize =
           BitmapUtils.calculateInSampleSize(options, scaledSelectedBitmapWidth, scaledSelectedBitmapHeight);
       options.inSampleSize = inSampleSize;

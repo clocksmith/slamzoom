@@ -6,6 +6,7 @@ import com.slamzoom.android.interpolate.base.spline.PointListBuilder;
 import com.slamzoom.android.interpolate.filter.GuassianUnblurFilterInterpolator;
 import com.slamzoom.android.interpolate.filter.UnsaturateFilterInterpolator;
 import com.slamzoom.android.interpolate.filter.ZoomBlurFilterInterpolator;
+import com.slamzoom.android.interpolate.single.IdentityInterpolator;
 import com.slamzoom.android.interpolate.single.SlamHardInAndOutInterpolator;
 import com.slamzoom.android.interpolate.single.SlamHardInterpolator;
 import com.slamzoom.android.interpolate.single.SlamSoftOutInterpolator;
@@ -21,6 +22,13 @@ public class SlamPackProvider {
   public static List<EffectModel> getPack() {
     List<EffectModel> packModels = Lists.newArrayList();
 
+    packModels.add(EffectModel.newBuilder()
+        .withPackName("slam pack")
+        .withName("test")
+        .addEffectStep(EffectStep.newBuilder()
+            .withScaleInterpolator(new IdentityInterpolator())
+            .build())
+        .build());
     packModels.add(EffectModel.newBuilder()
         .withPackName("slam pack")
         .withName("slamin")

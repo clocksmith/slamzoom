@@ -143,7 +143,7 @@ public class GifEncoder {
             writePalette(colorTable);
             writeNetscapeExt();
           }
-          writeGraphicCtrlExt((int) (frame.delayMillis / 10f)); // delay is in hundredths
+          writeGraphicCtrlExt(Math.round(frame.delayMillis / 10f)); // delay is in hundredths
           writeImageDesc(firstFrame);
           if (!firstFrame) {
             writePalette(colorTable);

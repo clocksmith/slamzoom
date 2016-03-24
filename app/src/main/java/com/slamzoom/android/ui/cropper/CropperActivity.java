@@ -2,6 +2,7 @@ package com.slamzoom.android.ui.cropper;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.net.Uri;
@@ -51,12 +52,8 @@ public class CropperActivity extends AppCompatActivity {
       @Override
       public void onClick(View v) {
         Intent returnIntent = new Intent();
-
-        Rect rect = new Rect();
-        mImageCropView.getBitmapRect().round(rect);
-        Rect cropRect = mImageCropView.getCropRect();
-
-        returnIntent.putExtra(Constants.CROP_RECT, cropRect);
+        Log.d(TAG, mImageCropView.getCropRect().toString());
+        returnIntent.putExtra(Constants.CROP_RECT, mImageCropView.getCropRect());
         setResult(RESULT_OK, returnIntent);
         finish();
       }

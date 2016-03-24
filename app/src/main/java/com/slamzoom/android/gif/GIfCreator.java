@@ -94,8 +94,8 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
     mNumTilesInRow = effectModel.getNumTilesInRow();
 
     float aspectRatio = (float) mSelectedBitmap.getWidth() / mSelectedBitmap.getHeight();
-    mGifWidth = aspectRatio > 1 ? gifSize : (int) (gifSize * aspectRatio);
-    mGifHeight = aspectRatio > 1 ? (int) (gifSize / aspectRatio) : gifSize;
+    mGifWidth = aspectRatio > 1 ? gifSize : Math.round(gifSize * aspectRatio);
+    mGifHeight = aspectRatio > 1 ? Math.round(gifSize / aspectRatio) : gifSize;
   }
 
   public void createAsync() {
@@ -105,7 +105,7 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
     mTotalNumFramesToAdd = new AtomicInteger(0);
     mAllFrames = Lists.newArrayListWithCapacity(steps.size());
     for (final EffectStep step : mEffectModel.getEffectSteps()) {
-      final int numFramesForChunk = (int) (Constants.DEFAULT_FPS * step.getDurationSeconds());
+      final int numFramesForChunk = Math.round(Constants.DEFAULT_FPS * step.getDurationSeconds());
       List<Frame> frames = Lists.newArrayListWithCapacity(numFramesForChunk);
       for (int i = 0; i < numFramesForChunk; i++) {
         mTotalNumFramesToAdd.incrementAndGet();
@@ -204,11 +204,11 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
 
         int extraDelayMillis = 0;
         if (frameIndex == 0) {
-          extraDelayMillis = (int) (1000f * step.getStartPauseSeconds());
+          extraDelayMillis = Math.round(1000f * step.getStartPauseSeconds());
         } else if (frameIndex == numFramesForChunk - 1) {
-          extraDelayMillis = (int) (1000f * step.getEndPauseSeconds());
+          extraDelayMillis = Math.round(1000f * step.getEndPauseSeconds());
         }
-        int delayMillis = (int) (1000f / Constants.DEFAULT_FPS) + extraDelayMillis;
+        int delayMillis = Math.round(1000f / Constants.DEFAULT_FPS) + extraDelayMillis;
 
         CreateFrameTask createFrameTask = new CreateFrameTask(
             stepIndex,

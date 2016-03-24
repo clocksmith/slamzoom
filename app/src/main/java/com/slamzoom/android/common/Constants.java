@@ -13,7 +13,7 @@ public class Constants {
   public static final int MAX_SELECTED_DIMEN_PX = 1000;
 
   public static final int DEFAULT_FPS = 24;
-  public static final int DEFAULT_GIF_SIZE_PX = 240;
+  public static final int DEFAULT_GIF_SIZE_PX = 320;
   public static final int DEFAULT_GIF_PREVIEW_SIZE_PX = 60;
   public static final boolean DEFAULT_USE_LOCAL_COLOR_PALETTE = true;
   public static final float DEFAULT_DURATION_SECONDS = 2;
