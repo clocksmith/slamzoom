@@ -3,13 +3,13 @@ package com.slamzoom.android.effects.packs;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectModel;
 import com.slamzoom.android.effects.EffectStep;
-import com.slamzoom.android.interpolate.base.spline.CubicSplineInterpolator;
-import com.slamzoom.android.interpolate.base.spline.PointListBuilder;
-import com.slamzoom.android.interpolate.combo.scaletranslate.CrashBounceBottomInterpolatorProvider;
-import com.slamzoom.android.interpolate.combo.scaletranslate.CrashBounceDiagonalInterpolatorProvider;
-import com.slamzoom.android.interpolate.combo.scaletranslate.CrashInterpolatorProvider;
-import com.slamzoom.android.interpolate.filter.GuassianUnblurFilterInterpolator;
-import com.slamzoom.android.interpolate.filter.UnsaturateFilterInterpolator;
+import com.slamzoom.android.interpolaters.base.spline.CubicSplineInterpolator;
+import com.slamzoom.android.interpolaters.base.spline.PointListBuilder;
+import com.slamzoom.android.interpolaters.combo.scaletranslate.CrashBounceBottomInterpolatorProvider;
+import com.slamzoom.android.interpolaters.combo.scaletranslate.CrashBounceDiagonalInterpolatorProvider;
+import com.slamzoom.android.interpolaters.combo.scaletranslate.CrashInterpolatorProvider;
+import com.slamzoom.android.interpolaters.filter.GuassianUnblurFilterInterpolator;
+import com.slamzoom.android.interpolaters.filter.UnsaturateFilterInterpolator;
 
 import java.util.List;
 

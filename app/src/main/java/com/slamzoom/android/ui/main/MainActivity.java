@@ -18,9 +18,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.slamzoom.android.common.utils.BitmapUtils;
-import com.slamzoom.android.common.singletons.BusProvider;
-import com.slamzoom.android.common.Constants;
+import com.slamzoom.android.global.utils.BitmapUtils;
+import com.slamzoom.android.global.singletons.BusProvider;
+import com.slamzoom.android.global.Constants;
 import com.slamzoom.android.R;
 import com.slamzoom.android.ui.cropper.CropperActivity;
 import com.slamzoom.android.ui.main.effectchooser.EffectChooser;

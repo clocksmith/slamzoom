@@ -3,7 +3,7 @@ package com.slamzoom.android.mediacreation.gif;
 import android.content.Context;
 import android.graphics.Bitmap;
 
-import com.slamzoom.android.common.singletons.BusProvider;
+import com.slamzoom.android.global.singletons.BusProvider;
 import com.slamzoom.android.mediacreation.CreateMediaCallback;
 import com.slamzoom.android.mediacreation.MediaCreator;
 import com.slamzoom.android.effects.EffectModel;

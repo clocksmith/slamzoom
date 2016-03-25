@@ -4,8 +4,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.common.collect.Lists;
-import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.common.singletons.ExecutorProvider;
+import com.slamzoom.android.global.Constants;
+import com.slamzoom.android.global.singletons.ExecutorProvider;
 import com.slamzoom.android.mediacreation.MediaEncoder;
 
 import java.io.ByteArrayOutputStream;

@@ -5,13 +5,13 @@ import android.util.Log;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
-import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.interpolate.base.Interpolator;
-import com.slamzoom.android.interpolate.combo.ScaleAndTranslateInterpolatorProvider;
-import com.slamzoom.android.interpolate.filter.FilterInterpolator;
-import com.slamzoom.android.interpolate.single.NoScaleInterpolator;
-import com.slamzoom.android.interpolate.combo.TranslateInterpolatorProvider;
-import com.slamzoom.android.interpolate.combo.translate.NoTranslateInterpolatorProvider;
+import com.slamzoom.android.global.Constants;
+import com.slamzoom.android.interpolaters.base.Interpolator;
+import com.slamzoom.android.interpolaters.combo.ScaleAndTranslateInterpolatorProvider;
+import com.slamzoom.android.interpolaters.filter.FilterInterpolator;
+import com.slamzoom.android.interpolaters.single.NoScaleInterpolator;
+import com.slamzoom.android.interpolaters.combo.TranslateInterpolatorProvider;
+import com.slamzoom.android.interpolaters.combo.translate.NoTranslateInterpolatorProvider;
 
 import java.util.List;
 

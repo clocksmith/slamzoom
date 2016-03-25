@@ -3,7 +3,7 @@ package com.slamzoom.android.effects.packs;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectModel;
 import com.slamzoom.android.effects.EffectStep;
-import com.slamzoom.android.interpolate.single.IdentityInterpolator;
+import com.slamzoom.android.interpolaters.single.IdentityInterpolator;
 
 import java.util.List;
 
