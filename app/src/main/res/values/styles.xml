@@ -1,11 +1,18 @@
 <resources>
+  <style name="SlamzoomTheme" parent="@style/Theme.AppCompat">
+    <item name="colorPrimary">@color/colorPrimary</item>
+    <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+    <item name="colorAccent">@color/colorAccent</item>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
+    <item name="actionBarStyle">@style/SlamzoomActionBar</item>
+  </style>
 
+  <style name="SlamzoomActionBar" parent="@style/Widget.AppCompat.ActionBar.Solid">
+    <item name="titleTextStyle">@style/SlamzoomActionBarText</item>
+  </style>
+
+  <style name="SlamzoomActionBarText" parent="@android:style/TextAppearance">
+    <item name="android:textColor">@color/menu_icon_color</item>
+    <item name="android:textSize">24dp</item>
+  </style>
 </resources>

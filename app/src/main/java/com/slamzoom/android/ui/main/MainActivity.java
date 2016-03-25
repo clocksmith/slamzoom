@@ -1,4 +1,4 @@
-package com.slamzoom.android.ui.main;
+  package com.slamzoom.android.ui.main;
 
 import android.Manifest;
 import android.content.Intent;
@@ -19,15 +19,15 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.slamzoom.android.common.utils.BitmapUtils;
-import com.slamzoom.android.common.providers.BusProvider;
+import com.slamzoom.android.common.singletons.BusProvider;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.R;
 import com.slamzoom.android.ui.cropper.CropperActivity;
-import com.slamzoom.android.ui.effect.EffectChooser;
-import com.slamzoom.android.ui.effect.EffectModel;
-import com.slamzoom.android.ui.effect.EffectModelsFactory;
-import com.slamzoom.android.ui.effect.EffectViewHolder;
-import com.slamzoom.android.media.gif.GifService;
+import com.slamzoom.android.ui.main.effect.EffectChooser;
+import com.slamzoom.android.ui.main.effect.EffectModel;
+import com.slamzoom.android.effects.EffectModelProvider;
+import com.slamzoom.android.ui.main.effect.EffectViewHolder;
+import com.slamzoom.android.mediacreation.gif.GifService;
 import com.squareup.otto.Subscribe;
 
 import java.io.File;
@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     BusProvider.getInstance().register(this);
 
     GifService.getInstance().setContext(this);
-    List<EffectModel> templates = EffectModelsFactory.getTemplates();
+    List<EffectModel> templates = EffectModelProvider.getModels();
     GifService.getInstance().setEffectModels(templates);
     mEffectChooser.setEffectModels(templates);
     mSelectedEffectName = templates.get(0).getName();
@@ -166,22 +166,27 @@ public class MainActivity extends AppCompatActivity {
     long now = System.currentTimeMillis();
     String gifFilename = "slamzoom_" + now + ".gif";
     File gifFile = new File(direct, gifFilename);
-    if (!gifFile.getParentFile().mkdirs()) {
-      Log.e(TAG, "Cannot make directory: " + gifFile.getPath());
+
+    if (!gifFile.getParentFile().isDirectory()) {
+      if (!gifFile.getParentFile().mkdirs()) {
+        Log.e(TAG, "Cannot make directory: " + gifFile.getParentFile());
+      }
     }
 
-    try {
-      // TODO(clocksmith): make sure external apps can't destory this (read only)
-      FileOutputStream gifOutputStream = new FileOutputStream(gifFile);
-      gifOutputStream.write(mSelectedGifBytes);
-      gifOutputStream.close();
+    if (mSelectedGifBytes != null) {
+      try {
+        // TODO(clocksmith): make sure external apps can't destory this (read only)
+        FileOutputStream gifOutputStream = new FileOutputStream(gifFile);
+        gifOutputStream.write(mSelectedGifBytes);
+        gifOutputStream.close();
 
-      Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
-      shareIntent.setType("image/gif");
-      shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(gifFile));
-      startActivity(Intent.createChooser(shareIntent, "Share via"));
-    } catch (IOException e) {
-      Log.e(TAG, "cannot share gif", e);
+        Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+        shareIntent.setType("image/gif");
+        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(gifFile));
+        startActivity(Intent.createChooser(shareIntent, "Share via"));
+      } catch (IOException e) {
+        Log.e(TAG, "cannot share gif", e);
+      }
     }
   }
 }
