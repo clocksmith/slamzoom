@@ -23,10 +23,10 @@ import com.slamzoom.android.common.singletons.BusProvider;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.R;
 import com.slamzoom.android.ui.cropper.CropperActivity;
-import com.slamzoom.android.ui.main.effect.EffectChooser;
-import com.slamzoom.android.ui.main.effect.EffectModel;
+import com.slamzoom.android.ui.main.effectchooser.EffectChooser;
+import com.slamzoom.android.effects.EffectModel;
 import com.slamzoom.android.effects.EffectModelProvider;
-import com.slamzoom.android.ui.main.effect.EffectViewHolder;
+import com.slamzoom.android.ui.main.effectchooser.EffectViewHolder;
 import com.slamzoom.android.mediacreation.gif.GifService;
 import com.squareup.otto.Subscribe;
 

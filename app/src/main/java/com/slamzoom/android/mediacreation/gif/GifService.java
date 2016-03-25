@@ -15,8 +15,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import com.slamzoom.android.common.singletons.BusProvider;
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.ui.main.effect.EffectModel;
-import com.slamzoom.android.ui.main.effect.EffectStep;
+import com.slamzoom.android.effects.EffectModel;
+import com.slamzoom.android.effects.EffectStep;
 import com.squareup.otto.Subscribe;
 
 import java.io.IOException;

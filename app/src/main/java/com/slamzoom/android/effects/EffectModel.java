@@ -1,4 +1,4 @@
-package com.slamzoom.android.ui.main.effect;
+package com.slamzoom.android.effects;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;

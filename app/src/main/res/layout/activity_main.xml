@@ -38,10 +38,10 @@
         android:max="100"/>
   </FrameLayout>
 
-  <com.slamzoom.android.ui.main.effect.EffectChooser
+  <com.slamzoom.android.ui.main.effectchooser.EffectChooser
       android:id="@+id/effectChooser"
       android:layout_width="match_parent"
       android:layout_height="@dimen/effect_chooser_height">
-  </com.slamzoom.android.ui.main.effect.EffectChooser>
+  </com.slamzoom.android.ui.main.effectchooser.EffectChooser>
 </LinearLayout>
 

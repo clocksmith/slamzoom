@@ -1,4 +1,4 @@
-package com.slamzoom.android.ui.main.effect;
+package com.slamzoom.android.ui.main.effectchooser;
 
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 
 import com.slamzoom.android.R;
+import com.slamzoom.android.effects.EffectModel;
 
 import java.util.List;
 

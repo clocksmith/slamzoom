@@ -1,7 +1,11 @@
 package com.slamzoom.android.effects;
 
 import com.google.common.collect.Lists;
-import com.slamzoom.android.ui.main.effect.EffectModel;
+import com.slamzoom.android.effects.packs.CrashPackProvider;
+import com.slamzoom.android.effects.packs.ShakePackProvider;
+import com.slamzoom.android.effects.packs.SimplePackProvider;
+import com.slamzoom.android.effects.packs.SlamPackProvider;
+import com.slamzoom.android.effects.packs.SwirlPackProvider;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.slamzoom.android.ui.main.effect;
+package com.slamzoom.android.ui.main.effectchooser;
 
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.singletons.BusProvider;
+import com.slamzoom.android.effects.EffectModel;
 
 import java.io.IOException;
 

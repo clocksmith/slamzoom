@@ -18,8 +18,8 @@ import com.slamzoom.android.common.singletons.ExecutorProvider;
 import com.slamzoom.android.common.utils.PostProcessorUtils;
 import com.slamzoom.android.interpolate.filter.FilterInterpolator;
 import com.slamzoom.android.interpolate.filter.GPUImageZoomBlurFilter;
-import com.slamzoom.android.ui.main.effect.EffectModel;
-import com.slamzoom.android.ui.main.effect.EffectStep;
+import com.slamzoom.android.effects.EffectModel;
+import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.interpolate.base.Interpolator;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.slamzoom.android.ui.main.effect;
+package com.slamzoom.android.effects;
 
 import android.graphics.Rect;
 import android.util.Log;

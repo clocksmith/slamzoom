@@ -1,6 +1,8 @@
-package com.slamzoom.android.effects;
+package com.slamzoom.android.effects.packs;
 
 import com.google.common.collect.Lists;
+import com.slamzoom.android.effects.EffectModel;
+import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.interpolate.base.spline.LinearSplineInterpolator;
 import com.slamzoom.android.interpolate.base.spline.PointListBuilder;
 import com.slamzoom.android.interpolate.filter.GuassianUnblurFilterInterpolator;
@@ -9,8 +11,6 @@ import com.slamzoom.android.interpolate.filter.ZoomBlurFilterInterpolator;
 import com.slamzoom.android.interpolate.single.SlamHardInAndOutInterpolator;
 import com.slamzoom.android.interpolate.single.SlamHardInterpolator;
 import com.slamzoom.android.interpolate.single.SlamSoftOutInterpolator;
-import com.slamzoom.android.ui.main.effect.EffectModel;
-import com.slamzoom.android.ui.main.effect.EffectStep;
 
 import java.util.List;
 
