@@ -1,4 +1,4 @@
-package com.slamzoom.android.gif;
+package com.slamzoom.android.media;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -19,7 +19,8 @@ import com.slamzoom.android.common.providers.ExecutorProvider;
 import com.slamzoom.android.common.utils.PostProcessorUtils;
 import com.slamzoom.android.interpolate.filter.FilterInterpolator;
 import com.slamzoom.android.interpolate.filter.GPUImageZoomBlurFilter;
-import com.slamzoom.android.interpolate.filter.ZoomBlurFilterInterpolator;
+import com.slamzoom.android.media.gif.GifEncoder;
+import com.slamzoom.android.media.gif.GifFrame;
 import com.slamzoom.android.ui.effect.EffectModel;
 import com.slamzoom.android.ui.effect.EffectStep;
 import com.slamzoom.android.interpolate.base.Interpolator;
@@ -35,25 +36,11 @@ import jp.co.cyberagent.android.gpuimage.GPUImageSwirlFilter;
 /**
  * Created by clocksmith on 3/18/16.
  */
-public class GifCreator implements GifEncoder.ProgressUpdateListener {
-  public static final String TAG = GifCreator.class.getSimpleName();
-
-  @Override
-  public void onProgressUpdate(double amountToUpdate) {
-    BusProvider.getInstance().post(new ProgressUpdateEvent(mEffectModel, amountToUpdate));
-  }
-
-  public class ProgressUpdateEvent {
-    public final EffectModel effectModel;
-    public final double amountToUpdate;
-    public ProgressUpdateEvent(EffectModel effectModel, double amountToUpdate) {
-      this.effectModel = effectModel;
-      this.amountToUpdate = amountToUpdate;
-    }
-  }
+public abstract class MediaCreator {
+  public static final String TAG = MediaCreator.class.getSimpleName();
 
   protected long mStart;
-  protected List<List<Frame>> mAllFrames;
+  protected List<List<MediaFrame>> mAllFrames;
   protected AtomicInteger mTotalNumFramesToAdd;
   protected int mGifWidth;
   protected int mGifHeight;
@@ -63,29 +50,16 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
   protected Bitmap mSelectedBitmap;
   protected EffectModel mEffectModel;
   protected boolean mIsFinalGif;
-  protected CreateGifCallback mCallback;
+  protected CreateMediaCallback mCallback;
   protected int mNumTilesInRow;
 
-  public interface CreateGifCallback {
-    void onCreateGif(byte[] gifBytes);
-  }
-
-  public static GifCreator newInstance(Context context,
-      Bitmap selectedBitmap,
-      EffectModel effectModel,
-      int gifSize,
-      boolean isFinalGif,
-      CreateGifCallback callback) {
-    return new GifCreator(context, selectedBitmap, effectModel, gifSize, isFinalGif, callback);
-  }
-
-  public GifCreator(
+  public MediaCreator(
       Context context,
       Bitmap selectedBitmap,
       EffectModel effectModel,
       int gifSize,
       boolean isFinalGif,
-      CreateGifCallback callback) {
+      CreateMediaCallback callback) {
     mContext = context;
     mSelectedBitmap = selectedBitmap;
     mEffectModel = effectModel;
@@ -98,6 +72,10 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
     mGifHeight = aspectRatio > 1 ? Math.round(gifSize / aspectRatio) : gifSize;
   }
 
+  public abstract MediaFrame createFrame(Bitmap bitmap, int delayMillis);
+
+  public abstract MediaEncoder createEncoder();
+
   public void createAsync() {
     Log.d(TAG, "createAsync()");
     mStart = System.currentTimeMillis();
@@ -106,7 +84,7 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
     mAllFrames = Lists.newArrayListWithCapacity(steps.size());
     for (final EffectStep step : mEffectModel.getEffectSteps()) {
       final int numFramesForChunk = Math.round(Constants.DEFAULT_FPS * step.getDurationSeconds());
-      List<Frame> frames = Lists.newArrayListWithCapacity(numFramesForChunk);
+      List<MediaFrame> frames = Lists.newArrayListWithCapacity(numFramesForChunk);
       for (int i = 0; i < numFramesForChunk; i++) {
         mTotalNumFramesToAdd.incrementAndGet();
         frames.add(null);
@@ -118,14 +96,13 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
     collectFrames();
   }
 
-  protected Frame getFrame(Matrix transformationMatrix, List<GPUImageFilter> filters, int delayMillis) {
+  protected MediaFrame getFrame(Matrix transformationMatrix, List<GPUImageFilter> filters, int delayMillis) {
     // Transform the selected bitmap
     Bitmap targetBitmap = Bitmap.createBitmap(
         mSelectedBitmap.getWidth(), mSelectedBitmap.getHeight(), Bitmap.Config.ARGB_8888);
     Canvas canvas = new Canvas(targetBitmap);
     Paint paint = new Paint();
     paint.setAntiAlias(true);
-    paint.setDither(true);
     canvas.drawBitmap(mSelectedBitmap, transformationMatrix, paint);
 
     if (mNumTilesInRow > 1) {
@@ -148,8 +125,7 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
 
     Bitmap finalBitmap = PostProcessorUtils.process(mContext, scaledBitmap, filters);
 
-    Frame frame = new Frame(finalBitmap, delayMillis);
-    return frame;
+    return createFrame(finalBitmap, delayMillis);
   }
 
   protected void collectFrames() {
@@ -223,14 +199,14 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
     }
   }
 
-  protected class CreateFrameTask extends AsyncTask<Void, Void, Frame> {
-    private int mStepIndex;
-    private int mFrameIndex;
-    private int mDelayMillis;
-    private float mScale;
-    private float mDx;
-    private float mDy;
-    private List<GPUImageFilter> mFilters;
+  protected class CreateFrameTask extends AsyncTask<Void, Void, MediaFrame> {
+    protected int mStepIndex;
+    protected int mFrameIndex;
+    protected int mDelayMillis;
+    protected float mScale;
+    protected float mDx;
+    protected float mDy;
+    protected List<GPUImageFilter> mFilters;
 
     CreateFrameTask(
         int stepIndex,
@@ -251,42 +227,21 @@ public class GifCreator implements GifEncoder.ProgressUpdateListener {
     }
 
     @Override
-    protected Frame doInBackground(Void... params) {
+    protected MediaFrame doInBackground(Void... params) {
       Matrix transformationMatrix = new Matrix();
       transformationMatrix.postScale(mScale, mScale, mDx, mDy);
+      return getFrame(transformationMatrix, mFilters, mDelayMillis);
 
-      Frame frame = getFrame(transformationMatrix, mFilters, mDelayMillis);
-
-      if (mIsFinalGif) {
-        BusProvider.getInstance().post(new ProgressUpdateEvent(mEffectModel, 1.0 / 3 / mTotalNumFrames));
-      }
-//      Log.d(TAG, "Finished scaling matrix and creating frame in " + (System.currentTimeMillis() - start) + "ms");
-      return frame;
     }
 
     @Override
-    protected void onPostExecute(Frame frame) {
+    protected void onPostExecute(MediaFrame frame) {
       mAllFrames.get(mStepIndex).set(mFrameIndex, frame);
       if (mTotalNumFramesToAdd.decrementAndGet() == 0) {
         Log.wtf(TAG, "Finished collecting frames " + (System.currentTimeMillis() - mStart) + "ms");
-        GifEncoder gifEncoder = new GifEncoder();
-
-        if (mIsFinalGif) {
-          gifEncoder.setProgressUpdateListener(GifCreator.this);
-        }
-
-        try {
-          Iterable<Frame> flattenedFrames = Iterables.concat(mAllFrames);
-          gifEncoder.addFrames(flattenedFrames);
-        } catch (InvalidObjectException e) {
-          Log.e(TAG, "Could not add frames", e);
-        }
-
-        try {
-          gifEncoder.encodeAsync(mCallback);
-        } catch (IOException e) {
-          Log.e(TAG, "Could not encode frames", e);
-        }
+        MediaEncoder mediaEncoder = createEncoder();
+        mediaEncoder.addFrames(Iterables.concat(mAllFrames));
+        mediaEncoder.encodeAsync(mCallback);
       }
     }
   }

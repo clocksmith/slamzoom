@@ -4,6 +4,9 @@ import android.content.ContentResolver;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.net.Uri;
 
 import java.io.FileNotFoundException;
@@ -34,6 +37,21 @@ public class BitmapUtils {
     } else {
       throw new FileNotFoundException("Could not load bitmap for path: " + uri.toString());
     }
+  }
+
+  // TODO(clocksmith): trying to make this better than Bitmap.createScaledBitmap,
+  // but right now it is the same quality but slower.
+  public static Bitmap createScaledBitmap(Bitmap sourceBitmap, int newWidth, int newHeight) {
+    Paint paint = new Paint();
+    paint.setAntiAlias(true);
+    Bitmap scaledBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888);
+    Canvas canvas = new Canvas(scaledBitmap);
+    canvas.drawBitmap(
+        sourceBitmap,
+        new Rect(0, 0, sourceBitmap.getWidth(), sourceBitmap.getHeight()),
+        new Rect(0, 0, newWidth, newHeight),
+        paint);
+    return scaledBitmap;
   }
 
   private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {

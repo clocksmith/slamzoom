@@ -1,4 +1,4 @@
-package com.slamzoom.android.gif;
+package com.slamzoom.android.media.gif;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -6,10 +6,10 @@ import android.util.Log;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.providers.ExecutorProvider;
+import com.slamzoom.android.media.MediaEncoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InvalidObjectException;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by clocksmith on 3/9/16.
  */
-public class GifEncoder {
+public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCallback> {
   private static final String TAG = GifEncoder.class.getSimpleName();
 
   public interface ProgressUpdateListener {
@@ -32,7 +32,7 @@ public class GifEncoder {
   private int mHeight;
 
   private ByteArrayOutputStream mOut;
-  private List<Frame> mFrames;
+  private List<GifFrame> mFrames;
   private boolean mUserLocalColorTables;
   private NeuQuant mGloabalNq;
   private byte[] mGlobalColorTable;
@@ -58,18 +58,19 @@ public class GifEncoder {
     mProgressUpdateListener = listener;
   }
 
-  public void addFrames(Iterable<Frame> frames) throws InvalidObjectException {
-    for (Frame frame : frames) {
+  @Override
+  public void addFrames(Iterable<GifFrame> frames) {
+    for (GifFrame frame : frames) {
       addFrame(frame);
     }
   }
 
-  public void addFrame(Frame frame) throws InvalidObjectException {
+  public void addFrame(GifFrame frame) {
     setOrVerifyGifDimensions(frame);
     mFrames.add(frame);
   }
 
-  public void encodeAsync(GifCreator.CreateGifCallback callback) throws IOException {
+  public void encodeAsync(GifCreator.CreateGifCallback callback) {
     mCallback = callback;
     mEncodeStart = System.currentTimeMillis();
 
@@ -85,17 +86,17 @@ public class GifEncoder {
     getStartFrameWriterTask.executeOnExecutor(Executors.newSingleThreadExecutor());
   }
 
-  private void setOrVerifyGifDimensions(Frame frame) throws InvalidObjectException {
+  private void setOrVerifyGifDimensions(GifFrame frame) {
     if (mWidth < 1 && mHeight < 1) {
       mWidth = frame.width;
       mHeight = frame.height;
     }
     if (mWidth > 0 && mWidth != frame.width || mHeight > 0 & mHeight != frame.height) {
-      throw new InvalidObjectException("Bitmap does not have same dimensions as previous frames");
+      Log.e(TAG, "Bitmap does not have same dimensions as previous frames");
     }
   }
 
-  private Runnable getFrameWriter(final Frame frame, final int frameIndex) {
+  private Runnable getFrameWriter(final GifFrame frame, final int frameIndex) {
     final boolean firstFrame = frameIndex == 0;
 
     int len = frame.pixelBytes.length;

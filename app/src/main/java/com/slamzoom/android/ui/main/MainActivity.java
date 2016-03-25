@@ -27,7 +27,7 @@ import com.slamzoom.android.ui.effect.EffectChooser;
 import com.slamzoom.android.ui.effect.EffectModel;
 import com.slamzoom.android.ui.effect.EffectModelsFactory;
 import com.slamzoom.android.ui.effect.EffectViewHolder;
-import com.slamzoom.android.gif.GifService;
+import com.slamzoom.android.media.gif.GifService;
 import com.squareup.otto.Subscribe;
 
 import java.io.File;

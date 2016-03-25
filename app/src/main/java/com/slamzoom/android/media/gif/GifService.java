@@ -1,4 +1,4 @@
-package com.slamzoom.android.gif;
+package com.slamzoom.android.media.gif;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,6 +15,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import com.slamzoom.android.common.providers.BusProvider;
 import com.slamzoom.android.common.Constants;
+import com.slamzoom.android.media.MediaCreator;
 import com.slamzoom.android.ui.effect.EffectModel;
 import com.slamzoom.android.ui.effect.EffectStep;
 import com.squareup.otto.Subscribe;
@@ -136,7 +137,7 @@ public class GifService {
             @Override
             public void run() {
               mIsCreatingGif = true;
-              GifCreator.newInstance(
+              new GifCreator(
                   mContext,
                   mSelectedBitmap,
                   effectModel,
@@ -181,7 +182,7 @@ public class GifService {
             @Override
             public void run() {
               mIsCreatingGif = true;
-              GifCreator.newInstance(
+              new GifCreator(
                   mContext,
                   mSelectedBitmap,
                   effectModel,
@@ -245,7 +246,7 @@ public class GifService {
 
     @Override
     protected Void doInBackground(Void... params) {
-      GifCreator.newInstance(
+      new GifCreator(
           mContext,
           mSelectedBitmap,
           mEffectModel,

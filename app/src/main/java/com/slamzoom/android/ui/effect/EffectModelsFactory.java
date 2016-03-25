@@ -15,11 +15,11 @@ import java.util.List;
 public class EffectModelsFactory {
   private static List<EffectModel> mModels = Lists.newArrayList();
   static {
-//    mModels.addAll(SlamPackProvider.getPack());
+    mModels.addAll(SlamPackProvider.getPack());
+//    mModels.addAll(CrashPackProvider.getPack());
 //    mModels.addAll(SwirlPackProvider.getPack());
 //    mModels.addAll(ShakePackProvider.getPack());
 //    mModels.addAll(SimplePackProvider.getPack());
-    mModels.addAll(CrashPackProvider.getPack());
   }
 
   public static List<EffectModel> getTemplates() {

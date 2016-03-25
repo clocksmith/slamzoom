@@ -1,20 +1,22 @@
-package com.slamzoom.android.gif;
+package com.slamzoom.android.media.gif;
 
 import android.graphics.Bitmap;
+
+import com.slamzoom.android.media.MediaFrame;
 
 import java.nio.ByteBuffer;
 
 /**
  * Created by clocksmith on 3/11/16.
  */
-public class Frame {
+public class GifFrame extends MediaFrame {
 //  public Bitmap bitmap;
   public int delayMillis;
   byte[] pixelBytes;
   int width;
   int height;
 
-  public Frame(Bitmap bitmap, int delayMillis) {
+  public GifFrame(Bitmap bitmap, int delayMillis) {
 //    this.bitmap = bitmap;
     width = bitmap.getWidth();
     height = bitmap.getHeight();

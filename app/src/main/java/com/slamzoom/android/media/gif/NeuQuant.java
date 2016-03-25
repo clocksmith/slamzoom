@@ -1,4 +1,4 @@
-package com.slamzoom.android.gif;
+package com.slamzoom.android.media.gif;
 
 /* NeuQuant Neural-Net Quantization Algorithm
  * ------------------------------------------
