@@ -1,13 +1,10 @@
 package com.slamzoom.android.ui.cropper;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 
-import com.naver.android.helloyako.imagecrop.util.BitmapLoadUtils;
 import com.naver.android.helloyako.imagecrop.view.ImageCropView;
 import com.naver.android.helloyako.imagecrop.view.ImageCropViewBase;
 
@@ -18,16 +15,16 @@ import java.lang.reflect.Field;
  *
  * Hack to get the damn crop rect.
  */
-public class CropRectProvidingImaeCropView extends ImageCropView {
-  public CropRectProvidingImaeCropView(Context context) {
+public class CropRectProvidingImageCropView extends ImageCropView {
+  public CropRectProvidingImageCropView(Context context) {
     this(context, null);
   }
 
-  public CropRectProvidingImaeCropView(Context context, AttributeSet attrs) {
+  public CropRectProvidingImageCropView(Context context, AttributeSet attrs) {
     this(context, attrs, 0);
   }
 
-  public CropRectProvidingImaeCropView(Context context, AttributeSet attrs, int defStyle) {
+  public CropRectProvidingImageCropView(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
   }
 

@@ -25,7 +25,8 @@ import butterknife.ButterKnife;
 public class CropperActivity extends AppCompatActivity {
   private static final String TAG = CropperActivity.class.getSimpleName();
 
-  @Bind(R.id.imageCropView) CropRectProvidingImaeCropView mImageCropView;
+  @Bind(R.id.imageCropView)
+  CropRectProvidingImageCropView mImageCropView;
   @Bind(R.id.doneButton) Button mDoneButton;
 
   @Override

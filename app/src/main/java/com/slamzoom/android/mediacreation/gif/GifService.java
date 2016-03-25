@@ -238,32 +238,4 @@ public class GifService {
     BusProvider.getInstance().post(new ProgressUpdateEvent(event.effectModel.getEffectTemplate().getName(),
         (int) Math.round(100 * mGifProgresses.get(event.effectModel))));
   }
-
-  private class CreateGifPreviewTask extends AsyncTask<Void, Void, Void> {
-    private EffectModel mEffectModel;
-
-    public CreateGifPreviewTask(EffectModel effectModel) {
-      mEffectModel = effectModel;
-    }
-
-    @Override
-    protected Void doInBackground(Void... params) {
-      new GifCreator(
-          mContext,
-          mSelectedBitmap,
-          mEffectModel,
-          Constants.DEFAULT_GIF_PREVIEW_SIZE_PX,
-          false,
-          new GifCreator.CreateGifCallback() {
-            @Override
-            public void onCreateGif(byte[] gifBytes) {
-              if (gifBytes != null) {
-                mGifPreviewCache.asMap().put(mEffectModel, gifBytes);
-                fireGifPreviewReadyEvent(mEffectModel);
-              }
-            }
-          }).createAsync();
-      return null;
-    }
-  }
 }

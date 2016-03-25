@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black">
-  <com.slamzoom.android.ui.cropper.CropRectProvidingImaeCropView
+  <com.slamzoom.android.ui.cropper.CropRectProvidingImageCropView
       android:id="@+id/imageCropView"
       xmlns:imagecrop="http://schemas.android.com/apk/res-auto"
       android:layout_width="match_parent"

@@ -41,25 +41,6 @@ public class EffectTemplate {
     return mNumTilesInRow;
   }
 
-  @Override
-  public int hashCode() {
-    return Objects.hashCode(mPackName, mName, mEffectSteps);
-  }
-
-  @Override
-  public boolean equals(final Object obj) {
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    final EffectTemplate other = (EffectTemplate) obj;
-    return Objects.equal(mPackName, other.getPackName())
-        && Objects.equal(mName, other.getName())
-        && Objects.equal(mEffectSteps, other.getEffectSteps());
-  }
-
   public static class Builder {
     private String mPackName;
     private String mName;
@@ -93,5 +74,24 @@ public class EffectTemplate {
     public EffectTemplate build() {
       return new EffectTemplate(mPackName, mName, mEffectSteps, mNumTilesInRow);
     }
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(mPackName, mName, mEffectSteps);
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final EffectTemplate other = (EffectTemplate) obj;
+    return Objects.equal(mPackName, other.getPackName())
+        && Objects.equal(mName, other.getName())
+        && Objects.equal(mEffectSteps, other.getEffectSteps());
   }
 }

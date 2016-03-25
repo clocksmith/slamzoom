@@ -1,7 +1,6 @@
 package com.slamzoom.android.ui.main.effectchooser;
 
-import android.graphics.Rect;
-
+import com.google.common.base.Objects;
 import com.slamzoom.android.effects.EffectTemplate;
 
 /**
@@ -21,15 +20,28 @@ public class EffectModel {
     return mEffectTemplate;
   }
 
-  public void setEffectTemplate(EffectTemplate effectTemplate) {
-    mEffectTemplate = effectTemplate;
-  }
-
   public byte[] getGifPreviewBytes() {
     return mGifPreviewBytes;
   }
 
   public void setGifPreviewBytes(byte[] gifPreviewBytes) {
     mGifPreviewBytes = gifPreviewBytes;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(mEffectTemplate);
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final EffectModel other = (EffectModel) obj;
+    return Objects.equal(mEffectTemplate, other.getEffectTemplate());
   }
 }
