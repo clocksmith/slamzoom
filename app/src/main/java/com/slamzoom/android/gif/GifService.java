@@ -3,6 +3,7 @@ package com.slamzoom.android.gif;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.common.base.Predicate;
@@ -118,7 +119,7 @@ public class GifService {
     }
 
     mCropRect = cropRect;
-//    updateGifPreviewsIfPossible();
+    updateGifPreviewsIfPossible();
 //    updateGifIfPossible(selectedEffectName);
   }
 
@@ -128,12 +129,13 @@ public class GifService {
       mGifCache.invalidateAll();
       mCreateGifQueue.clear();
       for (final EffectModel effectModel : mEffectModels) {
-        mCreateGifQueue.addLast(new Runnable() {
-          @Override
-          public void run() {
-            if (mGifPreviewCache.asMap().containsKey(effectModel)) {
-              fireGifPreviewReadyEvent(effectModel);
-            } else {
+        if (mGifPreviewCache.asMap().containsKey(effectModel)) {
+          fireGifPreviewReadyEvent(effectModel);
+        } else {
+          mCreateGifQueue.addLast(new Runnable() {
+            @Override
+            public void run() {
+              mIsCreatingGif = true;
               GifCreator.newInstance(
                   mContext,
                   mSelectedBitmap,
@@ -143,6 +145,7 @@ public class GifService {
                   new GifCreator.CreateGifCallback() {
                     @Override
                     public void onCreateGif(byte[] gifBytes) {
+                      mIsCreatingGif = false;
                       if (gifBytes != null) {
                         mGifPreviewCache.asMap().put(effectModel, gifBytes);
                         fireGifPreviewReadyEvent(effectModel);
@@ -151,8 +154,8 @@ public class GifService {
                     }
                   }).createAsync();
             }
-          }
-        });
+          });
+        }
       }
       resumeQueue();
     }
@@ -177,6 +180,7 @@ public class GifService {
           mCreateGifQueue.addFirst(new Runnable() {
             @Override
             public void run() {
+              mIsCreatingGif = true;
               GifCreator.newInstance(
                   mContext,
                   mSelectedBitmap,
@@ -186,6 +190,7 @@ public class GifService {
                   new GifCreator.CreateGifCallback() {
                     @Override
                     public void onCreateGif(byte[] gifBytes) {
+                      mIsCreatingGif = false;
                       if (gifBytes != null) {
                         Log.wtf(TAG, "gif took " + (System.currentTimeMillis() - start) + "ms to make");
                         mGifCache.asMap().put(effectModel, gifBytes);
@@ -204,7 +209,7 @@ public class GifService {
 
   private void resumeQueue() {
     if (!mIsCreatingGif && mCreateGifQueue.peek() != null) {
-      mCreateGifQueue.pollFirst().run();
+      mCreateGifQueue.removeFirst().run();
       mIsCreatingGif = true;
     } else {
       mIsCreatingGif = false;
@@ -229,5 +234,33 @@ public class GifService {
     mGifProgresses.put(event.effectModel, mGifProgresses.get(event.effectModel) + event.amountToUpdate);
     BusProvider.getInstance().post(new ProgressUpdateEvent(event.effectModel.getName(),
         (int) Math.round(100 * mGifProgresses.get(event.effectModel))));
+  }
+
+  private class CreateGifPreviewTask extends AsyncTask<Void, Void, Void> {
+    private EffectModel mEffectModel;
+
+    public CreateGifPreviewTask(EffectModel effectModel) {
+      mEffectModel = effectModel;
+    }
+
+    @Override
+    protected Void doInBackground(Void... params) {
+      GifCreator.newInstance(
+          mContext,
+          mSelectedBitmap,
+          mEffectModel,
+          Constants.DEFAULT_GIF_PREVIEW_SIZE_PX,
+          false,
+          new GifCreator.CreateGifCallback() {
+            @Override
+            public void onCreateGif(byte[] gifBytes) {
+              if (gifBytes != null) {
+                mGifPreviewCache.asMap().put(mEffectModel, gifBytes);
+                fireGifPreviewReadyEvent(mEffectModel);
+              }
+            }
+          }).createAsync();
+      return null;
+    }
   }
 }

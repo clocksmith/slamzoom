@@ -42,7 +42,8 @@ public class CropperActivity extends AppCompatActivity {
     try {
       Bitmap bitmap = BitmapUtils.readScaledBitmap(uri, this.getContentResolver(), Constants.MAX_SELECTED_DIMEN_PX);
       mImageCropView.setAspectRatio(bitmap.getWidth(), bitmap.getHeight());
-      mImageCropView.setImageBitmap(bitmap);
+      mImageCropView.setImageBitmap(bitmap, new Matrix(), 1f, 1000f);
+//      mImageCropView.setImageBitmap(bitmap);
     } catch (FileNotFoundException e) {
       Log.e(TAG, "Cannot read bitmap", e);
       finish();

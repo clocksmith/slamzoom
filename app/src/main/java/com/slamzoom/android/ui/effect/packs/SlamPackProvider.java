@@ -24,13 +24,6 @@ public class SlamPackProvider {
 
     packModels.add(EffectModel.newBuilder()
         .withPackName("slam pack")
-        .withName("test")
-        .addEffectStep(EffectStep.newBuilder()
-            .withScaleInterpolator(new IdentityInterpolator())
-            .build())
-        .build());
-    packModels.add(EffectModel.newBuilder()
-        .withPackName("slam pack")
         .withName("slamin")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new SlamHardInterpolator())
