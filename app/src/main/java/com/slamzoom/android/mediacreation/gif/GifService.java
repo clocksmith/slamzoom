@@ -117,7 +117,7 @@ public class GifService {
     }
 
     mCropRect = cropRect;
-//    updateGifPreviewsIfPossible();
+    updateGifPreviewsIfPossible();
   }
 
   // TODO(clocksmith) refactor this to share for updateGIfIfPossible

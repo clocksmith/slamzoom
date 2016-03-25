@@ -54,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
   private String mSelectedEffectName;
   private byte[] mSelectedGifBytes;
   private Bitmap mSelectedBitmap;
-  private List<EffectModel> mEffectModels;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -159,16 +158,16 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void setEffectModels() {
-    mEffectModels = Lists.transform(EffectTemplateProvider.getTemplates(),
+    List<EffectModel> models = Lists.newArrayList(Lists.transform(EffectTemplateProvider.getTemplates(),
         new Function<EffectTemplate, EffectModel>() {
           @Override
           public EffectModel apply(EffectTemplate input) {
             return new EffectModel(input);
           }
-        });
-    GifService.getInstance().setEffectModels(mEffectModels);
-    mEffectChooser.setEffectModels(mEffectModels);
-    mSelectedEffectName = mEffectModels.get(0).getEffectTemplate().getName();
+        }));
+    GifService.getInstance().setEffectModels(models);
+    mEffectChooser.setEffectModels(models);
+    mSelectedEffectName = models.get(0).getEffectTemplate().getName();
   }
 
   private void shareCurrentGif() {

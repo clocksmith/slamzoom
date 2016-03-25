@@ -40,8 +40,8 @@ public class EffectChooser extends LinearLayout {
     mRecyclerView.setLayoutManager(linearLayoutManager);
   }
 
-  public void setEffectModels(List<EffectModel> effectTemplates) {
-    mAdapter = new EffectThumbnailRecyclerViewAdapter(effectTemplates);
+  public void setEffectModels(List<EffectModel> effectModels) {
+    mAdapter = new EffectThumbnailRecyclerViewAdapter(effectModels);
     mRecyclerView.setAdapter(mAdapter);
   }
 

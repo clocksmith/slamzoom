@@ -1,6 +1,8 @@
 package com.slamzoom.android.ui.main.effectchooser;
 
+import android.media.effect.Effect;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -35,15 +37,15 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
     return mModels.size();
   }
 
-  public void setGifPreview(String effectName, byte[] gifbytes) {
-    int position = 0;
-    for (EffectModel model : mModels) {
-      if (model.getEffectTemplate().getName().equals(effectName)) {
-        model.setGifPreviewBytes(gifbytes);
+  public void setGifPreview(String effectName, byte[] gifBytes) {
+    for (int position = 0; position < mModels.size(); position++) {
+      if (mModels.get(position).getEffectTemplate().getName().equals(effectName)) {
+        mModels.get(position).setGifPreviewBytes(gifBytes);
+        int x = 1;
+        int y = x + 2;
         notifyItemChanged(position);
         break;
       }
-      position++;
     }
   }
 
