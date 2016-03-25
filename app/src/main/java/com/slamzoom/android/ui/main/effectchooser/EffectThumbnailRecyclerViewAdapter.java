@@ -1,34 +1,32 @@
 package com.slamzoom.android.ui.main.effectchooser;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.slamzoom.android.R;
-import com.slamzoom.android.effects.EffectTemplate;
 
 import java.util.List;
 
 /**
  * Created by clocksmith on 2/27/16.
  */
-public class EffectRecyclerViewAdapter extends RecyclerView.Adapter<EffectViewHolder> {
-  private static final String TAG = EffectRecyclerViewAdapter.class.getSimpleName();
+public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<EffectThumbnailViewHolder> {
+  private static final String TAG = EffectThumbnailRecyclerViewAdapter.class.getSimpleName();
 
   private List<EffectModel> mModels;
 
-  public EffectRecyclerViewAdapter(List<EffectModel>  models) {
+  public EffectThumbnailRecyclerViewAdapter(List<EffectModel>  models) {
     mModels = models;
   }
 
   @Override
-  public EffectViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-    return new EffectViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.vh_effect, parent, false));
+  public EffectThumbnailViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    return new EffectThumbnailViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.vh_effect, parent, false));
   }
 
   @Override
-  public void onBindViewHolder(EffectViewHolder holder, int position) {
+  public void onBindViewHolder(EffectThumbnailViewHolder holder, int position) {
     holder.bind(mModels.get(position));
   }
 
@@ -38,12 +36,10 @@ public class EffectRecyclerViewAdapter extends RecyclerView.Adapter<EffectViewHo
   }
 
   public void setGifPreview(String effectName, byte[] gifbytes) {
-    Log.d(TAG, "setGifPreview: " + effectName + " and gifbytes are: " + (gifbytes == null ? "null" : "not null"));
     int position = 0;
     for (EffectModel model : mModels) {
       if (model.getEffectTemplate().getName().equals(effectName)) {
         model.setGifPreviewBytes(gifbytes);
-        Log.e(TAG, "updating position: " + position);
         notifyItemChanged(position);
         break;
       }

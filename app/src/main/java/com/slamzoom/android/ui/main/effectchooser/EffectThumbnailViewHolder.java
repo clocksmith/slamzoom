@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import com.slamzoom.android.R;
 import com.slamzoom.android.global.singletons.BusProvider;
-import com.slamzoom.android.effects.EffectTemplate;
 
 import java.io.IOException;
 
@@ -20,8 +19,8 @@ import pl.droidsonroids.gif.GifImageView;
 /**
  * Created by clocksmith on 2/27/16.
  */
-public class EffectViewHolder extends RecyclerView.ViewHolder {
-  private static final String TAG = EffectViewHolder.class.getSimpleName();
+public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
+  private static final String TAG = EffectThumbnailViewHolder.class.getSimpleName();
 
   public class ItemClickEvent {
     public final String effectName;
@@ -34,7 +33,7 @@ public class EffectViewHolder extends RecyclerView.ViewHolder {
   @Bind(R.id.gifImageView) GifImageView mGifImageView;
   @Bind(R.id.progressBar) ProgressBar mProgressBar;
 
-  public EffectViewHolder(View itemView) {
+  public EffectThumbnailViewHolder(View itemView) {
     super(itemView);
     ButterKnife.bind(this, itemView);
   }
@@ -57,7 +56,7 @@ public class EffectViewHolder extends RecyclerView.ViewHolder {
         Log.e(TAG, "Could not set gif", e);
       }
     } else {
-//      Log.e(TAG, "gif bytes are null");
+      Log.e(TAG, "gif bytes are null");
       mProgressBar.setVisibility(View.VISIBLE);
       mGifImageView.setImageBitmap(null);
     }

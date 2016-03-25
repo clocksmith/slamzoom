@@ -29,7 +29,7 @@ import com.slamzoom.android.ui.main.effectchooser.EffectChooser;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.EffectTemplateProvider;
 import com.slamzoom.android.ui.main.effectchooser.EffectModel;
-import com.slamzoom.android.ui.main.effectchooser.EffectViewHolder;
+import com.slamzoom.android.ui.main.effectchooser.EffectThumbnailViewHolder;
 import com.slamzoom.android.mediacreation.gif.GifService;
 import com.squareup.otto.Subscribe;
 
@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
   private String mSelectedEffectName;
   private byte[] mSelectedGifBytes;
   private Bitmap mSelectedBitmap;
+  private List<EffectModel> mEffectModels;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -61,18 +62,9 @@ public class MainActivity extends AppCompatActivity {
     setContentView(R.layout.activity_main);
     ButterKnife.bind(this);
     BusProvider.getInstance().register(this);
-
     GifService.getInstance().setContext(this);
-    List<EffectModel> effectModels = Lists.transform(EffectTemplateProvider.getTemplates(),
-        new Function<EffectTemplate, EffectModel>() {
-          @Override
-          public EffectModel apply(EffectTemplate input) {
-            return new EffectModel(input);
-          }
-        });
-    GifService.getInstance().setEffectModels(effectModels);
-    mEffectChooser.setEffectModels(effectModels);
-    mSelectedEffectName = effectModels.get(0).getEffectTemplate().getName();
+
+    setEffectModels();
 
     mGifImageView.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -122,9 +114,14 @@ public class MainActivity extends AppCompatActivity {
       }
     } else if (requestCode == Constants.REQUEST_CROP_IMAGE) {
       if (resultCode == RESULT_OK) {
+        // TODO(clocksmith): move this
+        if (mSelectedBitmap != null) {
+          mEffectChooser.clearGifsAndShowSpinners();
+        }
+
         Rect cropRect = data.getParcelableExtra(Constants.CROP_RECT);
-        GifService.getInstance().setCropRect(cropRect, mSelectedEffectName);
-        mEffectChooser.clearGifsAndShowSpinners();
+        setEffectModels();
+        GifService.getInstance().setCropRect(cropRect);
         mSelectedGifBytes = null;
         mGifImageView.setImageBitmap(null);
       }
@@ -132,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   @Subscribe
-  public void on(EffectViewHolder.ItemClickEvent event) throws IOException {
+  public void on(EffectThumbnailViewHolder.ItemClickEvent event) throws IOException {
     mSelectedEffectName = event.effectName;
     mProgressBar.setProgress(0);
     mProgressBar.setVisibility(View.VISIBLE);
@@ -159,6 +156,19 @@ public class MainActivity extends AppCompatActivity {
     if (event.effectName.equals(mSelectedEffectName)) {
       mProgressBar.setProgress(event.progress);
     }
+  }
+
+  private void setEffectModels() {
+    mEffectModels = Lists.transform(EffectTemplateProvider.getTemplates(),
+        new Function<EffectTemplate, EffectModel>() {
+          @Override
+          public EffectModel apply(EffectTemplate input) {
+            return new EffectModel(input);
+          }
+        });
+    GifService.getInstance().setEffectModels(mEffectModels);
+    mEffectChooser.setEffectModels(mEffectModels);
+    mSelectedEffectName = mEffectModels.get(0).getEffectTemplate().getName();
   }
 
   private void shareCurrentGif() {

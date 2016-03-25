@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 
 import com.slamzoom.android.R;
-import com.slamzoom.android.effects.EffectTemplate;
 
 import java.util.List;
 
@@ -21,7 +20,7 @@ import butterknife.ButterKnife;
 public class EffectChooser extends LinearLayout {
   @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
 
-  private EffectRecyclerViewAdapter mAdapter;
+  private EffectThumbnailRecyclerViewAdapter mAdapter;
 
   public EffectChooser(Context context) {
     this(context, null);
@@ -42,7 +41,7 @@ public class EffectChooser extends LinearLayout {
   }
 
   public void setEffectModels(List<EffectModel> effectTemplates) {
-    mAdapter = new EffectRecyclerViewAdapter(effectTemplates);
+    mAdapter = new EffectThumbnailRecyclerViewAdapter(effectTemplates);
     mRecyclerView.setAdapter(mAdapter);
   }
 

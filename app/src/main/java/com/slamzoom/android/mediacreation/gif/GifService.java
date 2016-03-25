@@ -3,8 +3,6 @@ package com.slamzoom.android.mediacreation.gif;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
-import android.media.effect.Effect;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.common.base.Predicate;
@@ -14,9 +12,9 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
+import com.slamzoom.android.effects.EffectTemplateProvider;
 import com.slamzoom.android.global.singletons.BusProvider;
 import com.slamzoom.android.global.Constants;
-import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.ui.main.effectchooser.EffectModel;
 import com.squareup.otto.Subscribe;
@@ -65,16 +63,16 @@ public class GifService {
     }
   }
 
-  private static final int PREVIEW_CACHE_SIZE = 200;
-  private static final int CACHE_SIZE = 40;
+  private static final int PREVIEW_CACHE_SIZE = EffectTemplateProvider.getTemplates().size();
+  private static final int CACHE_SIZE = PREVIEW_CACHE_SIZE;
 
   private static GifService mGifService = new GifService();
 
   private Context mContext;
   private Deque<Runnable> mCreateGifQueue;
   private boolean mIsCreatingGif;
-  private Cache<EffectModel, byte[]> mGifPreviewCache;
-  private Cache<EffectModel, byte[]> mGifCache;
+  private Cache<String, byte[]> mGifPreviewCache;
+  private Cache<String, byte[]> mGifCache;
   private Map<EffectModel, Double> mGifProgresses;
   private List<EffectModel> mEffectModels;
   private Bitmap mSelectedBitmap;
@@ -104,15 +102,13 @@ public class GifService {
 
   public void setEffectModels(List<EffectModel> effectModels) {
     mEffectModels = effectModels;
-//    updateGifPreviewsIfPossible();
   }
 
   public void setSelectedBitmap(Bitmap bitmap) {
     mSelectedBitmap = bitmap;
-//    updateGifPreviewsIfPossible();
   }
 
-  public void setCropRect(Rect cropRect, String selectedEffectName) {
+  public void setCropRect(Rect cropRect) {
     // TODO(clocksmith): temp, change this.
     for (EffectModel effectTemplate : mEffectModels) {
       for (EffectStep step : effectTemplate.getEffectTemplate().getEffectSteps()) {
@@ -121,43 +117,42 @@ public class GifService {
     }
 
     mCropRect = cropRect;
-    updateGifPreviewsIfPossible();
-//    updateGifIfPossible(selectedEffectName);
+//    updateGifPreviewsIfPossible();
   }
 
   // TODO(clocksmith) refactor this to share for updateGIfIfPossible
   private void updateGifPreviewsIfPossible() {
     if (mEffectModels != null && mSelectedBitmap != null && mCropRect != null) {
       mGifCache.invalidateAll();
+      mGifPreviewCache.invalidateAll();
       mCreateGifQueue.clear();
       for (final EffectModel effectModel : mEffectModels) {
-        if (mGifPreviewCache.asMap().containsKey(effectModel)) {
-          fireGifPreviewReadyEvent(effectModel);
-        } else {
-          mCreateGifQueue.addLast(new Runnable() {
-            @Override
-            public void run() {
-              mIsCreatingGif = true;
-              new GifCreator(
-                  mContext,
-                  mSelectedBitmap,
-                  effectModel,
-                  Constants.DEFAULT_GIF_PREVIEW_SIZE_PX,
-                  false,
-                  new GifCreator.CreateGifCallback() {
-                    @Override
-                    public void onCreateGif(byte[] gifBytes) {
-                      mIsCreatingGif = false;
-                      if (gifBytes != null) {
-                        mGifPreviewCache.asMap().put(effectModel, gifBytes);
-                        fireGifPreviewReadyEvent(effectModel);
-                      }
-                      resumeQueue();
+        final long start = System.currentTimeMillis();
+        final String effectName = effectModel.getEffectTemplate().getName();
+        mCreateGifQueue.addLast(new Runnable() {
+          @Override
+          public void run() {
+            mIsCreatingGif = true;
+            new GifCreator(
+                mContext,
+                mSelectedBitmap,
+                effectModel,
+                Constants.DEFAULT_GIF_PREVIEW_SIZE_PX,
+                false,
+                new GifCreator.CreateGifCallback() {
+                  @Override
+                  public void onCreateGif(byte[] gifBytes) {
+                    mIsCreatingGif = false;
+                    if (gifBytes != null) {
+                      Log.wtf(TAG, "gif preview took " + (System.currentTimeMillis() - start) + "ms to make");
+                      mGifPreviewCache.put(effectName, gifBytes);
+                      fireGifPreviewReadyEvent(effectName);
                     }
-                  }).createAsync();
-            }
-          });
-        }
+                    resumeQueue();
+                  }
+                }).createAsync();
+          }
+        });
       }
       resumeQueue();
     }
@@ -175,8 +170,8 @@ public class GifService {
       if (iterator.hasNext()) {
         final EffectModel effectModel = iterator.next();
 
-        if (mGifCache.asMap().containsKey(effectModel)) {
-          fireGifReadyEvent(effectModel);
+        if (mGifCache.asMap().containsKey(effectName)) {
+          fireGifReadyEvent(effectName);
         } else {
           final long start = System.currentTimeMillis();
           mCreateGifQueue.addFirst(new Runnable() {
@@ -195,8 +190,8 @@ public class GifService {
                       mIsCreatingGif = false;
                       if (gifBytes != null) {
                         Log.wtf(TAG, "gif took " + (System.currentTimeMillis() - start) + "ms to make");
-                        mGifCache.asMap().put(effectModel, gifBytes);
-                        fireGifReadyEvent(effectModel);
+                        mGifCache.put(effectName, gifBytes);
+                        fireGifReadyEvent(effectName);
                         resumeQueue();
                       }
                     }
@@ -218,14 +213,12 @@ public class GifService {
     }
   }
 
-  private void fireGifPreviewReadyEvent(EffectModel effectModel) {
-    BusProvider.getInstance().post(
-        new GifPreviewReadyEvent(effectModel.getEffectTemplate().getName(), mGifPreviewCache.asMap().get(effectModel)));
+  private void fireGifPreviewReadyEvent(String effectName) {
+    BusProvider.getInstance().post(new GifPreviewReadyEvent(effectName, mGifPreviewCache.asMap().get(effectName)));
   }
 
-  private void fireGifReadyEvent(EffectModel effectModel) {
-    BusProvider.getInstance().post(new GifReadyEvent(effectModel.getEffectTemplate().getName(),
-        mGifCache.asMap().get(effectModel)));
+  private void fireGifReadyEvent(String effectName) {
+    BusProvider.getInstance().post(new GifReadyEvent(effectName, mGifCache.asMap().get(effectName)));
   }
 
   @Subscribe

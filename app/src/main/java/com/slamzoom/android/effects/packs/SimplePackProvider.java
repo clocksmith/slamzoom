@@ -37,7 +37,7 @@ public class SimplePackProvider {
         .withNumTilesInRow(3)
         .build());
     packModels.add(EffectTemplate.newBuilder()
-        .withName("simple x9")
+        .withName("simple x16")
         .addEffectStep(EffectStep.newBuilder()
             .withEndPauseSeconds(1)
             .withScaleInterpolator(new IdentityInterpolator())
