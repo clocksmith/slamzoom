@@ -1,7 +1,7 @@
 package com.slamzoom.android.effects.packs;
 
 import com.google.common.collect.Lists;
-import com.slamzoom.android.effects.EffectModel;
+import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.interpolaters.base.spline.CubicSplineInterpolator;
 import com.slamzoom.android.interpolaters.base.spline.PointListBuilder;
@@ -17,9 +17,9 @@ import java.util.List;
  * Created by clocksmith on 3/22/16.
  */
 public class CrashPackProvider {
-  public static List<EffectModel> getPack() {
-    List<EffectModel> packModels = Lists.newArrayList();
-    packModels.add(EffectModel.newBuilder()
+  public static List<EffectTemplate> getPack() {
+    List<EffectTemplate> packModels = Lists.newArrayList();
+    packModels.add(EffectTemplate.newBuilder()
         .withName("crash")
         .addEffectStep(EffectStep.newBuilder()
             .withStartPauseSeconds(0.3f)
@@ -27,7 +27,7 @@ public class CrashPackProvider {
             .withScaleAndTranslateInterpolatorProvider(new CrashInterpolatorProvider())
             .build())
         .build());
-    packModels.add(EffectModel.newBuilder()
+    packModels.add(EffectTemplate.newBuilder()
         .withName("crashmiss")
         .addEffectStep(EffectStep.newBuilder()
             .withStartPauseSeconds(0.5f)
@@ -35,7 +35,7 @@ public class CrashPackProvider {
             .withScaleAndTranslateInterpolatorProvider(new CrashBounceDiagonalInterpolatorProvider())
             .build())
         .build());
-    packModels.add(EffectModel.newBuilder()
+    packModels.add(EffectTemplate.newBuilder()
         .withName("crashin")
         .addEffectStep(EffectStep.newBuilder()
             .withStartPauseSeconds(0.5f)
@@ -43,7 +43,7 @@ public class CrashPackProvider {
             .withScaleAndTranslateInterpolatorProvider(new CrashBounceBottomInterpolatorProvider())
             .build())
         .build());
-    packModels.add(EffectModel.newBuilder()
+    packModels.add(EffectTemplate.newBuilder()
         .withName("crashblur")
         .addEffectStep(EffectStep.newBuilder()
             .withStartPauseSeconds(0.5f)
@@ -62,7 +62,7 @@ public class CrashPackProvider {
             .withEndPauseSeconds(0.5f)
             .build())
         .build());
-    packModels.add(EffectModel.newBuilder()
+    packModels.add(EffectTemplate.newBuilder()
         .withName("crashfreeze")
         .addEffectStep(EffectStep.newBuilder()
             .withStartPauseSeconds(0.5f)

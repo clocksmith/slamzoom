@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.slamzoom.android.R;
-import com.slamzoom.android.effects.EffectModel;
+import com.slamzoom.android.effects.EffectTemplate;
 
 import java.util.List;
 
@@ -41,8 +41,8 @@ public class EffectRecyclerViewAdapter extends RecyclerView.Adapter<EffectViewHo
     Log.d(TAG, "setGifPreview: " + effectName + " and gifbytes are: " + (gifbytes == null ? "null" : "not null"));
     int position = 0;
     for (EffectModel model : mModels) {
-      if (model.getName().equals(effectName)) {
-        model.setGifBytes(gifbytes);
+      if (model.getEffectTemplate().getName().equals(effectName)) {
+        model.setGifPreviewBytes(gifbytes);
         Log.e(TAG, "updating position: " + position);
         notifyItemChanged(position);
         break;
@@ -53,7 +53,7 @@ public class EffectRecyclerViewAdapter extends RecyclerView.Adapter<EffectViewHo
 
   public void clearGifsAndShowSpinners() {
     for (EffectModel model : mModels) {
-      model.setGifBytes(null);
+      model.setGifPreviewBytes(null);
     }
     notifyItemRangeChanged(0, getItemCount());
   }

@@ -12,17 +12,17 @@ import java.util.List;
 /**
  * Created by antrob on 2/21/16.
  */
-public class EffectModelProvider {
-  private static List<EffectModel> mModels = Lists.newArrayList();
+public class EffectTemplateProvider {
+  private static List<EffectTemplate> mTemplates = Lists.newArrayList();
   static {
-    mModels.addAll(SlamPackProvider.getPack());
-    mModels.addAll(CrashPackProvider.getPack());
-    mModels.addAll(SwirlPackProvider.getPack());
-    mModels.addAll(ShakePackProvider.getPack());
-    mModels.addAll(SimplePackProvider.getPack());
+    mTemplates.addAll(SlamPackProvider.getPack());
+    mTemplates.addAll(CrashPackProvider.getPack());
+    mTemplates.addAll(SwirlPackProvider.getPack());
+    mTemplates.addAll(ShakePackProvider.getPack());
+    mTemplates.addAll(SimplePackProvider.getPack());
   }
 
-  public static List<EffectModel> getModels() {
-    return mModels;
+  public static List<EffectTemplate> getTemplates() {
+    return mTemplates;
   }
 }

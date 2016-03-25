@@ -3,6 +3,7 @@ package com.slamzoom.android.mediacreation.gif;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.media.effect.Effect;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -15,8 +16,9 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import com.slamzoom.android.global.singletons.BusProvider;
 import com.slamzoom.android.global.Constants;
-import com.slamzoom.android.effects.EffectModel;
+import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.EffectStep;
+import com.slamzoom.android.ui.main.effectchooser.EffectModel;
 import com.squareup.otto.Subscribe;
 
 import java.io.IOException;
@@ -112,8 +114,8 @@ public class GifService {
 
   public void setCropRect(Rect cropRect, String selectedEffectName) {
     // TODO(clocksmith): temp, change this.
-    for (EffectModel effectModel : mEffectModels) {
-      for (EffectStep step : effectModel.getEffectSteps()) {
+    for (EffectModel effectTemplate : mEffectModels) {
+      for (EffectStep step : effectTemplate.getEffectTemplate().getEffectSteps()) {
         step.setHotspot(cropRect);
       }
     }
@@ -166,7 +168,7 @@ public class GifService {
       Iterator<EffectModel> iterator = Iterables.filter(mEffectModels, new Predicate<EffectModel>() {
         @Override
         public boolean apply(EffectModel input) {
-          return input.getName().equals(effectName);
+          return input.getEffectTemplate().getName().equals(effectName);
         }
       }).iterator();
 
@@ -218,11 +220,12 @@ public class GifService {
 
   private void fireGifPreviewReadyEvent(EffectModel effectModel) {
     BusProvider.getInstance().post(
-        new GifPreviewReadyEvent(effectModel.getName(), mGifPreviewCache.asMap().get(effectModel)));
+        new GifPreviewReadyEvent(effectModel.getEffectTemplate().getName(), mGifPreviewCache.asMap().get(effectModel)));
   }
 
   private void fireGifReadyEvent(EffectModel effectModel) {
-    BusProvider.getInstance().post(new GifReadyEvent(effectModel.getName(), mGifCache.asMap().get(effectModel)));
+    BusProvider.getInstance().post(new GifReadyEvent(effectModel.getEffectTemplate().getName(),
+        mGifCache.asMap().get(effectModel)));
   }
 
   @Subscribe
@@ -232,7 +235,7 @@ public class GifService {
     }
 
     mGifProgresses.put(event.effectModel, mGifProgresses.get(event.effectModel) + event.amountToUpdate);
-    BusProvider.getInstance().post(new ProgressUpdateEvent(event.effectModel.getName(),
+    BusProvider.getInstance().post(new ProgressUpdateEvent(event.effectModel.getEffectTemplate().getName(),
         (int) Math.round(100 * mGifProgresses.get(event.effectModel))));
   }
 

@@ -18,9 +18,10 @@ import com.slamzoom.android.global.singletons.ExecutorProvider;
 import com.slamzoom.android.global.utils.PostProcessorUtils;
 import com.slamzoom.android.interpolaters.filter.FilterInterpolator;
 import com.slamzoom.android.interpolaters.filter.GPUImageZoomBlurFilter;
-import com.slamzoom.android.effects.EffectModel;
+import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.interpolaters.base.Interpolator;
+import com.slamzoom.android.ui.main.effectchooser.EffectModel;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -60,7 +61,7 @@ public abstract class MediaCreator {
     mEffectModel = effectModel;
     mIsFinalGif = isFinalGif;
     mCallback = callback;
-    mNumTilesInRow = effectModel.getNumTilesInRow();
+    mNumTilesInRow = mEffectModel.getEffectTemplate().getNumTilesInRow();
 
     float aspectRatio = (float) mSelectedBitmap.getWidth() / mSelectedBitmap.getHeight();
     mGifWidth = aspectRatio > 1 ? gifSize : Math.round(gifSize * aspectRatio);
@@ -74,10 +75,10 @@ public abstract class MediaCreator {
   public void createAsync() {
     Log.d(TAG, "createAsync()");
     mStart = System.currentTimeMillis();
-    List<EffectStep> steps = mEffectModel.getEffectSteps();
+    List<EffectStep> steps = mEffectModel.getEffectTemplate().getEffectSteps();
     mTotalNumFramesToAdd = new AtomicInteger(0);
     mAllFrames = Lists.newArrayListWithCapacity(steps.size());
-    for (final EffectStep step : mEffectModel.getEffectSteps()) {
+    for (final EffectStep step : steps) {
       final int numFramesForChunk = Math.round(Constants.DEFAULT_FPS * step.getDurationSeconds());
       List<MediaFrame> frames = Lists.newArrayListWithCapacity(numFramesForChunk);
       for (int i = 0; i < numFramesForChunk; i++) {
@@ -124,7 +125,7 @@ public abstract class MediaCreator {
   }
 
   protected void collectFrames() {
-    List<EffectStep> steps = mEffectModel.getEffectSteps();
+    List<EffectStep> steps = mEffectModel.getEffectTemplate().getEffectSteps();
     EffectStep previousStep = null;
 
     for (int stepIndex = 0; stepIndex < steps.size(); stepIndex++) {

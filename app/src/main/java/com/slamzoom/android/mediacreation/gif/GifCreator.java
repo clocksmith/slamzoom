@@ -6,7 +6,7 @@ import android.graphics.Bitmap;
 import com.slamzoom.android.global.singletons.BusProvider;
 import com.slamzoom.android.mediacreation.CreateMediaCallback;
 import com.slamzoom.android.mediacreation.MediaCreator;
-import com.slamzoom.android.effects.EffectModel;
+import com.slamzoom.android.ui.main.effectchooser.EffectModel;
 
 /**
  * Created by clocksmith on 3/25/16.

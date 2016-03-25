@@ -1,7 +1,7 @@
 package com.slamzoom.android.effects.packs;
 
 import com.google.common.collect.Lists;
-import com.slamzoom.android.effects.EffectModel;
+import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.interpolaters.single.IdentityInterpolator;
 
@@ -11,16 +11,16 @@ import java.util.List;
  * Created by clocksmith on 3/22/16.
  */
 public class SimplePackProvider {
-  public static List<EffectModel> getPack() {
-    List<EffectModel> packModels = Lists.newArrayList();
-    packModels.add(EffectModel.newBuilder()
+  public static List<EffectTemplate> getPack() {
+    List<EffectTemplate> packModels = Lists.newArrayList();
+    packModels.add(EffectTemplate.newBuilder()
         .withName("simple")
         .addEffectStep(EffectStep.newBuilder()
             .withEndPauseSeconds(1)
             .withScaleInterpolator(new IdentityInterpolator())
             .build())
         .build());
-    packModels.add(EffectModel.newBuilder()
+    packModels.add(EffectTemplate.newBuilder()
         .withName("simple x4")
         .addEffectStep(EffectStep.newBuilder()
             .withEndPauseSeconds(1)
@@ -28,7 +28,7 @@ public class SimplePackProvider {
             .build())
         .withNumTilesInRow(2)
         .build());
-    packModels.add(EffectModel.newBuilder()
+    packModels.add(EffectTemplate.newBuilder()
         .withName("simple x9")
         .addEffectStep(EffectStep.newBuilder()
             .withEndPauseSeconds(1)
@@ -36,7 +36,7 @@ public class SimplePackProvider {
             .build())
         .withNumTilesInRow(3)
         .build());
-    packModels.add(EffectModel.newBuilder()
+    packModels.add(EffectTemplate.newBuilder()
         .withName("simple x9")
         .addEffectStep(EffectStep.newBuilder()
             .withEndPauseSeconds(1)
@@ -44,7 +44,7 @@ public class SimplePackProvider {
             .build())
         .withNumTilesInRow(4)
         .build());
-    packModels.add(EffectModel.newBuilder()
+    packModels.add(EffectTemplate.newBuilder()
         .withName("simple x25")
         .addEffectStep(EffectStep.newBuilder()
             .withEndPauseSeconds(1)

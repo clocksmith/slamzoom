@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 
 import com.slamzoom.android.R;
-import com.slamzoom.android.effects.EffectModel;
+import com.slamzoom.android.effects.EffectTemplate;
 
 import java.util.List;
 
@@ -41,8 +41,8 @@ public class EffectChooser extends LinearLayout {
     mRecyclerView.setLayoutManager(linearLayoutManager);
   }
 
-  public void setEffectModels(List<EffectModel> effectModels) {
-    mAdapter = new EffectRecyclerViewAdapter(effectModels);
+  public void setEffectModels(List<EffectModel> effectTemplates) {
+    mAdapter = new EffectRecyclerViewAdapter(effectTemplates);
     mRecyclerView.setAdapter(mAdapter);
   }
 

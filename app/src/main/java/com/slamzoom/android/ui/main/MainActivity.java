@@ -18,14 +18,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.slamzoom.android.global.utils.BitmapUtils;
 import com.slamzoom.android.global.singletons.BusProvider;
 import com.slamzoom.android.global.Constants;
 import com.slamzoom.android.R;
 import com.slamzoom.android.ui.cropper.CropperActivity;
 import com.slamzoom.android.ui.main.effectchooser.EffectChooser;
-import com.slamzoom.android.effects.EffectModel;
-import com.slamzoom.android.effects.EffectModelProvider;
+import com.slamzoom.android.effects.EffectTemplate;
+import com.slamzoom.android.effects.EffectTemplateProvider;
+import com.slamzoom.android.ui.main.effectchooser.EffectModel;
 import com.slamzoom.android.ui.main.effectchooser.EffectViewHolder;
 import com.slamzoom.android.mediacreation.gif.GifService;
 import com.squareup.otto.Subscribe;
@@ -60,10 +63,16 @@ public class MainActivity extends AppCompatActivity {
     BusProvider.getInstance().register(this);
 
     GifService.getInstance().setContext(this);
-    List<EffectModel> templates = EffectModelProvider.getModels();
-    GifService.getInstance().setEffectModels(templates);
-    mEffectChooser.setEffectModels(templates);
-    mSelectedEffectName = templates.get(0).getName();
+    List<EffectModel> effectModels = Lists.transform(EffectTemplateProvider.getTemplates(),
+        new Function<EffectTemplate, EffectModel>() {
+          @Override
+          public EffectModel apply(EffectTemplate input) {
+            return new EffectModel(input);
+          }
+        });
+    GifService.getInstance().setEffectModels(effectModels);
+    mEffectChooser.setEffectModels(effectModels);
+    mSelectedEffectName = effectModels.get(0).getEffectTemplate().getName();
 
     mGifImageView.setOnClickListener(new View.OnClickListener() {
       @Override

@@ -8,18 +8,17 @@ import java.util.List;
 /**
  * Created by antrob on 2/21/16.
  */
-public class EffectModel {
+public class EffectTemplate {
   private String mPackName;
   private String mName;
   private List<EffectStep> mEffectSteps;
-  private byte[] mGifBytes;
   private int mNumTilesInRow;
 
   public static Builder newBuilder() {
     return new Builder();
   }
 
-  private EffectModel(String packName, String name, List<EffectStep> effectSteps, int numTilesInRow) {
+  private EffectTemplate(String packName, String name, List<EffectStep> effectSteps, int numTilesInRow) {
     mPackName = packName;
     mName = name;
     mEffectSteps = effectSteps;
@@ -36,14 +35,6 @@ public class EffectModel {
 
   public List<EffectStep> getEffectSteps() {
     return mEffectSteps;
-  }
-
-  public byte[] getGifBytes() {
-    return mGifBytes;
-  }
-
-  public void setGifBytes(byte[] gifBytes) {
-    mGifBytes = gifBytes;
   }
 
   public int getNumTilesInRow() {
@@ -63,7 +54,7 @@ public class EffectModel {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    final EffectModel other = (EffectModel) obj;
+    final EffectTemplate other = (EffectTemplate) obj;
     return Objects.equal(mPackName, other.getPackName())
         && Objects.equal(mName, other.getName())
         && Objects.equal(mEffectSteps, other.getEffectSteps());
@@ -99,8 +90,8 @@ public class EffectModel {
       return this;
     }
 
-    public EffectModel build() {
-      return new EffectModel(mPackName, mName, mEffectSteps, mNumTilesInRow);
+    public EffectTemplate build() {
+      return new EffectTemplate(mPackName, mName, mEffectSteps, mNumTilesInRow);
     }
   }
 }

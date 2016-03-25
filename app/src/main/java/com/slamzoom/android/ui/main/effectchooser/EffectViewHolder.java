@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.slamzoom.android.R;
 import com.slamzoom.android.global.singletons.BusProvider;
-import com.slamzoom.android.effects.EffectModel;
+import com.slamzoom.android.effects.EffectTemplate;
 
 import java.io.IOException;
 
@@ -40,19 +40,19 @@ public class EffectViewHolder extends RecyclerView.ViewHolder {
   }
 
   public void bind(final EffectModel model) {
-    mNameTextView.setText(model.getName());
+    mNameTextView.setText(model.getEffectTemplate().getName());
 
     itemView.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        BusProvider.getInstance().post(new ItemClickEvent(model.getName()));
+        BusProvider.getInstance().post(new ItemClickEvent(model.getEffectTemplate().getName()));
       }
     });
 
-    if (model.getGifBytes() != null) {
+    if (model.getGifPreviewBytes() != null) {
       mProgressBar.setVisibility(View.GONE);
       try {
-        mGifImageView.setImageDrawable(new GifDrawable(model.getGifBytes()));
+        mGifImageView.setImageDrawable(new GifDrawable(model.getGifPreviewBytes()));
       } catch (IOException e) {
         Log.e(TAG, "Could not set gif", e);
       }
