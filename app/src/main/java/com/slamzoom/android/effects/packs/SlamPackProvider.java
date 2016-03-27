@@ -10,7 +10,10 @@ import com.slamzoom.android.interpolaters.filter.UnsaturateFilterInterpolator;
 import com.slamzoom.android.interpolaters.filter.ZoomBlurFilterInterpolator;
 import com.slamzoom.android.interpolaters.single.SlamHardInAndOutInterpolator;
 import com.slamzoom.android.interpolaters.single.SlamHardInterpolator;
+import com.slamzoom.android.interpolaters.single.SlamHardNoPauseInterpolator;
+import com.slamzoom.android.interpolaters.single.SlamHardOutNoPauseInterpolator;
 import com.slamzoom.android.interpolaters.single.SlamSoftOutInterpolator;
+import com.slamzoom.android.interpolaters.single.SlamSoftOutNoPauseInterpolator;
 
 import java.util.List;
 
@@ -25,15 +28,16 @@ public class SlamPackProvider {
         .withPackName("slam pack")
         .withName("slamin")
         .addEffectStep(EffectStep.newBuilder()
-            .withScaleInterpolator(new SlamHardInterpolator())
+            .withScaleInterpolator(new SlamHardNoPauseInterpolator())
             .withFilterInterpolator(new ZoomBlurFilterInterpolator(new LinearSplineInterpolator(
                 PointListBuilder.newPointListBuilder()
                     .add(0, 0)
-                    .add(0.7f, 0)
                     .add(0.9f, 1f)
                     .add(0.9999f, 1f)
                     .add(1f, 0)
                     .build())))
+            .withStartPauseSeconds(1.4f)
+            .withDurationSeconds(0.6f)
             .withEndPauseSeconds(1f)
             .build())
         .build());
@@ -41,15 +45,15 @@ public class SlamPackProvider {
         .withPackName("slam pack")
         .withName("slamout")
         .addEffectStep(EffectStep.newBuilder()
-            .withScaleInterpolator(new SlamSoftOutInterpolator())
+            .withScaleInterpolator(new SlamSoftOutNoPauseInterpolator())
             .withFilterInterpolator(new ZoomBlurFilterInterpolator(new LinearSplineInterpolator(
                 PointListBuilder.newPointListBuilder()
                     .add(0, 0)
-                    .add(0.7f, 0)
-                    .add(0.9f, 1f)
-                    .add(0.9999f, 1f)
+                    .add(0.8f, 1f)
                     .add(1f, 0)
                     .build())))
+            .withStartPauseSeconds(1.2f)
+            .withDurationSeconds(0.8f)
             .withEndPauseSeconds(1f)
             .build())
         .build());

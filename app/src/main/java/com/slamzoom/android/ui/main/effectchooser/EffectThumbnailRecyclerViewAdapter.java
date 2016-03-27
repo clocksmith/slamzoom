@@ -24,7 +24,8 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
 
   @Override
   public EffectThumbnailViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-    return new EffectThumbnailViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.vh_effect, parent, false));
+    return new EffectThumbnailViewHolder(
+        LayoutInflater.from(parent.getContext()).inflate(R.layout.vh_effect, parent, false));
   }
 
   @Override
@@ -41,8 +42,6 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
     for (int position = 0; position < mModels.size(); position++) {
       if (mModels.get(position).getEffectTemplate().getName().equals(effectName)) {
         mModels.get(position).setGifPreviewBytes(gifBytes);
-        int x = 1;
-        int y = x + 2;
         notifyItemChanged(position);
         break;
       }
