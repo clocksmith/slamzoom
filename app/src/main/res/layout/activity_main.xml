@@ -8,6 +8,15 @@
     android:background="@android:color/black"
     tools:context=".ui.main.MainActivity">
 
+  <android.support.v7.widget.Toolbar
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      app:theme="@style/SlamzoomActionBar"
+      android:id="@+id/actionBar"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+  </android.support.v7.widget.Toolbar>
+
   <FrameLayout
       android:layout_width="match_parent"
       android:layout_height="0dp"
@@ -18,13 +27,13 @@
         android:layout_height="match_parent"
         android:scaleType="fitCenter"/>
     <!--<ProgressBar-->
-        <!--android:id="@+id/progressBar"-->
-        <!--style="?android:attr/progressBarStyleHorizontal"-->
-        <!--android:indeterminate="false"-->
-        <!--android:visibility="gone"-->
-        <!--android:layout_width="64dp"-->
-        <!--android:layout_height="64dp"-->
-        <!--android:layout_gravity="center"/>-->
+    <!--android:id="@+id/progressBar"-->
+    <!--style="?android:attr/progressBarStyleHorizontal"-->
+    <!--android:indeterminate="false"-->
+    <!--android:visibility="gone"-->
+    <!--android:layout_width="64dp"-->
+    <!--android:layout_height="64dp"-->
+    <!--android:layout_gravity="center"/>-->
     <ProgressBar
         android:id="@+id/progressBar"
         android:visibility="gone"

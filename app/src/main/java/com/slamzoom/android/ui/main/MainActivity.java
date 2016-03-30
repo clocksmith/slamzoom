@@ -11,19 +11,23 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.slamzoom.android.global.BackInterceptingEditText;
 import com.slamzoom.android.global.utils.BitmapUtils;
 import com.slamzoom.android.global.singletons.BusProvider;
 import com.slamzoom.android.global.Constants;
 import com.slamzoom.android.R;
+import com.slamzoom.android.global.utils.KeyboardUtils;
 import com.slamzoom.android.ui.cropper.CropperActivity;
 import com.slamzoom.android.ui.main.effectchooser.EffectChooser;
 import com.slamzoom.android.effects.EffectTemplate;
@@ -47,13 +51,17 @@ import pl.droidsonroids.gif.GifImageView;
 public class MainActivity extends AppCompatActivity {
   private static final String TAG = MainActivity.class.getSimpleName();
 
+  @Bind(R.id.actionBar) Toolbar mActionBar;
   @Bind(R.id.gifImageView) GifImageView mGifImageView;
   @Bind(R.id.progressBar) ProgressBar mProgressBar;
   @Bind(R.id.effectChooser) EffectChooser mEffectChooser;
+  private AddTextView mAddTextView;
 
   private String mSelectedEffectName;
   private byte[] mSelectedGifBytes;
   private Bitmap mSelectedBitmap;
+
+  private boolean mIsAddTextViewShowing = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +70,12 @@ public class MainActivity extends AppCompatActivity {
     ButterKnife.bind(this);
     BusProvider.getInstance().register(this);
     GifService.getInstance().setContext(this);
+
+    setSupportActionBar(mActionBar);
+    assert getSupportActionBar() != null;
+    mAddTextView = new AddTextView(this);
+    getSupportActionBar().setCustomView(mAddTextView,
+        new Toolbar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
     setEffectModels();
 
@@ -79,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.menu_main, menu);
-    return true;
+    return super.onCreateOptionsMenu(menu);
   }
 
 
@@ -87,12 +101,29 @@ public class MainActivity extends AppCompatActivity {
   public boolean onOptionsItemSelected(MenuItem item) {
     // Handle item selection
     switch (item.getItemId()) {
+      case android.R.id.home:
+        handleUpOrBackPressed();
+        return true;
+      case R.id.action_add_text:
+        handleAddTextPressed();
+        return true;
+      case R.id.action_ok:
+        // TODO(clocksmith): something.
+        return true;
       case R.id.action_share:
         shareCurrentGif();
         return true;
       default:
         return super.onOptionsItemSelected(item);
     }
+  }
+
+  @Override
+  public boolean onPrepareOptionsMenu(Menu menu) {
+    menu.findItem(R.id.action_add_text).setVisible(!mIsAddTextViewShowing);
+    menu.findItem(R.id.action_share).setVisible(!mIsAddTextViewShowing);
+    menu.findItem(R.id.action_ok).setVisible(mIsAddTextViewShowing);
+    return super.onPrepareOptionsMenu(menu);
   }
 
   @Override
@@ -127,6 +158,15 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
+  @Override
+  public void onBackPressed() {
+    if (mIsAddTextViewShowing) {
+      handleUpOrBackPressed();
+    } else {
+      super.onBackPressed();
+    }
+  }
+
   @Subscribe
   public void on(EffectThumbnailViewHolder.ItemClickEvent event) throws IOException {
     mSelectedEffectName = event.effectName;
@@ -137,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   @Subscribe
-  public void on(GifService.GifPreviewReadyEvent event) throws IOException {
+  public void on(GifService.GifPreviewReadyEvent event) {
     mEffectChooser.setGifPreview(event.effectName, event.gifBytes);
   }
 
@@ -151,10 +191,15 @@ public class MainActivity extends AppCompatActivity {
   }
 
   @Subscribe
-  public void on(GifService.ProgressUpdateEvent event) throws IOException {
+  public void on(GifService.ProgressUpdateEvent event) {
     if (event.effectName.equals(mSelectedEffectName)) {
       mProgressBar.setProgress(event.progress);
     }
+  }
+
+  @Subscribe
+  public void on(BackInterceptingEditText.OnBackPressedEvent event) {
+    handleUpOrBackPressed();
   }
 
   private void setEffectModels() {
@@ -168,6 +213,28 @@ public class MainActivity extends AppCompatActivity {
     GifService.getInstance().setEffectModels(models);
     mEffectChooser.setEffectModels(models);
     mSelectedEffectName = models.get(0).getEffectTemplate().getName();
+  }
+
+  private void handleUpOrBackPressed() {
+    KeyboardUtils.hideKeyboard(this);
+    showAddTextView(false);
+  }
+
+  private void handleAddTextPressed() {
+    mAddTextView.getEditText().setText("");
+    mAddTextView.getEditText().requestFocus();
+    KeyboardUtils.showKeyboard(this);
+    showAddTextView(true);
+  }
+
+  private void showAddTextView(boolean show) {
+    assert getSupportActionBar() != null;
+    getSupportActionBar().setDisplayHomeAsUpEnabled(show);
+    getSupportActionBar().setHomeButtonEnabled(show);
+    getSupportActionBar().setDisplayShowCustomEnabled(show);
+    getSupportActionBar().setDisplayShowTitleEnabled(!show);
+    mIsAddTextViewShowing = show;
+    invalidateOptionsMenu();
   }
 
   private void shareCurrentGif() {

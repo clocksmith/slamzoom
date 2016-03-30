@@ -1,5 +1,5 @@
 <resources>
-  <style name="SlamzoomTheme" parent="@style/Theme.AppCompat">
+  <style name="SlamzoomTheme" parent="Theme.AppCompat.NoActionBar">
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     <item name="colorAccent">@color/colorAccent</item>
@@ -7,11 +7,17 @@
     <item name="actionBarStyle">@style/SlamzoomActionBar</item>
   </style>
 
-  <style name="SlamzoomActionBar" parent="@style/Widget.AppCompat.ActionBar.Solid">
-    <item name="titleTextStyle">@style/SlamzoomActionBarText</item>
+  <style name="SlamzoomActionBar" parent="Widget.AppCompat.ActionBar">
+    <item name="android:background">@color/colorPrimary</item>
+    <item name="android:textColorPrimary">@color/menu_icon_color</item>
+    <item name="colorControlNormal">@color/menu_icon_color</item>
+    <item name="selectableItemBackground">?android:selectableItemBackground</item>
+    <item name="selectableItemBackgroundBorderless">?android:selectableItemBackground</item>
+
+    <item name="android:textAppearance">@style/SlamzoomActionBarText</item>
   </style>
 
-  <style name="SlamzoomActionBarText" parent="@android:style/TextAppearance">
+  <style name="SlamzoomActionBarText" parent="TextAppearance.AppCompat">
     <item name="android:textColor">@color/menu_icon_color</item>
     <item name="android:textSize">24dp</item>
   </style>
