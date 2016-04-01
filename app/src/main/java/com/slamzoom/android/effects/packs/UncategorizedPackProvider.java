@@ -28,9 +28,9 @@ public class UncategorizedPackProvider {
                 if (input < 0.1667) {
                   return 0;
                 } else if (input < 0.5) {
-                  return 0.3333f;
+                  return 0.15f;
                 } else if (input < 0.8333) {
-                  return 0.6667f;
+                  return 0.50f;
                 } else {
                   return 1;
                 }
