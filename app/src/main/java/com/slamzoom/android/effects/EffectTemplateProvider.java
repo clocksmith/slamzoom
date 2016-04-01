@@ -6,6 +6,7 @@ import com.slamzoom.android.effects.packs.ShakePackProvider;
 import com.slamzoom.android.effects.packs.SimplePackProvider;
 import com.slamzoom.android.effects.packs.SlamPackProvider;
 import com.slamzoom.android.effects.packs.SwirlPackProvider;
+import com.slamzoom.android.effects.packs.UncategorizedPackProvider;
 
 import java.util.List;
 
@@ -16,10 +17,11 @@ public class EffectTemplateProvider {
   private static List<EffectTemplate> mTemplates = Lists.newArrayList();
   static {
     mTemplates.addAll(SlamPackProvider.getPack());
-    mTemplates.addAll(CrashPackProvider.getPack());
-    mTemplates.addAll(SwirlPackProvider.getPack());
-    mTemplates.addAll(ShakePackProvider.getPack());
-    mTemplates.addAll(SimplePackProvider.getPack());
+//    mTemplates.addAll(CrashPackProvider.getPack());
+//    mTemplates.addAll(SwirlPackProvider.getPack());
+//    mTemplates.addAll(ShakePackProvider.getPack());
+//    mTemplates.addAll(SimplePackProvider.getPack());
+    mTemplates.addAll(UncategorizedPackProvider.getPack());
   }
 
   public static List<EffectTemplate> getTemplates() {
