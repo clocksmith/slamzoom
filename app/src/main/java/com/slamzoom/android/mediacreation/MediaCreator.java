@@ -3,14 +3,19 @@ package com.slamzoom.android.mediacreation;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.util.TypedValue;
 
 import com.google.common.base.Function;
+import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.global.Constants;
@@ -26,6 +31,7 @@ import com.slamzoom.android.ui.main.effectchooser.EffectModel;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import jp.co.cyberagent.android.gpuimage.GPUImageBulgeDistortionFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageSwirlFilter;
 
@@ -92,7 +98,8 @@ public abstract class MediaCreator {
     collectFrames();
   }
 
-  protected MediaFrame getFrame(Matrix transformationMatrix, List<GPUImageFilter> filters, int delayMillis) {
+  protected MediaFrame getFrame(
+      Matrix transformationMatrix, List<GPUImageFilter> filters, int delayMillis, String textToRender) {
     // Transform the selected bitmap
     Bitmap targetBitmap = Bitmap.createBitmap(
         mSelectedBitmap.getWidth(), mSelectedBitmap.getHeight(), Bitmap.Config.ARGB_8888);
@@ -121,7 +128,34 @@ public abstract class MediaCreator {
 
     Bitmap finalBitmap = PostProcessorUtils.process(mContext, scaledBitmap, filters);
 
+    if (!Strings.isNullOrEmpty(textToRender)) {
+      delayMillis += 1000;
+      Canvas textCanvas = new Canvas(finalBitmap);
+      Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+      textPaint.setColor(Color.WHITE); // Text Color
+      textPaint.setTextSize(getCorrectedWidth(textToRender, finalBitmap.getWidth(), 3 * finalBitmap.getWidth() / 4));
+      textPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)); // Text Overlapping Pattern
+      textPaint.setTextAlign(Paint.Align.CENTER);
+      textCanvas.drawText(textToRender, finalBitmap.getWidth() / 2, finalBitmap.getHeight() / 2, textPaint);
+    }
+
     return createFrame(finalBitmap, delayMillis);
+  }
+
+  private int getCorrectedWidth(String text, int textSize, int desiredWidth) {
+    Paint paint = new Paint();
+    Rect bounds = new Rect();
+
+    paint.setTextSize(textSize);
+    paint.getTextBounds(text, 0, text.length(), bounds);
+
+    while (bounds.width() > desiredWidth) {
+      textSize--;
+      paint.setTextSize(textSize);
+      paint.getTextBounds(text, 0, text.length(), bounds);
+    }
+
+    return textSize;
   }
 
   protected void collectFrames() {
@@ -130,6 +164,7 @@ public abstract class MediaCreator {
 
     for (int stepIndex = 0; stepIndex < steps.size(); stepIndex++) {
       final EffectStep step = steps.get(stepIndex);
+      String textToRender = null;
 
       final Rect startRect = previousStep == null ?
           new Rect(0, 0, mSelectedBitmap.getWidth(), mSelectedBitmap.getHeight()) :
@@ -169,6 +204,8 @@ public abstract class MediaCreator {
                   ((GPUImageZoomBlurFilter) filter).setBlurCenter(effectCenter);
                 }  else if (filter instanceof GPUImageSwirlFilter) {
                   ((GPUImageSwirlFilter) filter).setCenter(effectCenter);
+                } else if (filter instanceof GPUImageBulgeDistortionFilter) {
+                  ((GPUImageBulgeDistortionFilter) filter).setCenter(effectCenter);
                 }
                 return filter;
               }
@@ -179,6 +216,7 @@ public abstract class MediaCreator {
           extraDelayMillis = Math.round(1000f * step.getStartPauseSeconds());
         } else if (frameIndex == numFramesForChunk - 1) {
           extraDelayMillis = Math.round(1000f * step.getEndPauseSeconds());
+          textToRender = step.getEndText();
         }
         int delayMillis = Math.round(1000f / Constants.DEFAULT_FPS) + extraDelayMillis;
 
@@ -189,7 +227,8 @@ public abstract class MediaCreator {
             scale,
             dx,
             dy,
-            filters);
+            filters,
+            textToRender);
         createFrameTask.executeOnExecutor(ExecutorProvider.getInstance());
       }
     }
@@ -203,6 +242,7 @@ public abstract class MediaCreator {
     protected float mDx;
     protected float mDy;
     protected List<GPUImageFilter> mFilters;
+    protected String mTextToRender;
 
     CreateFrameTask(
         int stepIndex,
@@ -211,7 +251,8 @@ public abstract class MediaCreator {
         float scale,
         float dx,
         float dy,
-        List<GPUImageFilter> filters) {
+        List<GPUImageFilter> filters,
+        String textToRender) {
       super();
       mStepIndex = stepIndex;
       mFrameIndex = frameIndex;
@@ -220,13 +261,14 @@ public abstract class MediaCreator {
       mDx = dx;
       mDy = dy;
       mFilters = filters;
+      mTextToRender = textToRender;
     }
 
     @Override
     protected MediaFrame doInBackground(Void... params) {
       Matrix transformationMatrix = new Matrix();
       transformationMatrix.postScale(mScale, mScale, mDx, mDy);
-      return getFrame(transformationMatrix, mFilters, mDelayMillis);
+      return getFrame(transformationMatrix, mFilters, mDelayMillis, mTextToRender);
 
     }
 

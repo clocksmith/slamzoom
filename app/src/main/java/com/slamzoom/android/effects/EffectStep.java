@@ -22,6 +22,8 @@ public class EffectStep {
   private static final String TAG = EffectStep.class.getSimpleName();
 
   private Rect mHotspot;
+  private String mEndText;
+
   private Interpolator mScaleInterpolator;
   private Interpolator mXInterpolator;
   private Interpolator mYInterpolator;
@@ -57,6 +59,14 @@ public class EffectStep {
 
   public void setHotspot(Rect hotspot) {
     mHotspot = hotspot;
+  }
+
+  public String getEndText() {
+    return mEndText;
+  }
+
+  public void setEndText(String endText) {
+    mEndText = endText;
   }
 
   public Interpolator getScaleInterpolator() {
@@ -211,6 +221,7 @@ public class EffectStep {
 
     final EffectStep other = (EffectStep) obj;
     return Objects.equal(mHotspot, other.getHotspot())
+        && Objects.equal(mEndText, other.getEndText())
         && Objects.equal(getName(mScaleInterpolator), getName(other.getScaleInterpolator()))
         && Objects.equal(getName(mXInterpolator), getName(other.getXInterpolator()))
         && Objects.equal(getName(mYInterpolator), getName(other.getYInterpolator()))

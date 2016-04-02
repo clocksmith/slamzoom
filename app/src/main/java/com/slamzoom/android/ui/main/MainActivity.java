@@ -109,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
       case R.id.action_ok:
         // TODO(clocksmith): something.
+        handleAddTextConfirmed();
         return true;
       case R.id.action_share:
         shareCurrentGif();
@@ -151,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
 
         Rect cropRect = data.getParcelableExtra(Constants.CROP_RECT);
         setEffectModels();
-        GifService.getInstance().setCropRect(cropRect);
+        GifService.getInstance().setHotspot(cropRect);
         mSelectedGifBytes = null;
         mGifImageView.setImageBitmap(null);
       }
@@ -225,6 +226,16 @@ public class MainActivity extends AppCompatActivity {
     mAddTextView.getEditText().requestFocus();
     KeyboardUtils.showKeyboard(this);
     showAddTextView(true);
+  }
+
+  private void handleAddTextConfirmed() {
+    if (mSelectedBitmap != null) {
+      mEffectChooser.clearGifsAndShowSpinners();
+    }
+
+    GifService.getInstance().setEndText(mAddTextView.getEditText().getText().toString());
+    KeyboardUtils.hideKeyboard(this);
+    showAddTextView(false);
   }
 
   private void showAddTextView(boolean show) {
