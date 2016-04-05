@@ -1,4 +1,4 @@
-package com.slamzoom.android.ui.main.effectchooser;
+package com.slamzoom.android.ui.create.effectchooser;
 
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;

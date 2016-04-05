@@ -1,4 +1,4 @@
-  package com.slamzoom.android.ui.main;
+  package com.slamzoom.android.ui.create;
 
 import android.Manifest;
 import android.content.Intent;
@@ -29,11 +29,11 @@ import com.slamzoom.android.global.Constants;
 import com.slamzoom.android.R;
 import com.slamzoom.android.global.utils.KeyboardUtils;
 import com.slamzoom.android.ui.cropper.CropperActivity;
-import com.slamzoom.android.ui.main.effectchooser.EffectChooser;
+import com.slamzoom.android.ui.create.effectchooser.EffectChooser;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.EffectTemplateProvider;
-import com.slamzoom.android.ui.main.effectchooser.EffectModel;
-import com.slamzoom.android.ui.main.effectchooser.EffectThumbnailViewHolder;
+import com.slamzoom.android.ui.create.effectchooser.EffectModel;
+import com.slamzoom.android.ui.create.effectchooser.EffectThumbnailViewHolder;
 import com.slamzoom.android.mediacreation.gif.GifService;
 import com.squareup.otto.Subscribe;
 
@@ -48,8 +48,8 @@ import butterknife.ButterKnife;
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 
-public class MainActivity extends AppCompatActivity {
-  private static final String TAG = MainActivity.class.getSimpleName();
+public class CreateActivity extends AppCompatActivity {
+  private static final String TAG = CreateActivity.class.getSimpleName();
 
   @Bind(R.id.actionBar) Toolbar mActionBar;
   @Bind(R.id.gifImageView) GifImageView mGifImageView;
@@ -60,52 +60,53 @@ public class MainActivity extends AppCompatActivity {
   private String mSelectedEffectName;
   private byte[] mSelectedGifBytes;
   private Bitmap mSelectedBitmap;
+  private Uri mSelectedUri;
+  private Rect mSelectedHotspot;
 
   private boolean mIsAddTextViewShowing = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
+    setContentView(R.layout.activity_create);
     ButterKnife.bind(this);
     BusProvider.getInstance().register(this);
     GifService.getInstance().setContext(this);
 
     setSupportActionBar(mActionBar);
     assert getSupportActionBar() != null;
+    getSupportActionBar().setTitle(getString(R.string.app_name));
     mAddTextView = new AddTextView(this);
     getSupportActionBar().setCustomView(mAddTextView,
         new Toolbar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
     setEffectModels();
 
-    mGifImageView.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
-        startActivityForResult(Intent.createChooser(intent, "Select Image"), Constants.REQUEST_PICK_IMAGE);
-      }
-    });
+    launchImageChooser();
   }
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
-    inflater.inflate(R.menu.menu_main, menu);
+    inflater.inflate(R.menu.menu_create, menu);
     return super.onCreateOptionsMenu(menu);
   }
 
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    // Handle item selection
     switch (item.getItemId()) {
       case android.R.id.home:
         handleUpOrBackPressed();
         return true;
       case R.id.action_add_text:
         handleAddTextPressed();
+        return true;
+      case R.id.action_change_hotspot:
+        launchHotspotChooser();
+        return true;
+      case R.id.action_change_image:
+        launchImageChooser();
         return true;
       case R.id.action_ok:
         // TODO(clocksmith): something.
@@ -122,6 +123,8 @@ public class MainActivity extends AppCompatActivity {
   @Override
   public boolean onPrepareOptionsMenu(Menu menu) {
     menu.findItem(R.id.action_add_text).setVisible(!mIsAddTextViewShowing);
+    menu.findItem(R.id.action_change_hotspot).setVisible(!mIsAddTextViewShowing);
+    menu.findItem(R.id.action_change_image).setVisible(!mIsAddTextViewShowing);
     menu.findItem(R.id.action_share).setVisible(!mIsAddTextViewShowing);
     menu.findItem(R.id.action_ok).setVisible(mIsAddTextViewShowing);
     return super.onPrepareOptionsMenu(menu);
@@ -133,14 +136,16 @@ public class MainActivity extends AppCompatActivity {
       if (resultCode == RESULT_OK) {
         Uri uri = data.getData();
         try {
+          mSelectedUri = uri;
           mSelectedBitmap = BitmapUtils.readScaledBitmap(
-              uri, this.getContentResolver(), Constants.MAX_SELECTED_DIMEN_PX);
-          GifService.getInstance().setSelectedBitmap(mSelectedBitmap);
-          Intent intent = new Intent(MainActivity.this, CropperActivity.class);
-          intent.putExtra(Constants.IMAGE_URI, uri);
-          startActivityForResult(intent, Constants.REQUEST_CROP_IMAGE);
+              mSelectedUri, this.getContentResolver(), Constants.MAX_SELECTED_DIMEN_PX);
+          launchHotspotChooser();
         } catch (FileNotFoundException e) {
           Log.e(TAG, "Cannot get bitmap for path: " + uri.toString());
+        }
+      } else {
+        if (mSelectedBitmap == null) {
+          finish();
         }
       }
     } else if (requestCode == Constants.REQUEST_CROP_IMAGE) {
@@ -150,11 +155,15 @@ public class MainActivity extends AppCompatActivity {
           mEffectChooser.clearGifsAndShowSpinners();
         }
 
-        Rect cropRect = data.getParcelableExtra(Constants.CROP_RECT);
+        mSelectedHotspot = data.getParcelableExtra(Constants.CROP_RECT);
         setEffectModels();
-        GifService.getInstance().setHotspot(cropRect);
+        GifService.getInstance().setHotspot(mSelectedHotspot);
         mSelectedGifBytes = null;
         mGifImageView.setImageBitmap(null);
+      } else {
+        if (mSelectedHotspot == null) {
+          finish();
+        }
       }
     }
   }
@@ -203,6 +212,18 @@ public class MainActivity extends AppCompatActivity {
     handleUpOrBackPressed();
   }
 
+  private void launchImageChooser() {
+    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+    intent.setType("image/*");
+    startActivityForResult(Intent.createChooser(intent, "Select Image"), Constants.REQUEST_PICK_IMAGE);
+  }
+
+  private void launchHotspotChooser() {
+    GifService.getInstance().setSelectedBitmap(mSelectedBitmap);
+    Intent intent = new Intent(CreateActivity.this, CropperActivity.class);
+    intent.putExtra(Constants.IMAGE_URI, mSelectedUri);
+    startActivityForResult(intent, Constants.REQUEST_CROP_IMAGE);
+  }
   private void setEffectModels() {
     List<EffectModel> models = Lists.newArrayList(Lists.transform(EffectTemplateProvider.getTemplates(),
         new Function<EffectTemplate, EffectModel>() {

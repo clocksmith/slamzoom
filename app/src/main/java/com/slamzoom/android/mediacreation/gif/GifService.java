@@ -16,7 +16,7 @@ import com.slamzoom.android.effects.EffectTemplateProvider;
 import com.slamzoom.android.global.singletons.BusProvider;
 import com.slamzoom.android.global.Constants;
 import com.slamzoom.android.effects.EffectStep;
-import com.slamzoom.android.ui.main.effectchooser.EffectModel;
+import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 import com.squareup.otto.Subscribe;
 
 import java.io.IOException;

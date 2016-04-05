@@ -1,8 +1,6 @@
-package com.slamzoom.android.ui.main.effectchooser;
+package com.slamzoom.android.ui.create.effectchooser;
 
-import android.media.effect.Effect;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 

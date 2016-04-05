@@ -17,11 +17,11 @@ import java.util.List;
 public class EffectTemplateProvider {
   private static List<EffectTemplate> mTemplates = Lists.newArrayList();
   static {
-//    mTemplates.addAll(SlamPackProvider.getPack());
-//    mTemplates.addAll(CrashPackProvider.getPack());
-//    mTemplates.addAll(SwirlPackProvider.getPack());
-//    mTemplates.addAll(ShakePackProvider.getPack());
-//    mTemplates.addAll(SimplePackProvider.getPack());
+    mTemplates.addAll(SlamPackProvider.getPack());
+    mTemplates.addAll(CrashPackProvider.getPack());
+    mTemplates.addAll(SwirlPackProvider.getPack());
+    mTemplates.addAll(ShakePackProvider.getPack());
+    mTemplates.addAll(SimplePackProvider.getPack());
     mTemplates.addAll(BulgePackProvider.getPack());
     mTemplates.addAll(UncategorizedPackProvider.getPack());
   }

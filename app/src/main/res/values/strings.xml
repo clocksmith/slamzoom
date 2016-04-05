@@ -1,7 +1,13 @@
 <resources>
   <string name="app_name">slamzoom</string>
+
+  <string name="create_slamzoom">Create a slamzoom</string>
+
   <string name="action_add_text">add text</string>
-  <string name="action_ok">ok</string>
+  <string name="action_change_hotspot">change hotspot</string>
+  <string name="action_change_image">change image</string>
   <string name="action_share">share</string>
+
+  <string name="action_ok">ok</string>
   <string name="action_done">done</string>
 </resources>

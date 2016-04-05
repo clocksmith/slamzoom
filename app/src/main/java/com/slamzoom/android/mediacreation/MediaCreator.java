@@ -12,7 +12,6 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.util.TypedValue;
 
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
@@ -23,10 +22,9 @@ import com.slamzoom.android.global.singletons.ExecutorProvider;
 import com.slamzoom.android.global.utils.PostProcessorUtils;
 import com.slamzoom.android.interpolaters.filter.FilterInterpolator;
 import com.slamzoom.android.interpolaters.filter.GPUImageZoomBlurFilter;
-import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.interpolaters.base.Interpolator;
-import com.slamzoom.android.ui.main.effectchooser.EffectModel;
+import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;

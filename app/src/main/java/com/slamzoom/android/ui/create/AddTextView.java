@@ -1,17 +1,13 @@
-package com.slamzoom.android.ui.main;
+package com.slamzoom.android.ui.create;
 
 import android.content.Context;
-import android.support.v7.view.CollapsibleActionView;
 import android.support.v7.widget.LinearLayoutCompat;
-import android.support.v7.widget.SearchView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.EditText;
-import android.widget.ImageView;
 
 import com.slamzoom.android.R;
 import com.slamzoom.android.global.BackInterceptingEditText;
-import com.slamzoom.android.global.singletons.BusProvider;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

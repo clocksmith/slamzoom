@@ -21,6 +21,6 @@ public class BulgeFilterInterpolator extends FilterInterpolator {
 
   @Override
   protected GPUImageFilter getFilter(float interpolationValue) {
-    return new GPUImageBulgeDistortionFilter(0.67f, 0.67f * interpolationValue, new PointF(0.5f, 0.5f));
+    return new GPUImageBulgeDistortionFilter(1, 0.6f * interpolationValue, new PointF(0.5f, 0.5f));
   }
 }

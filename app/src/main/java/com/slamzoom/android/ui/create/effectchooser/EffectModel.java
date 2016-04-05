@@ -1,4 +1,4 @@
-package com.slamzoom.android.ui.main.effectchooser;
+package com.slamzoom.android.ui.create.effectchooser;
 
 import com.google.common.base.Objects;
 import com.slamzoom.android.effects.EffectTemplate;
