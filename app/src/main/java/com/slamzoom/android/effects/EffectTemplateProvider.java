@@ -3,6 +3,7 @@ package com.slamzoom.android.effects;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.packs.BulgePackProvider;
 import com.slamzoom.android.effects.packs.CrashPackProvider;
+import com.slamzoom.android.effects.packs.DebugPackProvider;
 import com.slamzoom.android.effects.packs.ShakePackProvider;
 import com.slamzoom.android.effects.packs.SimplePackProvider;
 import com.slamzoom.android.effects.packs.SlamPackProvider;
@@ -24,6 +25,7 @@ public class EffectTemplateProvider {
     mTemplates.addAll(SimplePackProvider.getPack());
     mTemplates.addAll(BulgePackProvider.getPack());
     mTemplates.addAll(UncategorizedPackProvider.getPack());
+//    mTemplates.addAll(DebugPackProvider.getPack());
   }
 
   public static List<EffectTemplate> getTemplates() {

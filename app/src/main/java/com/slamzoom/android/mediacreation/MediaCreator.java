@@ -1,5 +1,6 @@
 package com.slamzoom.android.mediacreation;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -11,6 +12,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.util.Log;
 
 import com.google.common.base.Function;
@@ -26,6 +28,9 @@ import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.interpolaters.base.Interpolator;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -36,7 +41,7 @@ import jp.co.cyberagent.android.gpuimage.GPUImageSwirlFilter;
 /**
  * Created by clocksmith on 3/18/16.
  */
-public abstract class MediaCreator {
+public abstract class MediaCreator<E extends MediaEncoder> {
   public static final String TAG = MediaCreator.class.getSimpleName();
 
   protected long mStart;
@@ -74,7 +79,7 @@ public abstract class MediaCreator {
 
   public abstract MediaFrame createFrame(Bitmap bitmap, int delayMillis);
 
-  public abstract MediaEncoder createEncoder();
+  public abstract E createEncoder();
 
   public void createAsync() {
     Log.d(TAG, "createAsync()");
@@ -97,7 +102,7 @@ public abstract class MediaCreator {
   }
 
   protected MediaFrame getFrame(
-      Matrix transformationMatrix, List<GPUImageFilter> filters, int delayMillis, String textToRender) {
+      Matrix transformationMatrix, List<GPUImageFilter> filters, int delayMillis, String textToRender, int frameIndex) {
     // Transform the selected bitmap
     Bitmap targetBitmap = Bitmap.createBitmap(
         mSelectedBitmap.getWidth(), mSelectedBitmap.getHeight(), Bitmap.Config.ARGB_8888);
@@ -136,6 +141,42 @@ public abstract class MediaCreator {
       textPaint.setTextAlign(Paint.Align.CENTER);
       textCanvas.drawText(textToRender, finalBitmap.getWidth() / 2, finalBitmap.getHeight() / 2, textPaint);
     }
+
+    // TODO(clocksmith): debugging, remove this
+//    if (finalBitmap.getWidth() == 320 || finalBitmap.getHeight() == 320) {
+//      File direct = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "/SlamZoom");
+//      File file = new File(direct, "test" + frameIndex + ".png");
+//      Log.e(TAG, "w: " + finalBitmap.getWidth() + " h: " + finalBitmap.getHeight());
+//      if (!file.getParentFile().isDirectory()) {
+//        Log.e(TAG, "No directory exitsts: " + file.getParentFile());
+//        if (!file.getParentFile().mkdirs()) {
+//          Log.e(TAG, "Cannot make directory: " + file.getParentFile());
+//        }
+//        {
+//          Log.d(TAG, direct + " successfully created.");
+//        }
+//      } else {
+//        Log.d(TAG, direct + " already exists.");
+//      }
+//      if (frameIndex >= 0) {
+//        FileOutputStream out = null;
+//        try {
+//          out = new FileOutputStream(file);
+//          Log.e(TAG, "w: " + finalBitmap.getWidth() + " h: " + finalBitmap.getHeight());
+//          finalBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+//        } catch (Exception e) {
+//          e.printStackTrace();
+//        } finally {
+//          try {
+//            if (out != null) {
+//              out.close();
+//            }
+//          } catch (IOException e) {
+//            Log.e(TAG, "Cannot save bitmap");
+//          }
+//        }
+//      }
+//    }
 
     return createFrame(finalBitmap, delayMillis);
   }
@@ -266,7 +307,7 @@ public abstract class MediaCreator {
     protected MediaFrame doInBackground(Void... params) {
       Matrix transformationMatrix = new Matrix();
       transformationMatrix.postScale(mScale, mScale, mDx, mDy);
-      return getFrame(transformationMatrix, mFilters, mDelayMillis, mTextToRender);
+      return getFrame(transformationMatrix, mFilters, mDelayMillis, mTextToRender, mFrameIndex);
 
     }
 
@@ -275,7 +316,7 @@ public abstract class MediaCreator {
       mAllFrames.get(mStepIndex).set(mFrameIndex, frame);
       if (mTotalNumFramesToAdd.decrementAndGet() == 0) {
         Log.wtf(TAG, "Finished collecting frames " + (System.currentTimeMillis() - mStart) + "ms");
-        MediaEncoder mediaEncoder = createEncoder();
+        E mediaEncoder = createEncoder();
         mediaEncoder.addFrames(Iterables.concat(mAllFrames));
         mediaEncoder.encodeAsync(mCallback);
       }

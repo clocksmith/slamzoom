@@ -22,8 +22,8 @@ public class CrashPackProvider {
     packModels.add(EffectTemplate.newBuilder()
         .withName("crash")
         .addEffectStep(EffectStep.newBuilder()
-            .withStartPauseSeconds(0.3f)
-            .withDurationSeconds(0.7f)
+            .withStartPauseSeconds(0.75f)
+            .withDurationSeconds(0.75f)
             .withScaleAndTranslateInterpolatorProvider(new CrashInterpolatorProvider())
             .build())
         .build());

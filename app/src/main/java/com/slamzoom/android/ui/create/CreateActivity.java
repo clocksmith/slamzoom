@@ -160,6 +160,8 @@ public class CreateActivity extends AppCompatActivity {
         GifService.getInstance().setHotspot(mSelectedHotspot);
         mSelectedGifBytes = null;
         mGifImageView.setImageBitmap(null);
+        mProgressBar.setProgress(0);
+        mProgressBar.setVisibility(View.VISIBLE);
       } else {
         if (mSelectedHotspot == null) {
           finish();
@@ -271,9 +273,10 @@ public class CreateActivity extends AppCompatActivity {
 
   private void shareCurrentGif() {
     if (ContextCompat.checkSelfPermission(
-        this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-
-      ActivityCompat.requestPermissions(this,
+        this,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+      ActivityCompat.requestPermissions
+          (this,
           new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
           0);
     }
@@ -285,9 +288,14 @@ public class CreateActivity extends AppCompatActivity {
     File gifFile = new File(direct, gifFilename);
 
     if (!gifFile.getParentFile().isDirectory()) {
+      Log.e(TAG, "No directory exitsts: " + gifFile.getParentFile());
       if (!gifFile.getParentFile().mkdirs()) {
         Log.e(TAG, "Cannot make directory: " + gifFile.getParentFile());
+      } {
+        Log.d(TAG, direct + " successfully created." );
       }
+    } else {
+      Log.d(TAG, direct + " already exists." );
     }
 
     if (mSelectedGifBytes != null) {

@@ -1,5 +1,6 @@
 package com.slamzoom.android.ui.create.effectchooser;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -33,9 +34,12 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
   @Bind(R.id.gifImageView) GifImageView mGifImageView;
   @Bind(R.id.progressBar) ProgressBar mProgressBar;
 
+  private Context mContext;
+
   public EffectThumbnailViewHolder(View itemView) {
     super(itemView);
     ButterKnife.bind(this, itemView);
+    mContext = itemView.getContext();
   }
 
   public void bind(final EffectModel model) {
@@ -56,9 +60,15 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
         Log.e(TAG, "Could not set gif", e);
       }
     } else {
-      Log.e(TAG, "gif bytes are null");
-      mProgressBar.setVisibility(View.VISIBLE);
-      mGifImageView.setImageBitmap(null);
+//      mProgressBar.setVisibility(View.VISIBLE);
+//      mGifImageView.setImageBitmap(null);
+      String effectName = model.getEffectTemplate().getName();
+      try {
+        mGifImageView.setImageDrawable(
+              new GifDrawable(mContext.getAssets(), "slamzoom_preview_" + effectName + ".gif"));
+      } catch (IOException e) {
+        Log.e(TAG, "Could not open gif from assets");
+      }
     }
   }
 }

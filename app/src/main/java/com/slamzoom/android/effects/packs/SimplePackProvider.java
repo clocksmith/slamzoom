@@ -21,7 +21,7 @@ public class SimplePackProvider {
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
-        .withName("simple x4")
+        .withName("simple4x")
         .addEffectStep(EffectStep.newBuilder()
             .withEndPauseSeconds(1)
             .withScaleInterpolator(new IdentityInterpolator())
@@ -29,7 +29,7 @@ public class SimplePackProvider {
         .withNumTilesInRow(2)
         .build());
     packModels.add(EffectTemplate.newBuilder()
-        .withName("simple x9")
+        .withName("simple9x")
         .addEffectStep(EffectStep.newBuilder()
             .withEndPauseSeconds(1)
             .withScaleInterpolator(new IdentityInterpolator())
@@ -37,7 +37,7 @@ public class SimplePackProvider {
         .withNumTilesInRow(3)
         .build());
     packModels.add(EffectTemplate.newBuilder()
-        .withName("simple x16")
+        .withName("simple16x")
         .addEffectStep(EffectStep.newBuilder()
             .withEndPauseSeconds(1)
             .withScaleInterpolator(new IdentityInterpolator())
@@ -45,7 +45,7 @@ public class SimplePackProvider {
         .withNumTilesInRow(4)
         .build());
     packModels.add(EffectTemplate.newBuilder()
-        .withName("simple x25")
+        .withName("simple25x")
         .addEffectStep(EffectStep.newBuilder()
             .withEndPauseSeconds(1)
             .withScaleInterpolator(new IdentityInterpolator())

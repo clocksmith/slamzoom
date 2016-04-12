@@ -1,5 +1,7 @@
 package com.slamzoom.android.mediacreation;
 
+import android.app.Activity;
+
 /**
  * Created by clocksmith on 3/25/16.
  */

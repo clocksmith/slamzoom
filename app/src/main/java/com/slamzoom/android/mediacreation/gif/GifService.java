@@ -1,8 +1,11 @@
 package com.slamzoom.android.mediacreation.gif;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 
 import com.google.common.base.Predicate;
@@ -19,6 +22,8 @@ import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 import com.squareup.otto.Subscribe;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Deque;
 import java.util.Iterator;
@@ -141,34 +146,62 @@ public class GifService {
       mGifCache.invalidateAll();
       mGifPreviewCache.invalidateAll();
       mCreateGifQueue.clear();
-      for (final EffectModel effectModel : mEffectModels) {
-        final long start = System.currentTimeMillis();
-        final String effectName = effectModel.getEffectTemplate().getName();
-        mCreateGifQueue.addLast(new Runnable() {
-          @Override
-          public void run() {
-            mIsCreatingGif = true;
-            new GifCreator(
-                mContext,
-                mSelectedBitmap,
-                effectModel,
-                Constants.DEFAULT_GIF_PREVIEW_SIZE_PX,
-                false,
-                new GifCreator.CreateGifCallback() {
-                  @Override
-                  public void onCreateGif(byte[] gifBytes) {
-                    mIsCreatingGif = false;
-                    if (gifBytes != null) {
-                      Log.wtf(TAG, "gif preview took " + (System.currentTimeMillis() - start) + "ms to make");
-                      mGifPreviewCache.put(effectModel, gifBytes);
-                      fireGifPreviewReadyEvent(effectModel);
-                    }
-                    resumeQueue();
-                  }
-                }).createAsync();
-          }
-        });
-      }
+      updateGifIfPossible(mEffectModels.get(0).getEffectTemplate().getName());
+//
+//      for (final EffectModel effectModel : mEffectModels) {
+//        final long start = System.currentTimeMillis();
+//        final String effectName = effectModel.getEffectTemplate().getName();
+//        mCreateGifQueue.addLast(new Runnable() {
+//          @Override
+//          public void run() {
+//            mIsCreatingGif = true;
+//            new GifCreator(
+//                mContext,
+//                mSelectedBitmap,
+//                effectModel,
+//                Constants.DEFAULT_GIF_PREVIEW_SIZE_PX,
+//                false,
+//                new GifCreator.CreateGifCallback() {
+//                  @Override
+//                  public void onCreateGif(byte[] gifBytes) {
+//                    mIsCreatingGif = false;
+//                    if (gifBytes != null) {
+//                      Log.wtf(TAG, "gif preview took " + (System.currentTimeMillis() - start) + "ms to make");
+//                      mGifPreviewCache.put(effectModel, gifBytes);
+//                      fireGifPreviewReadyEvent(effectModel);
+//
+//                      // TODO(clocksmith): uncomment this to generate preview
+//                      File direct = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "/SlamZoom");
+//
+//                      String gifFilename = "slamzoom_preview_" + effectName + ".gif";
+//                      File gifFile = new File(direct, gifFilename);
+//
+//                      if (!gifFile.getParentFile().isDirectory()) {
+//                        Log.e(TAG, "No directory exitsts: " + gifFile.getParentFile());
+//                        if (!gifFile.getParentFile().mkdirs()) {
+//                          Log.e(TAG, "Cannot make directory: " + gifFile.getParentFile());
+//                        } {
+//                          Log.d(TAG, direct + " successfully created." );
+//                        }
+//                      } else {
+//                        Log.d(TAG, direct + " already exists." );
+//                      }
+//
+//                      try {
+//                        // TODO(clocksmith): make sure external apps can't destory this (read only)
+//                        FileOutputStream gifOutputStream = new FileOutputStream(gifFile);
+//                        gifOutputStream.write(gifBytes);
+//                        gifOutputStream.close();
+//                      } catch (IOException e) {
+//                        Log.e(TAG, "cannot share gif", e);
+//                      }
+//                    }
+//                    resumeQueue();
+//                  }
+//                }).createAsync();
+//          }
+//        });
+//      }
       resumeQueue();
     }
   }

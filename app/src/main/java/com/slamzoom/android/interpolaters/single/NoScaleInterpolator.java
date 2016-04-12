@@ -7,6 +7,6 @@ import com.slamzoom.android.interpolaters.base.ConstantInterpolator;
  */
 public class NoScaleInterpolator extends ConstantInterpolator {
   public NoScaleInterpolator() {
-    super(1);
+    super(0);
   }
 }
