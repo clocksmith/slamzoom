@@ -28,9 +28,6 @@ import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.interpolaters.base.Interpolator;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -54,7 +51,6 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   protected Context mContext;
   protected Bitmap mSelectedBitmap;
   protected EffectModel mEffectModel;
-  protected boolean mIsFinalGif;
   protected CreateMediaCallback mCallback;
   protected int mNumTilesInRow;
 
@@ -63,12 +59,10 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       Bitmap selectedBitmap,
       EffectModel effectModel,
       int gifSize,
-      boolean isFinalGif,
       CreateMediaCallback callback) {
     mContext = context;
     mSelectedBitmap = selectedBitmap;
     mEffectModel = effectModel;
-    mIsFinalGif = isFinalGif;
     mCallback = callback;
     mNumTilesInRow = mEffectModel.getEffectTemplate().getNumTilesInRow();
 
@@ -215,8 +209,9 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       Interpolator xInterpolator = step.getXInterpolator();
       Interpolator yInterpolator = step.getYInterpolator();
 
-      float pivotX = endRect.left + endRect.left * endRect.width() / (startRect.width() - endRect.width());
-      float pivotY = endRect.top + endRect.top * endRect.height() / (startRect.height() - endRect.height());
+      // TODO(clocksmith): This works but we need to double check for edge cases and off by 1s.
+      float pivotX = endRect.left + endRect.left * endRect.width() / (startRect.width() - endRect.width() + 1);
+      float pivotY = endRect.top + endRect.top * endRect.height() / (startRect.height() - endRect.height() + 1);
 
       float startScale = 1;
       final float endScale = (float) startRect.height() / endRect.height();

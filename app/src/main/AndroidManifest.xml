@@ -27,5 +27,7 @@
     <activity
         android:name=".ui.cropper.CropperActivity"
         android:screenOrientation="portrait"/>
+
+    <service android:name=".mediacreation.gif.GifService" />
   </application>
 </manifest>

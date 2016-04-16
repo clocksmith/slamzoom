@@ -44,12 +44,4 @@ public class EffectChooser extends LinearLayout {
     mAdapter = new EffectThumbnailRecyclerViewAdapter(effectModels);
     mRecyclerView.setAdapter(mAdapter);
   }
-
-  public void setGifPreview(String effectName, byte[] gifBytes) {
-    mAdapter.setGifPreview(effectName, gifBytes);
-  }
-
-  public void clearGifsAndShowSpinners() {
-    mAdapter.clearGifsAndShowSpinners();
-  }
 }

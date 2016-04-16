@@ -6,11 +6,10 @@ import com.slamzoom.android.effects.EffectTemplate;
 /**
  * Created by clocksmith on 3/25/16.
  *
- * TODO(clocksmith): Add instance specific config stuff
+ * TODO(clocksmith): Add instance specific config stuff. Right now its just a useless wrapper.
  */
 public class EffectModel {
   private EffectTemplate mEffectTemplate;
-  private byte[] mGifPreviewBytes;
 
   public EffectModel(EffectTemplate effectTemplate) {
     mEffectTemplate = effectTemplate;
@@ -18,14 +17,6 @@ public class EffectModel {
 
   public EffectTemplate getEffectTemplate() {
     return mEffectTemplate;
-  }
-
-  public byte[] getGifPreviewBytes() {
-    return mGifPreviewBytes;
-  }
-
-  public void setGifPreviewBytes(byte[] gifPreviewBytes) {
-    mGifPreviewBytes = gifPreviewBytes;
   }
 
   @Override

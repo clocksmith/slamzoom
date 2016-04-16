@@ -1,12 +1,16 @@
   package com.slamzoom.android.ui.create;
 
 import android.Manifest;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -20,28 +24,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
+import com.slamzoom.android.effects.EffectModelProvider;
 import com.slamzoom.android.global.BackInterceptingEditText;
 import com.slamzoom.android.global.utils.BitmapUtils;
 import com.slamzoom.android.global.singletons.BusProvider;
 import com.slamzoom.android.global.Constants;
 import com.slamzoom.android.R;
 import com.slamzoom.android.global.utils.KeyboardUtils;
+import com.slamzoom.android.mediacreation.gif.GifConfig;
+import com.slamzoom.android.mediacreation.gif.GifService;
 import com.slamzoom.android.ui.cropper.CropperActivity;
 import com.slamzoom.android.ui.create.effectchooser.EffectChooser;
-import com.slamzoom.android.effects.EffectTemplate;
-import com.slamzoom.android.effects.EffectTemplateProvider;
-import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 import com.slamzoom.android.ui.create.effectchooser.EffectThumbnailViewHolder;
-import com.slamzoom.android.mediacreation.gif.GifService;
 import com.squareup.otto.Subscribe;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -57,13 +57,19 @@ public class CreateActivity extends AppCompatActivity {
   @Bind(R.id.effectChooser) EffectChooser mEffectChooser;
   private AddTextView mAddTextView;
 
-  private String mSelectedEffectName;
-  private byte[] mSelectedGifBytes;
-  private Bitmap mSelectedBitmap;
-  private Uri mSelectedUri;
-  private Rect mSelectedHotspot;
-
   private boolean mIsAddTextViewShowing = false;
+
+  private Rect mSelectedHotspot;
+  private Bitmap mSelectedBitmap;
+  private String mSelectedEffectName;
+  private String mSelectedEndText;
+
+  private Uri mSelectedUri;
+  private byte[] mSelectedGifBytes;
+
+  private GifService mGifService;
+  private GifServiceConnection mConnection;
+  private boolean mBound = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +77,7 @@ public class CreateActivity extends AppCompatActivity {
     setContentView(R.layout.activity_create);
     ButterKnife.bind(this);
     BusProvider.getInstance().register(this);
-    GifService.getInstance().setContext(this);
+    mConnection = new GifServiceConnection();
 
     setSupportActionBar(mActionBar);
     assert getSupportActionBar() != null;
@@ -80,9 +86,27 @@ public class CreateActivity extends AppCompatActivity {
     getSupportActionBar().setCustomView(mAddTextView,
         new Toolbar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-    setEffectModels();
+    mEffectChooser.setEffectModels(EffectModelProvider.getEffectModels());
+    mSelectedEffectName = EffectModelProvider.getEffectModels().get(0).getEffectTemplate().getName();
+  }
 
-    launchImageChooser();
+  @Override
+  public void onStart() {
+    super.onStart();
+    bindService(new Intent(this, GifService.class), mConnection, Context.BIND_AUTO_CREATE);
+
+    if (mSelectedBitmap == null) {
+      launchImageChooser();
+    }
+  }
+
+  @Override
+  public void onStop() {
+    super.onStop();
+    if (mBound) {
+      unbindService(mConnection);
+      mBound = false;
+    }
   }
 
   @Override
@@ -91,7 +115,6 @@ public class CreateActivity extends AppCompatActivity {
     inflater.inflate(R.menu.menu_create, menu);
     return super.onCreateOptionsMenu(menu);
   }
-
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
@@ -109,7 +132,6 @@ public class CreateActivity extends AppCompatActivity {
         launchImageChooser();
         return true;
       case R.id.action_ok:
-        // TODO(clocksmith): something.
         handleAddTextConfirmed();
         return true;
       case R.id.action_share:
@@ -150,18 +172,13 @@ public class CreateActivity extends AppCompatActivity {
       }
     } else if (requestCode == Constants.REQUEST_CROP_IMAGE) {
       if (resultCode == RESULT_OK) {
-        // TODO(clocksmith): move this
-        if (mSelectedBitmap != null) {
-          mEffectChooser.clearGifsAndShowSpinners();
-        }
-
         mSelectedHotspot = data.getParcelableExtra(Constants.CROP_RECT);
-        setEffectModels();
-        GifService.getInstance().setHotspot(mSelectedHotspot);
+        mSelectedEndText = null;
         mSelectedGifBytes = null;
         mGifImageView.setImageBitmap(null);
         mProgressBar.setProgress(0);
         mProgressBar.setVisibility(View.VISIBLE);
+        updateGif();
       } else {
         if (mSelectedHotspot == null) {
           finish();
@@ -185,12 +202,7 @@ public class CreateActivity extends AppCompatActivity {
     mProgressBar.setProgress(0);
     mProgressBar.setVisibility(View.VISIBLE);
     mGifImageView.setImageBitmap(null);
-    GifService.getInstance().updateGifIfPossible(event.effectName);
-  }
-
-  @Subscribe
-  public void on(GifService.GifPreviewReadyEvent event) {
-    mEffectChooser.setGifPreview(event.effectName, event.gifBytes);
+    updateGif();
   }
 
   @Subscribe
@@ -214,6 +226,15 @@ public class CreateActivity extends AppCompatActivity {
     handleUpOrBackPressed();
   }
 
+  private void updateGif() {
+    mGifService.update(GifConfig.newBuilder()
+        .withHotspot(mSelectedHotspot)
+        .withBitmap(mSelectedBitmap)
+        .withEffectModel(EffectModelProvider.getEffectModel(mSelectedEffectName))
+        .withEndText(mSelectedEndText)
+        .build());
+  }
+
   private void launchImageChooser() {
     Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
     intent.setType("image/*");
@@ -221,22 +242,9 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   private void launchHotspotChooser() {
-    GifService.getInstance().setSelectedBitmap(mSelectedBitmap);
     Intent intent = new Intent(CreateActivity.this, CropperActivity.class);
     intent.putExtra(Constants.IMAGE_URI, mSelectedUri);
     startActivityForResult(intent, Constants.REQUEST_CROP_IMAGE);
-  }
-  private void setEffectModels() {
-    List<EffectModel> models = Lists.newArrayList(Lists.transform(EffectTemplateProvider.getTemplates(),
-        new Function<EffectTemplate, EffectModel>() {
-          @Override
-          public EffectModel apply(EffectTemplate input) {
-            return new EffectModel(input);
-          }
-        }));
-    GifService.getInstance().setEffectModels(models);
-    mEffectChooser.setEffectModels(models);
-    mSelectedEffectName = models.get(0).getEffectTemplate().getName();
   }
 
   private void handleUpOrBackPressed() {
@@ -245,18 +253,18 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   private void handleAddTextPressed() {
-    mAddTextView.getEditText().setText("");
+    mAddTextView.getEditText().setText(mSelectedEndText == null ? "" : mSelectedEndText);
     mAddTextView.getEditText().requestFocus();
     KeyboardUtils.showKeyboard(this);
     showAddTextView(true);
   }
 
   private void handleAddTextConfirmed() {
-    if (mSelectedBitmap != null) {
-      mEffectChooser.clearGifsAndShowSpinners();
-    }
-
-    GifService.getInstance().setEndText(mAddTextView.getEditText().getText().toString());
+    mSelectedEndText = mAddTextView.getEditText().getText().toString();
+    mProgressBar.setProgress(0);
+    mProgressBar.setVisibility(View.VISIBLE);
+    mGifImageView.setImageBitmap(null);
+    updateGif();
     KeyboardUtils.hideKeyboard(this);
     showAddTextView(false);
   }
@@ -312,6 +320,20 @@ public class CreateActivity extends AppCompatActivity {
       } catch (IOException e) {
         Log.e(TAG, "cannot share gif", e);
       }
+    }
+  }
+
+  private class GifServiceConnection implements ServiceConnection {
+    @Override
+    public void onServiceConnected(ComponentName className, IBinder iBinder) {
+      GifService.GifServiceBinder binder = (GifService.GifServiceBinder) iBinder;
+      mGifService = binder.getService();
+      mBound = true;
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName arg0) {
+      mBound = false;
     }
   }
 }

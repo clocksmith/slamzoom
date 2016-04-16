@@ -52,23 +52,13 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
       }
     });
 
-    if (model.getGifPreviewBytes() != null) {
-      mProgressBar.setVisibility(View.GONE);
-      try {
-        mGifImageView.setImageDrawable(new GifDrawable(model.getGifPreviewBytes()));
-      } catch (IOException e) {
-        Log.e(TAG, "Could not set gif", e);
-      }
-    } else {
-//      mProgressBar.setVisibility(View.VISIBLE);
-//      mGifImageView.setImageBitmap(null);
-      String effectName = model.getEffectTemplate().getName();
-      try {
-        mGifImageView.setImageDrawable(
-              new GifDrawable(mContext.getAssets(), "slamzoom_preview_" + effectName + ".gif"));
-      } catch (IOException e) {
-        Log.e(TAG, "Could not open gif from assets");
-      }
+    String effectName = model.getEffectTemplate().getName();
+    try {
+      mGifImageView.setImageDrawable(
+          new GifDrawable(mContext.getAssets(), "slamzoom_preview_" + effectName + ".gif"));
+    } catch (IOException e) {
+      Log.e(TAG, "Could not open gif from assets");
     }
   }
 }
+

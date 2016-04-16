@@ -35,21 +35,4 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
   public int getItemCount() {
     return mModels.size();
   }
-
-  public void setGifPreview(String effectName, byte[] gifBytes) {
-    for (int position = 0; position < mModels.size(); position++) {
-      if (mModels.get(position).getEffectTemplate().getName().equals(effectName)) {
-        mModels.get(position).setGifPreviewBytes(gifBytes);
-        notifyItemChanged(position);
-        break;
-      }
-    }
-  }
-
-  public void clearGifsAndShowSpinners() {
-    for (EffectModel model : mModels) {
-      model.setGifPreviewBytes(null);
-    }
-    notifyItemRangeChanged(0, getItemCount());
-  }
 }

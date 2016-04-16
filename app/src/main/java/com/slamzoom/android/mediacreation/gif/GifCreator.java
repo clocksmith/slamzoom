@@ -3,6 +3,8 @@ package com.slamzoom.android.mediacreation.gif;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import com.google.common.base.Strings;
+import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.global.singletons.BusProvider;
 import com.slamzoom.android.mediacreation.CreateMediaCallback;
 import com.slamzoom.android.mediacreation.MediaCreator;
@@ -32,33 +34,33 @@ public class GifCreator extends MediaCreator implements GifEncoder.ProgressUpdat
     }
   }
 
-  public GifCreator(
-      Context context,
-      Bitmap selectedBitmap,
-      EffectModel effectModel,
-      int gifSize,
-      boolean isFinalGif,
-      CreateGifCallback callback) {
-    super(context, selectedBitmap, effectModel, gifSize, isFinalGif, callback);
+  public GifCreator(Context context, GifConfig gifConfig, int gifSize, CreateGifCallback callback) {
+    super(context, gifConfig.bitmap, getAdjustedEffectModel(gifConfig), gifSize, callback);
+  }
+
+  private static EffectModel getAdjustedEffectModel(GifConfig gifConfig) {
+    // This is weird. Not yet sure how else to do this.
+    EffectModel effectModel = gifConfig.effectModel;
+    for (EffectStep step :  effectModel.getEffectTemplate().getEffectSteps()) {
+      step.setHotspot(gifConfig.hotspot);
+      if (!Strings.isNullOrEmpty(gifConfig.endText)) {
+        step.setEndText(gifConfig.endText);
+      }
+    }
+    return effectModel;
   }
 
   @Override
   public GifFrame createFrame(Bitmap bitmap, int delayMillis) {
     GifFrame frame =  new GifFrame(bitmap, delayMillis);
-
-    if (mIsFinalGif) {
-      BusProvider.getInstance().post(new ProgressUpdateEvent(mEffectModel, 1.0 / 3 / mTotalNumFrames));
-    }
-
+    BusProvider.getInstance().post(new ProgressUpdateEvent(mEffectModel, 1.0 / 3 / mTotalNumFrames));
     return frame;
   }
 
   @Override
   public GifEncoder createEncoder() {
     GifEncoder gifEncoder = new GifEncoder();
-    if (mIsFinalGif) {
-      gifEncoder.setProgressUpdateListener(this);
-    }
+    gifEncoder.setProgressUpdateListener(this);
     return gifEncoder;
   }
 }
