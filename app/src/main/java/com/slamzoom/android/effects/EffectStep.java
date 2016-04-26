@@ -5,13 +5,14 @@ import android.util.Log;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
+import com.slamzoom.android.effects.interpolation.filter.base.FilterInterpolator;
 import com.slamzoom.android.global.Constants;
-import com.slamzoom.android.interpolaters.base.Interpolator;
-import com.slamzoom.android.interpolaters.combo.ScaleAndTranslateInterpolatorProvider;
-import com.slamzoom.android.interpolaters.filter.FilterInterpolator;
-import com.slamzoom.android.interpolaters.single.NoScaleInterpolator;
-import com.slamzoom.android.interpolaters.combo.TranslateInterpolatorProvider;
-import com.slamzoom.android.interpolaters.combo.translate.NoTranslateInterpolatorProvider;
+import com.slamzoom.android.interpolators.base.Interpolator;
+import com.slamzoom.android.effects.interpolation.transform.base.ScaleAndTranslateInterpolatorProvider;
+import com.slamzoom.android.interpolators.base.InterpolatorHolder;
+import com.slamzoom.android.interpolators.effect.NoScaleInterpolator;
+import com.slamzoom.android.effects.interpolation.transform.base.TranslateInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.translate.NoTranslateInterpolatorProvider;
 
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class EffectStep {
   private Interpolator mScaleInterpolator;
   private Interpolator mXInterpolator;
   private Interpolator mYInterpolator;
-  private List<FilterInterpolator> mFilternterpolators;
+  private List<FilterInterpolator> mFilterInterpolators;
   private float mDurationSeconds;
   private float mStartPauseSeconds;
   private float mEndPauseSeconds;
@@ -47,7 +48,7 @@ public class EffectStep {
     mScaleInterpolator = scaleInterpolator;
     mXInterpolator = xInterpolator;
     mYInterpolator = yInterpolator;
-    mFilternterpolators = filterInterpolators;
+    mFilterInterpolators = filterInterpolators;
     mDurationSeconds = durationSeconds;
     mStartPauseSeconds = startPauseSeconds;
     mEndPauseSeconds = endPauseSeconds;
@@ -82,7 +83,7 @@ public class EffectStep {
   }
 
   public List<FilterInterpolator> getFilterInterpolators() {
-    return mFilternterpolators;
+    return mFilterInterpolators;
   }
 
   public float getDurationSeconds() {

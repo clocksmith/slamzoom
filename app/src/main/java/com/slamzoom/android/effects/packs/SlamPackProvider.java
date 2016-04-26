@@ -3,17 +3,15 @@ package com.slamzoom.android.effects.packs;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.EffectStep;
-import com.slamzoom.android.interpolaters.base.spline.LinearSplineInterpolator;
-import com.slamzoom.android.interpolaters.base.spline.PointListBuilder;
-import com.slamzoom.android.interpolaters.filter.GuassianUnblurFilterInterpolator;
-import com.slamzoom.android.interpolaters.filter.UnsaturateFilterInterpolator;
-import com.slamzoom.android.interpolaters.filter.ZoomBlurFilterInterpolator;
-import com.slamzoom.android.interpolaters.single.SlamHardInAndOutInterpolator;
-import com.slamzoom.android.interpolaters.single.SlamHardInterpolator;
-import com.slamzoom.android.interpolaters.single.SlamHardNoPauseInterpolator;
-import com.slamzoom.android.interpolaters.single.SlamHardOutNoPauseInterpolator;
-import com.slamzoom.android.interpolaters.single.SlamSoftOutInterpolator;
-import com.slamzoom.android.interpolaters.single.SlamSoftOutNoPauseInterpolator;
+import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
+import com.slamzoom.android.interpolators.spline.PointListBuilder;
+import com.slamzoom.android.effects.interpolation.filter.single.GuassianUnblurFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.UnsaturateFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.ZoomBlurFilterInterpolator;
+import com.slamzoom.android.interpolators.effect.SlamHardInAndOutInterpolator;
+import com.slamzoom.android.interpolators.effect.SlamHardInterpolator;
+import com.slamzoom.android.interpolators.effect.SlamHardNoPauseInterpolator;
+import com.slamzoom.android.interpolators.effect.SlamSoftOutNoPauseInterpolator;
 
 import java.util.List;
 

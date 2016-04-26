@@ -3,11 +3,8 @@ package com.slamzoom.android.effects.packs;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.effects.EffectTemplate;
-import com.slamzoom.android.interpolaters.base.Interpolator;
-import com.slamzoom.android.interpolaters.base.spline.CubicSplineInterpolator;
-import com.slamzoom.android.interpolaters.base.spline.PointListBuilder;
-import com.slamzoom.android.interpolaters.filter.ExposureFilterInterpolator;
-import com.slamzoom.android.interpolaters.filter.UnsaturateFilterInterpolator;
+import com.slamzoom.android.interpolators.base.Interpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.ExposureFilterInterpolator;
 
 import java.util.List;
 

@@ -3,8 +3,8 @@ package com.slamzoom.android.effects.packs;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.effects.EffectTemplate;
-import com.slamzoom.android.interpolaters.filter.BulgeFilterInterpolator;
-import com.slamzoom.android.interpolaters.single.IdentityInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.BulgeFilterInterpolator;
+import com.slamzoom.android.interpolators.effect.IdentityInterpolator;
 
 import java.util.List;
 

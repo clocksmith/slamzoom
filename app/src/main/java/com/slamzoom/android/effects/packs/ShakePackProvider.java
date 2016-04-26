@@ -3,13 +3,13 @@ package com.slamzoom.android.effects.packs;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.EffectStep;
-import com.slamzoom.android.interpolaters.combo.translate.MegaShakeInterpolatorProvider;
-import com.slamzoom.android.interpolaters.combo.translate.ShakeInterpolatorProvider;
-import com.slamzoom.android.interpolaters.combo.translate.SuperShakeInterpolatorProvider;
-import com.slamzoom.android.interpolaters.filter.GuassianUnblurFilterInterpolator;
-import com.slamzoom.android.interpolaters.single.HalfInAndOutInterpolator;
-import com.slamzoom.android.interpolaters.single.IdentityInterpolator;
-import com.slamzoom.android.interpolaters.single.SlamHardInterpolator;
+import com.slamzoom.android.effects.interpolation.transform.translate.MegaShakeInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.translate.ShakeInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.translate.SuperShakeInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.filter.single.GuassianUnblurFilterInterpolator;
+import com.slamzoom.android.interpolators.effect.HalfInAndOutInterpolator;
+import com.slamzoom.android.interpolators.effect.IdentityInterpolator;
+import com.slamzoom.android.interpolators.effect.SlamHardInterpolator;
 
 import java.util.List;
 

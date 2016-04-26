@@ -1,6 +1,5 @@
 package com.slamzoom.android.mediacreation;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -11,29 +10,28 @@ import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.util.Log;
 
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.slamzoom.android.effects.interpolation.filter.base.AdjustedFilterInterpolator;
 import com.slamzoom.android.global.Constants;
 import com.slamzoom.android.global.singletons.ExecutorProvider;
 import com.slamzoom.android.global.utils.PostProcessorUtils;
-import com.slamzoom.android.interpolaters.filter.FilterInterpolator;
-import com.slamzoom.android.interpolaters.filter.GPUImageZoomBlurFilter;
+import com.slamzoom.android.interpolators.base.InterpolatorHolder;
 import com.slamzoom.android.effects.EffectStep;
-import com.slamzoom.android.interpolaters.base.Interpolator;
+import com.slamzoom.android.interpolators.base.Interpolator;
+import com.slamzoom.android.effects.interpolation.filter.base.RegularFilterInterpolator;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import jp.co.cyberagent.android.gpuimage.GPUImageBulgeDistortionFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
-import jp.co.cyberagent.android.gpuimage.GPUImageSwirlFilter;
 
 /**
  * Created by clocksmith on 3/18/16.
@@ -213,7 +211,14 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       float pivotX = endRect.left + endRect.left * endRect.width() / (startRect.width() - endRect.width() + 1);
       float pivotY = endRect.top + endRect.top * endRect.height() / (startRect.height() - endRect.height() + 1);
 
-      float startScale = 1;
+      // TODO(clocksmith): How iss this related to pivotX and pivotY?
+//      final RectF relativeHotspot = new RectF(
+//          (float) endRect.left / startRect.width(),
+//          (float) endRect.top / startRect.height(),
+//          (float) endRect.right / startRect.width(),
+//          (float) endRect.bottom / startRect.height());
+
+      final float startScale = 1;
       final float endScale = (float) startRect.height() / endRect.height();
       scaleInterpolator.setDomain(startScale, endScale);
 
@@ -224,24 +229,33 @@ public abstract class MediaCreator<E extends MediaEncoder> {
         final float dx = pivotX + xInterpolator.getInterpolation(percent) * startRect.width() / scale;
         final float dy = pivotY + yInterpolator.getInterpolation(percent) * startRect.width() / scale;
 
+        // TODO(clocksmith): extract this.
         List<GPUImageFilter> filters = Lists.transform(step.getFilterInterpolators(),
-            new Function<FilterInterpolator, GPUImageFilter>() {
+            new Function<InterpolatorHolder, GPUImageFilter>() {
               @Override
-              public GPUImageFilter apply(FilterInterpolator filterInterpolator) {
-                GPUImageFilter filter = filterInterpolator.getInterpolationFilter(percent);
-                float c1 = (scale - 1) / endScale;
-                float c2 = 1 - c1;
-                PointF effectCenter = new PointF(
-                    c1 * 0.5f + c2 * endRect.centerX() / mSelectedBitmap.getWidth(),
-                    c1 * 0.5f + c2 * endRect.centerY() / mSelectedBitmap.getHeight());
-                if (filter instanceof GPUImageZoomBlurFilter) {
-                  ((GPUImageZoomBlurFilter) filter).setBlurCenter(effectCenter);
-                }  else if (filter instanceof GPUImageSwirlFilter) {
-                  ((GPUImageSwirlFilter) filter).setCenter(effectCenter);
-                } else if (filter instanceof GPUImageBulgeDistortionFilter) {
-                  ((GPUImageBulgeDistortionFilter) filter).setCenter(effectCenter);
+              public GPUImageFilter apply(InterpolatorHolder filterInterpolator) {
+                if (filterInterpolator instanceof RegularFilterInterpolator) {
+                  return ((RegularFilterInterpolator) filterInterpolator).getInterpolationFilter(percent);
+                } else if (filterInterpolator instanceof AdjustedFilterInterpolator) {
+                  // TODO(clocksmith): These were calculated piecewise, but may be able to be calculated a simpler way.
+                  float c1 = (scale - 1) / endScale;
+                  float c2 = 1 - c1;
+                  PointF relativeFocus = new PointF(
+                      c1 * 0.5f + c2 * endRect.centerX() / mSelectedBitmap.getWidth(),
+                      c1 * 0.5f + c2 * endRect.centerY() / mSelectedBitmap.getHeight());
+                  // TODO(clocksmith): this isnt right
+                  RectF relativeHotspot = new RectF(
+                      (float) endRect.left / startRect.width(),
+                      (float) endRect.top / startRect.height(),
+                      (float) endRect.right / startRect.width(),
+                      (float) endRect.bottom / startRect.height());
+
+                  return ((AdjustedFilterInterpolator) filterInterpolator)
+                      .getInterpolationFilter(percent, relativeFocus, relativeHotspot);
+                } else {
+                  Log.e(TAG, "filterInterpolator does not implement any interface that gets filter.");
+                  return null;
                 }
-                return filter;
               }
             });
 

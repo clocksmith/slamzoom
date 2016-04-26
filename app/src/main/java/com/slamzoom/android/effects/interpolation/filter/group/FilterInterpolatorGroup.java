@@ -1,0 +1,12 @@
+package com.slamzoom.android.effects.interpolation.filter.group;
+
+import com.slamzoom.android.effects.interpolation.filter.base.FilterInterpolator;
+
+import java.util.List;
+
+/**
+ * Created by clocksmith on 4/22/16.
+ */
+public interface FilterInterpolatorGroup {
+  List<FilterInterpolator> getFilterInterpolators();
+}
