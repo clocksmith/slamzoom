@@ -35,7 +35,7 @@ public class CubicSplineInterpolator extends Interpolator {
   }
 
   @Override
-  protected float getValue(float input) {
-    return (float) mPolynomialSplineFunction.value(input);
+  protected float getValue(float percent) {
+    return (float) mPolynomialSplineFunction.value(percent);
   }
 }

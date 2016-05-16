@@ -3,6 +3,7 @@ package com.slamzoom.android.effects.packs;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.effects.EffectTemplate;
+import com.slamzoom.android.effects.interpolation.filter.group.BulgeEyesFilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.filter.single.BulgeFilterInterpolator;
 import com.slamzoom.android.interpolators.effect.IdentityInterpolator;
 
@@ -23,6 +24,16 @@ public class BulgePackProvider {
             .withEndPauseSeconds(1)
             .build())
         .build());
+
+//    packModels.add(EffectTemplate.newBuilder()
+//        .withName("eyescenter")
+//        .addEffectStep(EffectStep.newBuilder()
+//            .withDurationSeconds(2)
+//            .withScaleInterpolator(new IdentityInterpolator())
+//            .withFilterInterpolatorGroup(new BulgeEyesFilterInterpolatorGroup())
+//            .withEndPauseSeconds(1)
+//            .build())
+//        .build());
     return packModels;
   }
 }

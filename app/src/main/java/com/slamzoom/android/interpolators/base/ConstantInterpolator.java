@@ -11,7 +11,7 @@ public class ConstantInterpolator extends Interpolator {
   }
 
   @Override
-  protected float getValue(float input) {
+  protected float getValue(float percent) {
     return mConstant;
   }
 }

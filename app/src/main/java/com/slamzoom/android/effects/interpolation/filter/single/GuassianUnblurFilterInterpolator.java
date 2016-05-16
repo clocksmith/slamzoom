@@ -1,6 +1,8 @@
 package com.slamzoom.android.effects.interpolation.filter.single;
 
-import com.slamzoom.android.effects.interpolation.filter.base.RegularFilterInterpolator;
+import android.graphics.RectF;
+
+import com.slamzoom.android.effects.interpolation.filter.base.FilterInterpolator;
 import com.slamzoom.android.interpolators.base.Interpolator;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
@@ -9,7 +11,7 @@ import jp.co.cyberagent.android.gpuimage.GPUImageGaussianBlurFilter;
 /**
  * Created by clocksmith on 3/21/16.
  */
-public class GuassianUnblurFilterInterpolator extends RegularFilterInterpolator {
+public class GuassianUnblurFilterInterpolator extends FilterInterpolator {
   public GuassianUnblurFilterInterpolator() {
     super();
   }
@@ -19,7 +21,7 @@ public class GuassianUnblurFilterInterpolator extends RegularFilterInterpolator 
   }
 
   @Override
-  public GPUImageFilter getFilter(float interpolationValue) {
+  public GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot, float normalizedScale) {
     return new GPUImageGaussianBlurFilter(5 * (1 - interpolationValue));
   }
 }

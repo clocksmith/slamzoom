@@ -7,7 +7,7 @@ import com.slamzoom.android.interpolators.base.Interpolator;
  */
 public class SlamVerySoftOutInterpolator extends Interpolator {
   @Override
-  protected float getValue(float input) {
-    return (float) (1 - Math.pow(input, 5));
+  protected float getValue(float percent) {
+    return (float) (1 - Math.pow(percent, 5));
   }
 }

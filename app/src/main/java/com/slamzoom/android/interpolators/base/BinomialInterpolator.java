@@ -21,7 +21,7 @@ public class BinomialInterpolator extends Interpolator {
   }
 
   @Override
-  protected float getValue(float input) {
-    return (float) (c1 * Math.pow(input, e1) + c2 * Math.pow(input, e2));
+  protected float getValue(float percent) {
+    return (float) (c1 * Math.pow(percent, e1) + c2 * Math.pow(percent, e2));
   }
 }

@@ -5,6 +5,7 @@ import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.interpolators.base.Interpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.ExposureFilterInterpolator;
+import com.slamzoom.android.interpolators.effect.IdentityInterpolator;
 
 import java.util.List;
 
@@ -21,12 +22,12 @@ public class UncategorizedPackProvider {
             .withDurationSeconds(4f)
             .withScaleInterpolator(new Interpolator() {
               @Override
-              protected float getValue(float input) {
-                if (input < 0.1667) {
+              protected float getValue(float percent) {
+                if (percent < 0.1667) {
                   return 0;
-                } else if (input < 0.5) {
+                } else if (percent < 0.5) {
                   return 0.15f;
-                } else if (input < 0.8333) {
+                } else if (percent < 0.8333) {
                   return 0.50f;
                 } else {
                   return 1;
@@ -36,8 +37,8 @@ public class UncategorizedPackProvider {
             .withFilterInterpolator(new ExposureFilterInterpolator(
                 new Interpolator() {
                   @Override
-                  protected float getValue(float input) {
-                    return (float) Math.pow(Math.sin(3 * Math.PI * input), 10);
+                  protected float getValue(float percent) {
+                    return (float) Math.pow(Math.sin(3 * Math.PI * percent), 10);
                   }
                 }))
             .withEndPauseSeconds(1)

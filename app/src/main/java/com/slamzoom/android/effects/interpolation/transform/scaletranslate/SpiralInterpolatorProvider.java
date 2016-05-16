@@ -17,8 +17,8 @@ public class SpiralInterpolatorProvider implements ScaleAndTranslateInterpolator
   public Interpolator getXInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getValue(float input) {
-        float newInput = 1 - input;
+      protected float getValue(float percent) {
+        float newInput = 1 - percent;
         return (float) (newInput * Math.cos(18 * Math.PI * newInput));
       }
     };
@@ -28,8 +28,8 @@ public class SpiralInterpolatorProvider implements ScaleAndTranslateInterpolator
   public Interpolator getYInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getValue(float input) {
-        float newInput = 1 - input;
+      protected float getValue(float percent) {
+        float newInput = 1 - percent;
         return (float) (newInput * Math.sin(18 * Math.PI * newInput));
       }
     };

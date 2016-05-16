@@ -24,9 +24,9 @@ public class BaseShakeInterpolatorProvider implements TranslateInterpolatorProvi
   public Interpolator getXInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getValue(float input) {
-        return (float) (mIntensity * Math.sin(mFrequency * Math.PI * input) +
-            mIntensity * Math.cos(mShiftedFrequency * Math.PI * input));
+      protected float getValue(float percent) {
+        return (float) (mIntensity * Math.sin(mFrequency * Math.PI * percent) +
+            mIntensity * Math.cos(mShiftedFrequency * Math.PI * percent));
       }
     };
   }
@@ -35,9 +35,9 @@ public class BaseShakeInterpolatorProvider implements TranslateInterpolatorProvi
   public Interpolator getYInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getValue(float input) {
-        return (float) (mIntensity * Math.sin(mShiftedFrequency * Math.PI * input) +
-            mIntensity * Math.cos(mFrequency * Math.PI * input));
+      protected float getValue(float percent) {
+        return (float) (mIntensity * Math.sin(mShiftedFrequency * Math.PI * percent) +
+            mIntensity * Math.cos(mFrequency * Math.PI * percent));
       }
     };
   }

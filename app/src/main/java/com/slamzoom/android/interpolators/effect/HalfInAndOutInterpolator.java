@@ -7,11 +7,11 @@ import com.slamzoom.android.interpolators.base.Interpolator;
  */
 public class HalfInAndOutInterpolator extends Interpolator {
   @Override
-  protected float getValue(float input) {
-    if (input < 0.5) {
-      return input;
+  protected float getValue(float percent) {
+    if (percent < 0.5) {
+      return percent;
     } else {
-      return 1 - input;
+      return 1 - percent;
     }
   }
 }

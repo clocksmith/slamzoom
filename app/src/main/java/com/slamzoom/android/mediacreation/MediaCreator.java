@@ -18,14 +18,16 @@ import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.slamzoom.android.effects.interpolation.filter.base.AdjustedFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.base.FilterInterpolator;
 import com.slamzoom.android.global.Constants;
 import com.slamzoom.android.global.singletons.ExecutorProvider;
 import com.slamzoom.android.global.utils.PostProcessorUtils;
 import com.slamzoom.android.interpolators.base.InterpolatorHolder;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.interpolators.base.Interpolator;
-import com.slamzoom.android.effects.interpolation.filter.base.RegularFilterInterpolator;
+import com.slamzoom.android.interpolators.base.LinearInterpolator;
+import com.slamzoom.android.interpolators.effect.IdentityInterpolator;
+import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 
 import java.util.List;
@@ -134,7 +136,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       textCanvas.drawText(textToRender, finalBitmap.getWidth() / 2, finalBitmap.getHeight() / 2, textPaint);
     }
 
-    // TODO(clocksmith): debugging, remove this
+    // TODO(clocksmith): debugging, remove this when done
 //    if (finalBitmap.getWidth() == 320 || finalBitmap.getHeight() == 320) {
 //      File direct = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "/SlamZoom");
 //      File file = new File(direct, "test" + frameIndex + ".png");
@@ -197,6 +199,8 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       final EffectStep step = steps.get(stepIndex);
       String textToRender = null;
 
+      // Even though in the 1 step case, the startRect top left is 0, 0 and width and height is full selected bitmap,
+      // we want to make this future proof for multiple steps.
       final Rect startRect = previousStep == null ?
           new Rect(0, 0, mSelectedBitmap.getWidth(), mSelectedBitmap.getHeight()) :
           previousStep.getHotspot();
@@ -211,13 +215,6 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       float pivotX = endRect.left + endRect.left * endRect.width() / (startRect.width() - endRect.width() + 1);
       float pivotY = endRect.top + endRect.top * endRect.height() / (startRect.height() - endRect.height() + 1);
 
-      // TODO(clocksmith): How iss this related to pivotX and pivotY?
-//      final RectF relativeHotspot = new RectF(
-//          (float) endRect.left / startRect.width(),
-//          (float) endRect.top / startRect.height(),
-//          (float) endRect.right / startRect.width(),
-//          (float) endRect.bottom / startRect.height());
-
       final float startScale = 1;
       final float endScale = (float) startRect.height() / endRect.height();
       scaleInterpolator.setDomain(startScale, endScale);
@@ -226,36 +223,41 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       for (int frameIndex = 0; frameIndex < numFramesForChunk; frameIndex++) {
         final float percent = ((float) frameIndex / (numFramesForChunk - 1));
         final float scale = scaleInterpolator.getInterpolation(percent);
-        final float dx = pivotX + xInterpolator.getInterpolation(percent) * startRect.width() / scale;
-        final float dy = pivotY + yInterpolator.getInterpolation(percent) * startRect.width() / scale;
+        final float intermediateWidth = startRect.width() / scale;
+        final float intermediateHeight = startRect.height() / scale;
+        final float dx = pivotX + xInterpolator.getInterpolation(percent) * intermediateWidth;
+        final float dy = pivotY + yInterpolator.getInterpolation(percent) * intermediateHeight;
 
         // TODO(clocksmith): extract this.
         List<GPUImageFilter> filters = Lists.transform(step.getFilterInterpolators(),
-            new Function<InterpolatorHolder, GPUImageFilter>() {
+            new Function<FilterInterpolator, GPUImageFilter>() {
               @Override
-              public GPUImageFilter apply(InterpolatorHolder filterInterpolator) {
-                if (filterInterpolator instanceof RegularFilterInterpolator) {
-                  return ((RegularFilterInterpolator) filterInterpolator).getInterpolationFilter(percent);
-                } else if (filterInterpolator instanceof AdjustedFilterInterpolator) {
-                  // TODO(clocksmith): These were calculated piecewise, but may be able to be calculated a simpler way.
-                  float c1 = (scale - 1) / endScale;
-                  float c2 = 1 - c1;
-                  PointF relativeFocus = new PointF(
-                      c1 * 0.5f + c2 * endRect.centerX() / mSelectedBitmap.getWidth(),
-                      c1 * 0.5f + c2 * endRect.centerY() / mSelectedBitmap.getHeight());
-                  // TODO(clocksmith): this isnt right
-                  RectF relativeHotspot = new RectF(
-                      (float) endRect.left / startRect.width(),
-                      (float) endRect.top / startRect.height(),
-                      (float) endRect.right / startRect.width(),
-                      (float) endRect.bottom / startRect.height());
+              public GPUImageFilter apply(FilterInterpolator filterInterpolator) {
+                // 0 is original/start, 1 is end
+                float normalizedScale = scale == endScale ? startScale : startScale * (scale - 1) / (endScale - 1);
 
-                  return ((AdjustedFilterInterpolator) filterInterpolator)
-                      .getInterpolationFilter(percent, relativeFocus, relativeHotspot);
-                } else {
-                  Log.e(TAG, "filterInterpolator does not implement any interface that gets filter.");
-                  return null;
-                }
+                IdentityInterpolator leftInterpolator = new IdentityInterpolator();
+                leftInterpolator.setDomain(endRect.left, startRect.left);
+                IdentityInterpolator topInterpolator = new IdentityInterpolator();
+                topInterpolator.setDomain(endRect.top, startRect.top);
+                IdentityInterpolator rightInterpolator = new IdentityInterpolator();
+                rightInterpolator.setDomain(endRect.right, startRect.right);
+                IdentityInterpolator bottomInterpolator = new IdentityInterpolator();
+                bottomInterpolator.setDomain(endRect.bottom, startRect.bottom);
+
+                float endLeftFromIntermediateLeft = leftInterpolator.getInterpolation(normalizedScale);
+                float endTopFromIntermediateTop = topInterpolator.getInterpolation(normalizedScale);
+                float endRightFromIntermediateRight = rightInterpolator.getInterpolation(normalizedScale);
+                float endBottomFromIntermediateBottom = bottomInterpolator.getInterpolation(normalizedScale);
+
+
+                RectF normalizedHotspot = new RectF(
+                    endLeftFromIntermediateLeft / startRect.width(),
+                    endTopFromIntermediateTop / startRect.height(),
+                    endRightFromIntermediateRight / startRect.width(),
+                    endBottomFromIntermediateBottom / startRect.height());
+
+                return filterInterpolator.getInterpolationFilter(percent, normalizedHotspot, normalizedScale);
               }
             });
 
@@ -317,7 +319,6 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       Matrix transformationMatrix = new Matrix();
       transformationMatrix.postScale(mScale, mScale, mDx, mDy);
       return getFrame(transformationMatrix, mFilters, mDelayMillis, mTextToRender, mFrameIndex);
-
     }
 
     @Override

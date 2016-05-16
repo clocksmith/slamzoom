@@ -35,9 +35,9 @@ public abstract class Interpolator implements Cloneable {
     return end;
   }
 
-  public float getInterpolation(float input) {
-    return getStart() + getValue(input) * (getEnd() - getStart());
+  public float getInterpolation(float percent) {
+    return getStart() + getValue(percent) * (getEnd() - getStart());
   }
 
-  protected abstract float getValue(float input);
+  protected abstract float getValue(float percent);
 }

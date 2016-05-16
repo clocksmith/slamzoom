@@ -7,7 +7,8 @@ import com.slamzoom.android.interpolators.base.Interpolator;
  */
 public class SlamHardNoPauseInterpolator extends Interpolator {
   @Override
-  protected float getValue(float input) {
-    return (float) Math.pow(0.25 * (input + 3), 20);
+  protected float getValue(float percent) {
+    // TODO(clocksmith): This, and probably some other interpolators, should return 0 when input is 0.
+    return (float) Math.pow(0.25 * (percent + 3), 20);
   }
 }

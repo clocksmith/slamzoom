@@ -18,8 +18,8 @@ public class BackAndForthInterpolatorProvider implements ScaleAndTranslateInterp
   public Interpolator getXInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getValue(float input) {
-        float newInput = 1 - input;
+      protected float getValue(float percent) {
+        float newInput = 1 - percent;
         return (float) (newInput * Math.cos(6 * Math.PI * newInput));
       }
     };

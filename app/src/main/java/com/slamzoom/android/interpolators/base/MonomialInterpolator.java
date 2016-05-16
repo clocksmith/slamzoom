@@ -12,7 +12,7 @@ public class MonomialInterpolator extends Interpolator {
   }
 
   @Override
-  protected float getValue(float input) {
-    return (float) Math.pow(input, exponent);
+  protected float getValue(float percent) {
+    return (float) Math.pow(percent, exponent);
   }
 }

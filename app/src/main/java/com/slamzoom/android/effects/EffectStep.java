@@ -6,6 +6,7 @@ import android.util.Log;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.interpolation.filter.base.FilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.group.FilterInterpolatorGroup;
 import com.slamzoom.android.global.Constants;
 import com.slamzoom.android.interpolators.base.Interpolator;
 import com.slamzoom.android.effects.interpolation.transform.base.ScaleAndTranslateInterpolatorProvider;
@@ -143,6 +144,11 @@ public class EffectStep {
 
     public Builder withFilterInterpolator(FilterInterpolator filterInterpolator) {
       mFilterInterpolators.add(filterInterpolator);
+      return this;
+    }
+
+    public Builder withFilterInterpolatorGroup(FilterInterpolatorGroup filterInterpolatorGroup) {
+      mFilterInterpolators.addAll(filterInterpolatorGroup.getFilterInterpolators());
       return this;
     }
 

@@ -3,8 +3,12 @@ package com.slamzoom.android.effects.packs;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.effects.EffectTemplate;
+import com.slamzoom.android.effects.interpolation.filter.single.BulgeFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.ZoomBlurFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashInterpolatorProvider;
 import com.slamzoom.android.interpolators.effect.IdentityInterpolator;
+import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
+import com.slamzoom.android.interpolators.spline.PointListBuilder;
 
 import java.util.List;
 
@@ -17,25 +21,15 @@ public class DebugPackProvider {
 
     packModels.add(EffectTemplate.newBuilder()
         .withPackName("debug pack")
-        .withName("stationary")
+        .withName("test")
         .addEffectStep(EffectStep.newBuilder()
+            .withStartPauseSeconds(1)
+            .withEndPauseSeconds(1)
+            .withDurationSeconds(3f)
             .withScaleInterpolator(new IdentityInterpolator())
-            .withStartPauseSeconds(3f)
-            .withDurationSeconds(0.2f)
-            .withEndPauseSeconds(3f)
+            .withFilterInterpolator(new BulgeFilterInterpolator())
             .build())
         .build());
-
-    packModels.add(EffectTemplate.newBuilder()
-        .withPackName("debug pack")
-        .withName("crash")
-        .addEffectStep(EffectStep.newBuilder()
-            .withStartPauseSeconds(0.3f)
-            .withDurationSeconds(0.7f)
-            .withScaleAndTranslateInterpolatorProvider(new CrashInterpolatorProvider())
-            .build())
-        .build());
-
 
     return packModels;
   }

@@ -36,6 +36,7 @@ public class SlamPackProvider {
                     .build())))
             .withStartPauseSeconds(1.4f)
             .withDurationSeconds(0.6f)
+//            .withDurationSeconds(6f)
             .withEndPauseSeconds(1f)
             .build())
         .build());
