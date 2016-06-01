@@ -134,6 +134,9 @@ public class CreateActivity extends AppCompatActivity {
       case R.id.action_ok:
         handleAddTextConfirmed();
         return true;
+      case R.id.action_add_to_library:
+        addCurrentGifToLibrary();
+        return true;
       case R.id.action_share:
         shareCurrentGif();
         return true;
@@ -279,14 +282,14 @@ public class CreateActivity extends AppCompatActivity {
     invalidateOptionsMenu();
   }
 
-  private void shareCurrentGif() {
+  private File addCurrentGifToLibrary() {
     if (ContextCompat.checkSelfPermission(
         this,
         Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
       ActivityCompat.requestPermissions
           (this,
-          new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
-          0);
+              new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
+              0);
     }
 
     File direct = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "/SlamZoom");
@@ -308,17 +311,28 @@ public class CreateActivity extends AppCompatActivity {
 
     if (mSelectedGifBytes != null) {
       try {
-        // TODO(clocksmith): make sure external apps can't destory this (read only)
+        // TODO(clocksmith): make sure external apps can't destroy this (read only)
         FileOutputStream gifOutputStream = new FileOutputStream(gifFile);
         gifOutputStream.write(mSelectedGifBytes);
         gifOutputStream.close();
+        return gifFile;
+      } catch (IOException e) {
+        Log.e(TAG, "cannot save gif", e);
+      }
+    }
+
+    return null;
+  }
+
+  private void shareCurrentGif() {
+    if (mSelectedGifBytes != null) {
+      File gifFile = addCurrentGifToLibrary();
+      if (gifFile != null) {
 
         Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
         shareIntent.setType("image/gif");
         shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(gifFile));
         startActivity(Intent.createChooser(shareIntent, "Share via"));
-      } catch (IOException e) {
-        Log.e(TAG, "cannot share gif", e);
       }
     }
   }

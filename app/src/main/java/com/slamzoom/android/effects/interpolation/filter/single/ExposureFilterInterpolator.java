@@ -21,7 +21,7 @@ public class ExposureFilterInterpolator extends FilterInterpolator {
   }
 
   @Override
-  public GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot, float normalizedScale) {
+  public GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot) {
     return new GPUImageExposureFilter(-10 * interpolationValue);
   }
 }

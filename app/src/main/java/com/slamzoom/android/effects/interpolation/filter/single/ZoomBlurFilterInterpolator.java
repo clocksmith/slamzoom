@@ -2,7 +2,6 @@ package com.slamzoom.android.effects.interpolation.filter.single;
 
 import android.graphics.PointF;
 import android.graphics.RectF;
-import android.util.Log;
 
 import com.slamzoom.android.effects.imagefilters.GPUImageZoomBlurFilter;
 import com.slamzoom.android.effects.interpolation.filter.base.FilterInterpolator;
@@ -19,7 +18,7 @@ public class ZoomBlurFilterInterpolator extends FilterInterpolator {
   }
 
   @Override
-  public GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot, float normalizedScale) {
+  public GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot) {
     PointF derivedFocus = new PointF(normalizedHotspot.centerX(), normalizedHotspot.centerY());
 //    Log.wtf("HERE", "interpolationValue: " + interpolationValue +
 //        "\n" + "relativeHotspot: " + relativeHotspot.toString() +

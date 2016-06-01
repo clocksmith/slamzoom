@@ -12,19 +12,19 @@ import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
 /**
  * Created by clocksmith on 4/2/16.
  */
-public class BulgeFilterInterpolator extends FilterInterpolator {
+public class NormalizedBulgeFilterInterpolator extends FilterInterpolator {
   private static final float RADIUS = 1f;
   private static final float SCALE = 0.5f;
-  public BulgeFilterInterpolator() {
+  public NormalizedBulgeFilterInterpolator() {
     super();
   }
 
-  public BulgeFilterInterpolator(Interpolator interpolator) {
+  public NormalizedBulgeFilterInterpolator(Interpolator interpolator) {
     super(interpolator);
   }
 
   @Override
-  public GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot, float normalizedScale) {
+  public GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot) {
     return new GPUImageBulgeDistortionFilter(
         RADIUS * interpolationValue,
         SCALE * interpolationValue,

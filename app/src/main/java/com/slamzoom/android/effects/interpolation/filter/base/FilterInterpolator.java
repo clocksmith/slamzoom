@@ -19,9 +19,9 @@ public abstract class FilterInterpolator extends InterpolatorHolder {
    super(interpolator);
   }
 
-  public GPUImageFilter getInterpolationFilter(float percent, RectF normalizedHotspot, float normalizedScale) {
-    return getFilter(mInterpolator.getInterpolation(percent), normalizedHotspot, normalizedScale);
+  public GPUImageFilter getInterpolationFilter(float percent, RectF normalizedHotspot) {
+    return getFilter(mInterpolator.getInterpolation(percent), normalizedHotspot);
   }
 
-  protected abstract GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot, float normalizedScale);
+  protected abstract GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot);
 }

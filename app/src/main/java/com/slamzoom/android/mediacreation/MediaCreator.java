@@ -2,32 +2,31 @@ package com.slamzoom.android.mediacreation;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.AsyncTask;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.slamzoom.android.R;
 import com.slamzoom.android.effects.interpolation.filter.base.FilterInterpolator;
 import com.slamzoom.android.global.Constants;
 import com.slamzoom.android.global.singletons.ExecutorProvider;
 import com.slamzoom.android.global.utils.PostProcessorUtils;
-import com.slamzoom.android.interpolators.base.InterpolatorHolder;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.interpolators.base.Interpolator;
-import com.slamzoom.android.interpolators.base.LinearInterpolator;
 import com.slamzoom.android.interpolators.effect.IdentityInterpolator;
-import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 
 import java.util.List;
@@ -54,6 +53,8 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   protected CreateMediaCallback mCallback;
   protected int mNumTilesInRow;
 
+  protected Bitmap mWatermarkBitmap;
+
   public MediaCreator(
       Context context,
       Bitmap selectedBitmap,
@@ -69,6 +70,10 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     float aspectRatio = (float) mSelectedBitmap.getWidth() / mSelectedBitmap.getHeight();
     mGifWidth = aspectRatio > 1 ? gifSize : Math.round(gifSize * aspectRatio);
     mGifHeight = aspectRatio > 1 ? Math.round(gifSize / aspectRatio) : gifSize;
+
+    if (Constants.USE_IMAGE_WATERMARK) {
+      mWatermarkBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.slamzoom_white);
+    }
   }
 
   public abstract MediaFrame createFrame(Bitmap bitmap, int delayMillis);
@@ -96,7 +101,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   }
 
   protected MediaFrame getFrame(
-      Matrix transformationMatrix, List<GPUImageFilter> filters, int delayMillis, String textToRender, int frameIndex) {
+      Matrix transformationMatrix, List<GPUImageFilter> filters, int delayMillis, String textToRender) {
     // Transform the selected bitmap
     Bitmap targetBitmap = Bitmap.createBitmap(
         mSelectedBitmap.getWidth(), mSelectedBitmap.getHeight(), Bitmap.Config.ARGB_8888);
@@ -134,6 +139,36 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       textPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)); // Text Overlapping Pattern
       textPaint.setTextAlign(Paint.Align.CENTER);
       textCanvas.drawText(textToRender, finalBitmap.getWidth() / 2, finalBitmap.getHeight() / 2, textPaint);
+    }
+
+    if (Constants.USE_TEXT_WATERMARK) {
+      Canvas watermarkCanvas = new Canvas(finalBitmap);
+      Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+      textPaint.setColor(Color.WHITE); // Text Color
+      textPaint.setTextSize(Constants.MAX_WATERMARK_TEXT_SIZE);
+      textPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)); // Text Overlapping Pattern
+      textPaint.setTextAlign(Paint.Align.LEFT);
+      Rect textBounds = new Rect();
+      textPaint.getTextBounds(Constants.WATERMARK_TEXT, 0, Constants.WATERMARK_TEXT.length(), textBounds);
+      watermarkCanvas.drawText(
+          Constants.WATERMARK_TEXT,
+          finalBitmap.getWidth() - textBounds.width() - Constants.WATERMARK_TEXT_PADDING,
+          finalBitmap.getHeight() - Constants.WATERMARK_TEXT_PADDING,
+          textPaint);
+    } else if (Constants.USE_IMAGE_WATERMARK) {
+      Canvas watermarkCanvas = new Canvas(finalBitmap);
+      Paint watermarkPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+      int watermarkWidth = finalBitmap.getWidth();
+      int watermarkHeight = mWatermarkBitmap.getHeight() * watermarkWidth / mWatermarkBitmap.getWidth();
+      watermarkCanvas.drawBitmap(
+          mWatermarkBitmap,
+          null,
+          new Rect(
+              finalBitmap.getWidth() - watermarkWidth,
+              finalBitmap.getHeight() - watermarkHeight,
+              finalBitmap.getWidth(),
+              finalBitmap.getHeight()),
+          watermarkPaint);
     }
 
     // TODO(clocksmith): debugging, remove this when done
@@ -219,6 +254,11 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       final float endScale = (float) startRect.height() / endRect.height();
       scaleInterpolator.setDomain(startScale, endScale);
 
+      final IdentityInterpolator leftInterpolator = new IdentityInterpolator(endRect.left, startRect.left);
+      final IdentityInterpolator topInterpolator = new IdentityInterpolator(endRect.top, startRect.top);
+      final IdentityInterpolator rightInterpolator = new IdentityInterpolator(endRect.right, startRect.right);
+      final IdentityInterpolator bottomInterpolator = new IdentityInterpolator(endRect.bottom, startRect.bottom);
+
       int numFramesForChunk = mAllFrames.get(stepIndex).size();
       for (int frameIndex = 0; frameIndex < numFramesForChunk; frameIndex++) {
         final float percent = ((float) frameIndex / (numFramesForChunk - 1));
@@ -233,22 +273,14 @@ public abstract class MediaCreator<E extends MediaEncoder> {
             new Function<FilterInterpolator, GPUImageFilter>() {
               @Override
               public GPUImageFilter apply(FilterInterpolator filterInterpolator) {
-                // 0 is original/start, 1 is end
-                float normalizedScale = scale == endScale ? startScale : startScale * (scale - 1) / (endScale - 1);
+                // 0 is original/start, 1 is
+                float interpolationValue = filterInterpolator.getInterpolator().getInterpolation(percent);
+//                float normalizedScale = scale == endScale ? startScale : startScale * (scale - 1) / (endScale - 1);
 
-                IdentityInterpolator leftInterpolator = new IdentityInterpolator();
-                leftInterpolator.setDomain(endRect.left, startRect.left);
-                IdentityInterpolator topInterpolator = new IdentityInterpolator();
-                topInterpolator.setDomain(endRect.top, startRect.top);
-                IdentityInterpolator rightInterpolator = new IdentityInterpolator();
-                rightInterpolator.setDomain(endRect.right, startRect.right);
-                IdentityInterpolator bottomInterpolator = new IdentityInterpolator();
-                bottomInterpolator.setDomain(endRect.bottom, startRect.bottom);
-
-                float endLeftFromIntermediateLeft = leftInterpolator.getInterpolation(normalizedScale);
-                float endTopFromIntermediateTop = topInterpolator.getInterpolation(normalizedScale);
-                float endRightFromIntermediateRight = rightInterpolator.getInterpolation(normalizedScale);
-                float endBottomFromIntermediateBottom = bottomInterpolator.getInterpolation(normalizedScale);
+                float endLeftFromIntermediateLeft = leftInterpolator.getInterpolation(interpolationValue);
+                float endTopFromIntermediateTop = topInterpolator.getInterpolation(interpolationValue);
+                float endRightFromIntermediateRight = rightInterpolator.getInterpolation(interpolationValue);
+                float endBottomFromIntermediateBottom = bottomInterpolator.getInterpolation(interpolationValue);
 
 
                 RectF normalizedHotspot = new RectF(
@@ -257,7 +289,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
                     endRightFromIntermediateRight / startRect.width(),
                     endBottomFromIntermediateBottom / startRect.height());
 
-                return filterInterpolator.getInterpolationFilter(percent, normalizedHotspot, normalizedScale);
+                return filterInterpolator.getInterpolationFilter(percent, normalizedHotspot);
               }
             });
 
@@ -318,7 +350,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     protected MediaFrame doInBackground(Void... params) {
       Matrix transformationMatrix = new Matrix();
       transformationMatrix.postScale(mScale, mScale, mDx, mDy);
-      return getFrame(transformationMatrix, mFilters, mDelayMillis, mTextToRender, mFrameIndex);
+      return getFrame(transformationMatrix, mFilters, mDelayMillis, mTextToRender);
     }
 
     @Override

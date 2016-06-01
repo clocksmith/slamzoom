@@ -21,7 +21,7 @@ public class GuassianUnblurFilterInterpolator extends FilterInterpolator {
   }
 
   @Override
-  public GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot, float normalizedScale) {
+  public GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot) {
     return new GPUImageGaussianBlurFilter(5 * (1 - interpolationValue));
   }
 }

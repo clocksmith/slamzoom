@@ -1,0 +1,50 @@
+{
+  "project_info": {
+    "project_number": "695560970483",
+    "firebase_url": "https://slam-zoom.firebaseio.com",
+    "project_id": "slam-zoom",
+    "storage_bucket": "slam-zoom.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:695560970483:android:9268e0475ba56fd1",
+        "android_client_info": {
+          "package_name": "com.slamzoom.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "695560970483-jccv4ct0mq4f0j48l8qor24km3smkuts.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.slamzoom.android",
+            "certificate_hash": "B460121D75F2F6254BFAA449A8E4D2593AA80A55"
+          }
+        },
+        {
+          "client_id": "695560970483-m2hpqep355qfgmo4nkparjcd5c2ioi5e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDq2VzwczXBYN2t6zAihXFVMrYgHJSk5oY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

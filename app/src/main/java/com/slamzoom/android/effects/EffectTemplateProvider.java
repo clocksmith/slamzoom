@@ -21,14 +21,15 @@ public class EffectTemplateProvider {
   private static List<EffectTemplate> mTemplates = Lists.newArrayList();
 
   static {
-//    mTemplates.addAll(SlamPackProvider.getPack());
-//    mTemplates.addAll(CrashPackProvider.getPack());
-//    mTemplates.addAll(SwirlPackProvider.getPack());
-//    mTemplates.addAll(ShakePackProvider.getPack());
-//    mTemplates.addAll(SimplePackProvider.getPack());
-//    mTemplates.addAll(BulgePackProvider.getPack());
-//    mTemplates.addAll(UncategorizedPackProvider.getPack());
-    mTemplates.addAll(DebugPackProvider.getPack());
+    mTemplates.addAll(SlamPackProvider.getPack());
+    mTemplates.addAll(CrashPackProvider.getPack());
+    mTemplates.addAll(SwirlPackProvider.getPack());
+    mTemplates.addAll(ShakePackProvider.getPack());
+    mTemplates.addAll(SimplePackProvider.getPack());
+    mTemplates.addAll(BulgePackProvider.getPack());
+    mTemplates.addAll(UncategorizedPackProvider.getPack());
+
+//    mTemplates.addAll(DebugPackProvider.getPack());
   }
 
   public static List<EffectTemplate> getTemplates() {

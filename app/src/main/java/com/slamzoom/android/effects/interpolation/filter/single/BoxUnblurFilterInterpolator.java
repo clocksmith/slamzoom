@@ -12,7 +12,7 @@ import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
  */
 public class BoxUnblurFilterInterpolator extends FilterInterpolator {
   @Override
-  public GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot, float normalizedScale) {
+  public GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot) {
     return new GPUImageBoxBlurFilter(1 - interpolationValue);
   }
 }

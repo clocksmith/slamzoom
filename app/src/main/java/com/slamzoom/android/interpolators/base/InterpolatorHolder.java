@@ -21,4 +21,8 @@ public abstract class InterpolatorHolder {
   public void setInterpolator(Interpolator interpolator) {
     mInterpolator = interpolator;
   }
+
+  public Interpolator getInterpolator() {
+    return mInterpolator;
+  }
 }

@@ -22,7 +22,7 @@ public class UnswirlFilterInterpolator extends FilterInterpolator {
   }
 
   @Override
-  public GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot, float normalizedScale) {
+  public GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot) {
     return new GPUImageSwirlFilter(0.5f,
         1 - interpolationValue,
         new PointF(normalizedHotspot.centerX(), normalizedHotspot.centerY()));

@@ -3,12 +3,8 @@ package com.slamzoom.android.effects.packs;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.effects.EffectTemplate;
-import com.slamzoom.android.effects.interpolation.filter.single.BulgeFilterInterpolator;
-import com.slamzoom.android.effects.interpolation.filter.single.ZoomBlurFilterInterpolator;
-import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.filter.single.NormalizedBulgeFilterInterpolator;
 import com.slamzoom.android.interpolators.effect.IdentityInterpolator;
-import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
-import com.slamzoom.android.interpolators.spline.PointListBuilder;
 
 import java.util.List;
 
@@ -27,7 +23,7 @@ public class DebugPackProvider {
             .withEndPauseSeconds(1)
             .withDurationSeconds(3f)
             .withScaleInterpolator(new IdentityInterpolator())
-            .withFilterInterpolator(new BulgeFilterInterpolator())
+            .withFilterInterpolator(new NormalizedBulgeFilterInterpolator())
             .build())
         .build());
 

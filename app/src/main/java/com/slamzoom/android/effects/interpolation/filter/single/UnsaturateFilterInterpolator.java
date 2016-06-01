@@ -21,7 +21,7 @@ public class UnsaturateFilterInterpolator extends FilterInterpolator {
   }
 
   @Override
-  public GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot, float normalizedScale) {
+  public GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot) {
     return new GPUImageSaturationFilter(1 - interpolationValue);
   }
 }
