@@ -159,15 +159,7 @@ public class CreateActivity extends AppCompatActivity {
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == Constants.REQUEST_PICK_IMAGE) {
       if (resultCode == RESULT_OK) {
-        Uri uri = data.getData();
-        try {
-          mSelectedUri = uri;
-          mSelectedBitmap = BitmapUtils.readScaledBitmap(
-              mSelectedUri, this.getContentResolver(), Constants.MAX_SELECTED_DIMEN_PX);
-          launchHotspotChooser();
-        } catch (FileNotFoundException e) {
-          Log.e(TAG, "Cannot get bitmap for path: " + uri.toString());
-        }
+        handleIncomingUri(data.getData());
       } else {
         if (mSelectedBitmap == null) {
           finish();
@@ -248,6 +240,17 @@ public class CreateActivity extends AppCompatActivity {
     Intent intent = new Intent(CreateActivity.this, CropperActivity.class);
     intent.putExtra(Constants.IMAGE_URI, mSelectedUri);
     startActivityForResult(intent, Constants.REQUEST_CROP_IMAGE);
+  }
+
+  private void handleIncomingUri(Uri uri) {
+    try {
+      mSelectedUri = uri;
+      mSelectedBitmap = BitmapUtils.readScaledBitmap(
+          mSelectedUri, this.getContentResolver(), Constants.MAX_SELECTED_DIMEN_PX);
+      launchHotspotChooser();
+    } catch (FileNotFoundException e) {
+      Log.e(TAG, "Cannot get bitmap for path: " + uri.toString());
+    }
   }
 
   private void handleUpOrBackPressed() {
