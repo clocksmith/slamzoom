@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import com.google.common.base.Optional;
 import com.slamzoom.android.effects.EffectModelProvider;
 import com.slamzoom.android.global.BackInterceptingEditText;
 import com.slamzoom.android.global.utils.BitmapUtils;
@@ -88,6 +89,11 @@ public class CreateActivity extends AppCompatActivity {
 
     mEffectChooser.setEffectModels(EffectModelProvider.getEffectModels());
     mSelectedEffectName = EffectModelProvider.getEffectModels().get(0).getEffectTemplate().getName();
+
+    Intent intent = getIntent();
+    if (Intent.ACTION_SEND.equals(intent.getAction())) {
+      handleIncomingUri((Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM));
+    }
   }
 
   @Override
