@@ -19,10 +19,7 @@ public class ZoomBlurFilterInterpolator extends FilterInterpolator {
 
   @Override
   public GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot) {
-    PointF derivedFocus = new PointF(normalizedHotspot.centerX(), normalizedHotspot.centerY());
-//    Log.wtf("HERE", "interpolationValue: " + interpolationValue +
-//        "\n" + "relativeHotspot: " + relativeHotspot.toString() +
-//        "\n" + "derivedFocus: " + derivedFocus.toString());
-    return new GPUImageZoomBlurFilter(5 * interpolationValue, derivedFocus);
+    PointF focus = new PointF(normalizedHotspot.centerX(), normalizedHotspot.centerY());
+    return new GPUImageZoomBlurFilter(5 * interpolationValue, focus);
   }
 }

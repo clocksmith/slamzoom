@@ -25,6 +25,7 @@ import com.slamzoom.android.interpolators.effect.IdentityInterpolator;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
@@ -127,7 +128,6 @@ public abstract class MediaCreator<E extends MediaEncoder> {
 
     for (int stepIndex = 0; stepIndex < steps.size(); stepIndex++) {
       final EffectStep step = steps.get(stepIndex);
-      String textToRender = null;
 
       // Even though in the 1 step case, the startRect top left is 0, 0 and width and height is full selected bitmap,
       // we want to make this future proof for multiple steps.
@@ -155,6 +155,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       final IdentityInterpolator bottomInterpolator = new IdentityInterpolator(endRect.bottom, startRect.bottom);
 
       int numFramesForChunk = mAllFrames.get(stepIndex).size();
+      String textToRender = null;
       for (int frameIndex = 0; frameIndex < numFramesForChunk; frameIndex++) {
         final float percent = ((float) frameIndex / (numFramesForChunk - 1));
         final float scale = scaleInterpolator.getInterpolation(percent);

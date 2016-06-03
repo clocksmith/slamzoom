@@ -57,6 +57,7 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
       mGifImageView.setImageDrawable(
           new GifDrawable(mContext.getAssets(), "slamzoom_preview_" + effectName + ".gif"));
     } catch (IOException e) {
+      mGifImageView.setImageDrawable(null);
       Log.e(TAG, "Could not open gif from assets");
     }
   }

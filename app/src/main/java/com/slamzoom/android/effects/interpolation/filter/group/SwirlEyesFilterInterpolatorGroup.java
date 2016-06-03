@@ -10,13 +10,13 @@ import java.util.List;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageBulgeDistortionFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageSwirlFilter;
 
 /**
- * Created by clocksmith on 4/22/16.
+ * Created by clocksmith on 6/2/16.
  */
-public class BulgeLeftRightFilterInterpolatorGroup implements FilterInterpolatorGroup {
-  private static final float RADIUS = 0.5f;
-  private static final float SCALE = 0.5f;
+public class SwirlEyesFilterInterpolatorGroup implements FilterInterpolatorGroup {
+  private static final float RADIUS_MULTIPLIER = 0.3f;
 
   @Override
   public List<FilterInterpolator> getFilterInterpolators() {
@@ -29,9 +29,9 @@ public class BulgeLeftRightFilterInterpolatorGroup implements FilterInterpolator
   private static class LeftFilterInterpolator extends FilterInterpolator {
     @Override
     protected GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot) {
-      return new GPUImageBulgeDistortionFilter(
-          RADIUS * interpolationValue,
-          SCALE * interpolationValue,
+      return new GPUImageSwirlFilter(
+          RADIUS_MULTIPLIER * Math.min(normalizedHotspot.width(), normalizedHotspot.height()),
+          1 - interpolationValue,
           new PointF((normalizedHotspot.left + normalizedHotspot.centerX()) / 2, normalizedHotspot.centerY()));
     }
   }
@@ -39,9 +39,9 @@ public class BulgeLeftRightFilterInterpolatorGroup implements FilterInterpolator
   private static class RightFilterInterpolator extends FilterInterpolator {
     @Override
     protected GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot) {
-      return new GPUImageBulgeDistortionFilter(
-          RADIUS * interpolationValue,
-          SCALE * interpolationValue,
+      return new GPUImageSwirlFilter(
+          RADIUS_MULTIPLIER * Math.min(normalizedHotspot.width(), normalizedHotspot.height()),
+          1 - interpolationValue,
           new PointF((normalizedHotspot.right + normalizedHotspot.centerX()) / 2, normalizedHotspot.centerY()));
     }
   }

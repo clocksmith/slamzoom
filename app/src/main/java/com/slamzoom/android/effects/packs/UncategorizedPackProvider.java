@@ -4,6 +4,8 @@ import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.interpolation.filter.single.ZoomBlurFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.transform.scaletranslate.FlushInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.scaletranslate.SpiralInterpolatorProvider;
 import com.slamzoom.android.interpolators.base.Interpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.ExposureFilterInterpolator;
 import com.slamzoom.android.interpolators.effect.IdentityInterpolator;
@@ -64,6 +66,23 @@ public class UncategorizedPackProvider {
                     .add(1f, 0)
                     .build())))
             .withEndPauseSeconds(0)
+            .build())
+        .build());
+
+    packModels.add(EffectTemplate.newBuilder()
+        .withName("flush")
+        .addEffectStep(EffectStep.newBuilder()
+            .withScaleAndTranslateInterpolatorProvider(new FlushInterpolatorProvider())
+            .withDurationSeconds(3f)
+            .withEndPauseSeconds(1f)
+            .build())
+        .build());
+    packModels.add(EffectTemplate.newBuilder()
+        .withName("spiral")
+        .addEffectStep(EffectStep.newBuilder()
+            .withScaleAndTranslateInterpolatorProvider(new SpiralInterpolatorProvider())
+            .withDurationSeconds(3f)
+            .withEndPauseSeconds(1f)
             .build())
         .build());
     return packModels;

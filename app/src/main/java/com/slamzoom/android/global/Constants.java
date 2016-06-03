@@ -6,7 +6,7 @@ package com.slamzoom.android.global;
 public class Constants {
   // Flags
   public static final boolean USE_IMAGE_WATERMARK = false;
-  public static final boolean USE_TEXT_WATERMARK = false;
+  public static final boolean USE_TEXT_WATERMARK = true;
   public static final boolean USE_WATERMARK = USE_IMAGE_WATERMARK || USE_TEXT_WATERMARK;
   // Debug
   public static final boolean SAVE_INDIVIDUAL_FRAMES_AS_BITMAPS = false;
