@@ -2,27 +2,22 @@ package com.slamzoom.android.mediacreation;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.AsyncTask;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.slamzoom.android.R;
 import com.slamzoom.android.effects.interpolation.filter.base.FilterInterpolator;
 import com.slamzoom.android.global.Constants;
 import com.slamzoom.android.global.singletons.ExecutorProvider;
+import com.slamzoom.android.global.utils.DebugUtils;
 import com.slamzoom.android.global.utils.PostProcessorUtils;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.interpolators.base.Interpolator;
@@ -53,8 +48,6 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   protected CreateMediaCallback mCallback;
   protected int mNumTilesInRow;
 
-  protected Bitmap mWatermarkBitmap;
-
   public MediaCreator(
       Context context,
       Bitmap selectedBitmap,
@@ -70,10 +63,6 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     float aspectRatio = (float) mSelectedBitmap.getWidth() / mSelectedBitmap.getHeight();
     mGifWidth = aspectRatio > 1 ? gifSize : Math.round(gifSize * aspectRatio);
     mGifHeight = aspectRatio > 1 ? Math.round(gifSize / aspectRatio) : gifSize;
-
-    if (Constants.USE_IMAGE_WATERMARK) {
-      mWatermarkBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.slamzoom_white);
-    }
   }
 
   public abstract MediaFrame createFrame(Bitmap bitmap, int delayMillis);
@@ -101,129 +90,35 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   }
 
   protected MediaFrame getFrame(
-      Matrix transformationMatrix, List<GPUImageFilter> filters, int delayMillis, String textToRender) {
-    // Transform the selected bitmap
-    Bitmap targetBitmap = Bitmap.createBitmap(
-        mSelectedBitmap.getWidth(), mSelectedBitmap.getHeight(), Bitmap.Config.ARGB_8888);
-    Canvas canvas = new Canvas(targetBitmap);
-    Paint paint = new Paint();
-    paint.setAntiAlias(true);
-    canvas.drawBitmap(mSelectedBitmap, transformationMatrix, paint);
+      Matrix transformationMatrix,
+      List<GPUImageFilter> filters,
+      int delayMillis,
+      String textToRender,
+      int frameIndex) {
+    Bitmap finalBitmap = getTransformedAndScaledBitmap(transformationMatrix);
 
     if (mNumTilesInRow > 1) {
-      // Write subframes into new bitmap
-      int tileWidth = targetBitmap.getWidth() / mNumTilesInRow;
-      int tileHeight = targetBitmap.getHeight() / mNumTilesInRow;
-      Bitmap bitmapTile = Bitmap.createScaledBitmap(targetBitmap, tileWidth, tileHeight, true);
-      Bitmap tiledTargetBitmap = Bitmap.createBitmap(
-          targetBitmap.getWidth(), targetBitmap.getHeight(), Bitmap.Config.ARGB_8888);
-      Canvas tiledCanvas = new Canvas(tiledTargetBitmap);
-      for (int i = 0; i < mNumTilesInRow; i++) {
-        for (int j = 0; j < mNumTilesInRow; j++) {
-          tiledCanvas.drawBitmap(bitmapTile, i * tileWidth, j * tileHeight, paint);
-        }
-      }
-      targetBitmap = tiledTargetBitmap;
+      finalBitmap = PostProcessorUtils.applyTiling(mNumTilesInRow, finalBitmap);
     }
 
-    Bitmap scaledBitmap = Bitmap.createScaledBitmap(targetBitmap, mGifWidth, mGifHeight, true);
-
-    Bitmap finalBitmap = PostProcessorUtils.process(mContext, scaledBitmap, filters);
+    if (!filters.isEmpty()) {
+      finalBitmap = PostProcessorUtils.applyFilters(mContext, finalBitmap, filters);
+    }
 
     if (!Strings.isNullOrEmpty(textToRender)) {
       delayMillis += 1000;
-      Canvas textCanvas = new Canvas(finalBitmap);
-      Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-      textPaint.setColor(Color.WHITE); // Text Color
-      textPaint.setTextSize(getCorrectedWidth(textToRender, finalBitmap.getWidth(), 3 * finalBitmap.getWidth() / 4));
-      textPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)); // Text Overlapping Pattern
-      textPaint.setTextAlign(Paint.Align.CENTER);
-      textCanvas.drawText(textToRender, finalBitmap.getWidth() / 2, finalBitmap.getHeight() / 2, textPaint);
+      PostProcessorUtils.renderText(finalBitmap, textToRender);
     }
 
-    if (Constants.USE_TEXT_WATERMARK) {
-      Canvas watermarkCanvas = new Canvas(finalBitmap);
-      Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-      textPaint.setColor(Color.WHITE); // Text Color
-      textPaint.setTextSize(Constants.MAX_WATERMARK_TEXT_SIZE);
-      textPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)); // Text Overlapping Pattern
-      textPaint.setTextAlign(Paint.Align.LEFT);
-      Rect textBounds = new Rect();
-      textPaint.getTextBounds(Constants.WATERMARK_TEXT, 0, Constants.WATERMARK_TEXT.length(), textBounds);
-      watermarkCanvas.drawText(
-          Constants.WATERMARK_TEXT,
-          finalBitmap.getWidth() - textBounds.width() - Constants.WATERMARK_TEXT_PADDING,
-          finalBitmap.getHeight() - Constants.WATERMARK_TEXT_PADDING,
-          textPaint);
-    } else if (Constants.USE_IMAGE_WATERMARK) {
-      Canvas watermarkCanvas = new Canvas(finalBitmap);
-      Paint watermarkPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-      int watermarkWidth = finalBitmap.getWidth();
-      int watermarkHeight = mWatermarkBitmap.getHeight() * watermarkWidth / mWatermarkBitmap.getWidth();
-      watermarkCanvas.drawBitmap(
-          mWatermarkBitmap,
-          null,
-          new Rect(
-              finalBitmap.getWidth() - watermarkWidth,
-              finalBitmap.getHeight() - watermarkHeight,
-              finalBitmap.getWidth(),
-              finalBitmap.getHeight()),
-          watermarkPaint);
+    if (Constants.USE_WATERMARK) {
+      PostProcessorUtils.renderwWatermark(mContext, finalBitmap);
     }
 
-    // TODO(clocksmith): debugging, remove this when done
-//    if (finalBitmap.getWidth() == 320 || finalBitmap.getHeight() == 320) {
-//      File direct = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "/SlamZoom");
-//      File file = new File(direct, "test" + frameIndex + ".png");
-//      Log.e(TAG, "w: " + finalBitmap.getWidth() + " h: " + finalBitmap.getHeight());
-//      if (!file.getParentFile().isDirectory()) {
-//        Log.e(TAG, "No directory exitsts: " + file.getParentFile());
-//        if (!file.getParentFile().mkdirs()) {
-//          Log.e(TAG, "Cannot make directory: " + file.getParentFile());
-//        }
-//        {
-//          Log.d(TAG, direct + " successfully created.");
-//        }
-//      } else {
-//        Log.d(TAG, direct + " already exists.");
-//      }
-//      if (frameIndex >= 0) {
-//        FileOutputStream out = null;
-//        try {
-//          out = new FileOutputStream(file);
-//          Log.e(TAG, "w: " + finalBitmap.getWidth() + " h: " + finalBitmap.getHeight());
-//          finalBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-//        } catch (Exception e) {
-//          e.printStackTrace();
-//        } finally {
-//          try {
-//            if (out != null) {
-//              out.close();
-//            }
-//          } catch (IOException e) {
-//            Log.e(TAG, "Cannot save bitmap");
-//          }
-//        }
-//      }
-//    }
+    if (Constants.SAVE_INDIVIDUAL_FRAMES_AS_BITMAPS) {
+      DebugUtils.saveFrameAsBitmap(finalBitmap, frameIndex);
+    }
 
     return createFrame(finalBitmap, delayMillis);
-  }
-
-  private int getCorrectedWidth(String text, int textSize, int desiredWidth) {
-    Paint paint = new Paint();
-    Rect bounds = new Rect();
-
-    paint.setTextSize(textSize);
-    paint.getTextBounds(text, 0, text.length(), bounds);
-
-    while (bounds.width() > desiredWidth) {
-      textSize--;
-      paint.setTextSize(textSize);
-      paint.getTextBounds(text, 0, text.length(), bounds);
-    }
-
-    return textSize;
   }
 
   protected void collectFrames() {
@@ -316,6 +211,21 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     }
   }
 
+  private Bitmap getTransformedAndScaledBitmap(Matrix transformationMatrix) {
+    return Bitmap.createScaledBitmap(
+        transformSelectedBitmap(transformationMatrix), mGifWidth, mGifHeight, true);
+  }
+
+  private Bitmap transformSelectedBitmap(Matrix transformationMatrix) {
+    Bitmap targetBitmap = Bitmap.createBitmap(
+        mSelectedBitmap.getWidth(), mSelectedBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+    Canvas canvas = new Canvas(targetBitmap);
+    Paint paint = new Paint();
+    paint.setAntiAlias(true);
+    canvas.drawBitmap(mSelectedBitmap, transformationMatrix, paint);
+    return targetBitmap;
+  }
+
   protected class CreateFrameTask extends AsyncTask<Void, Void, MediaFrame> {
     protected int mStepIndex;
     protected int mFrameIndex;
@@ -350,7 +260,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     protected MediaFrame doInBackground(Void... params) {
       Matrix transformationMatrix = new Matrix();
       transformationMatrix.postScale(mScale, mScale, mDx, mDy);
-      return getFrame(transformationMatrix, mFilters, mDelayMillis, mTextToRender);
+      return getFrame(transformationMatrix, mFilters, mDelayMillis, mTextToRender, mFrameIndex);
     }
 
     @Override

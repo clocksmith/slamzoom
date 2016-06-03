@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.slamzoom.android.R;
 import com.slamzoom.android.ui.create.CreateActivity;
 
@@ -18,11 +19,16 @@ import butterknife.ButterKnife;
 public class StartActivity extends AppCompatActivity {
   @Bind(R.id.createSlamzoomButton) Button mCreateSlamzoomButton;
 
+  private FirebaseAnalytics mFirebaseAnalytics;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_start);
     ButterKnife.bind(this);
+
+    mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+    mFirebaseAnalytics.setAnalyticsCollectionEnabled(true);
 
     mCreateSlamzoomButton.setOnClickListener(new View.OnClickListener() {
       @Override

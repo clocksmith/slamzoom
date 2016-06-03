@@ -24,7 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import com.google.common.base.Optional;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.slamzoom.android.effects.EffectModelProvider;
 import com.slamzoom.android.global.BackInterceptingEditText;
 import com.slamzoom.android.global.utils.BitmapUtils;
@@ -52,6 +52,8 @@ import pl.droidsonroids.gif.GifImageView;
 public class CreateActivity extends AppCompatActivity {
   private static final String TAG = CreateActivity.class.getSimpleName();
 
+  private FirebaseAnalytics mFirebaseAnalytics;
+
   @Bind(R.id.actionBar) Toolbar mActionBar;
   @Bind(R.id.gifImageView) GifImageView mGifImageView;
   @Bind(R.id.progressBar) ProgressBar mProgressBar;
@@ -75,6 +77,7 @@ public class CreateActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
     setContentView(R.layout.activity_create);
     ButterKnife.bind(this);
     BusProvider.getInstance().register(this);
@@ -252,7 +255,7 @@ public class CreateActivity extends AppCompatActivity {
     try {
       mSelectedUri = uri;
       mSelectedBitmap = BitmapUtils.readScaledBitmap(
-          mSelectedUri, this.getContentResolver(), Constants.MAX_SELECTED_DIMEN_PX);
+          mSelectedUri, this.getContentResolver(), Constants.MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX);
       launchHotspotChooser();
     } catch (FileNotFoundException e) {
       Log.e(TAG, "Cannot get bitmap for path: " + uri.toString());

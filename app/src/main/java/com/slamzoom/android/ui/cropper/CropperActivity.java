@@ -3,7 +3,6 @@ package com.slamzoom.android.ui.cropper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -39,7 +38,7 @@ public class CropperActivity extends AppCompatActivity {
 
     Uri uri = getIntent().getParcelableExtra(Constants.IMAGE_URI);
     try {
-      Bitmap bitmap = BitmapUtils.readScaledBitmap(uri, this.getContentResolver(), Constants.MAX_SELECTED_DIMEN_PX);
+      Bitmap bitmap = BitmapUtils.readScaledBitmap(uri, this.getContentResolver(), Constants.MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX);
       mImageCropView.setAspectRatio(bitmap.getWidth(), bitmap.getHeight());
       mImageCropView.setImageBitmap(bitmap, new Matrix(), 1f, 1000f);
 //      mImageCropView.setImageBitmap(bitmap);
