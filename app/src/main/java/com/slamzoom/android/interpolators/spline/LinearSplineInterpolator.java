@@ -35,7 +35,7 @@ public class LinearSplineInterpolator extends Interpolator {
   }
 
   @Override
-  protected float getValue(float percent) {
-    return (float) mPolynomialSplineFunction.value(percent);
+  protected float getRangePercent(float t) {
+    return (float) mPolynomialSplineFunction.value(t);
   }
 }

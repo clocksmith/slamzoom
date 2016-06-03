@@ -17,8 +17,8 @@ public class FlushInterpolatorProvider implements ScaleAndTranslateInterpolatorP
   public Interpolator getXInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getValue(float percent) {
-        float newInput = (float) Math.pow(1 - percent, 0.5);
+      protected float getRangePercent(float t) {
+        float newInput = (float) Math.pow(1 - t, 0.5);
         return  (float) (4 * newInput * Math.cos(32 * Math.PI * newInput));
       }
     };
@@ -28,8 +28,8 @@ public class FlushInterpolatorProvider implements ScaleAndTranslateInterpolatorP
   public Interpolator getYInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getValue(float percent) {
-        float newInput = (float) Math.pow(1 - percent, 0.5);
+      protected float getRangePercent(float t) {
+        float newInput = (float) Math.pow(1 - t, 0.5);
         return (float) (4 * newInput * Math.sin(32 * Math.PI * newInput));
       }
     };

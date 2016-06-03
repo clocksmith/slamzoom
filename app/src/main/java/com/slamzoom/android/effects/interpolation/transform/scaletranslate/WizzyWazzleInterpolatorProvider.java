@@ -18,9 +18,9 @@ public class WizzyWazzleInterpolatorProvider implements ScaleAndTranslateInterpo
   public Interpolator getXInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getValue(float percent) {
+      protected float getRangePercent(float t) {
 //        float newInput = input < 0.5 ? 1 - input : input;
-        return (float) Math.cos(8 * Math.PI * percent);
+        return (float) Math.cos(8 * Math.PI * t);
       }
     };
   }

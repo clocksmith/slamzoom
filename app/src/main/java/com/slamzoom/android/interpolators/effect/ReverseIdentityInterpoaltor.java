@@ -7,7 +7,7 @@ import com.slamzoom.android.interpolators.base.Interpolator;
  */
 public class ReverseIdentityInterpoaltor extends Interpolator {
   @Override
-  protected float getValue(float percent) {
-    return 1 - percent;
+  protected float getRangePercent(float t) {
+    return 1 - t;
   }
 }

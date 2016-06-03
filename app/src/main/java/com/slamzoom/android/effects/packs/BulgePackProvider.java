@@ -8,7 +8,7 @@ import com.slamzoom.android.effects.interpolation.filter.group.BulgeFaceFilterIn
 import com.slamzoom.android.effects.interpolation.filter.group.MultiBulgeSwimFilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.filter.group.TinyBulgesSwimFilterInterpoaltor;
 import com.slamzoom.android.effects.interpolation.filter.single.NormalizedBulgeFilterInterpolator;
-import com.slamzoom.android.interpolators.effect.IdentityInterpolator;
+import com.slamzoom.android.interpolators.base.LinearInterpolator;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class BulgePackProvider {
         .withName("bulgein")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
-            .withScaleInterpolator(new IdentityInterpolator())
+            .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolator(new NormalizedBulgeFilterInterpolator())
             .withEndPauseSeconds(1)
             .build())
@@ -33,7 +33,7 @@ public class BulgePackProvider {
         .withName("leftrightbulge")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
-            .withScaleInterpolator(new IdentityInterpolator())
+            .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolatorGroup(new BulgeEyesFilterInterpolatorGroup())
             .withEndPauseSeconds(1)
             .build())
@@ -43,7 +43,7 @@ public class BulgePackProvider {
         .withName("facebulge")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
-            .withScaleInterpolator(new IdentityInterpolator())
+            .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolatorGroup(new BulgeFaceFilterInterpolatorGroup())
             .withEndPauseSeconds(1)
             .build())
@@ -53,7 +53,7 @@ public class BulgePackProvider {
         .withName("bulgeswap")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
-            .withScaleInterpolator(new IdentityInterpolator())
+            .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolatorGroup(new MultiBulgeSwimFilterInterpolatorGroup())
             .withEndPauseSeconds(1)
             .build())
@@ -63,7 +63,7 @@ public class BulgePackProvider {
         .withName("tinybulges")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
-            .withScaleInterpolator(new IdentityInterpolator())
+            .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolatorGroup(new TinyBulgesSwimFilterInterpoaltor())
             .withEndPauseSeconds(1)
             .build())

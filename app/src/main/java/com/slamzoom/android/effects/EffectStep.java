@@ -10,7 +10,6 @@ import com.slamzoom.android.effects.interpolation.filter.group.FilterInterpolato
 import com.slamzoom.android.global.Constants;
 import com.slamzoom.android.interpolators.base.Interpolator;
 import com.slamzoom.android.effects.interpolation.transform.base.ScaleAndTranslateInterpolatorProvider;
-import com.slamzoom.android.interpolators.base.InterpolatorHolder;
 import com.slamzoom.android.interpolators.effect.NoScaleInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.base.TranslateInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.translate.NoTranslateInterpolatorProvider;
@@ -184,9 +183,11 @@ public class EffectStep {
 
       // If any filter interpolators do not have internal interpolators, match them with scale.
       for (FilterInterpolator filterInterpolator : mFilterInterpolators) {
-        if (!filterInterpolator.hasInterpoolator()) {
+        if (!filterInterpolator.hasInterpolator()) {
           try {
-            filterInterpolator.setInterpolator(mScaleInterpolator.clone());
+            Interpolator interpolator = mScaleInterpolator.clone();
+            interpolator.setRange(0, 1);
+            filterInterpolator.setInterpolator(interpolator);
           } catch (CloneNotSupportedException e) {
             Log.e(TAG, "Could not clone scale interpolator", e);
           }

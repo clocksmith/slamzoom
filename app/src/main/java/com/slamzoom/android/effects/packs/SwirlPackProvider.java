@@ -3,15 +3,12 @@ package com.slamzoom.android.effects.packs;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.EffectStep;
-import com.slamzoom.android.effects.interpolation.filter.group.BulgeEyesFilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.filter.group.SwirlEyesFilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.filter.single.UnswirlOnHotspotFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.UnswirlTurntableOnHotspotFilterInterpolator;
-import com.slamzoom.android.effects.interpolation.transform.scaletranslate.FlushInterpolatorProvider;
-import com.slamzoom.android.effects.interpolation.transform.scaletranslate.SpiralInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.translate.ShakeInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.filter.single.UnswirlFilterInterpolator;
-import com.slamzoom.android.interpolators.effect.IdentityInterpolator;
+import com.slamzoom.android.interpolators.base.LinearInterpolator;
 import com.slamzoom.android.interpolators.effect.InAndOutInterpolator;
 import com.slamzoom.android.interpolators.effect.SlamSoftInterpolator;
 
@@ -27,7 +24,7 @@ public class SwirlPackProvider {
     packModels.add(EffectTemplate.newBuilder()
         .withName("swirl")
         .addEffectStep(EffectStep.newBuilder()
-            .withScaleInterpolator(new IdentityInterpolator())
+            .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolator(new UnswirlFilterInterpolator())
             .withEndPauseSeconds(0.5f)
             .build())
@@ -35,7 +32,7 @@ public class SwirlPackProvider {
     packModels.add(EffectTemplate.newBuilder()
         .withName("swirl2")
         .addEffectStep(EffectStep.newBuilder()
-            .withScaleInterpolator(new IdentityInterpolator())
+            .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolator(new UnswirlOnHotspotFilterInterpolator())
             .withDurationSeconds(3f)
             .withEndPauseSeconds(0.5f)
@@ -61,7 +58,7 @@ public class SwirlPackProvider {
         .withName("swirleyes")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
-            .withScaleInterpolator(new IdentityInterpolator())
+            .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolatorGroup(new SwirlEyesFilterInterpolatorGroup())
             .withEndPauseSeconds(1)
             .build())
@@ -70,7 +67,7 @@ public class SwirlPackProvider {
         .withName("swirltable")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
-            .withScaleInterpolator(new IdentityInterpolator())
+            .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolator(new UnswirlTurntableOnHotspotFilterInterpolator())
             .withEndPauseSeconds(1)
             .build())

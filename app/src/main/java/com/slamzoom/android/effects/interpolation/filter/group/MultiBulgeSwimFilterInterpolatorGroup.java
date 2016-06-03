@@ -5,7 +5,7 @@ import android.graphics.RectF;
 
 import com.google.common.collect.ImmutableList;
 import com.slamzoom.android.effects.interpolation.filter.base.FilterInterpolator;
-import com.slamzoom.android.interpolators.effect.IdentityInterpolator;
+import com.slamzoom.android.interpolators.base.LinearInterpolator;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ public class MultiBulgeSwimFilterInterpolatorGroup implements FilterInterpolator
           RADIUS * interpolationValue,
           SCALE * interpolationValue,
           new PointF(
-              new IdentityInterpolator(
+              new LinearInterpolator(
                   normalizedHotspot.left,
                   normalizedHotspot.right).getInterpolation(interpolationValue),
               normalizedHotspot.centerY()));
@@ -48,7 +48,7 @@ public class MultiBulgeSwimFilterInterpolatorGroup implements FilterInterpolator
           RADIUS * interpolationValue,
           SCALE * interpolationValue,
           new PointF(
-              new IdentityInterpolator(
+              new LinearInterpolator(
                   normalizedHotspot.right,
                   normalizedHotspot.left).getInterpolation(interpolationValue),
               normalizedHotspot.centerY()));

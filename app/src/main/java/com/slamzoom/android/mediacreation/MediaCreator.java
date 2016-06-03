@@ -21,11 +21,10 @@ import com.slamzoom.android.global.utils.DebugUtils;
 import com.slamzoom.android.global.utils.PostProcessorUtils;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.interpolators.base.Interpolator;
-import com.slamzoom.android.interpolators.effect.IdentityInterpolator;
+import com.slamzoom.android.interpolators.base.LinearInterpolator;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
@@ -147,12 +146,12 @@ public abstract class MediaCreator<E extends MediaEncoder> {
 
       final float startScale = 1;
       final float endScale = (float) startRect.height() / endRect.height();
-      scaleInterpolator.setDomain(startScale, endScale);
+      scaleInterpolator.setRange(startScale, endScale);
 
-      final IdentityInterpolator leftInterpolator = new IdentityInterpolator(endRect.left, startRect.left);
-      final IdentityInterpolator topInterpolator = new IdentityInterpolator(endRect.top, startRect.top);
-      final IdentityInterpolator rightInterpolator = new IdentityInterpolator(endRect.right, startRect.right);
-      final IdentityInterpolator bottomInterpolator = new IdentityInterpolator(endRect.bottom, startRect.bottom);
+      final LinearInterpolator leftInterpolator = new LinearInterpolator(endRect.left, startRect.left);
+      final LinearInterpolator topInterpolator = new LinearInterpolator(endRect.top, startRect.top);
+      final LinearInterpolator rightInterpolator = new LinearInterpolator(endRect.right, startRect.right);
+      final LinearInterpolator bottomInterpolator = new LinearInterpolator(endRect.bottom, startRect.bottom);
 
       int numFramesForChunk = mAllFrames.get(stepIndex).size();
       String textToRender = null;

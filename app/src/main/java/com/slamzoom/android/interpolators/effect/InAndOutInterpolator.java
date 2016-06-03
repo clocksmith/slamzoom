@@ -7,11 +7,11 @@ import com.slamzoom.android.interpolators.base.Interpolator;
  */
 public class InAndOutInterpolator extends Interpolator {
   @Override
-  protected float getValue(float percent) {
-    if (percent < 0.5) {
-      return 2 * percent;
+  protected float getRangePercent(float t) {
+    if (t < 0.5) {
+      return 2 * t;
     } else {
-      return 2 * (1 - percent);
+      return 2 * (1 - t);
     }
   }
 }

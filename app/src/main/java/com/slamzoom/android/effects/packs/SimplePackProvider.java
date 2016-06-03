@@ -3,7 +3,7 @@ package com.slamzoom.android.effects.packs;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.EffectStep;
-import com.slamzoom.android.interpolators.effect.IdentityInterpolator;
+import com.slamzoom.android.interpolators.base.LinearInterpolator;
 
 import java.util.List;
 
@@ -17,14 +17,14 @@ public class SimplePackProvider {
         .withName("simple")
         .addEffectStep(EffectStep.newBuilder()
             .withEndPauseSeconds(1)
-            .withScaleInterpolator(new IdentityInterpolator())
+            .withScaleInterpolator(new LinearInterpolator())
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
         .withName("simple4x")
         .addEffectStep(EffectStep.newBuilder()
             .withEndPauseSeconds(1)
-            .withScaleInterpolator(new IdentityInterpolator())
+            .withScaleInterpolator(new LinearInterpolator())
             .build())
         .withNumTilesInRow(2)
         .build());
@@ -32,7 +32,7 @@ public class SimplePackProvider {
         .withName("simple9x")
         .addEffectStep(EffectStep.newBuilder()
             .withEndPauseSeconds(1)
-            .withScaleInterpolator(new IdentityInterpolator())
+            .withScaleInterpolator(new LinearInterpolator())
             .build())
         .withNumTilesInRow(3)
         .build());
@@ -40,7 +40,7 @@ public class SimplePackProvider {
         .withName("simple16x")
         .addEffectStep(EffectStep.newBuilder()
             .withEndPauseSeconds(1)
-            .withScaleInterpolator(new IdentityInterpolator())
+            .withScaleInterpolator(new LinearInterpolator())
             .build())
         .withNumTilesInRow(4)
         .build());
@@ -48,7 +48,7 @@ public class SimplePackProvider {
         .withName("simple25x")
         .addEffectStep(EffectStep.newBuilder()
             .withEndPauseSeconds(1)
-            .withScaleInterpolator(new IdentityInterpolator())
+            .withScaleInterpolator(new LinearInterpolator())
             .build())
         .withNumTilesInRow(5)
         .build());

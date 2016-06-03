@@ -5,7 +5,7 @@ import android.graphics.RectF;
 
 import com.google.common.collect.ImmutableList;
 import com.slamzoom.android.effects.interpolation.filter.base.FilterInterpolator;
-import com.slamzoom.android.interpolators.effect.IdentityInterpolator;
+import com.slamzoom.android.interpolators.base.LinearInterpolator;
 
 import java.util.List;
 
@@ -38,7 +38,7 @@ public class TinyBulgesSwimFilterInterpoaltor implements FilterInterpolatorGroup
           RADIUS,
           SCALE,
           new PointF(
-              new IdentityInterpolator(
+              new LinearInterpolator(
                   normalizedHotspot.left,
                   normalizedHotspot.right).getInterpolation(interpolationValue * 0.5f),
               normalizedHotspot.centerY()));
@@ -52,10 +52,10 @@ public class TinyBulgesSwimFilterInterpoaltor implements FilterInterpolatorGroup
           RADIUS,
           SCALE,
           new PointF(
-              new IdentityInterpolator(
+              new LinearInterpolator(
                   normalizedHotspot.left,
                   normalizedHotspot.right).getInterpolation(interpolationValue* (float) Math.random()),
-              new IdentityInterpolator(
+              new LinearInterpolator(
                   normalizedHotspot.top,
                   normalizedHotspot.bottom).getInterpolation(interpolationValue * (float) Math.random())));
     }
@@ -68,10 +68,10 @@ public class TinyBulgesSwimFilterInterpoaltor implements FilterInterpolatorGroup
           RADIUS,
           SCALE,
           new PointF(
-              new IdentityInterpolator(
+              new LinearInterpolator(
                   normalizedHotspot.left,
                   normalizedHotspot.right).getInterpolation(interpolationValue * (float) Math.random()),
-              new IdentityInterpolator(
+              new LinearInterpolator(
                   normalizedHotspot.bottom,
                   normalizedHotspot.top).getInterpolation(interpolationValue * (float) Math.random())));
     }
@@ -84,7 +84,7 @@ public class TinyBulgesSwimFilterInterpoaltor implements FilterInterpolatorGroup
           RADIUS,
           SCALE,
           new PointF(
-              new IdentityInterpolator(
+              new LinearInterpolator(
                   normalizedHotspot.right,
                   normalizedHotspot.left).getInterpolation(interpolationValue * (float) Math.random()),
               normalizedHotspot.centerY()));
@@ -98,10 +98,10 @@ public class TinyBulgesSwimFilterInterpoaltor implements FilterInterpolatorGroup
           RADIUS,
           SCALE,
           new PointF(
-              new IdentityInterpolator(
+              new LinearInterpolator(
                   normalizedHotspot.right,
                   normalizedHotspot.left).getInterpolation(interpolationValue * (float) Math.random()),
-              new IdentityInterpolator(
+              new LinearInterpolator(
                   normalizedHotspot.top,
                   normalizedHotspot.bottom).getInterpolation(interpolationValue * (float) Math.random())));
     }
@@ -114,10 +114,10 @@ public class TinyBulgesSwimFilterInterpoaltor implements FilterInterpolatorGroup
           RADIUS,
           SCALE,
           new PointF(
-              new IdentityInterpolator(
+              new LinearInterpolator(
                   normalizedHotspot.right,
                   normalizedHotspot.left).getInterpolation(interpolationValue * (float) Math.random()),
-              new IdentityInterpolator(
+              new LinearInterpolator(
                   normalizedHotspot.bottom,
                   normalizedHotspot.top).getInterpolation(interpolationValue) * (float) Math.random()));
     }

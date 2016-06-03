@@ -1,6 +1,6 @@
 package com.slamzoom.android.effects.interpolation.transform.scaletranslate;
 
-import com.slamzoom.android.interpolators.effect.IdentityInterpolator;
+import com.slamzoom.android.interpolators.base.LinearInterpolator;
 import com.slamzoom.android.interpolators.base.Interpolator;
 import com.slamzoom.android.effects.interpolation.transform.base.ScaleAndTranslateInterpolatorProvider;
 
@@ -10,15 +10,15 @@ import com.slamzoom.android.effects.interpolation.transform.base.ScaleAndTransla
 public class SpiralInterpolatorProvider implements ScaleAndTranslateInterpolatorProvider {
   @Override
   public Interpolator getScaleInterpolator() {
-    return new IdentityInterpolator();
+    return new LinearInterpolator();
   }
 
   @Override
   public Interpolator getXInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getValue(float percent) {
-        float newInput = 1 - percent;
+      protected float getRangePercent(float t) {
+        float newInput = 1 - t;
         return (float) (newInput * Math.cos(18 * Math.PI * newInput));
       }
     };
@@ -28,8 +28,8 @@ public class SpiralInterpolatorProvider implements ScaleAndTranslateInterpolator
   public Interpolator getYInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getValue(float percent) {
-        float newInput = 1 - percent;
+      protected float getRangePercent(float t) {
+        float newInput = 1 - t;
         return (float) (newInput * Math.sin(18 * Math.PI * newInput));
       }
     };

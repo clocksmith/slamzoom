@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.interpolation.filter.single.NormalizedBulgeFilterInterpolator;
-import com.slamzoom.android.interpolators.effect.IdentityInterpolator;
+import com.slamzoom.android.interpolators.base.LinearInterpolator;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ public class DebugPackProvider {
             .withStartPauseSeconds(1)
             .withEndPauseSeconds(1)
             .withDurationSeconds(3f)
-            .withScaleInterpolator(new IdentityInterpolator())
+            .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolator(new NormalizedBulgeFilterInterpolator())
             .build())
         .build());

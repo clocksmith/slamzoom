@@ -1,20 +1,23 @@
 package com.slamzoom.android.interpolators.base;
 
-import com.slamzoom.android.interpolators.base.Interpolator;
-
 /**
  * Created by clocksmith on 3/21/16.
+ *
+ * Holds an interpolator.
  */
 public abstract class InterpolatorHolder {
   protected Interpolator mInterpolator;
 
+  /**
+   * Default constructor creates a holder with no interpoaltor.
+   */
   public InterpolatorHolder() {}
 
   public InterpolatorHolder(Interpolator interpolator) {
     mInterpolator = interpolator;
   }
 
-  public boolean hasInterpoolator() {
+  public boolean hasInterpolator() {
     return mInterpolator != null;
   }
 

@@ -1,7 +1,13 @@
 package com.slamzoom.android.interpolators.base;
 
 /**
- * Created by antrob on 2/24/16.
+ * Created by clocksmith on 2/24/16.
+ *
+ * Interpolator in the form c1 * t^e1 + c2 * t^e2
+ * This is useful for effects that need to have different beginning and end behavior.
+ *
+ * {@link com.slamzoom.android.interpolators.effect.EaseInSlamHardInterpolator}
+ * {@link com.slamzoom.android.interpolators.effect.EaseInSlamSoftInterpolator}
  */
 public class BinomialInterpolator extends Interpolator {
   private float c1;
@@ -21,7 +27,7 @@ public class BinomialInterpolator extends Interpolator {
   }
 
   @Override
-  protected float getValue(float percent) {
-    return (float) (c1 * Math.pow(percent, e1) + c2 * Math.pow(percent, e2));
+  protected float getRangePercent(float t) {
+    return (float) (c1 * Math.pow(t, e1) + c2 * Math.pow(t, e2));
   }
 }

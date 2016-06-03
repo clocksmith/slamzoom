@@ -8,7 +8,7 @@ import com.slamzoom.android.effects.interpolation.transform.translate.ShakeInter
 import com.slamzoom.android.effects.interpolation.transform.translate.SuperShakeInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.filter.single.GuassianUnblurFilterInterpolator;
 import com.slamzoom.android.interpolators.effect.HalfInAndOutInterpolator;
-import com.slamzoom.android.interpolators.effect.IdentityInterpolator;
+import com.slamzoom.android.interpolators.base.LinearInterpolator;
 import com.slamzoom.android.interpolators.effect.SlamHardInterpolator;
 
 import java.util.List;
@@ -52,7 +52,7 @@ public class ShakePackProvider {
     packModels.add(EffectTemplate.newBuilder()
         .withName("shakeunblur")
         .addEffectStep(EffectStep.newBuilder()
-            .withScaleInterpolator(new IdentityInterpolator())
+            .withScaleInterpolator(new LinearInterpolator())
             .withTranslateInterpolator(new ShakeInterpolatorProvider())
             .withFilterInterpolator(new GuassianUnblurFilterInterpolator())
             .withEndPauseSeconds(1f)
