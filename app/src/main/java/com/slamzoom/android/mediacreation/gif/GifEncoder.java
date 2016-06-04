@@ -1,19 +1,14 @@
 package com.slamzoom.android.mediacreation.gif;
 
-import android.app.Activity;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.google.common.collect.Lists;
-import com.slamzoom.android.global.Constants;
-import com.slamzoom.android.global.singletons.ExecutorProvider;
+import com.slamzoom.android.common.Constants;
+import com.slamzoom.android.common.singletons.ExecutorProvider;
 import com.slamzoom.android.mediacreation.MediaEncoder;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Executors;

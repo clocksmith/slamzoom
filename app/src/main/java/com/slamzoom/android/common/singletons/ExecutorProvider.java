@@ -1,4 +1,4 @@
-package com.slamzoom.android.global.singletons;
+package com.slamzoom.android.common.singletons;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;

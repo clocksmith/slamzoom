@@ -7,7 +7,7 @@ import com.slamzoom.android.effects.interpolation.filter.single.ZoomBlurFilterIn
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.FlushInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.SpiralInterpolatorProvider;
 import com.slamzoom.android.interpolators.base.Interpolator;
-import com.slamzoom.android.effects.interpolation.filter.single.ExposureFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.UnderExposeFilterInterpolator;
 import com.slamzoom.android.interpolators.effect.SlamHardNoPauseInterpolator;
 import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
 import com.slamzoom.android.interpolators.spline.PointListBuilder;
@@ -40,7 +40,7 @@ public class UncategorizedPackProvider {
                 }
               }
             })
-            .withFilterInterpolator(new ExposureFilterInterpolator(
+            .withFilterInterpolator(new UnderExposeFilterInterpolator(
                 new Interpolator() {
                   @Override
                   protected float getRangePercent(float t) {

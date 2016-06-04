@@ -5,6 +5,7 @@ import android.graphics.RectF;
 
 import com.google.common.collect.ImmutableList;
 import com.slamzoom.android.effects.interpolation.filter.base.FilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.BulgeWeightedFilterInterpolator;
 
 import java.util.List;
 
@@ -27,39 +28,30 @@ public class BulgeFaceFilterInterpolatorGroup implements FilterInterpolatorGroup
       );
     }
 
-    private static class LeftEyeFilterInterpolator extends FilterInterpolator {
+    private static class LeftEyeFilterInterpolator extends BulgeWeightedFilterInterpolator {
       @Override
-      protected GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot) {
-        return new GPUImageBulgeDistortionFilter(
-            RADIUS * interpolationValue,
-            SCALE * interpolationValue,
-            new PointF(
-                (normalizedHotspot.left + normalizedHotspot.centerX()) / 2,
-                (normalizedHotspot.top + normalizedHotspot.centerY()) / 2));
+      public PointF getCenter() {
+        return new PointF(
+            (getNormalizedHotspot().left + getNormalizedHotspot().centerX()) / 2,
+            (getNormalizedHotspot().top + getNormalizedHotspot().centerY()) / 2);
       }
     }
 
-    private static class RightEyeFilterInterpolator extends FilterInterpolator {
+    private static class RightEyeFilterInterpolator extends BulgeWeightedFilterInterpolator {
       @Override
-      protected GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot) {
-        return new GPUImageBulgeDistortionFilter(
-            RADIUS * interpolationValue,
-            SCALE * interpolationValue,
-            new PointF(
-                (normalizedHotspot.right + normalizedHotspot.centerX()) / 2,
-                (normalizedHotspot.top + normalizedHotspot.centerY()) / 2));
+      public PointF getCenter() {
+        return new PointF(
+            (getNormalizedHotspot().right + getNormalizedHotspot().centerX()) / 2,
+            (getNormalizedHotspot().top + getNormalizedHotspot().centerY()) / 2);
       }
     }
 
-  private static class MouthFilterInterpolator extends FilterInterpolator {
+  private static class MouthFilterInterpolator extends BulgeWeightedFilterInterpolator {
     @Override
-    protected GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot) {
-      return new GPUImageBulgeDistortionFilter(
-          RADIUS * interpolationValue,
-          SCALE * interpolationValue,
-          new PointF(
-              normalizedHotspot.centerX(),
-              (normalizedHotspot.bottom + normalizedHotspot.centerY()) / 2));
+    public PointF getCenter() {
+      return new PointF(
+          getNormalizedHotspot().centerX(),
+          (getNormalizedHotspot().bottom + getNormalizedHotspot().centerY()) / 2);
     }
   }
 }

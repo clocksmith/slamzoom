@@ -2,6 +2,7 @@ package com.slamzoom.android.effects.interpolation.filter.single;
 
 import android.graphics.RectF;
 
+import com.slamzoom.android.effects.interpolation.filter.base.BaseSaturationFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.base.FilterInterpolator;
 import com.slamzoom.android.interpolators.base.Interpolator;
 
@@ -11,9 +12,9 @@ import jp.co.cyberagent.android.gpuimage.GPUImageSaturationFilter;
 /**
  * Created by clocksmith on 3/21/16.
  */
-public class UnsaturateFilterInterpolator extends FilterInterpolator {
+public class UnsaturateFilterInterpolator extends BaseSaturationFilterInterpolator {
   public UnsaturateFilterInterpolator() {
-    super();
+    this(null);
   }
 
   public UnsaturateFilterInterpolator(Interpolator interpolator) {
@@ -21,7 +22,7 @@ public class UnsaturateFilterInterpolator extends FilterInterpolator {
   }
 
   @Override
-  public GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot) {
-    return new GPUImageSaturationFilter(1 - interpolationValue);
+  public float getSaturation() {
+    return BASE_SATURATION * getInterpolationValueCompliment();
   }
 }

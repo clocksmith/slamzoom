@@ -1,4 +1,4 @@
-package com.slamzoom.android.global.utils;
+package com.slamzoom.android.common.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -9,8 +9,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 
-import com.google.common.base.Strings;
-import com.slamzoom.android.global.Constants;
+import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.mediacreation.WatermarkProvider;
 
 import java.util.List;

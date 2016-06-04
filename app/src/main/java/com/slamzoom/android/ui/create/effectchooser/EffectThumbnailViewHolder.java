@@ -8,7 +8,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.slamzoom.android.R;
-import com.slamzoom.android.global.singletons.BusProvider;
+import com.slamzoom.android.common.singletons.BusProvider;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package com.slamzoom.android.global.utils;
+package com.slamzoom.android.common.utils;
 
 import android.graphics.Bitmap;
 import android.os.Environment;

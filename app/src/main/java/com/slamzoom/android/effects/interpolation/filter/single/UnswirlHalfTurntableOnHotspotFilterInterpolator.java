@@ -14,11 +14,15 @@ import jp.co.cyberagent.android.gpuimage.GPUImageSwirlFilter;
 /**
  * Created by clocksmith on 6/3/16.
  */
-public class UnswirlTurntableOnHotspotFilterInterpolator extends FilterInterpolator {
+public class UnswirlHalfTurntableOnHotspotFilterInterpolator extends UnswirlHalfOnHotspotFilterInterpolator {
   Interpolator mAngleInterpolator;
 
-  public UnswirlTurntableOnHotspotFilterInterpolator() {
-    super();
+  public UnswirlHalfTurntableOnHotspotFilterInterpolator() {
+    this(null);
+  }
+
+  public UnswirlHalfTurntableOnHotspotFilterInterpolator(Interpolator interpolator) {
+    super(interpolator);
 
     mAngleInterpolator = new LinearSplineInterpolator(
         PointListBuilder.newPointListBuilder()
@@ -34,9 +38,7 @@ public class UnswirlTurntableOnHotspotFilterInterpolator extends FilterInterpola
   }
 
   @Override
-  public GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot) {
-    return new GPUImageSwirlFilter(0.5f * Math.min(normalizedHotspot.width(), normalizedHotspot.height()),
-        0.5f * mAngleInterpolator.getInterpolation(interpolationValue),
-        new PointF(normalizedHotspot.centerX(), normalizedHotspot.centerY()));
+  public float getRotation() {
+    return BASE_ROTATION * mAngleInterpolator.getInterpolation(getInterpolationValue());
   }
 }

@@ -5,9 +5,8 @@ import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeEyesFilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeFaceFilterInterpolatorGroup;
-import com.slamzoom.android.effects.interpolation.filter.group.MultiBulgeSwimFilterInterpolatorGroup;
-import com.slamzoom.android.effects.interpolation.filter.group.TinyBulgesSwimFilterInterpoaltor;
-import com.slamzoom.android.effects.interpolation.filter.single.NormalizedBulgeFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.group.BulgeLeftRightSwapFilterInterpolatorGroup;
+import com.slamzoom.android.effects.interpolation.filter.single.BulgeWeightedFilterInterpolator;
 import com.slamzoom.android.interpolators.base.LinearInterpolator;
 
 import java.util.List;
@@ -24,7 +23,7 @@ public class BulgePackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolator(new NormalizedBulgeFilterInterpolator())
+            .withFilterInterpolator(new BulgeWeightedFilterInterpolator())
             .withEndPauseSeconds(1)
             .build())
         .build());
@@ -54,17 +53,7 @@ public class BulgePackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolatorGroup(new MultiBulgeSwimFilterInterpolatorGroup())
-            .withEndPauseSeconds(1)
-            .build())
-        .build());
-
-    packModels.add(EffectTemplate.newBuilder()
-        .withName("tinybulges")
-        .addEffectStep(EffectStep.newBuilder()
-            .withDurationSeconds(2)
-            .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolatorGroup(new TinyBulgesSwimFilterInterpoaltor())
+            .withFilterInterpolatorGroup(new BulgeLeftRightSwapFilterInterpolatorGroup())
             .withEndPauseSeconds(1)
             .build())
         .build());

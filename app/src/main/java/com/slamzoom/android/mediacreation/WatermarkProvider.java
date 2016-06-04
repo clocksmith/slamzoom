@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import com.slamzoom.android.R;
-import com.slamzoom.android.global.Constants;
 
 /**
  * Created by clocksmith on 6/2/16.

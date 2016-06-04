@@ -11,8 +11,8 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Maps;
 import com.slamzoom.android.effects.EffectTemplateProvider;
-import com.slamzoom.android.global.Constants;
-import com.slamzoom.android.global.singletons.BusProvider;
+import com.slamzoom.android.common.Constants;
+import com.slamzoom.android.common.singletons.BusProvider;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 import com.squareup.otto.Subscribe;
 

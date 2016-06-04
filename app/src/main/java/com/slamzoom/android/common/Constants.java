@@ -1,4 +1,6 @@
-package com.slamzoom.android.global;
+package com.slamzoom.android.common;
+
+import android.graphics.PointF;
 
 /**
  * Created by clocksmith on 3/1/16.
@@ -26,10 +28,11 @@ public class Constants {
   public static final boolean DEFAULT_USE_LOCAL_COLOR_PALETTE = true;
 
   // arbitrary
-  public static final int MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX = DEFAULT_GIF_SIZE_PX * 2;
+  public static final int MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX = DEFAULT_GIF_SIZE_PX * 4;
 
   public static final float DEFAULT_DURATION_SECONDS = 2;
   public static final float DEFAULT_START_PAUSE_SECONDS = 0;
   public static final float DEFAULT_END_PAUSE_SECONDS = 0;
 
+  public static PointF NORMAL_CENTER_POINT = new PointF(0.5f, 0.5f);
 }

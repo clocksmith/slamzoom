@@ -3,11 +3,11 @@ package com.slamzoom.android.effects.packs;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.EffectStep;
-import com.slamzoom.android.effects.interpolation.filter.group.SwirlEyesFilterInterpolatorGroup;
-import com.slamzoom.android.effects.interpolation.filter.single.UnswirlOnHotspotFilterInterpolator;
-import com.slamzoom.android.effects.interpolation.filter.single.UnswirlTurntableOnHotspotFilterInterpolator;
-import com.slamzoom.android.effects.interpolation.transform.translate.ShakeInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.filter.group.UnswirlEyesOnHotspotFilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.filter.single.UnswirlFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.UnswirlHalfOnHotspotFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.UnswirlHalfTurntableOnHotspotFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.transform.translate.ShakeInterpolatorProvider;
 import com.slamzoom.android.interpolators.base.LinearInterpolator;
 import com.slamzoom.android.interpolators.effect.InAndOutInterpolator;
 import com.slamzoom.android.interpolators.effect.SlamSoftInterpolator;
@@ -33,7 +33,7 @@ public class SwirlPackProvider {
         .withName("swirl2")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolator(new UnswirlOnHotspotFilterInterpolator())
+            .withFilterInterpolator(new UnswirlHalfOnHotspotFilterInterpolator())
             .withDurationSeconds(3f)
             .withEndPauseSeconds(0.5f)
             .build())
@@ -59,7 +59,7 @@ public class SwirlPackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolatorGroup(new SwirlEyesFilterInterpolatorGroup())
+            .withFilterInterpolatorGroup(new UnswirlEyesOnHotspotFilterInterpolatorGroup())
             .withEndPauseSeconds(1)
             .build())
         .build());
@@ -68,7 +68,7 @@ public class SwirlPackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolator(new UnswirlTurntableOnHotspotFilterInterpolator())
+            .withFilterInterpolator(new UnswirlHalfTurntableOnHotspotFilterInterpolator())
             .withEndPauseSeconds(1)
             .build())
         .build());

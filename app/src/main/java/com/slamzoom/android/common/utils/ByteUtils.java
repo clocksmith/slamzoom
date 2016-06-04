@@ -1,4 +1,4 @@
-package com.slamzoom.android.global.utils;
+package com.slamzoom.android.common.utils;
 
 /**
  * Created by clocksmith on 3/11/16.

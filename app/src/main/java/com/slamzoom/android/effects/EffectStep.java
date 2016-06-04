@@ -7,7 +7,7 @@ import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.interpolation.filter.base.FilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.group.FilterInterpolatorGroup;
-import com.slamzoom.android.global.Constants;
+import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.interpolators.base.Interpolator;
 import com.slamzoom.android.effects.interpolation.transform.base.ScaleAndTranslateInterpolatorProvider;
 import com.slamzoom.android.interpolators.effect.NoScaleInterpolator;

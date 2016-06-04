@@ -5,15 +5,15 @@ package com.slamzoom.android.interpolators.base;
  *
  * Holds an interpolator.
  */
-public abstract class InterpolatorHolder {
+public abstract class HasInterpolator {
   protected Interpolator mInterpolator;
 
   /**
    * Default constructor creates a holder with no interpoaltor.
    */
-  public InterpolatorHolder() {}
+  public HasInterpolator() {}
 
-  public InterpolatorHolder(Interpolator interpolator) {
+  public HasInterpolator(Interpolator interpolator) {
     mInterpolator = interpolator;
   }
 

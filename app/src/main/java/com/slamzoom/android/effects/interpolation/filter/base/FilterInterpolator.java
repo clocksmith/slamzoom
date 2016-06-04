@@ -1,9 +1,11 @@
 package com.slamzoom.android.effects.interpolation.filter.base;
 
+import android.graphics.PointF;
 import android.graphics.RectF;
 
+import com.slamzoom.android.common.utils.RectFUtils;
 import com.slamzoom.android.interpolators.base.Interpolator;
-import com.slamzoom.android.interpolators.base.InterpolatorHolder;
+import com.slamzoom.android.interpolators.base.HasInterpolator;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
 
@@ -12,7 +14,10 @@ import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
  *
  * marker abstract class
  */
-public abstract class FilterInterpolator extends InterpolatorHolder {
+public abstract class FilterInterpolator extends HasInterpolator {
+  private float mInterpolationValue;
+  private RectF mNormalizedHotspot;
+
   public FilterInterpolator() {}
 
   public FilterInterpolator(Interpolator interpolator) {
@@ -20,8 +25,30 @@ public abstract class FilterInterpolator extends InterpolatorHolder {
   }
 
   public GPUImageFilter getInterpolationFilter(float percent, RectF normalizedHotspot) {
-    return getFilter(mInterpolator.getInterpolation(percent), normalizedHotspot);
+    mInterpolationValue = mInterpolator.getInterpolation(percent);
+    mNormalizedHotspot = normalizedHotspot;
+    return getFilter();
   }
 
-  protected abstract GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot);
+  public float getInterpolationValue() {
+    return mInterpolationValue;
+  }
+
+  public RectF getNormalizedHotspot() {
+    return mNormalizedHotspot;
+  }
+
+  public float getInterpolationValueCompliment() {
+    return 1 - getInterpolationValue();
+  }
+
+  public PointF getCenterOfHotspot() {
+    return RectFUtils.getCenterPointF(getNormalizedHotspot());
+  }
+
+  public float getMinDimenOfHotspot() {
+    return RectFUtils.getMinDimen(getNormalizedHotspot());
+  }
+
+  protected abstract GPUImageFilter getFilter();
 }

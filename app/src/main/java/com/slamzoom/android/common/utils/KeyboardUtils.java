@@ -1,4 +1,4 @@
-package com.slamzoom.android.global.utils;
+package com.slamzoom.android.common.utils;
 
 import android.app.Activity;
 import android.content.Context;

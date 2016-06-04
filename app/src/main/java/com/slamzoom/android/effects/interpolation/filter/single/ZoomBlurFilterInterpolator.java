@@ -4,7 +4,10 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 
 import com.slamzoom.android.effects.imagefilters.GPUImageZoomBlurFilter;
+import com.slamzoom.android.effects.interpolation.filter.base.BaseZoomBlurFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.base.FilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.base.HasBlurSize;
+import com.slamzoom.android.effects.interpolation.filter.base.HasCenter;
 import com.slamzoom.android.interpolators.base.Interpolator;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
@@ -12,14 +15,22 @@ import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
 /**
  * Created by clocksmith on 3/21/16.
  */
-public class ZoomBlurFilterInterpolator extends FilterInterpolator {
+public class ZoomBlurFilterInterpolator extends BaseZoomBlurFilterInterpolator {
+  public ZoomBlurFilterInterpolator() {
+    this(null);
+  }
+
   public ZoomBlurFilterInterpolator(Interpolator interpolator) {
-    super((interpolator));
+    super(interpolator);
   }
 
   @Override
-  public GPUImageFilter getFilter(float interpolationValue, RectF normalizedHotspot) {
-    PointF focus = new PointF(normalizedHotspot.centerX(), normalizedHotspot.centerY());
-    return new GPUImageZoomBlurFilter(5 * interpolationValue, focus);
+  public float getBlurSize() {
+    return BASE_BLUR_SIZE * getInterpolationValue();
+  }
+
+  @Override
+  public PointF getCenter() {
+    return getCenterOfHotspot();
   }
 }
