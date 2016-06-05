@@ -5,6 +5,6 @@ package com.slamzoom.android.effects.interpolation.transform.translate;
  */
 public class SuperShakeInterpolatorProvider extends BaseShakeInterpolatorProvider {
   public SuperShakeInterpolatorProvider() {
-    super(15, 30);
+    super(6, 10);
   }
 }
