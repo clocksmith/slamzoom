@@ -3,16 +3,15 @@ package com.slamzoom.android.effects.interpolation.filter.group;
 import android.graphics.PointF;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.interpolation.filter.base.FilterInterpolator;
-import com.slamzoom.android.effects.interpolation.filter.single.BulgeWeightedFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.BulgeInAtHotspotFilterInterpolator;
 
 import java.util.List;
 
 /**
  * Created by clocksmith on 4/22/16.
  */
-public class BulgeEyesFilterInterpolatorGroup implements FilterInterpolatorGroup {
+public class BulgeDoubleLeftRightFilterInterpolatorGroup implements FilterInterpolatorGroup {
   private static final float RADIUS = 0.5f;
   private static final float SCALE = 0.5f;
 
@@ -24,7 +23,7 @@ public class BulgeEyesFilterInterpolatorGroup implements FilterInterpolatorGroup
     );
   }
 
-  private static class LeftEyeFilterInterpolator extends BulgeWeightedFilterInterpolator {
+  private static class LeftEyeFilterInterpolator extends BulgeInAtHotspotFilterInterpolator {
     @Override
     public PointF getCenter() {
       return new PointF((
@@ -33,7 +32,7 @@ public class BulgeEyesFilterInterpolatorGroup implements FilterInterpolatorGroup
     }
   }
 
-  private static class RightEyeFilterInterpolator extends BulgeWeightedFilterInterpolator {
+  private static class RightEyeFilterInterpolator extends BulgeInAtHotspotFilterInterpolator {
     @Override
     public PointF getCenter() {
       return new PointF((

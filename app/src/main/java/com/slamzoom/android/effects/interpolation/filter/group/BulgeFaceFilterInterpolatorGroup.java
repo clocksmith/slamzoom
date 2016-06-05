@@ -1,24 +1,17 @@
 package com.slamzoom.android.effects.interpolation.filter.group;
 
 import android.graphics.PointF;
-import android.graphics.RectF;
 
 import com.google.common.collect.ImmutableList;
 import com.slamzoom.android.effects.interpolation.filter.base.FilterInterpolator;
-import com.slamzoom.android.effects.interpolation.filter.single.BulgeWeightedFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.BulgeInAtHotspotFilterInterpolator;
 
 import java.util.List;
-
-import jp.co.cyberagent.android.gpuimage.GPUImageBulgeDistortionFilter;
-import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
 
 /**
  * Created by clocksmith on 5/16/16.
  */
 public class BulgeFaceFilterInterpolatorGroup implements FilterInterpolatorGroup {
-    private static final float RADIUS = 0.5f;
-    private static final float SCALE = 0.5f;
-
     @Override
     public List<FilterInterpolator> getFilterInterpolators() {
       return ImmutableList.<FilterInterpolator>of(
@@ -28,7 +21,7 @@ public class BulgeFaceFilterInterpolatorGroup implements FilterInterpolatorGroup
       );
     }
 
-    private static class LeftEyeFilterInterpolator extends BulgeWeightedFilterInterpolator {
+    private static class LeftEyeFilterInterpolator extends BulgeInAtHotspotFilterInterpolator {
       @Override
       public PointF getCenter() {
         return new PointF(
@@ -37,7 +30,7 @@ public class BulgeFaceFilterInterpolatorGroup implements FilterInterpolatorGroup
       }
     }
 
-    private static class RightEyeFilterInterpolator extends BulgeWeightedFilterInterpolator {
+    private static class RightEyeFilterInterpolator extends BulgeInAtHotspotFilterInterpolator {
       @Override
       public PointF getCenter() {
         return new PointF(
@@ -46,7 +39,7 @@ public class BulgeFaceFilterInterpolatorGroup implements FilterInterpolatorGroup
       }
     }
 
-  private static class MouthFilterInterpolator extends BulgeWeightedFilterInterpolator {
+  private static class MouthFilterInterpolator extends BulgeInAtHotspotFilterInterpolator {
     @Override
     public PointF getCenter() {
       return new PointF(

@@ -7,7 +7,7 @@ import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
 import com.slamzoom.android.interpolators.spline.PointListBuilder;
 import com.slamzoom.android.effects.interpolation.filter.single.GuassianUnblurFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.UnsaturateFilterInterpolator;
-import com.slamzoom.android.effects.interpolation.filter.single.ZoomBlurFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.ZoomBlurAtHotspotFilterInterpolator;
 import com.slamzoom.android.interpolators.effect.SlamHardInAndOutInterpolator;
 import com.slamzoom.android.interpolators.effect.SlamHardInterpolator;
 import com.slamzoom.android.interpolators.effect.SlamHardNoPauseInterpolator;
@@ -27,7 +27,7 @@ public class SlamPackProvider {
         .withName("slamin")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new SlamHardNoPauseInterpolator())
-            .withFilterInterpolator(new ZoomBlurFilterInterpolator(new LinearSplineInterpolator(
+            .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(new LinearSplineInterpolator(
                 PointListBuilder.newPointListBuilder()
                     .add(0, 0)
                     .add(0.9f, 1f)
@@ -45,7 +45,7 @@ public class SlamPackProvider {
         .withName("slamout")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new SlamSoftOutNoPauseInterpolator())
-            .withFilterInterpolator(new ZoomBlurFilterInterpolator(new LinearSplineInterpolator(
+            .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(new LinearSplineInterpolator(
                 PointListBuilder.newPointListBuilder()
                     .add(0, 0)
                     .add(0.8f, 1f)
@@ -61,7 +61,7 @@ public class SlamPackProvider {
         .withName("slamio")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new SlamHardInAndOutInterpolator())
-            .withFilterInterpolator(new ZoomBlurFilterInterpolator(new LinearSplineInterpolator(
+            .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(new LinearSplineInterpolator(
                 PointListBuilder.newPointListBuilder()
                     .add(0, 0)
                     .add(0.35f, 0)
@@ -88,7 +88,7 @@ public class SlamPackProvider {
         .withName("grayslam ")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new SlamHardInterpolator())
-            .withFilterInterpolator(new ZoomBlurFilterInterpolator(new LinearSplineInterpolator(
+            .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(new LinearSplineInterpolator(
                 PointListBuilder.newPointListBuilder()
                     .add(0, 0)
                     .add(0.7f, 0)

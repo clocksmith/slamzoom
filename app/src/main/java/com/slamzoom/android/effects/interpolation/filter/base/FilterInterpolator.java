@@ -18,7 +18,9 @@ public abstract class FilterInterpolator extends HasInterpolator {
   private float mInterpolationValue;
   private RectF mNormalizedHotspot;
 
-  public FilterInterpolator() {}
+  public FilterInterpolator() {
+    this(null);
+  }
 
   public FilterInterpolator(Interpolator interpolator) {
    super(interpolator);
@@ -36,18 +38,6 @@ public abstract class FilterInterpolator extends HasInterpolator {
 
   public RectF getNormalizedHotspot() {
     return mNormalizedHotspot;
-  }
-
-  public float getInterpolationValueCompliment() {
-    return 1 - getInterpolationValue();
-  }
-
-  public PointF getCenterOfHotspot() {
-    return RectFUtils.getCenterPointF(getNormalizedHotspot());
-  }
-
-  public float getMinDimenOfHotspot() {
-    return RectFUtils.getMinDimen(getNormalizedHotspot());
   }
 
   protected abstract GPUImageFilter getFilter();

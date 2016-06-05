@@ -8,7 +8,8 @@ import android.graphics.RectF;
  */
 public class RectFUtils {
   public static float getMinDimen(RectF rect) {
-    return Math.min(rect.width(), rect.height());
+//    return Math.min(rect.width(), rect.height());
+    return rect.width();
   }
 
   public static PointF getCenterPointF(RectF rect) {

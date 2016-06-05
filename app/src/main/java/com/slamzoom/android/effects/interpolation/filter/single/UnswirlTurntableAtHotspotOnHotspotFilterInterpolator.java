@@ -1,27 +1,20 @@
 package com.slamzoom.android.effects.interpolation.filter.single;
 
-import android.graphics.PointF;
-import android.graphics.RectF;
-
-import com.slamzoom.android.effects.interpolation.filter.base.FilterInterpolator;
 import com.slamzoom.android.interpolators.base.Interpolator;
 import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
 import com.slamzoom.android.interpolators.spline.PointListBuilder;
 
-import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
-import jp.co.cyberagent.android.gpuimage.GPUImageSwirlFilter;
-
 /**
  * Created by clocksmith on 6/3/16.
  */
-public class UnswirlHalfTurntableOnHotspotFilterInterpolator extends UnswirlHalfOnHotspotFilterInterpolator {
+public class UnswirlTurntableAtHotspotOnHotspotFilterInterpolator extends UnswirlAtHotspotOnHotspotFilterInterpolator {
   Interpolator mAngleInterpolator;
 
-  public UnswirlHalfTurntableOnHotspotFilterInterpolator() {
+  public UnswirlTurntableAtHotspotOnHotspotFilterInterpolator() {
     this(null);
   }
 
-  public UnswirlHalfTurntableOnHotspotFilterInterpolator(Interpolator interpolator) {
+  public UnswirlTurntableAtHotspotOnHotspotFilterInterpolator(Interpolator interpolator) {
     super(interpolator);
 
     mAngleInterpolator = new LinearSplineInterpolator(

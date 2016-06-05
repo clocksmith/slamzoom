@@ -1,0 +1,38 @@
+package com.slamzoom.android.effects.interpolation.filter.base.parameters.calculators;
+
+import android.graphics.PointF;
+import android.graphics.RectF;
+
+import com.slamzoom.android.common.utils.RectFUtils;
+import com.slamzoom.android.effects.interpolation.filter.base.FilterInterpolator;
+
+/**
+ * Created by clocksmith on 6/4/16.
+ */
+public class BaseCalculator {
+  private FilterInterpolator mFilterInterpolator;
+
+  public BaseCalculator(FilterInterpolator filterInterpolator) {
+    mFilterInterpolator = filterInterpolator;
+  }
+
+  public float getInterpolationValue() {
+    return mFilterInterpolator.getInterpolationValue();
+  }
+
+  public RectF getNormalizedHotspot() {
+    return mFilterInterpolator.getNormalizedHotspot();
+  }
+
+  protected float getInterpolationValueCompliment() {
+    return 1 - getInterpolationValue();
+  }
+
+  protected PointF getCenterOfHotspot() {
+    return RectFUtils.getCenterPointF(getNormalizedHotspot());
+  }
+
+  protected float getMinDimenOfHotspot() {
+    return RectFUtils.getMinDimen(getNormalizedHotspot());
+  }
+}

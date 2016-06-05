@@ -3,7 +3,7 @@ package com.slamzoom.android.effects.packs;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.effects.EffectTemplate;
-import com.slamzoom.android.effects.interpolation.filter.single.BulgeWeightedFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.BulgeInAtHotspotFilterInterpolator;
 import com.slamzoom.android.interpolators.base.LinearInterpolator;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class DebugPackProvider {
             .withEndPauseSeconds(1)
             .withDurationSeconds(3f)
             .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolator(new BulgeWeightedFilterInterpolator())
+            .withFilterInterpolator(new BulgeInAtHotspotFilterInterpolator())
             .build())
         .build());
 

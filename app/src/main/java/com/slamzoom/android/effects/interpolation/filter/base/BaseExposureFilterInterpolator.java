@@ -1,10 +1,10 @@
 package com.slamzoom.android.effects.interpolation.filter.base;
 
+import com.slamzoom.android.effects.interpolation.filter.base.parameters.HasExposure;
 import com.slamzoom.android.interpolators.base.Interpolator;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageExposureFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
-import jp.co.cyberagent.android.gpuimage.GPUImageGaussianBlurFilter;
 
 /**
  * Created by clocksmith on 6/4/16.

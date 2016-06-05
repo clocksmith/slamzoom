@@ -3,7 +3,9 @@ package com.slamzoom.android.effects.interpolation.filter.base;
 import android.graphics.PointF;
 
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.common.utils.RectFUtils;
+import com.slamzoom.android.effects.interpolation.filter.base.parameters.HasCenter;
+import com.slamzoom.android.effects.interpolation.filter.base.parameters.HasRadius;
+import com.slamzoom.android.effects.interpolation.filter.base.parameters.HasRotation;
 import com.slamzoom.android.interpolators.base.Interpolator;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
@@ -12,12 +14,15 @@ import jp.co.cyberagent.android.gpuimage.GPUImageSwirlFilter;
 /**
  * Created by clocksmith on 6/4/16.
  */
-public abstract class BaseSwirlFilterInterpolator extends FilterInterpolator implements HasRadius, HasRotation, HasCenter {
+public abstract class BaseSwirlFilterInterpolator extends FilterInterpolator
+    implements HasRadius, HasRotation, HasCenter {
   protected static final float BASE_RADIUS = 0.5f;
   protected static final float BASE_ROTATION = 1;
   protected static final PointF BASE_CENTER = Constants.NORMAL_CENTER_POINT;
 
-  public BaseSwirlFilterInterpolator() {}
+  public BaseSwirlFilterInterpolator() {
+    this(null);
+  }
 
   public BaseSwirlFilterInterpolator(Interpolator interpolator) {
     super(interpolator);

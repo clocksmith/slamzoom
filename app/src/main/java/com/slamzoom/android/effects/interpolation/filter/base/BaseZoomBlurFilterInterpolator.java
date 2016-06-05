@@ -1,11 +1,11 @@
 package com.slamzoom.android.effects.interpolation.filter.base;
 
 import android.graphics.PointF;
-import android.graphics.RectF;
 
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.common.utils.RectFUtils;
 import com.slamzoom.android.effects.imagefilters.GPUImageZoomBlurFilter;
+import com.slamzoom.android.effects.interpolation.filter.base.parameters.HasBlurSize;
+import com.slamzoom.android.effects.interpolation.filter.base.parameters.HasCenter;
 import com.slamzoom.android.interpolators.base.Interpolator;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;

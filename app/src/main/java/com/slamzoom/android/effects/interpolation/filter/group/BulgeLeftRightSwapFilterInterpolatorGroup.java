@@ -4,7 +4,7 @@ import android.graphics.PointF;
 
 import com.google.common.collect.ImmutableList;
 import com.slamzoom.android.effects.interpolation.filter.base.FilterInterpolator;
-import com.slamzoom.android.effects.interpolation.filter.single.BulgeWeightedFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.BulgeInAtHotspotFilterInterpolator;
 import com.slamzoom.android.interpolators.base.LinearInterpolator;
 
 import java.util.List;
@@ -21,7 +21,7 @@ public class BulgeLeftRightSwapFilterInterpolatorGroup implements FilterInterpol
     );
   }
 
-  private static class LeftToRightBulgeInterpolator extends BulgeWeightedFilterInterpolator {
+  private static class LeftToRightBulgeInterpolator extends BulgeInAtHotspotFilterInterpolator {
     @Override
     public PointF getCenter() {
       return new PointF(
@@ -32,7 +32,7 @@ public class BulgeLeftRightSwapFilterInterpolatorGroup implements FilterInterpol
     }
   }
 
-  private static class RightToLeftBulgeInterpolator extends BulgeWeightedFilterInterpolator {
+  private static class RightToLeftBulgeInterpolator extends BulgeInAtHotspotFilterInterpolator {
     @Override
     public PointF getCenter() {
       return new PointF(

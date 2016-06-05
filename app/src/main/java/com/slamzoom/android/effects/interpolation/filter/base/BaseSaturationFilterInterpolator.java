@@ -1,8 +1,8 @@
 package com.slamzoom.android.effects.interpolation.filter.base;
 
+import com.slamzoom.android.effects.interpolation.filter.base.parameters.HasSaturation;
 import com.slamzoom.android.interpolators.base.Interpolator;
 
-import jp.co.cyberagent.android.gpuimage.GPUImageExposureFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageSaturationFilter;
 

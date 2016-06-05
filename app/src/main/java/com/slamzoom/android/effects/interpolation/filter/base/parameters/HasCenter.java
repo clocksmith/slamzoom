@@ -1,4 +1,4 @@
-package com.slamzoom.android.effects.interpolation.filter.base;
+package com.slamzoom.android.effects.interpolation.filter.base.parameters;
 
 import android.graphics.PointF;
 

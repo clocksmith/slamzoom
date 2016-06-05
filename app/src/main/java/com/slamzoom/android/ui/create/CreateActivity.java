@@ -139,9 +139,9 @@ public class CreateActivity extends AppCompatActivity {
       case R.id.action_ok:
         handleAddTextConfirmed();
         return true;
-      case R.id.action_add_to_library:
-        addCurrentGifToLibrary();
-        return true;
+//      case R.id.action_add_to_library:
+//        addCurrentGifToLibrary();
+//        return true;
       case R.id.action_share:
         shareCurrentGif();
         return true;

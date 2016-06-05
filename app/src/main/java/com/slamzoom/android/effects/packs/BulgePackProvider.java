@@ -3,10 +3,10 @@ package com.slamzoom.android.effects.packs;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.effects.EffectTemplate;
-import com.slamzoom.android.effects.interpolation.filter.group.BulgeEyesFilterInterpolatorGroup;
+import com.slamzoom.android.effects.interpolation.filter.group.BulgeDoubleLeftRightFilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeFaceFilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeLeftRightSwapFilterInterpolatorGroup;
-import com.slamzoom.android.effects.interpolation.filter.single.BulgeWeightedFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.BulgeInAtHotspotFilterInterpolator;
 import com.slamzoom.android.interpolators.base.LinearInterpolator;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class BulgePackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolator(new BulgeWeightedFilterInterpolator())
+            .withFilterInterpolator(new BulgeInAtHotspotFilterInterpolator())
             .withEndPauseSeconds(1)
             .build())
         .build());
@@ -33,7 +33,7 @@ public class BulgePackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolatorGroup(new BulgeEyesFilterInterpolatorGroup())
+            .withFilterInterpolatorGroup(new BulgeDoubleLeftRightFilterInterpolatorGroup())
             .withEndPauseSeconds(1)
             .build())
         .build());

@@ -8,7 +8,7 @@ import android.graphics.PointF;
 public class Constants {
   // Flags
   public static final boolean USE_IMAGE_WATERMARK = false;
-  public static final boolean USE_TEXT_WATERMARK = true;
+  public static final boolean USE_TEXT_WATERMARK = false;
   public static final boolean USE_WATERMARK = USE_IMAGE_WATERMARK || USE_TEXT_WATERMARK;
   // Debug
   public static final boolean SAVE_INDIVIDUAL_FRAMES_AS_BITMAPS = false;
@@ -28,7 +28,7 @@ public class Constants {
   public static final boolean DEFAULT_USE_LOCAL_COLOR_PALETTE = true;
 
   // arbitrary
-  public static final int MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX = DEFAULT_GIF_SIZE_PX * 4;
+  public static final int MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX = DEFAULT_GIF_SIZE_PX * 3;
 
   public static final float DEFAULT_DURATION_SECONDS = 2;
   public static final float DEFAULT_START_PAUSE_SECONDS = 0;

@@ -8,12 +8,12 @@ import com.slamzoom.android.interpolators.base.Interpolator;
 /**
  * Created by clocksmith on 4/2/16.
  */
-public class BulgeWeightedFilterInterpolator extends BaseBulgeFilterInterpolator {
-  public BulgeWeightedFilterInterpolator() {
+public class BulgeInAtHotspotFilterInterpolator extends BaseBulgeFilterInterpolator {
+  public BulgeInAtHotspotFilterInterpolator() {
     this(null);
   }
 
-  public BulgeWeightedFilterInterpolator(Interpolator interpolator) {
+  public BulgeInAtHotspotFilterInterpolator(Interpolator interpolator) {
     super(interpolator);
   }
 

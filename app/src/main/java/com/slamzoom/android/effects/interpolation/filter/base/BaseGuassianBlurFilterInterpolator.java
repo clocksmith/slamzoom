@@ -1,5 +1,6 @@
 package com.slamzoom.android.effects.interpolation.filter.base;
 
+import com.slamzoom.android.effects.interpolation.filter.base.parameters.HasBlurSize;
 import com.slamzoom.android.interpolators.base.Interpolator;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;

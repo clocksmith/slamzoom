@@ -3,10 +3,11 @@ package com.slamzoom.android.effects.packs;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.EffectStep;
-import com.slamzoom.android.effects.interpolation.filter.group.UnswirlEyesOnHotspotFilterInterpolatorGroup;
+import com.slamzoom.android.effects.interpolation.filter.group.UnswirlEyesFilterInterpolatorGroup;
+import com.slamzoom.android.effects.interpolation.filter.single.UnswirlAtHotspotFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.UnswirlAtHotspotOnHotspotFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.UnswirlFilterInterpolator;
-import com.slamzoom.android.effects.interpolation.filter.single.UnswirlHalfOnHotspotFilterInterpolator;
-import com.slamzoom.android.effects.interpolation.filter.single.UnswirlHalfTurntableOnHotspotFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.UnswirlTurntableAtHotspotOnHotspotFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.translate.ShakeInterpolatorProvider;
 import com.slamzoom.android.interpolators.base.LinearInterpolator;
 import com.slamzoom.android.interpolators.effect.InAndOutInterpolator;
@@ -30,10 +31,10 @@ public class SwirlPackProvider {
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
-        .withName("swirl2")
+        .withName("swirlface")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolator(new UnswirlHalfOnHotspotFilterInterpolator())
+            .withFilterInterpolator(new UnswirlAtHotspotOnHotspotFilterInterpolator())
             .withDurationSeconds(3f)
             .withEndPauseSeconds(0.5f)
             .build())
@@ -46,11 +47,27 @@ public class SwirlPackProvider {
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
+        .withName("swirlyface")
+        .addEffectStep(EffectStep.newBuilder()
+            .withScaleInterpolator(new InAndOutInterpolator())
+            .withFilterInterpolator(new UnswirlAtHotspotOnHotspotFilterInterpolator())
+            .build())
+        .build());
+    packModels.add(EffectTemplate.newBuilder()
         .withName("swirlslam")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new SlamSoftInterpolator())
             .withTranslateInterpolator(new ShakeInterpolatorProvider())
-            .withFilterInterpolator(new UnswirlFilterInterpolator())
+            .withFilterInterpolator(new UnswirlAtHotspotFilterInterpolator())
+            .withEndPauseSeconds(0.5f)
+            .build())
+        .build());
+    packModels.add(EffectTemplate.newBuilder()
+        .withName("swirlaway")
+        .addEffectStep(EffectStep.newBuilder()
+            .withScaleInterpolator(new LinearInterpolator())
+            .withFilterInterpolator(new UnswirlAtHotspotFilterInterpolator())
+            .withDurationSeconds(3f)
             .withEndPauseSeconds(0.5f)
             .build())
         .build());
@@ -59,16 +76,16 @@ public class SwirlPackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolatorGroup(new UnswirlEyesOnHotspotFilterInterpolatorGroup())
+            .withFilterInterpolatorGroup(new UnswirlEyesFilterInterpolatorGroup())
             .withEndPauseSeconds(1)
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
-        .withName("swirltable")
+        .withName("swirldj")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolator(new UnswirlHalfTurntableOnHotspotFilterInterpolator())
+            .withFilterInterpolator(new UnswirlTurntableAtHotspotOnHotspotFilterInterpolator())
             .withEndPauseSeconds(1)
             .build())
         .build());
