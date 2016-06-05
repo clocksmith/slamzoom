@@ -32,6 +32,6 @@ public class UnswirlTurntableAtHotspotOnHotspotFilterInterpolator extends Unswir
 
   @Override
   public float getRotation() {
-    return BASE_ROTATION * mAngleInterpolator.getInterpolation(getInterpolationValue());
+    return mRotationCalculator.getValueFromSubInterpolationOfInterpolation(mAngleInterpolator);
   }
 }

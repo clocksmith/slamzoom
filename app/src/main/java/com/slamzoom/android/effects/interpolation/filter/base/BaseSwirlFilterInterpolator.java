@@ -6,6 +6,8 @@ import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.effects.interpolation.filter.base.parameters.HasCenter;
 import com.slamzoom.android.effects.interpolation.filter.base.parameters.HasRadius;
 import com.slamzoom.android.effects.interpolation.filter.base.parameters.HasRotation;
+import com.slamzoom.android.effects.interpolation.filter.base.parameters.calculators.CenterCalculator;
+import com.slamzoom.android.effects.interpolation.filter.base.parameters.calculators.FloatCalculator;
 import com.slamzoom.android.interpolators.base.Interpolator;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
@@ -18,7 +20,10 @@ public abstract class BaseSwirlFilterInterpolator extends FilterInterpolator
     implements HasRadius, HasRotation, HasCenter {
   protected static final float BASE_RADIUS = 0.5f;
   protected static final float BASE_ROTATION = 1;
-  protected static final PointF BASE_CENTER = Constants.NORMAL_CENTER_POINT;
+
+  protected FloatCalculator mRadiusCalculator;
+  protected FloatCalculator mRotationCalculator;
+  protected CenterCalculator mCenterCalculator;
 
   public BaseSwirlFilterInterpolator() {
     this(null);
@@ -26,6 +31,9 @@ public abstract class BaseSwirlFilterInterpolator extends FilterInterpolator
 
   public BaseSwirlFilterInterpolator(Interpolator interpolator) {
     super(interpolator);
+    mRadiusCalculator = new FloatCalculator(this, BASE_RADIUS);
+    mRotationCalculator = new FloatCalculator(this, BASE_ROTATION);
+    mCenterCalculator = new CenterCalculator(this);
   }
 
   @Override
@@ -35,16 +43,16 @@ public abstract class BaseSwirlFilterInterpolator extends FilterInterpolator
 
   @Override
   public float getRadius() {
-    return BASE_RADIUS;
+    return mRadiusCalculator.getBaseValue();
   }
 
   @Override
   public float getRotation() {
-    return BASE_ROTATION;
+    return mRotationCalculator.getBaseValue();
   }
 
   @Override
   public PointF getCenter() {
-    return BASE_CENTER;
+    return mCenterCalculator.getBaseValue();
   }
 }

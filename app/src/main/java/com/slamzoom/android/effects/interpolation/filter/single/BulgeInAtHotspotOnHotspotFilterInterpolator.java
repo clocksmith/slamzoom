@@ -19,16 +19,16 @@ public class BulgeInAtHotspotOnHotspotFilterInterpolator extends BaseBulgeFilter
 
   @Override
   public float getRadius() {
-    return BASE_RADIUS * getMinDimenOfHotspot();
+    return mRadiusCalculator.getValueFromInterpolation();
   }
 
   @Override
   public float getScale() {
-    return BASE_SCALE * getInterpolationValue();
+    return mScaleCalculator.getValueFromInterpolation();
   }
 
   @Override
   public PointF getCenter() {
-    return getCenterOfHotspot();
+    return mCenterCalculator.getHotspotCenter();
   }
 }

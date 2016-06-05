@@ -12,7 +12,7 @@ import java.util.List;
  * Created by clocksmith on 6/2/16.
  */
 public class UnswirlEyesFilterInterpolatorGroup implements FilterInterpolatorGroup {
-  private static final float EYE_RADIUS_MULTIPLIER = 0.3f;
+  private static final float BASE_EYE_RADIUS = 0.25f;
 
   @Override
   public List<FilterInterpolator> getFilterInterpolators() {
@@ -23,35 +23,34 @@ public class UnswirlEyesFilterInterpolatorGroup implements FilterInterpolatorGro
   }
 
   private static class LeftFilterInterpolator extends UnswirlAtHotspotFilterInterpolator {
+    public LeftFilterInterpolator() {
+      mRadiusCalculator.setBaseValue(BASE_EYE_RADIUS);
+    }
+
     @Override
     public float getRadius() {
-      return EYE_RADIUS_MULTIPLIER * getMinDimenOfHotspot();
+      return mRadiusCalculator.getValueFromMinHotspotDimen();
     }
 
     @Override
     public PointF getCenter() {
-      return new PointF(
-          (getNormalizedHotspot().left + getNormalizedHotspot().centerX()) / 2,
-          getNormalizedHotspot().centerY());
+      return mCenterCalculator.getHotspotPoint(0.25f, 0.5f);
     }
   }
 
   private static class RightFilterInterpolator extends UnswirlAtHotspotFilterInterpolator {
-    @Override
-    public float getRadius() {
-      return EYE_RADIUS_MULTIPLIER * getMinDimenOfHotspot();
+    public RightFilterInterpolator() {
+      mRadiusCalculator.setBaseValue(BASE_EYE_RADIUS);
     }
 
-//    @Override
-//    public float getRadius() {
-//      return 0.1f;
-//    }
+    @Override
+    public float getRadius() {
+      return mRadiusCalculator.getValueFromMinHotspotDimen();
+    }
 
     @Override
     public PointF getCenter() {
-      return new PointF(
-          (getNormalizedHotspot().right + getNormalizedHotspot().centerX()) / 2,
-          getNormalizedHotspot().centerY());
+      return mCenterCalculator.getHotspotPoint(0.75f, 0.5f);
     }
   }
 }

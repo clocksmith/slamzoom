@@ -2,10 +2,11 @@ package com.slamzoom.android.effects.interpolation.filter.base;
 
 import android.graphics.PointF;
 
-import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.effects.imagefilters.GPUImageZoomBlurFilter;
 import com.slamzoom.android.effects.interpolation.filter.base.parameters.HasBlurSize;
 import com.slamzoom.android.effects.interpolation.filter.base.parameters.HasCenter;
+import com.slamzoom.android.effects.interpolation.filter.base.parameters.calculators.CenterCalculator;
+import com.slamzoom.android.effects.interpolation.filter.base.parameters.calculators.FloatCalculator;
 import com.slamzoom.android.interpolators.base.Interpolator;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
@@ -15,7 +16,9 @@ import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
  */
 public class BaseZoomBlurFilterInterpolator extends FilterInterpolator implements HasBlurSize, HasCenter {
   protected static final float BASE_BLUR_SIZE = 5;
-  protected static final PointF BASE_CENTER = Constants.NORMAL_CENTER_POINT;
+
+  protected FloatCalculator mBlurCalculator;
+  protected CenterCalculator mCenterCalculator;
 
   public BaseZoomBlurFilterInterpolator() {
     this(null);
@@ -23,6 +26,8 @@ public class BaseZoomBlurFilterInterpolator extends FilterInterpolator implement
 
   public BaseZoomBlurFilterInterpolator(Interpolator interpolator) {
     super(interpolator);
+    mBlurCalculator = new FloatCalculator(this, BASE_BLUR_SIZE);
+    mCenterCalculator = new CenterCalculator(this);
   }
 
   @Override
@@ -32,11 +37,11 @@ public class BaseZoomBlurFilterInterpolator extends FilterInterpolator implement
 
   @Override
   public float getBlurSize() {
-    return BASE_BLUR_SIZE;
+    return mBlurCalculator.getBaseValue();
   }
 
   @Override
   public PointF getCenter() {
-    return BASE_CENTER;
+    return mCenterCalculator.getBaseValue();
   }
 }

@@ -19,6 +19,6 @@ public class UnswirlFilterInterpolator extends BaseSwirlFilterInterpolator {
 
   @Override
   public float getRotation() {
-    return BASE_ROTATION * getInterpolationValueCompliment();
+    return mRotationCalculator.getValueFromInterpolationCompliment();
   }
 }

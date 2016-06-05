@@ -12,9 +12,6 @@ import java.util.List;
  * Created by clocksmith on 4/22/16.
  */
 public class BulgeDoubleLeftRightFilterInterpolatorGroup implements FilterInterpolatorGroup {
-  private static final float RADIUS = 0.5f;
-  private static final float SCALE = 0.5f;
-
   @Override
   public List<FilterInterpolator> getFilterInterpolators() {
     return ImmutableList.<FilterInterpolator>of(
@@ -26,18 +23,14 @@ public class BulgeDoubleLeftRightFilterInterpolatorGroup implements FilterInterp
   private static class LeftEyeFilterInterpolator extends BulgeInAtHotspotFilterInterpolator {
     @Override
     public PointF getCenter() {
-      return new PointF((
-          getNormalizedHotspot().left + getNormalizedHotspot().centerX()) / 2,
-          getNormalizedHotspot().centerY());
+      return mCenterCalculator.getHotspotPoint(0.25f, 0.5f);
     }
   }
 
   private static class RightEyeFilterInterpolator extends BulgeInAtHotspotFilterInterpolator {
     @Override
     public PointF getCenter() {
-      return new PointF((
-          getNormalizedHotspot().right + getNormalizedHotspot().centerX()) / 2,
-          getNormalizedHotspot().centerY());
+      return mCenterCalculator.getHotspotPoint(0.75f, 0.50f);
     }
   }
 }

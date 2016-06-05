@@ -2,11 +2,11 @@ package com.slamzoom.android.effects.interpolation.filter.base;
 
 import android.graphics.PointF;
 
-import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.effects.interpolation.filter.base.parameters.HasCenter;
 import com.slamzoom.android.effects.interpolation.filter.base.parameters.HasRadius;
 import com.slamzoom.android.effects.interpolation.filter.base.parameters.HasScale;
-import com.slamzoom.android.effects.interpolation.filter.base.parameters.calculators.RadiusCalculator;
+import com.slamzoom.android.effects.interpolation.filter.base.parameters.calculators.CenterCalculator;
+import com.slamzoom.android.effects.interpolation.filter.base.parameters.calculators.FloatCalculator;
 import com.slamzoom.android.interpolators.base.Interpolator;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageBulgeDistortionFilter;
@@ -17,11 +17,12 @@ import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
  */
 public abstract class BaseBulgeFilterInterpolator extends FilterInterpolator
     implements HasRadius, HasScale, HasCenter {
-  protected static final float BASE_RADIUS = 0.5f;
-  protected static final float BASE_SCALE = 0.5f;
-  protected static final PointF BASE_CENTER = Constants.NORMAL_CENTER_POINT;
+  private static final float BASE_RADIUS = 0.5f;
+  private static final float BASE_SCALE = 0.5f;
 
-  RadiusCalculator mRadiusCalculator;
+  protected FloatCalculator mRadiusCalculator;
+  protected FloatCalculator mScaleCalculator;
+  protected CenterCalculator mCenterCalculator;
 
   public BaseBulgeFilterInterpolator() {
     this(null);
@@ -29,7 +30,9 @@ public abstract class BaseBulgeFilterInterpolator extends FilterInterpolator
 
   public BaseBulgeFilterInterpolator(Interpolator interpolator) {
     super(interpolator);
-    mRadiusCalculator = new RadiusCalculator(this, BASE_RADIUS);
+    mRadiusCalculator = new FloatCalculator(this, BASE_RADIUS);
+    mScaleCalculator = new FloatCalculator(this, BASE_SCALE);
+    mCenterCalculator = new CenterCalculator(this);
   }
 
   @Override
@@ -39,16 +42,16 @@ public abstract class BaseBulgeFilterInterpolator extends FilterInterpolator
 
   @Override
   public float getRadius() {
-    return mRadiusCalculator.getBaseRadius();
+    return mRadiusCalculator.getBaseValue();
   }
 
   @Override
   public float getScale() {
-    return BASE_SCALE;
+    return mScaleCalculator.getBaseValue();
   }
 
   @Override
   public PointF getCenter() {
-    return BASE_CENTER;
+    return mCenterCalculator.getBaseValue();
   }
 }

@@ -19,16 +19,16 @@ public class UnswirlAtHotspotFilterInterpolator extends BaseSwirlFilterInterpola
 
   @Override
   public float getRadius() {
-    return BASE_RADIUS * getInterpolationValueCompliment();
+    return mRadiusCalculator.getValueFromInterpolationCompliment();
   }
 
   @Override
   public float getRotation() {
-    return BASE_ROTATION * getInterpolationValueCompliment();
+    return mRotationCalculator.getValueFromInterpolationCompliment();
   }
 
   @Override
   public PointF getCenter() {
-    return getCenterOfHotspot();
+    return mCenterCalculator.getHotspotCenter();
   }
 }

@@ -1,6 +1,7 @@
 package com.slamzoom.android.effects.interpolation.filter.base;
 
 import com.slamzoom.android.effects.interpolation.filter.base.parameters.HasBlurSize;
+import com.slamzoom.android.effects.interpolation.filter.base.parameters.calculators.FloatCalculator;
 import com.slamzoom.android.interpolators.base.Interpolator;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
@@ -12,12 +13,15 @@ import jp.co.cyberagent.android.gpuimage.GPUImageGaussianBlurFilter;
 public abstract class BaseGuassianBlurFilterInterpolator extends FilterInterpolator implements HasBlurSize {
   protected static final float BASE_BLUR_SIZE = 5;
 
+  protected FloatCalculator mBlurCalculator;
+
   public BaseGuassianBlurFilterInterpolator() {
     this(null);
   }
 
   public BaseGuassianBlurFilterInterpolator(Interpolator interpolator) {
     super(interpolator);
+    mBlurCalculator = new FloatCalculator(this, BASE_BLUR_SIZE);
   }
 
   @Override
@@ -27,6 +31,6 @@ public abstract class BaseGuassianBlurFilterInterpolator extends FilterInterpola
 
   @Override
   public float getBlurSize() {
-    return BASE_BLUR_SIZE;
+    return mBlurCalculator.getBaseValue();
   }
 }

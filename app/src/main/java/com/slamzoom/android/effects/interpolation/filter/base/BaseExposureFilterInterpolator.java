@@ -1,6 +1,8 @@
 package com.slamzoom.android.effects.interpolation.filter.base;
 
 import com.slamzoom.android.effects.interpolation.filter.base.parameters.HasExposure;
+import com.slamzoom.android.effects.interpolation.filter.base.parameters.calculators.ExposureCalculator;
+import com.slamzoom.android.effects.interpolation.filter.base.parameters.calculators.FloatCalculator;
 import com.slamzoom.android.interpolators.base.Interpolator;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageExposureFilter;
@@ -12,12 +14,15 @@ import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
 public class BaseExposureFilterInterpolator extends FilterInterpolator implements HasExposure {
   protected static final float BASE_EXPOSURE = 0;
 
+  protected ExposureCalculator mExposureCalcualtor;
+
   public BaseExposureFilterInterpolator() {
     this(null);
   }
 
   public BaseExposureFilterInterpolator(Interpolator interpolator) {
     super(interpolator);
+    mExposureCalcualtor = new ExposureCalculator(this);
   }
 
   @Override
@@ -27,6 +32,6 @@ public class BaseExposureFilterInterpolator extends FilterInterpolator implement
 
   @Override
   public float getExposure() {
-    return BASE_EXPOSURE;
+    return mExposureCalcualtor.getBaseExposure();
   }
 }

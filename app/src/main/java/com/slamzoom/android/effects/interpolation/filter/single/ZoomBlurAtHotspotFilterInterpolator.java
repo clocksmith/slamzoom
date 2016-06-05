@@ -19,11 +19,11 @@ public class ZoomBlurAtHotspotFilterInterpolator extends BaseZoomBlurFilterInter
 
   @Override
   public float getBlurSize() {
-    return BASE_BLUR_SIZE * getInterpolationValue();
+    return mBlurCalculator.getValueFromInterpolation();
   }
 
   @Override
   public PointF getCenter() {
-    return getCenterOfHotspot();
+    return mCenterCalculator.getHotspotCenter();
   }
 }

@@ -32,7 +32,7 @@ public class BaseCalculator {
     return RectFUtils.getCenterPointF(getNormalizedHotspot());
   }
 
-  protected float getMinDimenOfHotspot() {
+  protected float getMinHotspotDimen() {
     return RectFUtils.getMinDimen(getNormalizedHotspot());
   }
 }
