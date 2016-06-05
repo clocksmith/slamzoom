@@ -12,7 +12,7 @@ import java.util.List;
  * Created by clocksmith on 6/2/16.
  */
 public class UnswirlEyesFilterInterpolatorGroup implements FilterInterpolatorGroup {
-  private static final float BASE_EYE_RADIUS = 0.25f;
+  private static final float BASE_EYE_RADIUS = 0.2f;
 
   @Override
   public List<FilterInterpolator> getFilterInterpolators() {
@@ -33,6 +33,11 @@ public class UnswirlEyesFilterInterpolatorGroup implements FilterInterpolatorGro
     }
 
     @Override
+    public float getRotation() {
+      return -2 * super.getRotation();
+    }
+
+    @Override
     public PointF getCenter() {
       return mCenterCalculator.getHotspotPoint(0.25f, 0.5f);
     }
@@ -46,6 +51,11 @@ public class UnswirlEyesFilterInterpolatorGroup implements FilterInterpolatorGro
     @Override
     public float getRadius() {
       return mRadiusCalculator.getValueFromMinHotspotDimen();
+    }
+
+    @Override
+    public float getRotation() {
+      return 2 * super.getRotation();
     }
 
     @Override

@@ -43,44 +43,6 @@ public class CrashPackProvider {
             .withScaleAndTranslateInterpolatorProvider(new CrashBounceBottomInterpolatorProvider())
             .build())
         .build());
-    packModels.add(EffectTemplate.newBuilder()
-        .withName("crashblur")
-        .addEffectStep(EffectStep.newBuilder()
-            .withStartPauseSeconds(0.5f)
-            .withDurationSeconds(0.8f)
-            .withScaleInterpolator(new CubicSplineInterpolator(PointListBuilder.newPointListBuilder()
-                .add(0, 0)
-                .add(0.3f, 1f)
-                .add(1f, 1f)
-                .build()))
-            .withFilterInterpolator(new GuassianUnblurFilterInterpolator(
-                new CubicSplineInterpolator(PointListBuilder.newPointListBuilder()
-                    .add(0, 0f)
-                    .add(0.8f, 0)
-                    .add(1, 1)
-                    .build())))
-            .withEndPauseSeconds(0.5f)
-            .build())
-        .build());
-    packModels.add(EffectTemplate.newBuilder()
-        .withName("crashfreeze")
-        .addEffectStep(EffectStep.newBuilder()
-            .withStartPauseSeconds(0.5f)
-            .withDurationSeconds(2f)
-            .withScaleInterpolator(new CubicSplineInterpolator(PointListBuilder.newPointListBuilder()
-                .add(0, 0)
-                .add(0.15f, 1f)
-                .add(1f, 1f)
-                .build()))
-            .withFilterInterpolator(new UnsaturateFilterInterpolator(
-                new CubicSplineInterpolator(PointListBuilder.newPointListBuilder()
-                    .add(0, 0)
-                    .add(0.5f, 0)
-                    .add(1f, 1f)
-                    .build())))
-            .withEndPauseSeconds(0.5f)
-            .build())
-        .build());
 
     return packModels;
   }

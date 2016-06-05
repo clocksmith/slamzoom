@@ -141,8 +141,8 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       Interpolator yInterpolator = step.getYInterpolator();
 
       // TODO(clocksmith): This works but we need to double check for edge cases and off by 1s.
-      float pivotX = endRect.left + endRect.left * endRect.width() / (startRect.width() - endRect.width() + 1);
-      float pivotY = endRect.top + endRect.top * endRect.height() / (startRect.height() - endRect.height() + 1);
+      final float px = endRect.left + endRect.left * endRect.width() / (startRect.width() - endRect.width() + 1);
+      final float py = endRect.top + endRect.top * endRect.height() / (startRect.height() - endRect.height() + 1);
 
       final float startScale = 1;
       final float endScale = (float) startRect.height() / endRect.height();
@@ -156,12 +156,12 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       int numFramesForChunk = mAllFrames.get(stepIndex).size();
       String textToRender = null;
       for (int frameIndex = 0; frameIndex < numFramesForChunk; frameIndex++) {
-        final float percent = ((float) frameIndex / (numFramesForChunk - 1));
-        final float scale = scaleInterpolator.getInterpolation(percent);
+        final float t = ((float) frameIndex / (numFramesForChunk - 1));
+        final float scale = scaleInterpolator.getInterpolation(t);
         final float intermediateWidth = startRect.width() / scale;
         final float intermediateHeight = startRect.height() / scale;
-        final float dx = pivotX + xInterpolator.getInterpolation(percent) * intermediateWidth;
-        final float dy = pivotY + yInterpolator.getInterpolation(percent) * intermediateHeight;
+        final float dx = xInterpolator.getInterpolation(t) * intermediateWidth;
+        final float dy = yInterpolator.getInterpolation(t) * intermediateHeight;
 
         // TODO(clocksmith): extract this.
         List<GPUImageFilter> filters = Lists.transform(step.getFilterInterpolators(),
@@ -169,7 +169,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
               @Override
               public GPUImageFilter apply(FilterInterpolator filterInterpolator) {
                 // 0 is original/start, 1 is
-                float interpolationValue = filterInterpolator.getInterpolator().getInterpolation(percent);
+                float interpolationValue = filterInterpolator.getInterpolator().getInterpolation(t);
 //                float normalizedScale = scale == endScale ? startScale : startScale * (scale - 1) / (endScale - 1);
 
                 float endLeftFromIntermediateLeft = leftInterpolator.getInterpolation(interpolationValue);
@@ -184,7 +184,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
                     endRightFromIntermediateRight / startRect.width(),
                     endBottomFromIntermediateBottom / startRect.height());
 
-                return filterInterpolator.getInterpolationFilter(percent, normalizedHotspot);
+                return filterInterpolator.getInterpolationFilter(t, normalizedHotspot);
               }
             });
 
@@ -202,6 +202,8 @@ public abstract class MediaCreator<E extends MediaEncoder> {
             frameIndex,
             delayMillis,
             scale,
+            px,
+            py,
             dx,
             dy,
             filters,
@@ -231,6 +233,8 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     protected int mFrameIndex;
     protected int mDelayMillis;
     protected float mScale;
+    protected float mPx;
+    protected float mPy;
     protected float mDx;
     protected float mDy;
     protected List<GPUImageFilter> mFilters;
@@ -241,6 +245,8 @@ public abstract class MediaCreator<E extends MediaEncoder> {
         int frameIndex,
         int delayMillis,
         float scale,
+        float px,
+        float py,
         float dx,
         float dy,
         List<GPUImageFilter> filters,
@@ -250,6 +256,8 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       mFrameIndex = frameIndex;
       mDelayMillis = delayMillis;
       mScale = scale;
+      mPx = px;
+      mPy = py;
       mDx = dx;
       mDy = dy;
       mFilters = filters;
@@ -259,7 +267,8 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     @Override
     protected MediaFrame doInBackground(Void... params) {
       Matrix transformationMatrix = new Matrix();
-      transformationMatrix.postScale(mScale, mScale, mDx, mDy);
+      transformationMatrix.postScale(mScale, mScale, mPx, mPy);
+      transformationMatrix.postTranslate(mDx, mDy);
       return getFrame(transformationMatrix, mFilters, mDelayMillis, mTextToRender, mFrameIndex);
     }
 

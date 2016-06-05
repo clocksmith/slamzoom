@@ -23,16 +23,16 @@ public class Constants {
   public static final String IMAGE_URI = "imageUri";
   public static final String CROP_RECT = "cropRect";
 
+  public static final float DEFAULT_DURATION_SECONDS = 2;
+  public static final float DEFAULT_START_PAUSE_SECONDS = 0;
+  public static final float DEFAULT_END_PAUSE_SECONDS = 0;
+
   public static final int DEFAULT_FPS = 24;
   public static final int DEFAULT_GIF_SIZE_PX = 320 ;
   public static final boolean DEFAULT_USE_LOCAL_COLOR_PALETTE = true;
 
   // arbitrary
-  public static final int MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX = DEFAULT_GIF_SIZE_PX * 3;
-
-  public static final float DEFAULT_DURATION_SECONDS = 2;
-  public static final float DEFAULT_START_PAUSE_SECONDS = 0;
-  public static final float DEFAULT_END_PAUSE_SECONDS = 0;
+  public static final int MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX = DEFAULT_GIF_SIZE_PX * 8;
 
   public static PointF NORMAL_CENTER_POINT = new PointF(0.5f, 0.5f);
 }

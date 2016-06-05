@@ -24,7 +24,7 @@ public class CrashBounceBottomInterpolatorProvider implements ScaleAndTranslateI
     return new CubicSplineInterpolator(PointListBuilder.newPointListBuilder()
         .add(0, 0)
         .add(0.3f, -0.05f)
-        .add(0.4f, 0f)
+        .add(0.4f, 0)
         .add(0.5f, 0)
         .add(1, 0)
         .build());
@@ -35,7 +35,7 @@ public class CrashBounceBottomInterpolatorProvider implements ScaleAndTranslateI
     return new CubicSplineInterpolator(PointListBuilder.newPointListBuilder()
         .add(0, 0)
         .add(0.3f, 0.25f)
-        .add(0.4f, 0f)
+        .add(0.4f, 0)
         .add(0.5f, 0)
         .add(1, 0)
         .build());

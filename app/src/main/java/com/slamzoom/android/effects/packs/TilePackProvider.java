@@ -10,18 +10,18 @@ import java.util.List;
 /**
  * Created by clocksmith on 3/22/16.
  */
-public class SimplePackProvider {
+public class TilePackProvider {
   public static List<EffectTemplate> getPack() {
     List<EffectTemplate> packModels = Lists.newArrayList();
     packModels.add(EffectTemplate.newBuilder()
-        .withName("simple")
+        .withName("tile")
         .addEffectStep(EffectStep.newBuilder()
             .withEndPauseSeconds(1)
             .withScaleInterpolator(new LinearInterpolator())
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
-        .withName("simple4x")
+        .withName("tile4")
         .addEffectStep(EffectStep.newBuilder()
             .withEndPauseSeconds(1)
             .withScaleInterpolator(new LinearInterpolator())
@@ -29,7 +29,7 @@ public class SimplePackProvider {
         .withNumTilesInRow(2)
         .build());
     packModels.add(EffectTemplate.newBuilder()
-        .withName("simple9x")
+        .withName("tile9")
         .addEffectStep(EffectStep.newBuilder()
             .withEndPauseSeconds(1)
             .withScaleInterpolator(new LinearInterpolator())
@@ -37,7 +37,7 @@ public class SimplePackProvider {
         .withNumTilesInRow(3)
         .build());
     packModels.add(EffectTemplate.newBuilder()
-        .withName("simple16x")
+        .withName("tile16")
         .addEffectStep(EffectStep.newBuilder()
             .withEndPauseSeconds(1)
             .withScaleInterpolator(new LinearInterpolator())
@@ -45,7 +45,7 @@ public class SimplePackProvider {
         .withNumTilesInRow(4)
         .build());
     packModels.add(EffectTemplate.newBuilder()
-        .withName("simple25x")
+        .withName("tile25")
         .addEffectStep(EffectStep.newBuilder()
             .withEndPauseSeconds(1)
             .withScaleInterpolator(new LinearInterpolator())

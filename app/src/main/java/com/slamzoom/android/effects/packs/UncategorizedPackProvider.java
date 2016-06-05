@@ -5,13 +5,18 @@ import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeEyesSwirlMouthFilterInterpoaltor;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeFaceFilterInterpolatorGroup;
+import com.slamzoom.android.effects.interpolation.filter.group.UnswirlEyesFilterInterpolatorGroup;
+import com.slamzoom.android.effects.interpolation.filter.single.UnswirlAtHotspotFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.ZoomBlurAtHotspotFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.FlushInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.SpiralInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.translate.ShakeInterpolatorProvider;
 import com.slamzoom.android.interpolators.base.Interpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.UnderExposeFilterInterpolator;
 import com.slamzoom.android.interpolators.base.LinearInterpolator;
+import com.slamzoom.android.interpolators.effect.InAndOutInterpolator;
 import com.slamzoom.android.interpolators.effect.SlamHardNoPauseInterpolator;
+import com.slamzoom.android.interpolators.effect.SlamSoftInterpolator;
 import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
 import com.slamzoom.android.interpolators.spline.PointListBuilder;
 
@@ -55,23 +60,6 @@ public class UncategorizedPackProvider {
         .build());
 
     packModels.add(EffectTemplate.newBuilder()
-        .withName("slamfinity")
-        .addEffectStep(EffectStep.newBuilder()
-            .withStartPauseSeconds(0)
-            .withDurationSeconds(0.6f)
-            .withScaleInterpolator(new SlamHardNoPauseInterpolator())
-            .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(new LinearSplineInterpolator(
-                PointListBuilder.newPointListBuilder()
-                    .add(0, 0)
-                    .add(0.9f, 1f)
-                    .add(0.9999f, 1f)
-                    .add(1f, 0)
-                    .build())))
-            .withEndPauseSeconds(0)
-            .build())
-        .build());
-
-    packModels.add(EffectTemplate.newBuilder()
         .withName("flush")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleAndTranslateInterpolatorProvider(new FlushInterpolatorProvider())
@@ -89,12 +77,30 @@ public class UncategorizedPackProvider {
         .build());
 
     packModels.add(EffectTemplate.newBuilder()
-        .withName("mr twistyfrog")
+        .withName("twistyfrog")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolatorGroup(new BulgeEyesSwirlMouthFilterInterpoaltor())
             .withEndPauseSeconds(1)
+            .build())
+        .build());
+
+    packModels.add(EffectTemplate.newBuilder()
+        .withName("twistyfroggy")
+        .addEffectStep(EffectStep.newBuilder()
+            .withScaleInterpolator(new InAndOutInterpolator())
+            .withFilterInterpolatorGroup(new BulgeEyesSwirlMouthFilterInterpoaltor())
+            .build())
+        .build());
+
+    packModels.add(EffectTemplate.newBuilder()
+        .withName("swirlslam")
+        .addEffectStep(EffectStep.newBuilder()
+            .withScaleInterpolator(new SlamSoftInterpolator())
+            .withTranslateInterpolator(new ShakeInterpolatorProvider())
+            .withFilterInterpolator(new UnswirlAtHotspotFilterInterpolator())
+            .withEndPauseSeconds(0.5f)
             .build())
         .build());
 

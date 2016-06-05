@@ -56,7 +56,7 @@ public class GifService extends Service {
   }
 
 //  private static final int CACHE_SIZE = EffectTemplateProvider.getTemplates().size();
-  private static final int CACHE_SIZE = 5;
+  private static final int CACHE_SIZE = 10;
 
   private final IBinder mBinder = new GifServiceBinder();
   private Cache<GifConfig, byte[]> mGifCache;

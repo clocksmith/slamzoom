@@ -36,7 +36,6 @@ public class SlamPackProvider {
                     .build())))
             .withStartPauseSeconds(1.4f)
             .withDurationSeconds(0.6f)
-//            .withDurationSeconds(6f)
             .withEndPauseSeconds(1f)
             .build())
         .build());
@@ -77,29 +76,22 @@ public class SlamPackProvider {
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
-        .withName("blurslam")
+        .withName("slamfinity")
         .addEffectStep(EffectStep.newBuilder()
-            .withScaleInterpolator(new SlamHardInterpolator())
-            .withFilterInterpolator(new GuassianUnblurFilterInterpolator())
-            .withEndPauseSeconds(1f)
-            .build())
-        .build());
-    packModels.add(EffectTemplate.newBuilder()
-        .withName("grayslam ")
-        .addEffectStep(EffectStep.newBuilder()
-            .withScaleInterpolator(new SlamHardInterpolator())
+            .withStartPauseSeconds(0)
+            .withDurationSeconds(0.6f)
+            .withScaleInterpolator(new SlamHardNoPauseInterpolator())
             .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(new LinearSplineInterpolator(
                 PointListBuilder.newPointListBuilder()
                     .add(0, 0)
-                    .add(0.7f, 0)
                     .add(0.9f, 1f)
                     .add(0.9999f, 1f)
                     .add(1f, 0)
                     .build())))
-            .withFilterInterpolator(new UnsaturateFilterInterpolator())
-            .withEndPauseSeconds(1f)
+            .withEndPauseSeconds(0)
             .build())
         .build());
+
 
     return packModels;
   }
