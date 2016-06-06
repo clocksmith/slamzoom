@@ -12,7 +12,7 @@ import com.slamzoom.android.effects.interpolation.transform.base.ScaleAndTransla
 public class CrashBounceDiagonalInterpolatorProvider implements ScaleAndTranslateInterpolatorProvider {
   @Override
   public Interpolator getScaleInterpolator() {
-    return new LinearSplineInterpolator(PointListBuilder.newPointListBuilder()
+    return new LinearSplineInterpolator(PointListBuilder.create()
         .add(0, 0)
         .add(0.3f, 1)
         .add(1, 1)
@@ -21,7 +21,7 @@ public class CrashBounceDiagonalInterpolatorProvider implements ScaleAndTranslat
 
   @Override
   public Interpolator getXInterpolator() {
-    return new CubicSplineInterpolator(PointListBuilder.newPointListBuilder()
+    return new CubicSplineInterpolator(PointListBuilder.create()
         .add(0, 0)
         .add(0.3f, 0.3f)
         .add(0.45f, 0f)
@@ -32,7 +32,7 @@ public class CrashBounceDiagonalInterpolatorProvider implements ScaleAndTranslat
 
   @Override
   public Interpolator getYInterpolator() {
-    return new CubicSplineInterpolator(PointListBuilder.newPointListBuilder()
+    return new CubicSplineInterpolator(PointListBuilder.create()
         .add(0, 0)
         .add(0.25f, -0.35f)
         .add(0.45f, 0)

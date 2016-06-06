@@ -30,14 +30,15 @@ public class BulgePackProvider {
         .build());
 
     packModels.add(EffectTemplate.newBuilder()
-        .withName("bulgeleftright")
+        .withName("bulgeeyes")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolatorGroup(new BulgeDoubleLeftRightFilterInterpolatorGroup())
+            .withFilterInterpolatorGroup(new BulgeEyesFilterInterpolatorGroup())
             .withEndPauseSeconds(1)
             .build())
         .build());
+
 
     packModels.add(EffectTemplate.newBuilder()
         .withName("bulgeface")
@@ -50,11 +51,11 @@ public class BulgePackProvider {
         .build());
 
     packModels.add(EffectTemplate.newBuilder()
-        .withName("bulgeeyes")
+        .withName("bulgeleftright")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolatorGroup(new BulgeEyesFilterInterpolatorGroup())
+            .withFilterInterpolatorGroup(new BulgeDoubleLeftRightFilterInterpolatorGroup())
             .withEndPauseSeconds(1)
             .build())
         .build());

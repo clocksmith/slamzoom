@@ -1,15 +1,13 @@
 package com.slamzoom.android.effects.packs;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
 import com.slamzoom.android.interpolators.spline.PointListBuilder;
-import com.slamzoom.android.effects.interpolation.filter.single.GuassianUnblurFilterInterpolator;
-import com.slamzoom.android.effects.interpolation.filter.single.UnsaturateFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.ZoomBlurAtHotspotFilterInterpolator;
 import com.slamzoom.android.interpolators.effect.SlamHardInAndOutInterpolator;
-import com.slamzoom.android.interpolators.effect.SlamHardInterpolator;
 import com.slamzoom.android.interpolators.effect.SlamHardNoPauseInterpolator;
 import com.slamzoom.android.interpolators.effect.SlamSoftOutNoPauseInterpolator;
 
@@ -28,40 +26,42 @@ public class SlamPackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new SlamHardNoPauseInterpolator())
             .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(new LinearSplineInterpolator(
-                PointListBuilder.newPointListBuilder()
+                PointListBuilder.create()
                     .add(0, 0)
-                    .add(0.9f, 1f)
-                    .add(0.9999f, 1f)
-                    .add(1f, 0)
+                    .add(0.9f, 1)
+                    .add(0.9999f, 1)
+                    .add(1, 0)
                     .build())))
             .withStartPauseSeconds(1.4f)
             .withDurationSeconds(0.6f)
-            .withEndPauseSeconds(1f)
+            .withEndPauseSeconds(1)
             .build())
         .build());
+
     packModels.add(EffectTemplate.newBuilder()
         .withPackName("slam pack")
         .withName("slamout")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new SlamSoftOutNoPauseInterpolator())
             .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(new LinearSplineInterpolator(
-                PointListBuilder.newPointListBuilder()
+                PointListBuilder.create()
                     .add(0, 0)
-                    .add(0.8f, 1f)
-                    .add(1f, 0)
+                    .add(0.8f, 1)
+                    .add(1, 0)
                     .build())))
             .withStartPauseSeconds(1.2f)
             .withDurationSeconds(0.8f)
             .withEndPauseSeconds(1f)
             .build())
         .build());
+
     packModels.add(EffectTemplate.newBuilder()
         .withPackName("slam pack")
         .withName("slamio")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new SlamHardInAndOutInterpolator())
             .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(new LinearSplineInterpolator(
-                PointListBuilder.newPointListBuilder()
+                PointListBuilder.create()
                     .add(0, 0)
                     .add(0.35f, 0)
                     .add(0.45f, 1f)
@@ -75,6 +75,7 @@ public class SlamPackProvider {
             .withDurationSeconds(1f)
             .build())
         .build());
+
     packModels.add(EffectTemplate.newBuilder()
         .withName("slamfinity")
         .addEffectStep(EffectStep.newBuilder()
@@ -82,7 +83,7 @@ public class SlamPackProvider {
             .withDurationSeconds(0.6f)
             .withScaleInterpolator(new SlamHardNoPauseInterpolator())
             .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(new LinearSplineInterpolator(
-                PointListBuilder.newPointListBuilder()
+                PointListBuilder.create()
                     .add(0, 0)
                     .add(0.9f, 1f)
                     .add(0.9999f, 1f)
@@ -92,6 +93,24 @@ public class SlamPackProvider {
             .build())
         .build());
 
+    packModels.add(EffectTemplate.newBuilder()
+        .withName("slamfunity")
+        .addEffectStep(EffectStep.newBuilder()
+            .withStartPauseSeconds(0)
+            .withDurationSeconds(0.6f)
+            .withScaleInterpolator(new SlamSoftOutNoPauseInterpolator())
+            .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(new LinearSplineInterpolator(
+                PointListBuilder.create()
+                    .add(0, 0)
+                    .add(0.9f, 1f)
+                    .add(0.9999f, 1f)
+                    .add(1f, 0)
+                    .build())))
+            .withEndPauseSeconds(0)
+            .build())
+        .build());
+
+//    ImmutableList.builder().
 
     return packModels;
   }

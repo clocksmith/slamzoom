@@ -5,7 +5,6 @@ import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.interpolation.filter.single.UnsaturateFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.ZoomBlurAtHotspotFilterInterpolator;
-import com.slamzoom.android.interpolators.base.LinearInterpolator;
 import com.slamzoom.android.interpolators.effect.SlamHardInterpolator;
 import com.slamzoom.android.interpolators.spline.CubicSplineInterpolator;
 import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
@@ -25,7 +24,7 @@ public class GrayPackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new SlamHardInterpolator())
             .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(new LinearSplineInterpolator(
-                PointListBuilder.newPointListBuilder()
+                PointListBuilder.create()
                     .add(0, 0)
                     .add(0.7f, 0)
                     .add(0.9f, 1f)
@@ -42,13 +41,13 @@ public class GrayPackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withStartPauseSeconds(0.5f)
             .withDurationSeconds(2f)
-            .withScaleInterpolator(new CubicSplineInterpolator(PointListBuilder.newPointListBuilder()
+            .withScaleInterpolator(new CubicSplineInterpolator(PointListBuilder.create()
                 .add(0, 0)
                 .add(0.15f, 1f)
                 .add(1f, 1f)
                 .build()))
             .withFilterInterpolator(new UnsaturateFilterInterpolator(
-                new CubicSplineInterpolator(PointListBuilder.newPointListBuilder()
+                new CubicSplineInterpolator(PointListBuilder.create()
                     .add(0, 0)
                     .add(0.5f, 0)
                     .add(1f, 1f)

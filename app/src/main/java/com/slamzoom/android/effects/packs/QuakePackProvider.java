@@ -6,6 +6,7 @@ import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.FlushInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.translate.MegaShakeInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.translate.ShakeInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.translate.SpiralShakeInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.translate.SuperShakeInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.filter.single.GuassianUnblurFilterInterpolator;
 import com.slamzoom.android.interpolators.effect.HalfInAndOutInterpolator;
@@ -47,15 +48,16 @@ public class QuakePackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new SlamHardInterpolator())
             .withTranslateInterpolator(new ShakeInterpolatorProvider())
-            .withEndPauseSeconds(1f)
+            .withEndPauseSeconds(1)
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
         .withName("quakearound")
         .addEffectStep(EffectStep.newBuilder()
-            .withScaleInterpolator(new HalfInAndOutInterpolator())
-            .withTranslateInterpolator(new FlushInterpolatorProvider())
-            .withEndPauseSeconds(1f)
+            .withDurationSeconds(3)
+            .withScaleInterpolator(new LinearInterpolator())
+            .withTranslateInterpolator(new SpiralShakeInterpolatorProvider())
+            .withEndPauseSeconds(1)
             .build())
         .build());
 

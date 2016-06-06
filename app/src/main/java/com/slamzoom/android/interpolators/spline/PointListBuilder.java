@@ -16,7 +16,7 @@ public class PointListBuilder {
     mPointList = Lists.newArrayList();
   }
 
-  public static PointListBuilder newPointListBuilder() {
+  public static PointListBuilder create() {
     return new PointListBuilder();
   }
 

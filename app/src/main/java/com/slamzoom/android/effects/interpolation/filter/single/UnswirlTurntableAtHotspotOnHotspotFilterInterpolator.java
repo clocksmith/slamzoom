@@ -18,7 +18,7 @@ public class UnswirlTurntableAtHotspotOnHotspotFilterInterpolator extends Unswir
     super(interpolator);
 
     mAngleInterpolator = new LinearSplineInterpolator(
-        PointListBuilder.newPointListBuilder()
+        PointListBuilder.create()
             .add(0f, 1f)
             .add(0.2f, 0.4f)
             .add(0.3f, 0.45f)

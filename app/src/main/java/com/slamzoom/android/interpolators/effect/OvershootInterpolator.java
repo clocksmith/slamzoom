@@ -8,7 +8,7 @@ import com.slamzoom.android.interpolators.spline.PointListBuilder;
  */
 public class OvershootInterpolator extends CubicSplineInterpolator {
   public OvershootInterpolator() {
-    super(PointListBuilder.newPointListBuilder()
+    super(PointListBuilder.create()
     .add(0, 0)
     .add(0.9f, 1f)
     .add(1f, 1f)
