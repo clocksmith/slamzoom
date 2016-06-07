@@ -1,13 +1,12 @@
 package com.slamzoom.android.effects;
 
 import com.google.common.collect.Lists;
-import com.slamzoom.android.effects.packs.BulgePackProvider;
+import com.slamzoom.android.effects.packs.DistortionPack1Provider;
 import com.slamzoom.android.effects.packs.CrashPackProvider;
-import com.slamzoom.android.effects.packs.QuakePackProvider;
-import com.slamzoom.android.effects.packs.ShrinkPackProvider;
+import com.slamzoom.android.effects.packs.RumblePackProvider;
+import com.slamzoom.android.effects.packs.DistortionPack2Provider;
 import com.slamzoom.android.effects.packs.SlamPackProvider;
 import com.slamzoom.android.effects.packs.SwirlPackProvider;
-import com.slamzoom.android.effects.packs.TheLabPackProvider;
 
 import java.util.List;
 
@@ -19,11 +18,11 @@ public class EffectTemplateProvider {
 
   static {
     mTemplates.addAll(SlamPackProvider.getPack());
-    mTemplates.addAll(BulgePackProvider.getPack());
+    mTemplates.addAll(DistortionPack1Provider.getPack());
     mTemplates.addAll(CrashPackProvider.getPack());
     mTemplates.addAll(SwirlPackProvider.getPack());
-    mTemplates.addAll(QuakePackProvider.getPack());
-    mTemplates.addAll(ShrinkPackProvider.getPack());
+    mTemplates.addAll(RumblePackProvider.getPack());
+    mTemplates.addAll(DistortionPack2Provider.getPack());
 
 //    mTemplates.addAll(GrayPackProvider.getPack());
 //    mTemplates.addAll(BlurPackProvider.getPack());

@@ -39,7 +39,7 @@ public class CrashPackProvider {
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
-        .withName("crashover")
+        .withName("overcrash")
         .addEffectStep(EffectStep.newBuilder()
             .withStartPauseSeconds(0.5f)
             .withDurationSeconds(1f)
@@ -48,7 +48,7 @@ public class CrashPackProvider {
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
-        .withName("crashtaran")
+        .withName("crashblur")
         .addEffectStep(EffectStep.newBuilder()
             .withStartPauseSeconds(0.75f)
             .withDurationSeconds(0.75f)

@@ -10,16 +10,15 @@ import com.slamzoom.android.interpolators.custom.SlamHardNoPauseInterpolator;
  * Created by clocksmith on 6/6/16.
  */
 public class CrashRumbleInterpolatorProvider implements ScaleAndTranslateInterpolatorProvider {
-  private static final float PERCENT_SLAMMIN = 0.5f;
+  private static final float PERCENT_CRASH = 0.5f;
 
   @Override
   public Interpolator getScaleInterpolator() {
     return new Interpolator() {
-      private SlamHardNoPauseInterpolator mSlamInterpolator = new SlamHardNoPauseInterpolator();
       @Override
       protected float getRangePercent(float t) {
-        if (t <= PERCENT_SLAMMIN) {
-          return mSlamInterpolator.getInterpolation(t / PERCENT_SLAMMIN);
+        if (t <= PERCENT_CRASH) {
+          return mCrashIP.getScaleInterpolator().getInterpolation(t / PERCENT_CRASH);
         } else {
           return 1;
         }
@@ -27,6 +26,7 @@ public class CrashRumbleInterpolatorProvider implements ScaleAndTranslateInterpo
     };
   }
 
+  private CrashInterpolatorProvider mCrashIP = new CrashInterpolatorProvider();
   private TranslateInterpolatorProvider mShakeIP = new BaseShakeInterpolatorProvider(3, 3);
 
   @Override
@@ -34,10 +34,10 @@ public class CrashRumbleInterpolatorProvider implements ScaleAndTranslateInterpo
     return new Interpolator() {
       @Override
       protected float getRangePercent(float t) {
-        if (t <= PERCENT_SLAMMIN) {
-          return 0;
+        if (t <= PERCENT_CRASH) {
+          return mCrashIP.getXInterpolator().getInterpolation(t / PERCENT_CRASH);
         } else {
-          return mShakeIP.getXInterpolator().getInterpolation(t / (1 - PERCENT_SLAMMIN));
+          return mShakeIP.getXInterpolator().getInterpolation(t / (1 - PERCENT_CRASH));
         }
       }
     };
@@ -48,10 +48,10 @@ public class CrashRumbleInterpolatorProvider implements ScaleAndTranslateInterpo
     return new Interpolator() {
       @Override
       protected float getRangePercent(float t) {
-        if (t <= PERCENT_SLAMMIN) {
-          return 0;
+        if (t <= PERCENT_CRASH) {
+          return mCrashIP.getYInterpolator().getInterpolation(t / PERCENT_CRASH);
         } else {
-          return mShakeIP.getYInterpolator().getInterpolation(t / (1 - PERCENT_SLAMMIN));
+          return mShakeIP.getYInterpolator().getInterpolation(t / (1 - PERCENT_CRASH));
         }
       }
     };

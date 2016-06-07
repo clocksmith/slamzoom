@@ -9,6 +9,7 @@ import com.slamzoom.android.effects.interpolation.filter.single.UnswirlAtHotspot
 import com.slamzoom.android.effects.interpolation.filter.single.UnswirlFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.UnswirlTurntableAtHotspotOnHotspotFilterInterpolator;
 import com.slamzoom.android.interpolators.LinearInterpolator;
+import com.slamzoom.android.interpolators.ReverseLinearInterpolator;
 import com.slamzoom.android.interpolators.custom.InAndOutInterpolator;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class SwirlPackProvider {
     List<EffectTemplate> packModels = Lists.newArrayList();
 
     packModels.add(EffectTemplate.newBuilder()
-        .withName("swirl")
+        .withName("swirlin")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolator(new UnswirlFilterInterpolator())
@@ -29,14 +30,22 @@ public class SwirlPackProvider {
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
-        .withName("swirly")
+        .withName("swirlout")
+        .addEffectStep(EffectStep.newBuilder()
+            .withScaleInterpolator(new ReverseLinearInterpolator())
+            .withFilterInterpolator(new UnswirlFilterInterpolator())
+            .withEndPauseSeconds(0.5f)
+            .build())
+        .build());
+    packModels.add(EffectTemplate.newBuilder()
+        .withName("swirlinout")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new InAndOutInterpolator())
             .withFilterInterpolator(new UnswirlFilterInterpolator())
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
-        .withName("swirlhead")
+        .withName("swirlspot")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolator(new UnswirlAtHotspotOnHotspotFilterInterpolator())
@@ -45,39 +54,7 @@ public class SwirlPackProvider {
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
-        .withName("swirlyhead")
-        .addEffectStep(EffectStep.newBuilder()
-            .withScaleInterpolator(new InAndOutInterpolator())
-            .withFilterInterpolator(new UnswirlAtHotspotOnHotspotFilterInterpolator())
-            .build())
-        .build());
-    packModels.add(EffectTemplate.newBuilder()
-        .withName("swirleyes")
-        .addEffectStep(EffectStep.newBuilder()
-            .withDurationSeconds(2)
-            .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolatorGroup(new UnswirlEyesFilterInterpolatorGroup())
-            .withEndPauseSeconds(1)
-            .build())
-        .build());
-    packModels.add(EffectTemplate.newBuilder()
-        .withName("swirlyeyes")
-        .addEffectStep(EffectStep.newBuilder()
-            .withScaleInterpolator(new InAndOutInterpolator())
-            .withFilterInterpolatorGroup(new UnswirlEyesFilterInterpolatorGroup())
-            .build())
-        .build());
-    packModels.add(EffectTemplate.newBuilder()
-        .withName("swirlaway")
-        .addEffectStep(EffectStep.newBuilder()
-            .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolator(new UnswirlAtHotspotFilterInterpolator())
-            .withDurationSeconds(3f)
-            .withEndPauseSeconds(0.5f)
-            .build())
-        .build());
-    packModels.add(EffectTemplate.newBuilder()
-        .withName("swirldj")
+        .withName("djswirls")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())

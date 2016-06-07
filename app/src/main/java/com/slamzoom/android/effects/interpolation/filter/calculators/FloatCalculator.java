@@ -33,18 +33,18 @@ public class FloatCalculator extends BaseCalculator {
   }
 
   public float getValueFromInterpolationCompliment() {
-    return getBaseValue()  * getInterpolationValueCompliment();
+    return getBaseValue() * getInterpolationValueCompliment();
   }
 
   public float getValueFromMinHotspotDimen() {
-    return getBaseValue()  * getMinHotspotDimen();
+    return getBaseValue() * getMinHotspotDimen();
   }
 
   public float getValueFromSubInterpolationOfInterpolation(Interpolator interpolator) {
-    return getBaseValue()  * interpolator.getInterpolation(getInterpolationValue());
+    return getBaseValue() * interpolator.getInterpolation(getInterpolationValue());
   }
 
   public float getValueFromSubInterpolationOfInterpolationCompliment(Interpolator interpolator) {
-    return getBaseValue()  * interpolator.getInterpolation(getInterpolationValueCompliment());
+    return getBaseValue() * interpolator.getInterpolation(getInterpolationValueCompliment());
   }
 }

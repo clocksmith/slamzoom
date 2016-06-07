@@ -6,8 +6,10 @@ import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeDoubleLeftRightFilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeEyesFilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeFaceFilterInterpolatorGroup;
-import com.slamzoom.android.effects.interpolation.filter.group.ShrinkFaceFilterInterpolatorGroup;
+import com.slamzoom.android.effects.interpolation.filter.group.InflateFaceFilterInterpolatorGroup;
+import com.slamzoom.android.effects.interpolation.filter.group.SumoBulgeFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.BulgeInAtHotspotFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.ShrinkInAtHotspotFilterInterpolator;
 import com.slamzoom.android.interpolators.LinearInterpolator;
 
 import java.util.List;
@@ -15,12 +17,12 @@ import java.util.List;
 /**
  * Created by clocksmith on 4/1/16.
  */
-public class BulgePackProvider {
+public class DistortionPack1Provider {
   public static List<EffectTemplate> getPack() {
     List<EffectTemplate> packModels = Lists.newArrayList();
 
     packModels.add(EffectTemplate.newBuilder()
-        .withName("bulgein")
+        .withName("bulger")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
             .withEndPauseSeconds(1)
@@ -30,18 +32,17 @@ public class BulgePackProvider {
         .build());
 
     packModels.add(EffectTemplate.newBuilder()
-        .withName("bulgeeyes")
+        .withName("shrinkydink")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
-            .withEndPauseSeconds(1)
             .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolatorGroup(new BulgeEyesFilterInterpolatorGroup())
+            .withFilterInterpolator(new ShrinkInAtHotspotFilterInterpolator())
+            .withEndPauseSeconds(1)
             .build())
         .build());
 
-
     packModels.add(EffectTemplate.newBuilder()
-        .withName("bulgeface")
+        .withName("smush")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
             .withEndPauseSeconds(1)
@@ -51,22 +52,22 @@ public class BulgePackProvider {
         .build());
 
     packModels.add(EffectTemplate.newBuilder()
-        .withName("bulgeindouble")
+        .withName("magoo")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
             .withEndPauseSeconds(1)
             .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolatorGroup(new BulgeDoubleLeftRightFilterInterpolatorGroup())
+            .withFilterInterpolatorGroup(new BulgeEyesFilterInterpolatorGroup())
             .build())
         .build());
 
     packModels.add(EffectTemplate.newBuilder()
-        .withName("bulgeswap")
+        .withName("sumo")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
-            .withEndPauseSeconds(1)
             .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolatorGroup(new ShrinkFaceFilterInterpolatorGroup())
+            .withFilterInterpolatorGroup(new SumoBulgeFilterInterpolator())
+            .withEndPauseSeconds(1)
             .build())
         .build());
 

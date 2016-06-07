@@ -15,33 +15,33 @@ import java.util.List;
 /**
  * Created by clocksmith on 3/22/16.
  */
-public class QuakePackProvider {
+public class RumblePackProvider {
   public static List<EffectTemplate> getPack() {
     List<EffectTemplate> packModels = Lists.newArrayList();
 
     packModels.add(EffectTemplate.newBuilder()
-        .withName("quake")
+        .withName("rumble")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new HalfInAndOutInterpolator())
             .withTranslateInterpolator(new ShakeInterpolatorProvider())
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
-        .withName("quakezilla")
+        .withName("earthquake")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new HalfInAndOutInterpolator())
             .withTranslateInterpolator(new SuperShakeInterpolatorProvider())
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
-        .withName("quakedout")
+        .withName("shakezilla")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new HalfInAndOutInterpolator())
             .withTranslateInterpolator(new MegaShakeInterpolatorProvider())
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
-        .withName("quakeslam")
+        .withName("rumbleslam")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new SlamHardInterpolator())
             .withTranslateInterpolator(new ShakeInterpolatorProvider())
@@ -49,7 +49,7 @@ public class QuakePackProvider {
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
-        .withName("quakearound")
+        .withName("rumblestiltskin")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(3)
             .withScaleAndTranslateInterpolatorProvider(new ShakeSwitchInterpolatorProvider())

@@ -6,7 +6,7 @@ package com.slamzoom.android.interpolators;
 public class LinearInterpolator extends MonomialInterpolator {
   public LinearInterpolator(float start, float end) {
     this();
-    super.setRange(start, end);
+    setRange(start, end);
   }
 
   public LinearInterpolator() {
