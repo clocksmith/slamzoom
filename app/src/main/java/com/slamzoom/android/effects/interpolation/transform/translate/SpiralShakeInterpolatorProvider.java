@@ -1,8 +1,8 @@
 package com.slamzoom.android.effects.interpolation.transform.translate;
 
-import com.slamzoom.android.effects.interpolation.transform.base.TranslateInterpolatorProvider;
-import com.slamzoom.android.effects.interpolation.transform.scaletranslate.SpiralInterpolatorProvider;
-import com.slamzoom.android.interpolators.base.Interpolator;
+import com.slamzoom.android.effects.interpolation.transform.TranslateInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CircleCenterInterpolatorProvider;
+import com.slamzoom.android.interpolators.Interpolator;
 
 /**
  * Created by clocksmith on 6/5/16.
@@ -10,8 +10,8 @@ import com.slamzoom.android.interpolators.base.Interpolator;
  * TODO(clocksmith): This could be a general "aggregate interpolator provider."
  */
 public class SpiralShakeInterpolatorProvider implements TranslateInterpolatorProvider {
-  private SpiralInterpolatorProvider mSpiralIP = new SpiralInterpolatorProvider();
-  private ShakeInterpolatorProvider mShakeIP = new ShakeInterpolatorProvider();
+  private CircleCenterInterpolatorProvider mSpiralIP = new CircleCenterInterpolatorProvider();
+  private SuperShakeInterpolatorProvider mShakeIP = new SuperShakeInterpolatorProvider();
 
   @Override
   public Interpolator getXInterpolator() {

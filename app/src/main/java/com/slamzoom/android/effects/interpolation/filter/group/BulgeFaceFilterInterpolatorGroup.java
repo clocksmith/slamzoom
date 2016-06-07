@@ -3,7 +3,7 @@ package com.slamzoom.android.effects.interpolation.filter.group;
 import android.graphics.PointF;
 
 import com.google.common.collect.ImmutableList;
-import com.slamzoom.android.effects.interpolation.filter.base.FilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.BulgeInAtHotspotFilterInterpolator;
 
 import java.util.List;

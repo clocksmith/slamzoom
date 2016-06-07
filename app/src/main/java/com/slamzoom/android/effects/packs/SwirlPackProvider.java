@@ -8,10 +8,8 @@ import com.slamzoom.android.effects.interpolation.filter.single.UnswirlAtHotspot
 import com.slamzoom.android.effects.interpolation.filter.single.UnswirlAtHotspotOnHotspotFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.UnswirlFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.UnswirlTurntableAtHotspotOnHotspotFilterInterpolator;
-import com.slamzoom.android.effects.interpolation.transform.translate.ShakeInterpolatorProvider;
-import com.slamzoom.android.interpolators.base.LinearInterpolator;
-import com.slamzoom.android.interpolators.effect.InAndOutInterpolator;
-import com.slamzoom.android.interpolators.effect.SlamSoftInterpolator;
+import com.slamzoom.android.interpolators.LinearInterpolator;
+import com.slamzoom.android.interpolators.custom.InAndOutInterpolator;
 
 import java.util.List;
 

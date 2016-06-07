@@ -5,7 +5,7 @@ import android.graphics.PointF;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Doubles;
-import com.slamzoom.android.interpolators.base.Interpolator;
+import com.slamzoom.android.interpolators.Interpolator;
 
 import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;

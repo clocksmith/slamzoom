@@ -2,7 +2,7 @@ package com.slamzoom.android.effects.interpolation.filter.single;
 
 import android.graphics.PointF;
 
-import com.slamzoom.android.interpolators.base.Interpolator;
+import com.slamzoom.android.interpolators.Interpolator;
 
 /**
  * Created by clocksmith on 6/2/16.

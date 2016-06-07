@@ -3,10 +3,8 @@ package com.slamzoom.android.effects.packs;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.effects.EffectTemplate;
-import com.slamzoom.android.effects.interpolation.filter.single.BulgeInAtHotspotFilterInterpolator;
-import com.slamzoom.android.interpolators.base.ConstantInterpolator;
-import com.slamzoom.android.interpolators.base.Interpolator;
-import com.slamzoom.android.interpolators.base.LinearInterpolator;
+import com.slamzoom.android.interpolators.ConstantInterpolator;
+import com.slamzoom.android.interpolators.LinearInterpolator;
 
 import java.util.List;
 
@@ -16,18 +14,6 @@ import java.util.List;
 public class DebugPackProvider {
   public static List<EffectTemplate> getPack() {
     List<EffectTemplate> packModels = Lists.newArrayList();
-
-    packModels.add(EffectTemplate.newBuilder()
-        .withPackName("debug pack")
-        .withName("test")
-        .addEffectStep(EffectStep.newBuilder()
-            .withStartPauseSeconds(1)
-            .withEndPauseSeconds(1)
-            .withDurationSeconds(3)
-            .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolator(new BulgeInAtHotspotFilterInterpolator())
-            .build())
-        .build());
 
     packModels.add(EffectTemplate.newBuilder()
         .withPackName("debug pack")

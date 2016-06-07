@@ -2,8 +2,8 @@ package com.slamzoom.android.effects.interpolation.filter.single;
 
 import android.graphics.PointF;
 
-import com.slamzoom.android.effects.interpolation.filter.base.BaseZoomBlurFilterInterpolator;
-import com.slamzoom.android.interpolators.base.Interpolator;
+import com.slamzoom.android.effects.interpolation.filter.BaseZoomBlurFilterInterpolator;
+import com.slamzoom.android.interpolators.Interpolator;
 
 /**
  * Created by clocksmith on 3/21/16.

@@ -6,9 +6,9 @@ import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeDoubleLeftRightFilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeEyesFilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeFaceFilterInterpolatorGroup;
-import com.slamzoom.android.effects.interpolation.filter.group.BulgeLeftRightSwapFilterInterpolatorGroup;
+import com.slamzoom.android.effects.interpolation.filter.group.ShrinkFaceFilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.filter.single.BulgeInAtHotspotFilterInterpolator;
-import com.slamzoom.android.interpolators.base.LinearInterpolator;
+import com.slamzoom.android.interpolators.LinearInterpolator;
 
 import java.util.List;
 
@@ -23,9 +23,9 @@ public class BulgePackProvider {
         .withName("bulgein")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
+            .withEndPauseSeconds(1)
             .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolator(new BulgeInAtHotspotFilterInterpolator())
-            .withEndPauseSeconds(1)
             .build())
         .build());
 
@@ -33,9 +33,9 @@ public class BulgePackProvider {
         .withName("bulgeeyes")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
+            .withEndPauseSeconds(1)
             .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolatorGroup(new BulgeEyesFilterInterpolatorGroup())
-            .withEndPauseSeconds(1)
             .build())
         .build());
 
@@ -44,19 +44,19 @@ public class BulgePackProvider {
         .withName("bulgeface")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
+            .withEndPauseSeconds(1)
             .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolatorGroup(new BulgeFaceFilterInterpolatorGroup())
-            .withEndPauseSeconds(1)
             .build())
         .build());
 
     packModels.add(EffectTemplate.newBuilder()
-        .withName("bulgeleftright")
+        .withName("bulgeindouble")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
+            .withEndPauseSeconds(1)
             .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolatorGroup(new BulgeDoubleLeftRightFilterInterpolatorGroup())
-            .withEndPauseSeconds(1)
             .build())
         .build());
 
@@ -64,9 +64,9 @@ public class BulgePackProvider {
         .withName("bulgeswap")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
-            .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolatorGroup(new BulgeLeftRightSwapFilterInterpolatorGroup())
             .withEndPauseSeconds(1)
+            .withScaleInterpolator(new LinearInterpolator())
+            .withFilterInterpolatorGroup(new ShrinkFaceFilterInterpolatorGroup())
             .build())
         .build());
 

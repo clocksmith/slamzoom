@@ -1,6 +1,6 @@
 package com.slamzoom.android.effects.interpolation.filter.single;
 
-import com.slamzoom.android.interpolators.base.Interpolator;
+import com.slamzoom.android.interpolators.Interpolator;
 import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
 import com.slamzoom.android.interpolators.spline.PointListBuilder;
 

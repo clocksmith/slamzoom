@@ -14,14 +14,14 @@ import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.slamzoom.android.effects.interpolation.filter.base.FilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.singletons.ExecutorProvider;
 import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.PostProcessorUtils;
 import com.slamzoom.android.effects.EffectStep;
-import com.slamzoom.android.interpolators.base.Interpolator;
-import com.slamzoom.android.interpolators.base.LinearInterpolator;
+import com.slamzoom.android.interpolators.Interpolator;
+import com.slamzoom.android.interpolators.LinearInterpolator;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 
 import java.util.List;
@@ -168,9 +168,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
             new Function<FilterInterpolator, GPUImageFilter>() {
               @Override
               public GPUImageFilter apply(FilterInterpolator filterInterpolator) {
-                // 0 is original/start, 1 is
                 float interpolationValue = filterInterpolator.getInterpolator().getInterpolation(t);
-//                float normalizedScale = scale == endScale ? startScale : startScale * (scale - 1) / (endScale - 1);
 
                 float endLeftFromIntermediateLeft = leftInterpolator.getInterpolation(interpolationValue);
                 float endTopFromIntermediateTop = topInterpolator.getInterpolation(interpolationValue);

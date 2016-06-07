@@ -32,7 +32,7 @@ public class Constants {
   public static final boolean DEFAULT_USE_LOCAL_COLOR_PALETTE = true;
 
   // arbitrary
-  public static final int MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX = DEFAULT_GIF_SIZE_PX * 8;
+  public static final int MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX = DEFAULT_GIF_SIZE_PX * 4;
 
   public static PointF NORMAL_CENTER_POINT = new PointF(0.5f, 0.5f);
 }

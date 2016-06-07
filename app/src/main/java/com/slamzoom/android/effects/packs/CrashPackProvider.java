@@ -3,13 +3,14 @@ package com.slamzoom.android.effects.packs;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.EffectStep;
-import com.slamzoom.android.interpolators.spline.CubicSplineInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.GuassianBlurFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashRumbleInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashTaranInterpolatorProvider;
+import com.slamzoom.android.interpolators.custom.OvershootInterpolator;
+import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
 import com.slamzoom.android.interpolators.spline.PointListBuilder;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashBounceBottomInterpolatorProvider;
-import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashBounceDiagonalInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashInterpolatorProvider;
-import com.slamzoom.android.effects.interpolation.filter.single.GuassianUnblurFilterInterpolator;
-import com.slamzoom.android.effects.interpolation.filter.single.UnsaturateFilterInterpolator;
 
 import java.util.List;
 
@@ -20,19 +21,12 @@ public class CrashPackProvider {
   public static List<EffectTemplate> getPack() {
     List<EffectTemplate> packModels = Lists.newArrayList();
     packModels.add(EffectTemplate.newBuilder()
-        .withName("crash")
+        .withName("crashmiss")
         .addEffectStep(EffectStep.newBuilder()
             .withStartPauseSeconds(0.75f)
             .withDurationSeconds(0.75f)
+            .withEndPauseSeconds(0.5f)
             .withScaleAndTranslateInterpolatorProvider(new CrashInterpolatorProvider())
-            .build())
-        .build());
-    packModels.add(EffectTemplate.newBuilder()
-        .withName("crashmiss")
-        .addEffectStep(EffectStep.newBuilder()
-            .withStartPauseSeconds(0.5f)
-            .withDurationSeconds(1f)
-            .withScaleAndTranslateInterpolatorProvider(new CrashBounceDiagonalInterpolatorProvider())
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
@@ -40,7 +34,47 @@ public class CrashPackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withStartPauseSeconds(0.5f)
             .withDurationSeconds(1f)
+            .withEndPauseSeconds(0.5f)
             .withScaleAndTranslateInterpolatorProvider(new CrashBounceBottomInterpolatorProvider())
+            .build())
+        .build());
+    packModels.add(EffectTemplate.newBuilder()
+        .withName("crashover")
+        .addEffectStep(EffectStep.newBuilder()
+            .withStartPauseSeconds(0.5f)
+            .withDurationSeconds(1f)
+            .withEndPauseSeconds(0.5f)
+            .withScaleInterpolator(new OvershootInterpolator())
+            .build())
+        .build());
+    packModels.add(EffectTemplate.newBuilder()
+        .withName("crashtaran")
+        .addEffectStep(EffectStep.newBuilder()
+            .withStartPauseSeconds(0.75f)
+            .withDurationSeconds(0.75f)
+            .withEndPauseSeconds(0.5f)
+            .withScaleAndTranslateInterpolatorProvider(new CrashTaranInterpolatorProvider())
+            .withFilterInterpolator(new GuassianBlurFilterInterpolator(
+                new LinearSplineInterpolator(PointListBuilder.create()
+                    .add(0, 0)
+                    .add(0.3f, 1)
+                    .add(0.6f, 1)
+                    .add(0.9f, 0)
+                    .add(1, 0)
+                    .build())) {
+              @Override
+              public float getBlurSize() {
+                return super.getBlurSize() * 2;
+              }
+            })
+            .build())
+        .build());
+    packModels.add(EffectTemplate.newBuilder()
+        .withName("crashrumble")
+        .addEffectStep(EffectStep.newBuilder()
+            .withStartPauseSeconds(0.5f)
+            .withDurationSeconds(1.5f)
+            .withScaleAndTranslateInterpolatorProvider(new CrashRumbleInterpolatorProvider())
             .build())
         .build());
 

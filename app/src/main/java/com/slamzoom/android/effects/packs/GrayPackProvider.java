@@ -5,7 +5,7 @@ import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.interpolation.filter.single.UnsaturateFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.ZoomBlurAtHotspotFilterInterpolator;
-import com.slamzoom.android.interpolators.effect.SlamHardInterpolator;
+import com.slamzoom.android.interpolators.custom.SlamHardInterpolator;
 import com.slamzoom.android.interpolators.spline.CubicSplineInterpolator;
 import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
 import com.slamzoom.android.interpolators.spline.PointListBuilder;

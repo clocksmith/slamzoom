@@ -1,6 +1,6 @@
 package com.slamzoom.android.effects.interpolation.filter.group;
 
-import com.slamzoom.android.effects.interpolation.filter.base.FilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 
 import java.util.List;
 
