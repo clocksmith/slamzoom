@@ -163,25 +163,32 @@ public abstract class MediaCreator<E extends MediaEncoder> {
         final float dx = xInterpolator.getInterpolation(t) * intermediateWidth;
         final float dy = yInterpolator.getInterpolation(t) * intermediateHeight;
 
+        final RectF normalizedHotspot = new RectF(0, 0, 1, 1);
+        try {
+          // Simple way to get normalized scale. We could hash out a formula, but this is easier to understand.
+          Interpolator normalizedScaleInterpolator = scaleInterpolator.clone();
+          normalizedScaleInterpolator.setRange(0, 1);
+          float normalizedScale = normalizedScaleInterpolator.getInterpolation(t);
+
+          float endLeftFromIntermediateLeft = leftInterpolator.getInterpolation(normalizedScale);
+          float endTopFromIntermediateTop = topInterpolator.getInterpolation(normalizedScale);
+          float endRightFromIntermediateRight = rightInterpolator.getInterpolation(normalizedScale);
+          float endBottomFromIntermediateBottom = bottomInterpolator.getInterpolation(normalizedScale);
+
+          normalizedHotspot.set(
+              endLeftFromIntermediateLeft / startRect.width(),
+              endTopFromIntermediateTop / startRect.height(),
+              endRightFromIntermediateRight / startRect.width(),
+              endBottomFromIntermediateBottom / startRect.height());
+        } catch (CloneNotSupportedException e) {
+          Log.wtf(TAG, "unable to clone", e);
+        }
+
         // TODO(clocksmith): extract this.
         List<GPUImageFilter> filters = Lists.transform(step.getFilterInterpolators(),
             new Function<FilterInterpolator, GPUImageFilter>() {
               @Override
               public GPUImageFilter apply(FilterInterpolator filterInterpolator) {
-                float interpolationValue = filterInterpolator.getInterpolator().getInterpolation(t);
-
-                float endLeftFromIntermediateLeft = leftInterpolator.getInterpolation(interpolationValue);
-                float endTopFromIntermediateTop = topInterpolator.getInterpolation(interpolationValue);
-                float endRightFromIntermediateRight = rightInterpolator.getInterpolation(interpolationValue);
-                float endBottomFromIntermediateBottom = bottomInterpolator.getInterpolation(interpolationValue);
-
-
-                RectF normalizedHotspot = new RectF(
-                    endLeftFromIntermediateLeft / startRect.width(),
-                    endTopFromIntermediateTop / startRect.height(),
-                    endRightFromIntermediateRight / startRect.width(),
-                    endBottomFromIntermediateBottom / startRect.height());
-
                 return filterInterpolator.getInterpolationFilter(t, normalizedHotspot);
               }
             });

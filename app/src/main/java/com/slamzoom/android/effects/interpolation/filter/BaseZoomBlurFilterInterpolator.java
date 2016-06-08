@@ -15,7 +15,7 @@ import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
  * Created by clocksmith on 6/4/16.
  */
 public class BaseZoomBlurFilterInterpolator extends FilterInterpolator implements HasBlurSize, HasCenter {
-  protected static final float BASE_BLUR_SIZE = 5;
+  protected static final float BASE_BLUR_SIZE = 3;
 
   protected FloatCalculator mBlurCalculator;
   protected CenterCalculator mCenterCalculator;

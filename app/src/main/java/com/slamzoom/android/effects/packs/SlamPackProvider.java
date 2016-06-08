@@ -3,6 +3,7 @@ package com.slamzoom.android.effects.packs;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.EffectStep;
+import com.slamzoom.android.interpolators.custom.SlamSoftOutInterpolator;
 import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
 import com.slamzoom.android.interpolators.spline.PointListBuilder;
 import com.slamzoom.android.effects.interpolation.filter.single.ZoomBlurAtHotspotFilterInterpolator;
@@ -41,10 +42,11 @@ public class SlamPackProvider {
         .withPackName("slam pack")
         .withName("slamout")
         .addEffectStep(EffectStep.newBuilder()
-            .withStartPauseSeconds(1.2f)
-            .withDurationSeconds(0.8f)
+//            .withStartPauseSeconds(1.2f)
+//            .withDurationSeconds(0.8f)
             .withEndPauseSeconds(1f)
-            .withScaleInterpolator(new SlamSoftOutNoPauseInterpolator())
+//            .withScaleInterpolator(new SlamSoftOutNoPauseInterpolator())
+            .withScaleInterpolator(new SlamSoftOutInterpolator())
             .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(new LinearSplineInterpolator(
                 PointListBuilder.create()
                     .add(0, 0)
