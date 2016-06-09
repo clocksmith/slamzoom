@@ -39,13 +39,12 @@ public class PostProcessorUtils {
   }
 
   public static Bitmap applyFilters(Context context, Bitmap original, List<GPUImageFilter> filters) {
-    Bitmap processed = original;
     for (GPUImageFilter filter : filters) {
       GPUImage gpuImage = new GPUImage(context);
       gpuImage.setFilter(filter);
-      processed = gpuImage.getBitmapWithFilterApplied(processed);
+      original = gpuImage.getBitmapWithFilterApplied(original);
     }
-    return processed;
+    return original;
   }
 
   public static void renderText(Bitmap original, String text) {
