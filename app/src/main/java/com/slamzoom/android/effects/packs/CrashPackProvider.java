@@ -3,7 +3,7 @@ package com.slamzoom.android.effects.packs;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.EffectStep;
-import com.slamzoom.android.effects.interpolation.filter.single.GuassianBlurFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.GaussianBlurFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashRumbleInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashTaranInterpolatorProvider;
 import com.slamzoom.android.interpolators.custom.OvershootInterpolator;
@@ -54,7 +54,7 @@ public class CrashPackProvider {
             .withDurationSeconds(0.75f)
             .withEndPauseSeconds(0.5f)
             .withScaleAndTranslateInterpolatorProvider(new CrashTaranInterpolatorProvider())
-            .withFilterInterpolator(new GuassianBlurFilterInterpolator(
+            .withFilterInterpolator(new GaussianBlurFilterInterpolator(
                 new LinearSplineInterpolator(PointListBuilder.create()
                     .add(0, 0)
                     .add(0.3f, 1)

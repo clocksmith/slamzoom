@@ -4,19 +4,19 @@ import com.slamzoom.android.effects.interpolation.filter.BaseGuassianBlurFilterI
 import com.slamzoom.android.interpolators.Interpolator;
 
 /**
- * Created by clocksmith on 6/5/16.
+ * Created by clocksmith on 3/21/16.
  */
-public class GuassianBlurFilterInterpolator extends BaseGuassianBlurFilterInterpolator {
-  public GuassianBlurFilterInterpolator() {
+public class GaussianUnblurFilterInterpolator extends BaseGuassianBlurFilterInterpolator {
+  public GaussianUnblurFilterInterpolator() {
     this(null);
   }
 
-  public GuassianBlurFilterInterpolator(Interpolator interpolator) {
+  public GaussianUnblurFilterInterpolator(Interpolator interpolator) {
     super(interpolator);
   }
 
   @Override
   public float getBlurSize() {
-    return mBlurCalculator.getValueFromInterpolation();
+    return mBlurCalculator.getValueFromInterpolationCompliment();
   }
 }
