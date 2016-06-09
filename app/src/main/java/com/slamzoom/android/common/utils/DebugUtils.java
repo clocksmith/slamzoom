@@ -1,6 +1,7 @@
 package com.slamzoom.android.common.utils;
 
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.os.Environment;
 import android.util.Log;
 
@@ -13,6 +14,22 @@ import java.io.IOException;
  */
 public class DebugUtils {
   private static final String TAG = DebugUtils.class.getSimpleName();
+
+  // Flags
+  public static final boolean DEBUG_SAVE_INDIVIDUAL_FRAMES_AS_BITMAPS = false;
+  public static final boolean DEBUG_USE_STATIC_RECTANGLE = true;
+
+  public static final float DEBUG_RECT_LEFT_FRACTION = 0.07f;
+  public static final float DEBUG_RECT_TOP_FRACTION = 0.2f;
+  public static final float DEBUG_RECT_SIZE_FRACTION = 0.3333f;
+
+  public static Rect getDebugRect(Bitmap src) {
+    return new Rect(
+        (int) (DEBUG_RECT_LEFT_FRACTION * src.getWidth() + 0.5f),
+        (int) (DEBUG_RECT_TOP_FRACTION * src.getHeight() + 0.5f),
+        (int) (src.getWidth() * (DEBUG_RECT_LEFT_FRACTION + DEBUG_RECT_SIZE_FRACTION) + 0.5f),
+        (int) (src.getHeight() * (DEBUG_RECT_TOP_FRACTION + DEBUG_RECT_SIZE_FRACTION) + 0.5f));
+  }
 
   public static void saveFrameAsBitmap(Bitmap finalBitmap, int frameIndex) {
       File direct = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "/SlamZoom");

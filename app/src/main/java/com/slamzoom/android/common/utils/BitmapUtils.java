@@ -9,12 +9,18 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.net.Uri;
 
+import com.slamzoom.android.common.Constants;
+
 import java.io.FileNotFoundException;
 
 /**
  * Created by clocksmith on 3/7/16.
  */
 public class BitmapUtils {
+  public static Bitmap readScaledBitmap(Uri uri , ContentResolver contentResolver) throws FileNotFoundException  {
+    return readScaledBitmap(uri, contentResolver, Constants.MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX);
+  }
+
   public static Bitmap readScaledBitmap(
       Uri uri, ContentResolver contentResolver, int maxDimen) throws FileNotFoundException {
     AssetFileDescriptor assetFileDescriptor = contentResolver.openAssetFileDescriptor(uri, "r");

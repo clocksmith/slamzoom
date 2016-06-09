@@ -250,8 +250,7 @@ public class CreateActivity extends AppCompatActivity {
   private void handleIncomingUri(Uri uri) {
     try {
       mSelectedUri = uri;
-      mSelectedBitmap = BitmapUtils.readScaledBitmap(
-          mSelectedUri, this.getContentResolver(), Constants.MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX);
+      mSelectedBitmap = BitmapUtils.readScaledBitmap(mSelectedUri, this.getContentResolver());
       launchHotspotChooser();
     } catch (FileNotFoundException e) {
       Log.e(TAG, "Cannot get bitmap for path: " + uri.toString());

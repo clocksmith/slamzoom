@@ -10,8 +10,6 @@ public class Constants {
   public static final boolean USE_IMAGE_WATERMARK = false;
   public static final boolean USE_TEXT_WATERMARK = false;
   public static final boolean USE_WATERMARK = USE_IMAGE_WATERMARK || USE_TEXT_WATERMARK;
-  // Debug
-  public static final boolean SAVE_INDIVIDUAL_FRAMES_AS_BITMAPS = false;
 
   public static final String WATERMARK_TEXT = "slamzoom.com";
   public static final int MAX_WATERMARK_TEXT_SIZE = 18;

@@ -5,7 +5,7 @@ import android.util.Log;
 
 import com.google.common.collect.Lists;
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.common.singletons.ExecutorProvider;
+import com.slamzoom.android.common.utils.ExecutorFactory;
 import com.slamzoom.android.mediacreation.MediaEncoder;
 
 import java.io.ByteArrayOutputStream;
@@ -39,10 +39,10 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
 
   private List<Runnable> mFrameWriters;
   private AtomicInteger mTotalNumFrameWritersToAdd;
-  private long mEncodeStart;
   private GifCreator.CreateGifCallback mCallback;
 
   private ProgressUpdateListener mProgressUpdateListener;
+  private long mEncodingFramesStart;
 
   public GifEncoder() {
     this(Constants.DEFAULT_USE_LOCAL_COLOR_PALETTE);
@@ -72,9 +72,7 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
 
   public void encodeAsync(GifCreator.CreateGifCallback callback) {
     mCallback = callback;
-    mEncodeStart = System.currentTimeMillis();
-
-//    Log.d(TAG, "Starting GIF encode...");
+    mEncodingFramesStart = System.currentTimeMillis();
 
     mFrameWriters = Lists.newArrayListWithCapacity(mFrames.size());
     for (int frameIndex = 0; frameIndex < mFrames.size(); frameIndex++) {
@@ -82,8 +80,8 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
     }
     mTotalNumFrameWritersToAdd = new AtomicInteger(mFrameWriters.size());
 
-    GetFrameWriterTask getStartFrameWriterTask = new GetFrameWriterTask(0);
-    getStartFrameWriterTask.executeOnExecutor(Executors.newSingleThreadExecutor());
+    GetFirstFrameWriterTask getFirstFrameWriterTask = new GetFirstFrameWriterTask();
+    getFirstFrameWriterTask.executeOnExecutor(ExecutorFactory.create(1, 1));
   }
 
   private void setOrVerifyGifDimensions(GifFrame frame) {
@@ -279,6 +277,26 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
     }
   }
 
+  private class GetFirstFrameWriterTask extends AsyncTask<Void, Void, Runnable> {
+    @Override
+    protected Runnable doInBackground(Void... params) {
+      return getFrameWriter(mFrames.get(0), 0);
+    }
+
+    @Override
+    protected void onPostExecute(Runnable frameWriter) {
+      mTotalNumFrameWritersToAdd.decrementAndGet();
+      mFrameWriters.set(0, frameWriter);
+        for (int frameIndex = 1; frameIndex < mFrames.size(); frameIndex++) {
+          Log.wtf(TAG, "create frame writer task for frame: " + frameIndex);
+          GetFrameWriterTask getFrameWriterTask = new GetFrameWriterTask(frameIndex);
+//          getFrameWriterTask.executeOnExecutor(ExecutorFactory.create(2, 2));
+          getFrameWriterTask.executeOnExecutor(Executors.newFixedThreadPool(1));
+          Log.wtf(TAG, "frame writer task for frame added to exec: " + frameIndex);
+        }
+      }
+  }
+
   private class GetFrameWriterTask extends AsyncTask<Void, Void, Runnable> {
     private int mFrameIndex;
 
@@ -289,21 +307,19 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
 
     @Override
     protected Runnable doInBackground(Void... params) {
+      Log.wtf(TAG, "executing frame writer task for frame: " + mFrameIndex);
       return getFrameWriter(mFrames.get(mFrameIndex), mFrameIndex);
     }
 
     @Override
     protected void onPostExecute(Runnable frameWriter) {
       mFrameWriters.set(mFrameIndex, frameWriter);
-      if (mFrameIndex == 0) {
-        for (int frameIndex = 1; frameIndex < mFrames.size(); frameIndex++) {
-          GetFrameWriterTask getFrameWriterTask = new GetFrameWriterTask(frameIndex);
-          getFrameWriterTask.executeOnExecutor(ExecutorProvider.getInstance());
-        }
-      }
+
+      Log.wtf(TAG, "executed frame writer task for frame: " + mFrameIndex);
 
       if (mTotalNumFrameWritersToAdd.decrementAndGet() == 0) {
-        new WriteFramesTask().executeOnExecutor(ExecutorProvider.getInstance());
+        Log.wtf(TAG, "Finished encoding frames in " + (System.currentTimeMillis() - mEncodingFramesStart) + "ms");
+        new WriteFramesTask().executeOnExecutor(ExecutorFactory.create(1, 1));
       }
     }
 

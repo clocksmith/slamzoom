@@ -39,12 +39,13 @@ public class PostProcessorUtils {
   }
 
   public static Bitmap applyFilters(Context context, Bitmap original, List<GPUImageFilter> filters) {
+    Bitmap processed = original;
     for (GPUImageFilter filter : filters) {
       GPUImage gpuImage = new GPUImage(context);
       gpuImage.setFilter(filter);
-      original = gpuImage.getBitmapWithFilterApplied(original);
+      processed = gpuImage.getBitmapWithFilterApplied(processed);
     }
-    return original;
+    return processed;
   }
 
   public static void renderText(Bitmap original, String text) {
@@ -57,7 +58,7 @@ public class PostProcessorUtils {
     textCanvas.drawText(text, original.getWidth() / 2, original.getHeight() / 2, textPaint);
   }
 
-  public static void renderwWatermark(Context context, Bitmap original) {
+  public static void renderWatermark(Context context, Bitmap original) {
     if (Constants.USE_TEXT_WATERMARK) {
       Canvas watermarkCanvas = new Canvas(original);
       Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);

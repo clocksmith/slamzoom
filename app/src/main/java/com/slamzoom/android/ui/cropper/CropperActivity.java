@@ -3,6 +3,7 @@ package com.slamzoom.android.ui.cropper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import android.widget.Button;
 import com.slamzoom.android.common.utils.BitmapUtils;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.R;
+import com.slamzoom.android.common.utils.DebugUtils;
 
 import java.io.FileNotFoundException;
 
@@ -38,24 +40,35 @@ public class CropperActivity extends AppCompatActivity {
 
     Uri uri = getIntent().getParcelableExtra(Constants.IMAGE_URI);
     try {
-      Bitmap bitmap = BitmapUtils.readScaledBitmap(uri, this.getContentResolver(), Constants.MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX);
-      mImageCropView.setAspectRatio(bitmap.getWidth(), bitmap.getHeight());
-      mImageCropView.setImageBitmap(bitmap, new Matrix(), 1f, 1000f);
-//      mImageCropView.setImageBitmap(bitmap);
+      Bitmap bitmap = BitmapUtils.readScaledBitmap(uri, this.getContentResolver());
+      if (DebugUtils.DEBUG_USE_STATIC_RECTANGLE) {
+        Rect debugCropRect = DebugUtils.getDebugRect(bitmap);
+        Log.d(TAG, "using debug cropRect: " + debugCropRect.toString());
+        finishWithCropRect(debugCropRect);
+      } else {
+        mImageCropView.setAspectRatio(bitmap.getWidth(), bitmap.getHeight());
+        mImageCropView.setImageBitmap(bitmap, new Matrix(), 1f, 100f);
+      }
     } catch (FileNotFoundException e) {
-      Log.e(TAG, "Cannot read bitmap", e);
+      Log.e(TAG, "Cannot read selected image", e);
       finish();
     }
 
     mDoneButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        Intent returnIntent = new Intent();
-        Log.d(TAG, mImageCropView.getCropRect().toString());
-        returnIntent.putExtra(Constants.CROP_RECT, mImageCropView.getCropRect());
-        setResult(RESULT_OK, returnIntent);
-        finish();
+        Rect cropRect = mImageCropView.getCropRect();
+        Log.d(TAG, "selected cropRect: " + cropRect.toString());
+        finishWithCropRect(cropRect);
       }
     });
   }
+
+  private void finishWithCropRect(Rect cropRect) {
+    Intent returnIntent = new Intent();
+    returnIntent.putExtra(Constants.CROP_RECT, cropRect);
+    setResult(RESULT_OK, returnIntent);
+    finish();
+  }
+
 }

@@ -16,7 +16,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.common.singletons.ExecutorProvider;
+import com.slamzoom.android.common.utils.ExecutorFactory;
 import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.PostProcessorUtils;
 import com.slamzoom.android.effects.EffectStep;
@@ -95,30 +95,30 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       int delayMillis,
       String textToRender,
       int frameIndex) {
-    Bitmap finalBitmap = getTransformedAndScaledBitmap(transformationMatrix);
+    Bitmap frameBitmap = transformSelectedBitmap(transformationMatrix);
 
     if (mNumTilesInRow > 1) {
-      finalBitmap = PostProcessorUtils.applyTiling(mNumTilesInRow, finalBitmap);
+      frameBitmap = PostProcessorUtils.applyTiling(mNumTilesInRow, frameBitmap);
     }
 
-    if (!filters.isEmpty()) {
-      finalBitmap = PostProcessorUtils.applyFilters(mContext, finalBitmap, filters);
-    }
+    Bitmap scaledFrameBitmap = Bitmap.createScaledBitmap(frameBitmap, mGifWidth, mGifHeight, true);
+
+    Bitmap filteredFrameBitmap = PostProcessorUtils.applyFilters(mContext, scaledFrameBitmap, filters);
 
     if (!Strings.isNullOrEmpty(textToRender)) {
       delayMillis += 1000;
-      PostProcessorUtils.renderText(finalBitmap, textToRender);
+      PostProcessorUtils.renderText(filteredFrameBitmap, textToRender);
     }
 
     if (Constants.USE_WATERMARK) {
-      PostProcessorUtils.renderwWatermark(mContext, finalBitmap);
+      PostProcessorUtils.renderWatermark(mContext, filteredFrameBitmap);
     }
 
-    if (Constants.SAVE_INDIVIDUAL_FRAMES_AS_BITMAPS) {
-      DebugUtils.saveFrameAsBitmap(finalBitmap, frameIndex);
+    if (DebugUtils.DEBUG_SAVE_INDIVIDUAL_FRAMES_AS_BITMAPS) {
+      DebugUtils.saveFrameAsBitmap(filteredFrameBitmap, frameIndex);
     }
 
-    return createFrame(finalBitmap, delayMillis);
+    return createFrame(filteredFrameBitmap, delayMillis);
   }
 
   protected void collectFrames() {
@@ -213,14 +213,9 @@ public abstract class MediaCreator<E extends MediaEncoder> {
             dy,
             filters,
             textToRender);
-        createFrameTask.executeOnExecutor(ExecutorProvider.getInstance());
+        createFrameTask.executeOnExecutor(ExecutorFactory.create(4, 4));
       }
     }
-  }
-
-  private Bitmap getTransformedAndScaledBitmap(Matrix transformationMatrix) {
-    return Bitmap.createScaledBitmap(
-        transformSelectedBitmap(transformationMatrix), mGifWidth, mGifHeight, true);
   }
 
   private Bitmap transformSelectedBitmap(Matrix transformationMatrix) {

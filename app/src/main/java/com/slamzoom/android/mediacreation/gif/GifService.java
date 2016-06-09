@@ -85,7 +85,8 @@ public class GifService extends Service {
             @Override
             public void onCreateGif(byte[] gifBytes) {
               if (gifBytes != null) {
-                Log.wtf(TAG, "gif took " + (System.currentTimeMillis() - start) + "ms to make");
+                Log.wtf(TAG, gifConfig.effectModel.getEffectTemplate().getName() +
+                    " gif took a total of " + (System.currentTimeMillis() - start) + "ms to create");
                 mGifCache.put(gifConfig, gifBytes);
                 fireGifReadyEvent(gifConfig);
               }

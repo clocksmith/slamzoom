@@ -7,6 +7,7 @@ import com.slamzoom.android.effects.packs.RumblePackProvider;
 import com.slamzoom.android.effects.packs.DistortionPack2Provider;
 import com.slamzoom.android.effects.packs.SlamPackProvider;
 import com.slamzoom.android.effects.packs.SwirlPackProvider;
+import com.slamzoom.android.mediacreation.gif.GifCreator;
 
 import java.util.List;
 
@@ -17,8 +18,9 @@ public class EffectTemplateProvider {
   private static List<EffectTemplate> mTemplates = Lists.newArrayList();
 
   static {
-    mTemplates.addAll(SlamPackProvider.getPack());
     mTemplates.addAll(DistortionPack1Provider.getPack());
+    mTemplates.addAll(SlamPackProvider.getPack());
+//    mTemplates.addAll(DistortionPack1Provider.getPack());
     mTemplates.addAll(CrashPackProvider.getPack());
     mTemplates.addAll(SwirlPackProvider.getPack());
     mTemplates.addAll(RumblePackProvider.getPack());
