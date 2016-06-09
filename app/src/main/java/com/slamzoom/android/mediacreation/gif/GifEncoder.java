@@ -290,8 +290,8 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
         for (int frameIndex = 1; frameIndex < mFrames.size(); frameIndex++) {
           Log.wtf(TAG, "create frame writer task for frame: " + frameIndex);
           GetFrameWriterTask getFrameWriterTask = new GetFrameWriterTask(frameIndex);
-//          getFrameWriterTask.executeOnExecutor(ExecutorFactory.create(2, 2));
-          getFrameWriterTask.executeOnExecutor(Executors.newFixedThreadPool(1));
+          getFrameWriterTask.executeOnExecutor(ExecutorFactory.create());
+//          getFrameWriterTask.executeOnExecutor(Executors.newFixedThreadPool(1));
           Log.wtf(TAG, "frame writer task for frame added to exec: " + frameIndex);
         }
       }

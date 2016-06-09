@@ -26,7 +26,7 @@ public class Constants {
   public static final float DEFAULT_END_PAUSE_SECONDS = 0;
 
   public static final int DEFAULT_FPS = 24;
-  public static final int DEFAULT_GIF_SIZE_PX = 320 ;
+  public static final int DEFAULT_GIF_SIZE_PX = 320;
   public static final boolean DEFAULT_USE_LOCAL_COLOR_PALETTE = true;
 
   // arbitrary

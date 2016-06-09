@@ -19,8 +19,8 @@ public class DebugUtils {
   public static final boolean DEBUG_SAVE_INDIVIDUAL_FRAMES_AS_BITMAPS = false;
   public static final boolean DEBUG_USE_STATIC_RECTANGLE = true;
 
-  public static final float DEBUG_RECT_LEFT_FRACTION = 0.07f;
-  public static final float DEBUG_RECT_TOP_FRACTION = 0.2f;
+  public static final float DEBUG_RECT_LEFT_FRACTION = 0.18f;
+  public static final float DEBUG_RECT_TOP_FRACTION = 0.12f;
   public static final float DEBUG_RECT_SIZE_FRACTION = 0.3333f;
 
   public static Rect getDebugRect(Bitmap src) {

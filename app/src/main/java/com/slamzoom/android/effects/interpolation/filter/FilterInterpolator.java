@@ -24,9 +24,9 @@ public abstract class FilterInterpolator {
     mInterpolator = interpolator;
   }
 
-  public GPUImageFilter getInterpolationFilter(float percent, RectF normalizedHotspot) {
-    mInterpolationValue = mInterpolator.getInterpolation(percent);
-    mNormalizedHotspot = normalizedHotspot;
+  public synchronized GPUImageFilter getInterpolationFilter(float percent, RectF normalizedHotspot) {
+    setInterpolationValue(mInterpolator.getInterpolation(percent));
+    setNormalizedHotspot(normalizedHotspot);
     return getFilter();
   }
 
@@ -42,12 +42,20 @@ public abstract class FilterInterpolator {
     mInterpolator = interpolator;
   }
 
-  public float getInterpolationValue() {
+  public synchronized float getInterpolationValue() {
     return mInterpolationValue;
   }
 
-  public RectF getNormalizedHotspot() {
+  public synchronized RectF getNormalizedHotspot() {
     return mNormalizedHotspot;
+  }
+
+  public synchronized void setInterpolationValue(float interpolationValue) {
+    mInterpolationValue = interpolationValue;
+  }
+
+  public synchronized void setNormalizedHotspot(RectF normalizedHotspot) {
+    mNormalizedHotspot = normalizedHotspot;
   }
 
   protected abstract GPUImageFilter getFilter();

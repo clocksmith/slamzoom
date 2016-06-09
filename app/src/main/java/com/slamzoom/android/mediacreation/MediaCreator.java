@@ -213,7 +213,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
             dy,
             filters,
             textToRender);
-        createFrameTask.executeOnExecutor(ExecutorFactory.create(4, 4));
+        createFrameTask.executeOnExecutor(ExecutorFactory.create());
       }
     }
   }
