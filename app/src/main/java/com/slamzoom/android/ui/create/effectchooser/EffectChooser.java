@@ -44,18 +44,6 @@ public class EffectChooser extends LinearLayout {
     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
     linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
     mRecyclerView.setLayoutManager(linearLayoutManager);
-
-    mRecyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
-      @Override
-      public void onChildViewAttachedToWindow(View view) {
-
-      }
-
-      @Override
-      public void onChildViewDetachedFromWindow(View view) {
-
-      }
-    });
   }
 
   public void setEffectModels(List<EffectModel> effectModels) {

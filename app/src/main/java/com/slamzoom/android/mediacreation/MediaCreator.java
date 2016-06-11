@@ -48,6 +48,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   protected Set<CreateFrameTask> mCreateFrameTasks = Sets.newConcurrentHashSet();
   protected E mMediaEncoder;
   protected boolean mIsCancelled;
+  protected boolean mIsPreview;
 
   protected Context mContext;
   protected Bitmap mSelectedBitmap;
@@ -67,6 +68,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     mCallback = callback;
     mNumTilesInRow = mEffectModel.getEffectTemplate().getNumTilesInRow();
 
+    mIsPreview = gifSize == Constants.DEFAULT_GIF_PREVIEW_SIZE_PX;
     float aspectRatio = (float) mSelectedBitmap.getWidth() / mSelectedBitmap.getHeight();
     mGifWidth = aspectRatio > 1 ? gifSize : Math.round(gifSize * aspectRatio);
     mGifHeight = aspectRatio > 1 ? Math.round(gifSize / aspectRatio) : gifSize;
@@ -197,6 +199,9 @@ public abstract class MediaCreator<E extends MediaEncoder> {
               endTopFromIntermediateTop / startRect.height(),
               endRightFromIntermediateRight / startRect.width(),
               endBottomFromIntermediateBottom / startRect.height());
+
+//          Log.wtf(TAG, "frame: " + frameIndex + " normRect: " + normalizedHotspot.toShortString() +
+//          " normW: " + normalizedHotspot.width() + " normH: " + normalizedHotspot.height());
         } catch (CloneNotSupportedException e) {
           Log.wtf(TAG, "unable to clone", e);
         }

@@ -55,15 +55,6 @@ public class GifService extends Service {
     }
   }
 
-  public class ProgressUpdateEvent{
-    public final String effectName;
-    public final int progress;
-    public ProgressUpdateEvent(String effectName, int progress) {
-      this.effectName = effectName;
-      this.progress = progress;
-    }
-  }
-
   public class GifServiceBinder extends Binder {
     public GifService getService() {
       return GifService.this;
@@ -73,7 +64,6 @@ public class GifService extends Service {
   private final IBinder mBinder = new GifServiceBinder();
   private Cache<GifConfig, byte[]> mGifCache;
   private GifCreator mGifCreator;
-  private Map<EffectModel, Double> mGifProgresses;
 
   private Cache<GifConfig, byte[]> mGifPreviewCache;
   private Map<String, GifCreator> mGifPreviewCreators;
@@ -84,7 +74,6 @@ public class GifService extends Service {
     mGifCache = CacheBuilder.newBuilder()
         .maximumSize(DebugUtils.DEBUG_USE_CACHE ? EffectTemplateProvider.getTemplates().size() : 0)
         .build();
-    mGifProgresses = Maps.newHashMap();
 
     mGifPreviewCache = CacheBuilder.newBuilder()
         .maximumSize(DebugUtils.DEBUG_USE_CACHE ? EffectTemplateProvider.getTemplates().size() : 0)
@@ -154,16 +143,16 @@ public class GifService extends Service {
     BusProvider.getInstance().post(new GifPreviewReadyEvent(effectName, mGifPreviewCache.asMap().get(gifConfig)));
   }
 
-  @Subscribe
-  public void on(GifCreator.ProgressUpdateEvent event) throws IOException {
-    if (!mGifProgresses.containsKey(event.effectModel)) {
-      mGifProgresses.put(event.effectModel, 0d);
-    }
-
-    mGifProgresses.put(event.effectModel, mGifProgresses.get(event.effectModel) + event.amountToUpdate);
-    BusProvider.getInstance().post(new ProgressUpdateEvent(event.effectModel.getEffectTemplate().getName(),
-        (int) Math.round(100 * mGifProgresses.get(event.effectModel))));
-  }
+//  @Subscribe
+//  public void on(GifCreator.ProgressUpdateEvent event) throws IOException {
+//    if (!mGifProgresses.containsKey(event.effectModel)) {
+//      mGifProgresses.put(event.effectModel, 0d);
+//    }
+//
+//    mGifProgresses.put(event.effectModel, mGifProgresses.get(event.effectModel) + event.amountToUpdate);
+//    BusProvider.getInstance().post(new ProgressUpdateEvent(event.effectModel.getEffectTemplate().getName(),
+//        (int) Math.round(100 * mGifProgresses.get(event.effectModel))));
+//  }
 
   @Subscribe
   public void on(EffectThumbnailViewHolder.RequestGifPreviewEvent event) {

@@ -24,9 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import com.google.common.base.Function;
-import com.google.common.collect.FluentIterable;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.slamzoom.android.effects.EffectModelProvider;
 import com.slamzoom.android.common.BackInterceptingEditText;
@@ -36,6 +33,7 @@ import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.utils.KeyboardUtils;
 import com.slamzoom.android.mediacreation.gif.GifConfig;
+import com.slamzoom.android.mediacreation.gif.GifCreator;
 import com.slamzoom.android.mediacreation.gif.GifService;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 import com.slamzoom.android.ui.cropper.CropperActivity;
@@ -79,6 +77,7 @@ public class CreateActivity extends AppCompatActivity {
   private GifService mGifService;
   private GifServiceConnection mConnection;
   private boolean mBound = false;
+  private Map<String, Double> mGifProgresses;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +100,8 @@ public class CreateActivity extends AppCompatActivity {
     if (Intent.ACTION_SEND.equals(intent.getAction())) {
       handleIncomingUri((Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM));
     }
+
+    mGifProgresses = Maps.newHashMap();
 
     bindService(new Intent(this, GifService.class), mConnection, Context.BIND_AUTO_CREATE);
 
@@ -180,11 +181,14 @@ public class CreateActivity extends AppCompatActivity {
             (int) (mSelectedHotspot.top / ratio),
             (int) (mSelectedHotspot.right / ratio),
             (int) (mSelectedHotspot.bottom / ratio));
+
         mSelectedEndText = null;
         mSelectedGifBytes = null;
         mGifImageView.setImageBitmap(null);
-        mProgressBar.setProgress(0);
-        mProgressBar.setVisibility(View.VISIBLE);
+
+        resetProgresses();
+        updateProgressBar();
+
         updateGifPreviews();
         updateGif();
       } else {
@@ -207,9 +211,8 @@ public class CreateActivity extends AppCompatActivity {
   @Subscribe
   public void on(EffectThumbnailViewHolder.ItemClickEvent event) throws IOException {
     mSelectedEffectName = event.effectName;
-    mProgressBar.setProgress(0);
-    mProgressBar.setVisibility(View.VISIBLE);
     mGifImageView.setImageBitmap(null);
+    updateProgressBar();
     updateGif();
   }
 
@@ -223,15 +226,25 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   @Subscribe
-  public void on(GifService.ProgressUpdateEvent event) {
-    if (event.effectName.equals(mSelectedEffectName)) {
-      mProgressBar.setProgress(event.progress);
-    }
+  public void on(GifCreator.ProgressUpdateEvent event) throws IOException {
+    mGifProgresses.put(event.effectName, mGifProgresses.get(event.effectName) + event.amountToUpdate);
+    updateProgressBar();
   }
 
   @Subscribe
   public void on(BackInterceptingEditText.OnBackPressedEvent event) {
     handleUpOrBackPressed();
+  }
+
+  private void resetProgresses() {
+    for (EffectModel model : EffectModelProvider.getEffectModels()) {
+      mGifProgresses.put(model.getEffectTemplate().getName(), 0d);
+    }
+  }
+
+  private void updateProgressBar() {
+    mProgressBar.setVisibility(View.VISIBLE);
+    mProgressBar.setProgress((int) Math.round(100 * mGifProgresses.get(mSelectedEffectName)));
   }
 
   private void updateGif() {
@@ -298,9 +311,8 @@ public class CreateActivity extends AppCompatActivity {
 
   private void handleAddTextConfirmed() {
     mSelectedEndText = mAddTextView.getEditText().getText().toString();
-    mProgressBar.setProgress(0);
-    mProgressBar.setVisibility(View.VISIBLE);
     mGifImageView.setImageBitmap(null);
+    updateProgressBar();
     updateGifPreviews();
     updateGif();
     KeyboardUtils.hideKeyboard(this);

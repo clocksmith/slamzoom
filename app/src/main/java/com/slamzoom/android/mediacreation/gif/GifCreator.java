@@ -22,14 +22,14 @@ public class GifCreator extends MediaCreator implements GifEncoder.ProgressUpdat
 
   @Override
   public void onProgressUpdate(double amountToUpdate) {
-    BusProvider.getInstance().post(new ProgressUpdateEvent(mEffectModel, amountToUpdate));
+    BusProvider.getInstance().post(new ProgressUpdateEvent(mEffectModel.getEffectTemplate().getName(), amountToUpdate));
   }
 
   public class ProgressUpdateEvent {
-    public final EffectModel effectModel;
+    public final String effectName;
     public final double amountToUpdate;
-    public ProgressUpdateEvent(EffectModel effectModel, double amountToUpdate) {
-      this.effectModel = effectModel;
+    public ProgressUpdateEvent(String effectName, double amountToUpdate) {
+      this.effectName = effectName;
       this.amountToUpdate = amountToUpdate;
     }
   }
@@ -53,14 +53,19 @@ public class GifCreator extends MediaCreator implements GifEncoder.ProgressUpdat
   @Override
   public GifFrame createFrame(Bitmap bitmap, int delayMillis) {
     GifFrame frame =  new GifFrame(bitmap, delayMillis);
-    BusProvider.getInstance().post(new ProgressUpdateEvent(mEffectModel, 1.0 / 3 / mTotalNumFrames));
+    if (!mIsPreview) {
+      BusProvider.getInstance().post(
+          new ProgressUpdateEvent(mEffectModel.getEffectTemplate().getName(), 1.0 / 3 / mTotalNumFrames));
+    }
     return frame;
   }
 
   @Override
   public GifEncoder createEncoder() {
     GifEncoder gifEncoder = new GifEncoder();
-    gifEncoder.setProgressUpdateListener(this);
+    if (!mIsPreview) {
+      gifEncoder.setProgressUpdateListener(this);
+    }
     return gifEncoder;
   }
 }
