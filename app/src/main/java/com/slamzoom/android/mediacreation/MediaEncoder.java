@@ -9,4 +9,6 @@ public interface MediaEncoder<F extends MediaFrame, C extends CreateMediaCallbac
   void addFrames(Iterable<F> frame);
 
   void encodeAsync(C callback);
+
+  void cancel();
 }

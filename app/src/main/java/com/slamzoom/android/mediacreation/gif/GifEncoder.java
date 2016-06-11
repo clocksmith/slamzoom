@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.singletons.ExecutorProvider;
 import com.slamzoom.android.mediacreation.MediaEncoder;
@@ -11,6 +12,7 @@ import com.slamzoom.android.mediacreation.MediaEncoder;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -36,6 +38,7 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
   private NeuQuant mGloabalNq;
   private byte[] mGlobalColorTable;
 
+  private Set<AsyncTask> mTasks = Sets.newConcurrentHashSet();
   private List<Runnable> mFrameWriters;
   private AtomicInteger mTotalNumFrameWritersToAdd;
   private GifCreator.CreateGifCallback mCallback;
@@ -55,6 +58,13 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
 
   public void setProgressUpdateListener(ProgressUpdateListener listener) {
     mProgressUpdateListener = listener;
+  }
+
+  @Override
+  public void cancel() {
+    for (AsyncTask task : mTasks) {
+      task.cancel(true);
+    }
   }
 
   @Override
@@ -80,6 +90,7 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
     mTotalNumFrameWritersToAdd = new AtomicInteger(mFrameWriters.size());
 
     GetFirstFrameWriterTask getFirstFrameWriterTask = new GetFirstFrameWriterTask();
+    mTasks.add(getFirstFrameWriterTask);
     getFirstFrameWriterTask.executeOnExecutor(ExecutorProvider.getEncodeFramesExecutor());
   }
 
@@ -289,6 +300,7 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
         for (int frameIndex = 1; frameIndex < mFrames.size(); frameIndex++) {
 //          Log.wtf(TAG, "create frame writer task for frame: " + frameIndex);
           GetFrameWriterTask getFrameWriterTask = new GetFrameWriterTask(frameIndex);
+          mTasks.add(getFrameWriterTask);
           getFrameWriterTask.executeOnExecutor(ExecutorProvider.getEncodeFramesExecutor());
 //          Log.wtf(TAG, "frame writer task for frame added to exec: " + frameIndex);
         }
@@ -301,7 +313,6 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
     public GetFrameWriterTask(int frameIndex) {
       mFrameIndex = frameIndex;
     }
-
 
     @Override
     protected Runnable doInBackground(Void... params) {
@@ -317,6 +328,8 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
 
       if (mTotalNumFrameWritersToAdd.decrementAndGet() == 0) {
         Log.wtf(TAG, "Finished encoding frames in " + (System.currentTimeMillis() - mEncodingFramesStart) + "ms");
+        WriteFramesTask writeFramesTask = new WriteFramesTask();
+        mTasks.add(writeFramesTask);
         new WriteFramesTask().execute();
       }
     }

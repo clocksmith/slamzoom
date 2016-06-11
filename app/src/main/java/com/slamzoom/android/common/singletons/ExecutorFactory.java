@@ -1,4 +1,4 @@
-package com.slamzoom.android.common.utils;
+package com.slamzoom.android.common.singletons;
 
 import android.util.Log;
 
@@ -19,7 +19,7 @@ public class ExecutorFactory {
   private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
   private static final int KEEP_ALIVE = 1;
 
-  public static Executor create(int corePoolSize, int maxPoolSize) {
+  public static ThreadPoolExecutor create(int corePoolSize, int maxPoolSize) {
     BlockingQueue<Runnable> sPoolWorkQueue = new LinkedBlockingQueue<Runnable>(Integer.MAX_VALUE);
 
     ThreadFactory sThreadFactory = new ThreadFactory() {
@@ -39,7 +39,7 @@ public class ExecutorFactory {
         sThreadFactory);
   }
 
-  public static Executor create() {
+  public static ThreadPoolExecutor create() {
     return create(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE);
   }
 }

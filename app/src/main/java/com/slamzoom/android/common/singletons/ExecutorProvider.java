@@ -1,27 +1,35 @@
 package com.slamzoom.android.common.singletons;
 
-import com.slamzoom.android.common.utils.ExecutorFactory;
-
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Created by clocksmith on 6/9/16.
  */
 public class ExecutorProvider {
-  private static Executor COLLECT_FRAMES_EXECUTOR;
-  private static Executor ENCODE_FRAMES_EXECUTOR;
+  private static ThreadPoolExecutor COLLECT_FRAMES_EXECUTOR;
+  private static ThreadPoolExecutor ENCODE_FRAMES_EXECUTOR;
+  private static ThreadPoolExecutor GENERATE_PREVIEWS_EXECUTOR;
 
-  public static Executor getCollectFramesExecutor() {
+  public static ThreadPoolExecutor getCollectFramesExecutor() {
     if (COLLECT_FRAMES_EXECUTOR == null) {
       COLLECT_FRAMES_EXECUTOR = ExecutorFactory.create();
     }
     return COLLECT_FRAMES_EXECUTOR;
   }
 
-  public static Executor getEncodeFramesExecutor() {
+  public static ThreadPoolExecutor getEncodeFramesExecutor() {
     if (ENCODE_FRAMES_EXECUTOR == null) {
       ENCODE_FRAMES_EXECUTOR = ExecutorFactory.create();
     }
     return ENCODE_FRAMES_EXECUTOR;
+  }
+
+  public static ThreadPoolExecutor getGeneratePreviewsExecutor() {
+    if (GENERATE_PREVIEWS_EXECUTOR == null) {
+      GENERATE_PREVIEWS_EXECUTOR = ExecutorFactory.create(1, 1);
+    }
+    return GENERATE_PREVIEWS_EXECUTOR;
   }
 }

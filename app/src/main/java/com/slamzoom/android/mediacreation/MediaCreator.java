@@ -14,10 +14,11 @@ import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.slamzoom.android.common.singletons.ExecutorProvider;
+import com.slamzoom.android.common.utils.BitmapUtils;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.common.utils.ExecutorFactory;
 import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.PostProcessorUtils;
 import com.slamzoom.android.effects.EffectStep;
@@ -26,7 +27,8 @@ import com.slamzoom.android.interpolators.LinearInterpolator;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 
 import java.util.List;
-import java.util.concurrent.Executors;
+import java.util.Set;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
@@ -43,6 +45,9 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   protected int mGifWidth;
   protected int mGifHeight;
   protected int mTotalNumFrames;
+  protected Set<CreateFrameTask> mCreateFrameTasks = Sets.newConcurrentHashSet();
+  protected E mMediaEncoder;
+  protected boolean mIsCancelled;
 
   protected Context mContext;
   protected Bitmap mSelectedBitmap;
@@ -72,7 +77,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   public abstract E createEncoder();
 
   public void createAsync() {
-    Log.d(TAG, "createAsync()");
+    Log.wtf(TAG, "createAsync() " + mEffectModel.getEffectTemplate().getName());
     mStart = System.currentTimeMillis();
     List<EffectStep> steps = mEffectModel.getEffectTemplate().getEffectSteps();
     mTotalNumFramesToAdd = new AtomicInteger(0);
@@ -91,6 +96,16 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     collectFrames();
   }
 
+  public void cancel() {
+    mIsCancelled = true;
+    for (CreateFrameTask task : mCreateFrameTasks) {
+      task.cancel(true);
+    }
+    if (mMediaEncoder != null) {
+      mMediaEncoder.cancel();
+    }
+  }
+
   protected MediaFrame getFrame(
       Matrix transformationMatrix,
       List<GPUImageFilter> filters,
@@ -103,7 +118,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       frameBitmap = PostProcessorUtils.applyTiling(mNumTilesInRow, frameBitmap);
     }
 
-    Bitmap scaledFrameBitmap = Bitmap.createScaledBitmap(frameBitmap, mGifWidth, mGifHeight, true);
+    Bitmap scaledFrameBitmap = BitmapUtils.createScaledBitmap(frameBitmap, mGifWidth, mGifHeight);
 
     Bitmap filteredFrameBitmap = PostProcessorUtils.applyFilters(mContext, scaledFrameBitmap, filters);
 
@@ -215,6 +230,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
             dy,
             filters,
             textToRender);
+        mCreateFrameTasks.add(createFrameTask);
         createFrameTask.executeOnExecutor(ExecutorProvider.getCollectFramesExecutor());
       }
     }
@@ -276,12 +292,14 @@ public abstract class MediaCreator<E extends MediaEncoder> {
 
     @Override
     protected void onPostExecute(MediaFrame frame) {
-      mAllFrames.get(mStepIndex).set(mFrameIndex, frame);
-      if (mTotalNumFramesToAdd.decrementAndGet() == 0) {
-        Log.wtf(TAG, "Finished collecting frames " + (System.currentTimeMillis() - mStart) + "ms");
-        E mediaEncoder = createEncoder();
-        mediaEncoder.addFrames(Iterables.concat(mAllFrames));
-        mediaEncoder.encodeAsync(mCallback);
+      if (!mIsCancelled) {
+        mAllFrames.get(mStepIndex).set(mFrameIndex, frame);
+        if (mTotalNumFramesToAdd.decrementAndGet() == 0) {
+          Log.wtf(TAG, "Finished collecting frames " + (System.currentTimeMillis() - mStart) + "ms");
+          mMediaEncoder = createEncoder();
+          mMediaEncoder.addFrames(Iterables.concat(mAllFrames));
+          mMediaEncoder.encodeAsync(mCallback);
+        }
       }
     }
   }

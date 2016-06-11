@@ -7,17 +7,26 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.google.common.base.Function;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.effects.EffectTemplateProvider;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.singletons.BusProvider;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
+import com.slamzoom.android.ui.create.effectchooser.EffectThumbnailViewHolder;
 import com.squareup.otto.Subscribe;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 
 /**
  * Created by clocksmith on 4/14/16.
@@ -40,6 +49,12 @@ public class GifService extends Service {
     }
   }
 
+  public class GifPreviewReadyEvent extends BaseGifReadyEvent {
+    public GifPreviewReadyEvent(String effectName, byte[] gifBytes) {
+      super(effectName, gifBytes);
+    }
+  }
+
   public class ProgressUpdateEvent{
     public final String effectName;
     public final int progress;
@@ -55,29 +70,50 @@ public class GifService extends Service {
     }
   }
 
-//  private static final int CACHE_SIZE = EffectTemplateProvider.getTemplates().size();
-  private static final int CACHE_SIZE = 10;
-
   private final IBinder mBinder = new GifServiceBinder();
   private Cache<GifConfig, byte[]> mGifCache;
+  private GifCreator mGifCreator;
   private Map<EffectModel, Double> mGifProgresses;
+
+  private Cache<GifConfig, byte[]> mGifPreviewCache;
+  private Map<String, GifCreator> mGifPreviewCreators;
+  private Map<String, GifConfig> mPreviewConfigs;
 
   @Override
   public void onCreate() {
     mGifCache = CacheBuilder.newBuilder()
-        .maximumSize(CACHE_SIZE)
+        .maximumSize(DebugUtils.DEBUG_USE_CACHE ? EffectTemplateProvider.getTemplates().size() : 0)
         .build();
     mGifProgresses = Maps.newHashMap();
+
+    mGifPreviewCache = CacheBuilder.newBuilder()
+        .maximumSize(DebugUtils.DEBUG_USE_CACHE ? EffectTemplateProvider.getTemplates().size() : 0)
+        .build();
+    mGifPreviewCreators = Maps.newHashMap();
 
     BusProvider.getInstance().register(this);
   }
 
-  public void update(final GifConfig gifConfig) {
+  public void updatePreviewConfigs(Map<String, GifConfig> configs) {
+    mGifPreviewCache.asMap().clear();
+
+    for (GifCreator creator : mGifPreviewCreators.values()) {
+      creator.cancel();
+    }
+    mGifPreviewCreators.clear();
+
+    mPreviewConfigs = Maps.newHashMap(configs);
+  }
+
+  public void generate(final GifConfig gifConfig) {
     if (mGifCache.asMap().containsKey(gifConfig)) {
       fireGifReadyEvent(gifConfig);
     } else {
       final long start = System.currentTimeMillis();
-      new GifCreator(
+      if (mGifCreator != null) {
+        mGifCreator.cancel();
+      }
+      mGifCreator = new GifCreator(
           getApplicationContext(),
           gifConfig,
           Constants.DEFAULT_GIF_SIZE_PX,
@@ -91,7 +127,8 @@ public class GifService extends Service {
                 fireGifReadyEvent(gifConfig);
               }
             }
-          }).createAsync();
+          });
+      mGifCreator.createAsync();
     }
   }
 
@@ -112,6 +149,11 @@ public class GifService extends Service {
     BusProvider.getInstance().post(new GifReadyEvent(effectName, mGifCache.asMap().get(gifConfig)));
   }
 
+  private void fireGifPreviewReadyEvent(GifConfig gifConfig) {
+    String effectName = gifConfig.effectModel.getEffectTemplate().getName();
+    BusProvider.getInstance().post(new GifPreviewReadyEvent(effectName, mGifPreviewCache.asMap().get(gifConfig)));
+  }
+
   @Subscribe
   public void on(GifCreator.ProgressUpdateEvent event) throws IOException {
     if (!mGifProgresses.containsKey(event.effectModel)) {
@@ -121,5 +163,37 @@ public class GifService extends Service {
     mGifProgresses.put(event.effectModel, mGifProgresses.get(event.effectModel) + event.amountToUpdate);
     BusProvider.getInstance().post(new ProgressUpdateEvent(event.effectModel.getEffectTemplate().getName(),
         (int) Math.round(100 * mGifProgresses.get(event.effectModel))));
+  }
+
+  @Subscribe
+  public void on(EffectThumbnailViewHolder.RequestGifPreviewEvent event) {
+    final String name = event.effectName;
+    final GifConfig gifConfig = mPreviewConfigs.get(event.effectName);
+    final long start = System.currentTimeMillis();
+    final GifCreator gifPreviewCreator = new GifCreator(
+        getApplicationContext(),
+        gifConfig,
+        Constants.DEFAULT_GIF_PREVIEW_SIZE_PX,
+        new GifCreator.CreateGifCallback() {
+          @Override
+          public void onCreateGif(byte[] gifBytes) {
+            if (gifBytes != null) {
+              Log.wtf(
+                  TAG, name + " gif preview took a total of " + (System.currentTimeMillis() - start) + "ms to create");
+              mGifPreviewCache.put(gifConfig, gifBytes);
+              fireGifPreviewReadyEvent(gifConfig);
+            }
+          }
+        });
+    mGifPreviewCreators.put(event.effectName, gifPreviewCreator);
+    gifPreviewCreator.createAsync();
+  }
+
+  @Subscribe
+  public void on(EffectThumbnailViewHolder.RequestCancelGifPreviewEvent event) {
+    if (mGifPreviewCreators.containsKey(event.effectName)) {
+      GifCreator creator = mGifPreviewCreators.get(event.effectName);
+      creator.cancel();
+    }
   }
 }

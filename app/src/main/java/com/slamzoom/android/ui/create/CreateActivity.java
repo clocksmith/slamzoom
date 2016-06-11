@@ -1,4 +1,4 @@
-  package com.slamzoom.android.ui.create;
+package com.slamzoom.android.ui.create;
 
 import android.Manifest;
 import android.content.ComponentName;
@@ -24,6 +24,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import com.google.common.base.Function;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.slamzoom.android.effects.EffectModelProvider;
 import com.slamzoom.android.common.BackInterceptingEditText;
 import com.slamzoom.android.common.utils.BitmapUtils;
@@ -33,6 +37,7 @@ import com.slamzoom.android.R;
 import com.slamzoom.android.common.utils.KeyboardUtils;
 import com.slamzoom.android.mediacreation.gif.GifConfig;
 import com.slamzoom.android.mediacreation.gif.GifService;
+import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 import com.slamzoom.android.ui.cropper.CropperActivity;
 import com.slamzoom.android.ui.create.effectchooser.EffectChooser;
 import com.slamzoom.android.ui.create.effectchooser.EffectThumbnailViewHolder;
@@ -42,6 +47,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -59,13 +65,16 @@ public class CreateActivity extends AppCompatActivity {
 
   private boolean mIsAddTextViewShowing = false;
 
-  private Rect mSelectedHotspot;
-  private Bitmap mSelectedBitmap;
-  private String mSelectedEffectName;
-  private String mSelectedEndText;
-
   private Uri mSelectedUri;
   private byte[] mSelectedGifBytes;
+
+  private Bitmap mSelectedBitmap;
+  private Bitmap mSelectedBitmapForPreview;
+  private Rect mSelectedHotspot;
+  private Rect mSelectedHotspotForPreview;
+
+  private String mSelectedEffectName;
+  private String mSelectedEndText;
 
   private GifService mGifService;
   private GifServiceConnection mConnection;
@@ -86,18 +95,13 @@ public class CreateActivity extends AppCompatActivity {
     getSupportActionBar().setCustomView(mAddTextView,
         new Toolbar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-    mEffectChooser.setEffectModels(EffectModelProvider.getEffectModels());
     mSelectedEffectName = EffectModelProvider.getEffectModels().get(0).getEffectTemplate().getName();
 
     Intent intent = getIntent();
     if (Intent.ACTION_SEND.equals(intent.getAction())) {
       handleIncomingUri((Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM));
     }
-  }
 
-  @Override
-  public void onStart() {
-    super.onStart();
     bindService(new Intent(this, GifService.class), mConnection, Context.BIND_AUTO_CREATE);
 
     if (mSelectedBitmap == null) {
@@ -106,8 +110,8 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   @Override
-  public void onStop() {
-    super.onStop();
+  public void onDestroy() {
+    super.onDestroy();
     if (mBound) {
       unbindService(mConnection);
       mBound = false;
@@ -139,9 +143,6 @@ public class CreateActivity extends AppCompatActivity {
       case R.id.action_ok:
         handleAddTextConfirmed();
         return true;
-//      case R.id.action_add_to_library:
-//        addCurrentGifToLibrary();
-//        return true;
       case R.id.action_share:
         shareCurrentGif();
         return true;
@@ -173,11 +174,17 @@ public class CreateActivity extends AppCompatActivity {
     } else if (requestCode == Constants.REQUEST_CROP_IMAGE) {
       if (resultCode == RESULT_OK) {
         mSelectedHotspot = data.getParcelableExtra(Constants.CROP_RECT);
+        mSelectedHotspotForPreview = new Rect(
+            mSelectedHotspot.left / Constants.GIF_PREVIEW_DIVIDER,
+            mSelectedHotspot.top / Constants.GIF_PREVIEW_DIVIDER,
+            mSelectedHotspot.right / Constants.GIF_PREVIEW_DIVIDER,
+            mSelectedHotspot.bottom / Constants.GIF_PREVIEW_DIVIDER);
         mSelectedEndText = null;
         mSelectedGifBytes = null;
         mGifImageView.setImageBitmap(null);
         mProgressBar.setProgress(0);
         mProgressBar.setVisibility(View.VISIBLE);
+        updateGifPreviews();
         updateGif();
       } else {
         if (mSelectedHotspot == null) {
@@ -227,12 +234,27 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   private void updateGif() {
-    mGifService.update(GifConfig.newBuilder()
+    mGifService.generate(GifConfig.newBuilder()
         .withHotspot(mSelectedHotspot)
         .withBitmap(mSelectedBitmap)
         .withEffectModel(EffectModelProvider.getEffectModel(mSelectedEffectName))
         .withEndText(mSelectedEndText)
         .build());
+  }
+
+  private void updateGifPreviews() {
+    Map<String, GifConfig> configs = Maps.newHashMap();
+    for (EffectModel model : EffectModelProvider.getEffectModels()) {
+      configs.put(model.getEffectTemplate().getName(),
+          GifConfig.newBuilder()
+              .withHotspot(mSelectedHotspotForPreview)
+              .withBitmap(mSelectedBitmapForPreview)
+              .withEffectModel(model)
+              .withEndText(mSelectedEndText)
+              .build());
+    }
+    mGifService.updatePreviewConfigs(configs);
+    mEffectChooser.setEffectModels(EffectModelProvider.getEffectModels());
   }
 
   private void launchImageChooser() {
@@ -251,6 +273,10 @@ public class CreateActivity extends AppCompatActivity {
     try {
       mSelectedUri = uri;
       mSelectedBitmap = BitmapUtils.readScaledBitmap(mSelectedUri, this.getContentResolver());
+      mSelectedBitmapForPreview = BitmapUtils.readScaledBitmap(
+          mSelectedUri,
+          this.getContentResolver(),
+          Constants.MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX / Constants.GIF_PREVIEW_DIVIDER);
       launchHotspotChooser();
     } catch (FileNotFoundException e) {
       Log.e(TAG, "Cannot get bitmap for path: " + uri.toString());
@@ -274,6 +300,7 @@ public class CreateActivity extends AppCompatActivity {
     mProgressBar.setProgress(0);
     mProgressBar.setVisibility(View.VISIBLE);
     mGifImageView.setImageBitmap(null);
+    updateGifPreviews();
     updateGif();
     KeyboardUtils.hideKeyboard(this);
     showAddTextView(false);

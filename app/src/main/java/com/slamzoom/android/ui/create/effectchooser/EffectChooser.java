@@ -5,10 +5,15 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import com.slamzoom.android.R;
+import com.slamzoom.android.common.singletons.BusProvider;
+import com.slamzoom.android.mediacreation.gif.GifService;
+import com.squareup.otto.Subscribe;
 
+import java.io.IOException;
 import java.util.List;
 
 import butterknife.Bind;
@@ -34,14 +39,33 @@ public class EffectChooser extends LinearLayout {
     super(context, attrs, defStyleAttr);
     LayoutInflater.from(context).inflate(R.layout.view_effect_chooser, this);
     ButterKnife.bind(this);
+    BusProvider.getInstance().register(this);
 
     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
     linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
     mRecyclerView.setLayoutManager(linearLayoutManager);
+
+    mRecyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
+      @Override
+      public void onChildViewAttachedToWindow(View view) {
+
+      }
+
+      @Override
+      public void onChildViewDetachedFromWindow(View view) {
+
+      }
+    });
   }
 
   public void setEffectModels(List<EffectModel> effectModels) {
     mAdapter = new EffectThumbnailRecyclerViewAdapter(effectModels);
+    mAdapter.unbindAll();
     mRecyclerView.setAdapter(mAdapter);
+  }
+
+  @Subscribe
+  public void on(GifService.GifPreviewReadyEvent event) {
+    mAdapter.setGifPreview(event.effectName, event.gifBytes);
   }
 }

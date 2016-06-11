@@ -50,6 +50,7 @@ public class BitmapUtils {
   public static Bitmap createScaledBitmap(Bitmap sourceBitmap, int newWidth, int newHeight) {
     Paint paint = new Paint();
     paint.setAntiAlias(true);
+    paint.setDither(true);
     Bitmap scaledBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888);
     Canvas canvas = new Canvas(scaledBitmap);
     canvas.drawBitmap(
