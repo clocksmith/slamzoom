@@ -174,11 +174,12 @@ public class CreateActivity extends AppCompatActivity {
     } else if (requestCode == Constants.REQUEST_CROP_IMAGE) {
       if (resultCode == RESULT_OK) {
         mSelectedHotspot = data.getParcelableExtra(Constants.CROP_RECT);
+        float ratio = (float) mSelectedBitmap.getWidth() / mSelectedBitmapForPreview.getWidth();
         mSelectedHotspotForPreview = new Rect(
-            mSelectedHotspot.left / Constants.GIF_PREVIEW_DIVIDER,
-            mSelectedHotspot.top / Constants.GIF_PREVIEW_DIVIDER,
-            mSelectedHotspot.right / Constants.GIF_PREVIEW_DIVIDER,
-            mSelectedHotspot.bottom / Constants.GIF_PREVIEW_DIVIDER);
+            (int) (mSelectedHotspot.left / ratio),
+            (int) (mSelectedHotspot.top / ratio),
+            (int) (mSelectedHotspot.right / ratio),
+            (int) (mSelectedHotspot.bottom / ratio));
         mSelectedEndText = null;
         mSelectedGifBytes = null;
         mGifImageView.setImageBitmap(null);

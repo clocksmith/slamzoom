@@ -17,17 +17,20 @@
         android:id="@+id/gifImageView1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitCenter"/>
+        android:scaleType="fitCenter"
+        android:visibility="gone"/>
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/gifImageView2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitCenter"/>
+        android:scaleType="fitCenter"
+        android:visibility="gone"/>
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/gifImageView3"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitCenter"/>
+        android:scaleType="fitCenter"
+        android:visibility="gone"/>
   </FrameLayout>
   <Button
       android:id="@+id/createSlamzoomButton"
@@ -35,5 +38,4 @@
       android:layout_width="match_parent"
       android:layout_height="80dp"
       android:gravity="center"/>
-
 </LinearLayout>

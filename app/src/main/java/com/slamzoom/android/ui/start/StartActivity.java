@@ -5,18 +5,21 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.utils.AnimationUtils;
 import com.slamzoom.android.ui.create.CreateActivity;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -30,7 +33,7 @@ import pl.droidsonroids.gif.GifImageView;
 public class StartActivity extends AppCompatActivity {
   private static final String TAG = StartActivity.class.getSimpleName();
 
-  private static final int NUM_GIFS_FOR_SHOW = 3;
+  private static final int NUM_GIFS_IN_SHOW = 3;
   private static final int ANIMATION_DURATION_MS = 350;
 
   @Bind(R.id.createSlamzoomButton) Button mCreateSlamzoomButton;
@@ -40,6 +43,7 @@ public class StartActivity extends AppCompatActivity {
 
   private List<GifImageView> mGifImageViews;
   private List<GifDrawable> mGifDrawables;
+  private Map<Integer, AnimationListener> mGifAnimationListeners;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -56,58 +60,93 @@ public class StartActivity extends AppCompatActivity {
 
     mGifImageViews = Lists.newArrayList(mGifImageView1, mGifImageView2, mGifImageView3);
     mGifDrawables = Lists.newArrayList();
-    for (int gifNum = 1; gifNum <= NUM_GIFS_FOR_SHOW; gifNum++) {
+    for (int gifNum = 1; gifNum <= NUM_GIFS_IN_SHOW; gifNum++) {
       try {
         mGifDrawables.add(new GifDrawable(getAssets(), "start_" + gifNum + ".gif"));
       } catch (IOException e) {
         Log.e(TAG, "Could not open gif from assets");
       }
     }
-    for (int i = 0; i < NUM_GIFS_FOR_SHOW; i++) {
-      mGifImageViews.get(i).setImageDrawable(mGifDrawables.get(i));
+
+    for (int i = 0; i < NUM_GIFS_IN_SHOW; i++) {
+      final GifImageView currentGifImageView = mGifImageViews.get(i);
+      final GifDrawable currentGifDrawable = mGifDrawables.get(i);
+
+      currentGifImageView.setScaleX(0f);
+      currentGifImageView.setScaleY(0f);
+      currentGifImageView.setImageDrawable(currentGifDrawable);
+      currentGifDrawable.stop();
+      currentGifDrawable.seekToFrame(0);
     }
-    runShow(1);
+
+    mGifAnimationListeners = Maps.newHashMap();
+
+    runShow(0);
   }
 
-  private void showGifDrawable(int index) {
+
+  private void showGifImageView(int gifIndex) {
+    for (int i = 0; i < NUM_GIFS_IN_SHOW; i++) {
+      mGifImageViews.get(i).setVisibility(i == gifIndex ? View.VISIBLE : View.GONE);
+    }
   }
 
   private void runShow(final int step) {
-    final GifDrawable currentGifDrawable = mGifDrawables.get(step % NUM_GIFS_FOR_SHOW);
-    showGifDrawable(step - 1);
-    currentGifDrawable.pause();
-      ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(mGifImageView, "scaleX", 0f);
-      ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(mGifImageView, "scaleY", 0f);
-      AnimatorSet animatorSet = new AnimatorSet();
-      animatorSet.playTogether(scaleDownX, scaleDownY);
-      animatorSet.setDuration(ANIMATION_DURATION_MS);
-      animatorSet.addListener(new AnimationUtils.OnAnimationEndOnlyListener() {
-        @Override
-        public void onAnimationEnd(Animator animation) {
-          mGifImageView.setImageDrawable(null);
-          mGifImageView.setImageDrawable(currentGifDrawable);
+    final int gifIndex = step % NUM_GIFS_IN_SHOW;
+    final GifImageView currentGifImageView = mGifImageViews.get(gifIndex);
+    final GifDrawable currentGifDrawable = mGifDrawables.get(gifIndex);
+    showGifImageView(gifIndex);
 
-          ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(mGifImageView, "scaleX", 1f);
-          ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(mGifImageView, "scaleY", 1f);
-          AnimatorSet animatorSet = new AnimatorSet();
-          animatorSet.playTogether(scaleDownX, scaleDownY);
-          animatorSet.setDuration(ANIMATION_DURATION_MS);
-          animatorSet.addListener(new AnimationUtils.OnAnimationEndOnlyListener() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-              currentGifDrawable.start();
-              currentGifDrawable.addAnimationListener(new AnimationListener() {
-                @Override
-                public void onAnimationCompleted(int loopNumber) {
-//                  currentGifDrawable.pause();
-                  runShow(step + 1, false);
-                }
-              });
-            }});
-          animatorSet.start();
+    ObjectAnimator scaleUpX = ObjectAnimator.ofFloat(currentGifImageView, "scaleX", 1f);
+    ObjectAnimator scaleUpY = ObjectAnimator.ofFloat(currentGifImageView, "scaleY", 1f);
+    AnimatorSet scaleUpAnimatorSet = new AnimatorSet();
+    scaleUpAnimatorSet.playTogether(scaleUpX, scaleUpY);
+    scaleUpAnimatorSet.setDuration(ANIMATION_DURATION_MS);
+    scaleUpAnimatorSet.addListener(new AnimationUtils.OnAnimationEndOnlyListener() {
+      @Override
+      public void onAnimationEnd(Animator animation) {
+        if (mGifAnimationListeners.containsKey(gifIndex)) {
+          currentGifDrawable.removeAnimationListener(mGifAnimationListeners.get(gifIndex));
         }
-      });
-      animatorSet.start();
-    }
+
+       AnimationListener animationListener = new AnimationListener() {
+          @Override
+          public void onAnimationCompleted(int loopNumber) {
+            new Handler().postDelayed(new Runnable() {
+              @Override
+              public void run() {
+                currentGifDrawable.stop();
+                ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(currentGifImageView, "scaleX", 0);
+                ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(currentGifImageView, "scaleY", 0);
+                AnimatorSet scaleDownAnimatorSet = new AnimatorSet();
+                scaleDownAnimatorSet.playTogether(scaleDownX, scaleDownY);
+                scaleDownAnimatorSet.setDuration(ANIMATION_DURATION_MS);
+                scaleDownAnimatorSet.addListener(new AnimationUtils.OnAnimationEndOnlyListener() {
+                  @Override
+                  public void onAnimationEnd(Animator animation) {
+                    new Handler().post(new Runnable() {
+                      @Override
+                      public void run() {
+                        runShow(step + 1);
+                      }
+                    });
+                  }});
+
+                scaleDownAnimatorSet.start();
+              }
+            }, gifIndex == 0 ? 1000 : 0);
+          }
+        };
+
+        mGifAnimationListeners.put(gifIndex, animationListener);
+        currentGifDrawable.addAnimationListener(animationListener);
+
+        currentGifDrawable.start();
+      }
+    });
+
+    currentGifDrawable.seekToFrame(0);
+    scaleUpAnimatorSet.start();
   }
 }
+
