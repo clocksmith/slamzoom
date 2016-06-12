@@ -7,26 +7,17 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.google.common.base.Function;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.FluentIterable;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.effects.EffectTemplateProvider;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.singletons.BusProvider;
-import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 import com.slamzoom.android.ui.create.effectchooser.EffectThumbnailViewHolder;
 import com.squareup.otto.Subscribe;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 
 /**
  * Created by clocksmith on 4/14/16.

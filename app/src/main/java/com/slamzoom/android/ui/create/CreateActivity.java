@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.slamzoom.android.effects.EffectModelProvider;
 import com.slamzoom.android.common.BackInterceptingEditText;
@@ -94,7 +95,8 @@ public class CreateActivity extends AppCompatActivity {
     getSupportActionBar().setCustomView(mAddTextView,
         new Toolbar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-    mSelectedEffectName = EffectModelProvider.getEffectModels().get(0).getEffectTemplate().getName();
+//    mSelectedEffectName = EffectModelProvider.getEffectModels().get(0).getEffectTemplate().getName();
+    mProgressBar.setVisibility(View.GONE);
 
     Intent intent = getIntent();
     if (Intent.ACTION_SEND.equals(intent.getAction())) {
@@ -190,7 +192,7 @@ public class CreateActivity extends AppCompatActivity {
         updateProgressBar();
 
         updateGifPreviews();
-        updateGif();
+//        updateGif();
       } else {
         if (mSelectedHotspot == null) {
           finish();
@@ -244,7 +246,9 @@ public class CreateActivity extends AppCompatActivity {
 
   private void updateProgressBar() {
     mProgressBar.setVisibility(View.VISIBLE);
-    mProgressBar.setProgress((int) Math.round(100 * mGifProgresses.get(mSelectedEffectName)));
+    if (!Strings.isNullOrEmpty(mSelectedEffectName)) {
+      mProgressBar.setProgress((int) Math.round(100 * mGifProgresses.get(mSelectedEffectName)));
+    }
   }
 
   private void updateGif() {
