@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.singletons.ExecutorProvider;
+import com.slamzoom.android.mediacreation.MediaCreatorTracker;
 import com.slamzoom.android.mediacreation.MediaEncoder;
 
 import java.io.ByteArrayOutputStream;
@@ -46,6 +47,8 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
   private ProgressUpdateListener mProgressUpdateListener;
   private long mEncodingFramesStart;
 
+  private MediaCreatorTracker mTracker;
+
   public GifEncoder() {
     this(Constants.DEFAULT_USE_LOCAL_COLOR_PALETTE);
   }
@@ -54,6 +57,10 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
     mOut = new ByteArrayOutputStream();
     mFrames = Lists.newArrayList();
     mUserLocalColorTables = useLocalColorTables;
+  }
+
+  public void setTracker(MediaCreatorTracker tracker) {
+    mTracker = tracker;
   }
 
   public void setProgressUpdateListener(ProgressUpdateListener listener) {
@@ -91,6 +98,7 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
 
     GetFirstFrameWriterTask getFirstFrameWriterTask = new GetFirstFrameWriterTask();
     mTasks.add(getFirstFrameWriterTask);
+    mTracker.startEncoding();
     getFirstFrameWriterTask.executeOnExecutor(ExecutorProvider.getEncodeFramesExecutor());
   }
 
@@ -327,9 +335,11 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
 //      Log.wtf(TAG, "executed frame writer task for frame: " + mFrameIndex);
 
       if (mTotalNumFrameWritersToAdd.decrementAndGet() == 0) {
-        Log.wtf(TAG, "Finished encoding frames in " + (System.currentTimeMillis() - mEncodingFramesStart) + "ms");
+        mTracker.stopEncoding();
+//        Log.wtf(TAG, "Finished encoding frames in " + (System.currentTimeMillis() - mEncodingFramesStart) + "ms");
         WriteFramesTask writeFramesTask = new WriteFramesTask();
         mTasks.add(writeFramesTask);
+        mTracker.startWriting();
         new WriteFramesTask().execute();
       }
     }
@@ -360,7 +370,8 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
         }
 
         byte[] gifBytes = mOut.toByteArray();
-        Log.wtf(TAG, "Finished writing frames in " + (System.currentTimeMillis() - start) + "ms");
+        mTracker.stopWriting();
+//        Log.wtf(TAG, "Finished writing frames in " + (System.currentTimeMillis() - start) + "ms");
         mCallback.onCreateGif(gifBytes);
         return null;
       }

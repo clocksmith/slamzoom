@@ -13,6 +13,7 @@ import android.util.Log;
 
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -55,18 +56,21 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   protected EffectModel mEffectModel;
   protected CreateMediaCallback mCallback;
   protected int mNumTilesInRow;
+  protected MediaCreatorTracker mTracker;
 
   public MediaCreator(
       Context context,
       Bitmap selectedBitmap,
       EffectModel effectModel,
       int gifSize,
-      CreateMediaCallback callback) {
+      CreateMediaCallback callback,
+      MediaCreatorTracker tracker) {
     mContext = context;
     mSelectedBitmap = selectedBitmap;
     mEffectModel = effectModel;
     mCallback = callback;
     mNumTilesInRow = mEffectModel.getEffectTemplate().getNumTilesInRow();
+    mTracker = tracker;
 
     mIsPreview = gifSize == Constants.DEFAULT_GIF_PREVIEW_SIZE_PX;
     float aspectRatio = (float) mSelectedBitmap.getWidth() / mSelectedBitmap.getHeight();
@@ -110,27 +114,38 @@ public abstract class MediaCreator<E extends MediaEncoder> {
 
   protected MediaFrame getFrame(
       Matrix transformationMatrix,
-      List<GPUImageFilter> filters,
+      ImmutableList<GPUImageFilter> filters,
       int delayMillis,
       String textToRender,
       int frameIndex) {
-    Bitmap frameBitmap = transformSelectedBitmap(transformationMatrix);
+//    Bitmap frameBitmap = transformSelectedBitmap(transformationMatrix);
+//
+//    if (DebugUtils.DEBUG_SAVE_TRANSFORMED_FRAMES_AS_BITMAPS && !mIsPreview) {
+//      DebugUtils.saveFrameAsBitmap(frameBitmap, "transformed", frameIndex);
+//    }
 
-    if (DebugUtils.DEBUG_SAVE_TRANSFORMED_FRAMES_AS_BITMAPS && !mIsPreview) {
-      DebugUtils.saveFrameAsBitmap(frameBitmap, "transformed", frameIndex);
-    }
-
-    if (mNumTilesInRow > 1) {
-      frameBitmap = PostProcessorUtils.applyTiling(mNumTilesInRow, frameBitmap);
-    }
-
-    Bitmap scaledFrameBitmap = BitmapUtils.createScaledBitmap4(frameBitmap, mGifWidth, mGifHeight);
 //    Bitmap scaledFrameBitmap = Bitmap.createScaledBitmap(frameBitmap, mGifWidth, mGifHeight, true);
+//    Bitmap scaledFrameBitmap = BitmapUtils.createScaledBitmap3(frameBitmap, mGifWidth, mGifHeight);
+
+    mTracker.startTransforming();
+    Bitmap scaledFrameBitmap = transformAndScaleSelectedBitmap(transformationMatrix);
+    mTracker.stopTransforming();
+
     if (DebugUtils.DEBUG_SAVE_SCALED_FRAMES_AS_BITMAPS && !mIsPreview) {
       DebugUtils.saveFrameAsBitmap(scaledFrameBitmap, "scaled", frameIndex);
     }
 
-    Bitmap filteredFrameBitmap = PostProcessorUtils.applyFilters(mContext, scaledFrameBitmap, filters);
+    if (mNumTilesInRow > 1) {
+      scaledFrameBitmap = PostProcessorUtils.applyTiling(mNumTilesInRow, scaledFrameBitmap);
+    }
+
+    mTracker.startFiltering();
+    Bitmap filteredFrameBitmap = scaledFrameBitmap;
+    if (!filters.isEmpty()) {
+      filteredFrameBitmap = PostProcessorUtils.applyFiltersAsGroup(mContext, scaledFrameBitmap, filters);
+//    filteredFrameBitmap = PostProcessorUtils.applyFilters(mContext, scaledFrameBitmap, filters);
+    }
+    mTracker.stopFiltering();
 
     if (!Strings.isNullOrEmpty(textToRender)) {
       delayMillis += 1000;
@@ -215,13 +230,13 @@ public abstract class MediaCreator<E extends MediaEncoder> {
         }
 
         // TODO(clocksmith): extract this.
-        List<GPUImageFilter> filters = Lists.transform(step.getFilterInterpolators(),
+        ImmutableList<GPUImageFilter> filters = ImmutableList.copyOf(Lists.transform(step.getFilterInterpolators(),
             new Function<FilterInterpolator, GPUImageFilter>() {
               @Override
               public GPUImageFilter apply(FilterInterpolator filterInterpolator) {
                 return filterInterpolator.getInterpolationFilter(t, normalizedHotspot);
               }
-            });
+            }));
 
         int extraDelayMillis = 0;
         if (frameIndex == 0) {
@@ -251,10 +266,24 @@ public abstract class MediaCreator<E extends MediaEncoder> {
 
   private Bitmap transformSelectedBitmap(Matrix transformationMatrix) {
     Bitmap targetBitmap = Bitmap.createBitmap(
-        mSelectedBitmap.getWidth(), mSelectedBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        mSelectedBitmap.getWidth(), mSelectedBitmap.getHeight(), Bitmap.Config.RGB_565);
     Canvas canvas = new Canvas(targetBitmap);
-    Paint paint = new Paint();
+    Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
     paint.setFilterBitmap(true);
+    canvas.drawBitmap(mSelectedBitmap, transformationMatrix, paint);
+    return targetBitmap;
+  }
+
+  private Bitmap transformAndScaleSelectedBitmap(Matrix transformationMatrix) {
+    Bitmap targetBitmap = Bitmap.createBitmap(mGifWidth, mGifHeight, Bitmap.Config.RGB_565);
+    Canvas canvas = new Canvas(targetBitmap);
+    Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
+    paint.setFilterBitmap(true);
+    transformationMatrix.postScale(
+        (float) mGifWidth / mSelectedBitmap.getWidth(),
+        (float )mGifHeight / mSelectedBitmap.getHeight(),
+        0,
+        0);
     canvas.drawBitmap(mSelectedBitmap, transformationMatrix, paint);
     return targetBitmap;
   }
@@ -268,7 +297,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     protected float mPy;
     protected float mDx;
     protected float mDy;
-    protected List<GPUImageFilter> mFilters;
+    protected ImmutableList<GPUImageFilter> mFilters;
     protected String mTextToRender;
 
     CreateFrameTask(
@@ -280,7 +309,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
         float py,
         float dx,
         float dy,
-        List<GPUImageFilter> filters,
+        ImmutableList<GPUImageFilter> filters,
         String textToRender) {
       super();
       mStepIndex = stepIndex;
@@ -308,7 +337,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       if (!mIsCancelled) {
         mAllFrames.get(mStepIndex).set(mFrameIndex, frame);
         if (mTotalNumFramesToAdd.decrementAndGet() == 0) {
-          Log.wtf(TAG, "Finished collecting frames " + (System.currentTimeMillis() - mStart) + "ms");
+//          Log.wtf(TAG, "Finished collecting frames " + (System.currentTimeMillis() - mStart) + "ms");
           mMediaEncoder = createEncoder();
           mMediaEncoder.addFrames(Iterables.concat(mAllFrames));
           mMediaEncoder.encodeAsync(mCallback);

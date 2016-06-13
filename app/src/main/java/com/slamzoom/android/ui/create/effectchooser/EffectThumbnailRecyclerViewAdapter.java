@@ -29,7 +29,7 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
 
   @Override
   public void onBindViewHolder(EffectThumbnailViewHolder holder, int position) {
-    Log.wtf(TAG, "binding position: " + position);
+//    Log.wtf(TAG, "binding position: " + position);
     holder.unbindCurrentAndBindNew(mModels.get(position));
   }
 

@@ -2,6 +2,8 @@ package com.slamzoom.android.mediacreation.gif;
 
 import android.content.Context;
 
+import com.slamzoom.android.mediacreation.MediaCreatorTracker;
+
 /**
  * Created by clocksmith on 6/12/16.
  */
@@ -10,6 +12,7 @@ public class GifCreatorManager {
   private GifConfig mGifConfig;
   private int mGifSize;
   private GifCreator.CreateGifCallback mCallback;
+  private MediaCreatorTracker mTracker;
 
   private GifCreator mGifCreator;
   private boolean mIsRunning;
@@ -23,11 +26,12 @@ public class GifCreatorManager {
     mGifConfig = gifConfig;
     mGifSize = gifSize;
     mCallback = callback;
+    mTracker = new MediaCreatorTracker();
   }
 
   public void start() {
     mIsRunning = true;
-    mGifCreator = new GifCreator(mContext, mGifConfig, mGifSize, mCallback);
+    mGifCreator = new GifCreator(mContext, mGifConfig, mGifSize, mCallback, mTracker);
     mGifCreator.createAsync();
   }
 
@@ -49,5 +53,9 @@ public class GifCreatorManager {
 
   public String getName() {
     return mGifConfig.effectModel.getEffectTemplate().getName();
+  }
+
+  public MediaCreatorTracker getTracker() {
+    return mTracker;
   }
 }

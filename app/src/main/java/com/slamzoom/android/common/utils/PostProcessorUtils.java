@@ -9,6 +9,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 
+import com.google.common.collect.ImmutableList;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.mediacreation.WatermarkProvider;
 
@@ -16,6 +17,7 @@ import java.util.List;
 
 import jp.co.cyberagent.android.gpuimage.GPUImage;
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageFilterGroup;
 
 /**
  * Created by clocksmith on 3/20/16.
@@ -45,6 +47,15 @@ public class PostProcessorUtils {
       original = gpuImage.getBitmapWithFilterApplied(original);
     }
     return original;
+  }
+
+  public static Bitmap applyFiltersAsGroup(Context context, Bitmap original, ImmutableList<GPUImageFilter> filters) {
+    GPUImageFilterGroup group = new GPUImageFilterGroup(filters);
+    GPUImage gpuImage = new GPUImage(context);
+    gpuImage.setFilter(group);
+    Bitmap filtered = gpuImage.getBitmapWithFilterApplied(original);
+    original.recycle();
+    return filtered;
   }
 
   public static void renderText(Bitmap original, String text) {

@@ -201,6 +201,7 @@ public class GifService extends Service {
 
 
   private void fireGifReadyEvent(String name) {
+    Log.wtf(TAG, "name: " + name + "\n" + mGifCreatorManagers.get(name).getTracker().getReport());
     BusProvider.getInstance().post(new GifReadyEvent(name, mGifCache.asMap().get(name)));
   }
 

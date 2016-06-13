@@ -4,6 +4,7 @@ import android.graphics.Rect;
 import android.util.Log;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.group.FilterInterpolatorGroup;
@@ -28,7 +29,7 @@ public class EffectStep {
   private Interpolator mScaleInterpolator;
   private Interpolator mXInterpolator;
   private Interpolator mYInterpolator;
-  private List<FilterInterpolator> mFilterInterpolators;
+  private ImmutableList<FilterInterpolator> mFilterInterpolators;
   private float mDurationSeconds;
   private float mStartPauseSeconds;
   private float mEndPauseSeconds;
@@ -48,7 +49,7 @@ public class EffectStep {
     mScaleInterpolator = scaleInterpolator;
     mXInterpolator = xInterpolator;
     mYInterpolator = yInterpolator;
-    mFilterInterpolators = filterInterpolators;
+    mFilterInterpolators = ImmutableList.copyOf(filterInterpolators);
     mDurationSeconds = durationSeconds;
     mStartPauseSeconds = startPauseSeconds;
     mEndPauseSeconds = endPauseSeconds;
@@ -82,7 +83,7 @@ public class EffectStep {
     return mYInterpolator;
   }
 
-  public List<FilterInterpolator> getFilterInterpolators() {
+  public ImmutableList<FilterInterpolator> getFilterInterpolators() {
     return mFilterInterpolators;
   }
 

@@ -40,6 +40,8 @@ public class BitmapUtils {
           BitmapUtils.calculateInSampleSize(options, scaledSelectedBitmapWidth, scaledSelectedBitmapHeight);
       options.inSampleSize = inSampleSize;
       options.inJustDecodeBounds = false;
+      options.inPreferredConfig = Bitmap.Config.RGB_565;
+      options.inPreferQualityOverSpeed = true;
       return BitmapFactory.decodeFileDescriptor(assetFileDescriptor.getFileDescriptor(), null, options);
     } else {
       throw new FileNotFoundException("Could not load bitmap for path: " + uri.toString());
@@ -77,7 +79,7 @@ public class BitmapUtils {
     return resizedBitmap;
   }
 
-  public static Bitmap createScaledBitmap3(Bitmap bitmap,int newWidth,int newHeight) {
+  public static Bitmap createScaledBitmap3(Bitmap bitmap, int newWidth, int newHeight) {
     Bitmap scaledBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888);
 
     float ratioX = newWidth / (float) bitmap.getWidth();
@@ -115,6 +117,7 @@ public class BitmapUtils {
     Paint paint = new Paint();
     paint.setAntiAlias(true);
     paint.setFilterBitmap(true);
+    paint.setDither(true  );
     canvas.drawBitmap(bitmap, 0, 0, paint);
 
     return scaledBitmap;

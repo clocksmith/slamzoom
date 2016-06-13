@@ -8,6 +8,7 @@ import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.common.singletons.BusProvider;
 import com.slamzoom.android.mediacreation.CreateMediaCallback;
 import com.slamzoom.android.mediacreation.MediaCreator;
+import com.slamzoom.android.mediacreation.MediaCreatorTracker;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 
 /**
@@ -34,8 +35,13 @@ public class GifCreator extends MediaCreator implements GifEncoder.ProgressUpdat
     }
   }
 
-  public GifCreator(Context context, GifConfig gifConfig, int gifSize, CreateGifCallback callback) {
-    super(context, gifConfig.bitmap, getAdjustedEffectModel(gifConfig), gifSize, callback);
+  public GifCreator(
+      Context context,
+      GifConfig gifConfig,
+      int gifSize,
+      CreateGifCallback callback,
+      MediaCreatorTracker tracker) {
+    super(context, gifConfig.bitmap, getAdjustedEffectModel(gifConfig), gifSize, callback, tracker);
   }
 
   private static EffectModel getAdjustedEffectModel(GifConfig gifConfig) {
@@ -52,7 +58,9 @@ public class GifCreator extends MediaCreator implements GifEncoder.ProgressUpdat
 
   @Override
   public GifFrame createFrame(Bitmap bitmap, int delayMillis) {
+    mTracker.startPixelizing();
     GifFrame frame =  new GifFrame(bitmap, delayMillis);
+    mTracker.stopPixelizing();
     if (!mIsPreview) {
       BusProvider.getInstance().post(
           new ProgressUpdateEvent(mEffectModel.getEffectTemplate().getName(), 1.0 / 3 / mTotalNumFrames));
@@ -66,6 +74,7 @@ public class GifCreator extends MediaCreator implements GifEncoder.ProgressUpdat
     if (!mIsPreview) {
       gifEncoder.setProgressUpdateListener(this);
     }
+    gifEncoder.setTracker(mTracker);
     return gifEncoder;
   }
 }

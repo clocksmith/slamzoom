@@ -17,12 +17,12 @@ public class GifFrame extends MediaFrame {
   int height;
 
   public GifFrame(Bitmap bitmap, int delayMillis) {
-//    this.bitmap = bitmap;
     width = bitmap.getWidth();
     height = bitmap.getHeight();
 
     int[] pixelInts = new int[width * height];
     bitmap.getPixels(pixelInts, 0, width, 0, 0, width, height);
+    bitmap.recycle();
     this.pixelBytes = getPixelBytes(pixelInts);
 
     this.delayMillis = delayMillis;
