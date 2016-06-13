@@ -16,7 +16,9 @@ public class DebugUtils {
   private static final String TAG = DebugUtils.class.getSimpleName();
 
   // Flags
-  public static final boolean DEBUG_SAVE_INDIVIDUAL_FRAMES_AS_BITMAPS = false;
+  public static final boolean DEBUG_SAVE_TRANSFORMED_FRAMES_AS_BITMAPS = false;
+  public static final boolean DEBUG_SAVE_SCALED_FRAMES_AS_BITMAPS = false;
+  public static final boolean DEBUG_SAVE_FILTERED_FRAMES_AS_BITMAPS = false;
   public static final boolean DEBUG_USE_STATIC_RECTANGLE = false;
   public static final boolean DEBUG_USE_CACHE = true;
 
@@ -32,9 +34,9 @@ public class DebugUtils {
         (int) (src.getHeight() * (DEBUG_RECT_TOP_FRACTION + DEBUG_RECT_SIZE_FRACTION) + 0.5f));
   }
 
-  public static void saveFrameAsBitmap(Bitmap finalBitmap, int frameIndex) {
+  public static void saveFrameAsBitmap(Bitmap finalBitmap, String type, int frameIndex) {
       File direct = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "/SlamZoom");
-      File file = new File(direct, "test" + frameIndex + ".png");
+      File file = new File(direct, "debug_" + frameIndex + "_" + type + ".png");
       Log.e(TAG, "w: " + finalBitmap.getWidth() + " h: " + finalBitmap.getHeight());
       if (!file.getParentFile().isDirectory()) {
         Log.e(TAG, "No directory exitsts: " + file.getParentFile());

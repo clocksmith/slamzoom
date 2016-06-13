@@ -2,6 +2,7 @@ package com.slamzoom.android.mediacreation;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -28,7 +29,6 @@ import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
@@ -116,11 +116,19 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       int frameIndex) {
     Bitmap frameBitmap = transformSelectedBitmap(transformationMatrix);
 
+    if (DebugUtils.DEBUG_SAVE_TRANSFORMED_FRAMES_AS_BITMAPS && !mIsPreview) {
+      DebugUtils.saveFrameAsBitmap(frameBitmap, "transformed", frameIndex);
+    }
+
     if (mNumTilesInRow > 1) {
       frameBitmap = PostProcessorUtils.applyTiling(mNumTilesInRow, frameBitmap);
     }
 
-    Bitmap scaledFrameBitmap = BitmapUtils.createScaledBitmap(frameBitmap, mGifWidth, mGifHeight);
+    Bitmap scaledFrameBitmap = BitmapUtils.createScaledBitmap4(frameBitmap, mGifWidth, mGifHeight);
+//    Bitmap scaledFrameBitmap = Bitmap.createScaledBitmap(frameBitmap, mGifWidth, mGifHeight, true);
+    if (DebugUtils.DEBUG_SAVE_SCALED_FRAMES_AS_BITMAPS && !mIsPreview) {
+      DebugUtils.saveFrameAsBitmap(scaledFrameBitmap, "scaled", frameIndex);
+    }
 
     Bitmap filteredFrameBitmap = PostProcessorUtils.applyFilters(mContext, scaledFrameBitmap, filters);
 
@@ -133,8 +141,8 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       PostProcessorUtils.renderWatermark(mContext, filteredFrameBitmap);
     }
 
-    if (DebugUtils.DEBUG_SAVE_INDIVIDUAL_FRAMES_AS_BITMAPS) {
-      DebugUtils.saveFrameAsBitmap(filteredFrameBitmap, frameIndex);
+    if (DebugUtils.DEBUG_SAVE_FILTERED_FRAMES_AS_BITMAPS && !mIsPreview) {
+      DebugUtils.saveFrameAsBitmap(filteredFrameBitmap, "filtered", frameIndex);
     }
 
     return createFrame(filteredFrameBitmap, delayMillis);
@@ -246,7 +254,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
         mSelectedBitmap.getWidth(), mSelectedBitmap.getHeight(), Bitmap.Config.ARGB_8888);
     Canvas canvas = new Canvas(targetBitmap);
     Paint paint = new Paint();
-    paint.setAntiAlias(true);
+    paint.setFilterBitmap(true);
     canvas.drawBitmap(mSelectedBitmap, transformationMatrix, paint);
     return targetBitmap;
   }

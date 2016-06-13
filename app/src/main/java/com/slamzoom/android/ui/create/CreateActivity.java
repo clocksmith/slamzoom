@@ -252,7 +252,7 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   private void updateGif() {
-    mGifService.generate(GifConfig.newBuilder()
+    mGifService.requestGif(GifConfig.newBuilder()
         .withHotspot(mSelectedHotspot)
         .withBitmap(mSelectedBitmap)
         .withEffectModel(EffectModelProvider.getEffectModel(mSelectedEffectName))
@@ -271,7 +271,7 @@ public class CreateActivity extends AppCompatActivity {
               .withEndText(mSelectedEndText)
               .build());
     }
-    mGifService.updatePreviewConfigs(configs);
+    mGifService.resetWithConfigs(configs);
     mEffectChooser.setEffectModels(EffectModelProvider.getEffectModels());
   }
 

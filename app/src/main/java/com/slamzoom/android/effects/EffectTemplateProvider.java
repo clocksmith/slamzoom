@@ -1,6 +1,7 @@
 package com.slamzoom.android.effects;
 
 import com.google.common.collect.Lists;
+import com.slamzoom.android.effects.packs.DebugPackProvider;
 import com.slamzoom.android.effects.packs.DistortionPack1Provider;
 import com.slamzoom.android.effects.packs.CrashPackProvider;
 import com.slamzoom.android.effects.packs.RumblePackProvider;
@@ -18,6 +19,8 @@ public class EffectTemplateProvider {
   private static List<EffectTemplate> mTemplates = Lists.newArrayList();
 
   static {
+    mTemplates.addAll(DebugPackProvider.getPack());
+
     mTemplates.addAll(SlamPackProvider.getPack());
     mTemplates.addAll(CrashPackProvider.getPack());
     mTemplates.addAll(DistortionPack1Provider.getPack());
@@ -32,7 +35,6 @@ public class EffectTemplateProvider {
 //
 //    mTemplates.addAll(TheLabPackProvider.getPack());
 //
-//    mTemplates.addAll(DebugPackProvider.getPack());
   }
 
   public static List<EffectTemplate> getTemplates() {

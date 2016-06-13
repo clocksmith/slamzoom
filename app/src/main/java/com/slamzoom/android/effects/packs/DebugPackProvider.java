@@ -15,15 +15,24 @@ public class DebugPackProvider {
   public static List<EffectTemplate> getPack() {
     List<EffectTemplate> packModels = Lists.newArrayList();
 
+//    packModels.add(EffectTemplate.newBuilder()
+//        .withPackName("debug pack")
+//        .withName("debug-translate")
+//        .addEffectStep(EffectStep.newBuilder()
+//            .withStartPauseSeconds(1)
+//            .withEndPauseSeconds(1)
+//            .withDurationSeconds(3)
+//            .withScaleInterpolator(new LinearInterpolator())
+//            .withXInterpolator(new ConstantInterpolator(1))
+//            .build())
+//        .build());
+
     packModels.add(EffectTemplate.newBuilder()
         .withPackName("debug pack")
-        .withName("test-translate")
+        .withName("debug-quality")
         .addEffectStep(EffectStep.newBuilder()
-            .withStartPauseSeconds(1)
-            .withEndPauseSeconds(1)
-            .withDurationSeconds(3)
+            .withDurationSeconds(0.5f)
             .withScaleInterpolator(new LinearInterpolator())
-            .withXInterpolator(new ConstantInterpolator(1))
             .build())
         .build());
 
