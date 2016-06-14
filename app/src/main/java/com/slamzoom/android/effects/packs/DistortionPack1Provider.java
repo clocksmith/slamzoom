@@ -52,12 +52,12 @@ public class DistortionPack1Provider {
         .build());
 
     packModels.add(EffectTemplate.newBuilder()
-        .withName("magoo")
+        .withName("inflate")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
-            .withEndPauseSeconds(1)
             .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolatorGroup(new BulgeEyesFilterInterpolatorGroup())
+            .withFilterInterpolatorGroup(new InflateFaceFilterInterpolatorGroup())
+            .withEndPauseSeconds(1)
             .build())
         .build());
 

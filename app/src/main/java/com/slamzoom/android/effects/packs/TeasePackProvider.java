@@ -206,7 +206,7 @@ public class TeasePackProvider {
                 new Interpolator() {
                   @Override
                   protected float getRangePercent(float t) {
-                    return (float) Math.pow(Math.sin(3 * Math.PI * t), 10);
+                    return (float) Math.pow(Math.sin(3.5 * Math.PI * (t + 2f / 7)), 2);
                   }
                 }))
             .withEndPauseSeconds(1)

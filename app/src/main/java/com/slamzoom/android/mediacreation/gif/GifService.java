@@ -144,55 +144,60 @@ public class GifService extends Service {
     if (mGifCache.asMap().containsKey(name)) {
       fireGifReadyEvent(name, false);
     } else {
+      if (mGifCreatorManager != null && !mGifCreatorManager.getName().equals(name)) {
+        mGifCreatorManager.stop();
+        mGifCreatorManager = getManager(config, false, mGifCache);
+      } else if (mGifCreatorManager == null) {
+        mGifCreatorManager = getManager(config, false, mGifCache);
+      } else {
+        return;
+      }
+
       for (GifCreatorManager previewManager : mGifPreviewCreatorPriorityQueue) {
         if (previewManager.isRunning()) {
           previewManager.stop();
         }
       }
-      if (mGifCreatorManager != null && !mGifCreatorManager.getName().equals(name)) {
-        mGifCreatorManager.stop();
-      }
-      mGifCreatorManager = getManager(config, false, mGifCache);
       mGifCreatorManager.start();
     }
   }
 
 
-  @Subscribe
-  public void on(EffectThumbnailViewHolder.RequestGifPreviewEvent event) {
-    final String name = event.effectName;
-    if (mGifPreviewCache.asMap().containsKey(name)) {
-      fireGifReadyEvent(name, true);
-    } else {
+    @Subscribe
+    public void on(EffectThumbnailViewHolder.RequestGifPreviewEvent event) {
+      final String name = event.effectName;
+      if (mGifPreviewCache.asMap().containsKey(name)) {
+        fireGifReadyEvent(name, true);
+      } else {
+        int i = 0;
+        for (GifCreatorManager previewManager : mGifPreviewCreatorBackQueue) {
+          if (previewManager.getName().equals(name)) {
+            GifCreatorManager managerWithPriority = mGifPreviewCreatorBackQueue.remove(i);
+            mGifPreviewCreatorPriorityQueue.add(managerWithPriority);
+            continueGifPreviewGeneration();
+            break;
+          }
+          i++;
+        }
+      }
+    }
+
+    @Subscribe
+    public void on(EffectThumbnailViewHolder.RequestGifPreviewStopEvent event) {
+      final String name = event.effectName;
       int i = 0;
-      for (GifCreatorManager previewManager : mGifPreviewCreatorBackQueue) {
+      for (GifCreatorManager previewManager : mGifPreviewCreatorPriorityQueue) {
         if (previewManager.getName().equals(name)) {
-          GifCreatorManager managerWithPriority = mGifPreviewCreatorBackQueue.remove(i);
-          mGifPreviewCreatorPriorityQueue.add(managerWithPriority);
-          continueGifPreviewGeneration();
+          GifCreatorManager managerToCancel = mGifPreviewCreatorPriorityQueue.remove(i);
+          if (managerToCancel.isRunning()) {
+            managerToCancel.stop();
+          }
+          mGifPreviewCreatorBackQueue.add(managerToCancel);
           break;
         }
         i++;
       }
     }
-  }
-
-  @Subscribe
-  public void on(EffectThumbnailViewHolder.RequestGifPreviewStopEvent event) {
-    final String name = event.effectName;
-    int i = 0;
-    for (GifCreatorManager previewManager : mGifPreviewCreatorPriorityQueue) {
-      if (previewManager.getName().equals(name)) {
-        GifCreatorManager managerToCancel = mGifPreviewCreatorPriorityQueue.remove(i);
-        if (managerToCancel.isRunning()) {
-          managerToCancel.stop();
-        }
-        mGifPreviewCreatorBackQueue.add(managerToCancel);
-        break;
-      }
-      i++;
-    }
-  }
 
   private void continueGifPreviewGeneration() {
     if (!mGifPreviewCreatorPriorityQueue.isEmpty() && !mGifPreviewCreatorPriorityQueue.get(0).isRunning()) {

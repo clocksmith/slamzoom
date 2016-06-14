@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeDoubleLeftRightFilterInterpolatorGroup;
+import com.slamzoom.android.effects.interpolation.filter.group.BulgeEyesFilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeLeftRightSwapFilterInterpolationGroup;
 import com.slamzoom.android.effects.interpolation.filter.group.DeflateFaceFilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.filter.group.SumoBulge2FilterInterpolator;
@@ -32,12 +33,12 @@ public class DistortionPack2Provider {
         .build());
 
     packModels.add(EffectTemplate.newBuilder()
-        .withName("inflate")
+        .withName("magoo")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
-            .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolatorGroup(new InflateFaceFilterInterpolatorGroup())
             .withEndPauseSeconds(1)
+            .withScaleInterpolator(new LinearInterpolator())
+            .withFilterInterpolatorGroup(new BulgeEyesFilterInterpolatorGroup())
             .build())
         .build());
 
