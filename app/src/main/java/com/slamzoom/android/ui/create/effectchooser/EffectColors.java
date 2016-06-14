@@ -44,5 +44,11 @@ public class EffectColors {
       Color.parseColor("#FDD835"),
       Color.parseColor("#FFEB3B"),
       Color.parseColor("#FFEE58"),
-      Color.parseColor("#FFF176"));
+      Color.parseColor("#FFF176"),
+      //gray
+      Color.parseColor("#455A64"),
+      Color.parseColor("#546E7A"),
+      Color.parseColor("#607D8B"),
+      Color.parseColor("#78909C"),
+      Color.parseColor("#90A4AE"));
 }

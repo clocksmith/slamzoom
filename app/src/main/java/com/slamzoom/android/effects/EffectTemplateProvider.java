@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.packs.DebugPackProvider;
 import com.slamzoom.android.effects.packs.DistortionPack1Provider;
 import com.slamzoom.android.effects.packs.CrashPackProvider;
+import com.slamzoom.android.effects.packs.GrayPackProvider;
 import com.slamzoom.android.effects.packs.RumblePackProvider;
 import com.slamzoom.android.effects.packs.DistortionPack2Provider;
 import com.slamzoom.android.effects.packs.SlamPackProvider;
@@ -29,7 +30,7 @@ public class EffectTemplateProvider {
     mTemplates.addAll(RumblePackProvider.getPack());
 
 
-//    mTemplates.addAll(GrayPackProvider.getPack());
+    mTemplates.addAll(GrayPackProvider.getPack());
 //    mTemplates.addAll(BlurPackProvider.getPack());
 //    mTemplates.addAll(TilePackProvider.getPack());
 //

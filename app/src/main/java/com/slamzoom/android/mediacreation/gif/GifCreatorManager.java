@@ -1,15 +1,21 @@
 package com.slamzoom.android.mediacreation.gif;
 
 import android.content.Context;
+import android.util.Log;
 
+import com.slamzoom.android.common.Constants;
+import com.slamzoom.android.common.utils.FLog;
 import com.slamzoom.android.mediacreation.MediaCreatorTracker;
 
 /**
  * Created by clocksmith on 6/12/16.
  */
 public class GifCreatorManager {
+  private static final String TAG = GifCreatorManager.class.getSimpleName();
+
   private Context mContext;
   private GifConfig mGifConfig;
+  private boolean mIsPreview;
   private int mGifSize;
   private GifCreator.CreateGifCallback mCallback;
   private MediaCreatorTracker mTracker;
@@ -20,22 +26,25 @@ public class GifCreatorManager {
   public GifCreatorManager(
       Context context,
       GifConfig gifConfig,
-      int gifSize,
+      boolean preview,
       GifCreator.CreateGifCallback callback) {
     mContext = context;
     mGifConfig = gifConfig;
-    mGifSize = gifSize;
+    mIsPreview = preview;
+    mGifSize = preview ? Constants.DEFAULT_GIF_PREVIEW_SIZE_PX : Constants.DEFAULT_GIF_SIZE_PX;
     mCallback = callback;
     mTracker = new MediaCreatorTracker();
   }
 
   public void start() {
+    FLog.f(TAG, "start() " + (mIsPreview ? "preview_" : "") + mGifConfig.effectModel.getEffectTemplate().getName());
     mIsRunning = true;
     mGifCreator = new GifCreator(mContext, mGifConfig, mGifSize, mCallback, mTracker);
     mGifCreator.createAsync();
   }
 
   public void stop() {
+    FLog.f(TAG, "stop() " + (mIsPreview ? "preview_" : "") + mGifConfig.effectModel.getEffectTemplate().getName());
     mIsRunning = false;
     if (mGifCreator != null) {
       mGifCreator.cancel();

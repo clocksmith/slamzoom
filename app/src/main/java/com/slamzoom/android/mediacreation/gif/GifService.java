@@ -12,6 +12,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.common.utils.DebugUtils;
+import com.slamzoom.android.common.utils.FLog;
 import com.slamzoom.android.effects.EffectTemplateProvider;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.singletons.BusProvider;
@@ -25,6 +26,8 @@ import java.util.List;
  */
 public class GifService extends Service {
   private static final String TAG = GifService.class.getSimpleName();
+
+  private static int MAIN_CACHE_SIZE = 5;
 
   public class GifReadyEvent {
     public final String effectName;
@@ -50,11 +53,12 @@ public class GifService extends Service {
   private GifCreatorManager mGifCreatorManager;
   private List<GifCreatorManager> mGifPreviewCreatorBackQueue;
   private List<GifCreatorManager> mGifPreviewCreatorPriorityQueue;
+  private long mStart;
 
   @Override
   public void onCreate() {
     mGifCache = CacheBuilder.newBuilder()
-        .maximumSize(DebugUtils.DEBUG_USE_CACHE ? EffectTemplateProvider.getTemplates().size() : 0)
+        .maximumSize(DebugUtils.DEBUG_USE_CACHE ? MAIN_CACHE_SIZE : 0)
         .build();
     mGifPreviewCache = CacheBuilder.newBuilder()
         .maximumSize(DebugUtils.DEBUG_USE_CACHE ? EffectTemplateProvider.getTemplates().size() : 0)
@@ -97,6 +101,8 @@ public class GifService extends Service {
         return getManager(input, true, mGifPreviewCache);
       }
     }));
+
+    mStart = System.currentTimeMillis();
   }
 
   private GifCreatorManager getManager(GifConfig config, final boolean preview, final Cache<String, byte[]> cache) {
@@ -104,7 +110,7 @@ public class GifService extends Service {
     return new GifCreatorManager(
         getApplicationContext(),
         config,
-        preview ? Constants.DEFAULT_GIF_PREVIEW_SIZE_PX : Constants.DEFAULT_GIF_SIZE_PX,
+        preview,
         new GifCreator.CreateGifCallback() {
           @Override
           public void onCreateGif(byte[] gifBytes) {
@@ -115,11 +121,17 @@ public class GifService extends Service {
                 int i = 0;
                 for (GifCreatorManager manager : mGifPreviewCreatorPriorityQueue) {
                   if (manager.getName().equals(name)) {
+                    FLog.f(TAG, "finished " + name + "\n" + manager.getTracker().getReport());
                     mGifPreviewCreatorPriorityQueue.remove(i);
                     break;
                   }
                   i++;
                 }
+                if (mGifPreviewCreatorPriorityQueue.isEmpty()) {
+                  FLog.f(TAG, "finished generating all previews in: " + (System.currentTimeMillis() - mStart) + "ms");
+                }
+              } else {
+                FLog.f(TAG, "finished " + name + "\n" + mGifCreatorManager.getTracker().getReport());
               }
               continueGifPreviewGeneration();
             }
@@ -193,7 +205,7 @@ public class GifService extends Service {
 
   private void fireGifReadyEvent(String name, boolean preview) {
     if (!preview) {
-      Log.wtf(TAG, "name: " + name + "\n" + mGifCreatorManager.getTracker().getReport());
+      Log.d(TAG, "name: " + name + "\n" + mGifCreatorManager.getTracker().getReport());
     }
 
     BusProvider.getInstance().post(

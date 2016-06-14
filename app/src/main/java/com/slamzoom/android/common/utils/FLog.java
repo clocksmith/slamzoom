@@ -1,0 +1,30 @@
+package com.slamzoom.android.common.utils;
+
+import android.util.Log;
+
+import com.google.common.collect.ImmutableSet;
+import com.slamzoom.android.mediacreation.gif.GifCreatorManager;
+import com.slamzoom.android.mediacreation.gif.GifService;
+
+import java.util.Set;
+
+/**
+ * Created by clocksmith on 6/14/16.
+ */
+public class FLog {
+  // NOTE: Please keep in alphabetical order.
+  private static Set<String> mAcceptedTags = ImmutableSet.of(
+      GifCreatorManager.class.getSimpleName(),
+      GifService.class.getSimpleName(),
+
+      "" // This is so we can always have a trailing comma.
+  );
+
+  public static void f(String tag, String message) {
+    if (mAcceptedTags.contains(tag)) {
+      Log.d("F/" + tag, message);
+    } else {
+      Log.d(tag, message);
+    }
+  }
+}

@@ -83,7 +83,6 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   public abstract E createEncoder();
 
   public void createAsync() {
-    Log.wtf(TAG, "createAsync() " + (mIsPreview ? "preview_" : "") + mEffectModel.getEffectTemplate().getName());
     mStart = System.currentTimeMillis();
     List<EffectStep> steps = mEffectModel.getEffectTemplate().getEffectSteps();
     mTotalNumFramesToAdd = new AtomicInteger(0);
@@ -140,10 +139,12 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     }
 
     mTracker.startFiltering();
-    Bitmap filteredFrameBitmap = scaledFrameBitmap;
+    Bitmap filteredFrameBitmap;
     if (!filters.isEmpty()) {
-//      filteredFrameBitmap = PostProcessorUtils.applyFiltersAsGroup(mContext, scaledFrameBitmap, filters);
-    filteredFrameBitmap = PostProcessorUtils.applyFilters(mContext, scaledFrameBitmap, filters);
+      filteredFrameBitmap = PostProcessorUtils.applyFilters(mContext, scaledFrameBitmap, filters);
+      scaledFrameBitmap.recycle();
+    } else {
+      filteredFrameBitmap = scaledFrameBitmap;
     }
     mTracker.stopFiltering();
 

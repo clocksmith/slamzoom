@@ -87,11 +87,14 @@ public class MediaCreatorTracker {
         "\npixelizing: " + mPixelizing.elapsed(TimeUnit.MILLISECONDS) + "ms" +
         "\nencoding: " + mEncoding.elapsed(TimeUnit.MILLISECONDS) + "ms" +
         "\nwriting: " + mWriting.elapsed(TimeUnit.MILLISECONDS) + "ms" +
-        "\ntotal: " +
-        (mTransforming.elapsed(TimeUnit.MILLISECONDS) +
-            mFiltering.elapsed(TimeUnit.MILLISECONDS) +
-            mPixelizing.elapsed(TimeUnit.MILLISECONDS) +
-            mEncoding.elapsed(TimeUnit.MILLISECONDS) +
-            mWriting.elapsed(TimeUnit.MILLISECONDS) + "ms");
+        "\ntotal: " + getTotal();
+  }
+
+  public String getTotal() {
+    return (mTransforming.elapsed(TimeUnit.MILLISECONDS) +
+        mFiltering.elapsed(TimeUnit.MILLISECONDS) +
+        mPixelizing.elapsed(TimeUnit.MILLISECONDS) +
+        mEncoding.elapsed(TimeUnit.MILLISECONDS) +
+        mWriting.elapsed(TimeUnit.MILLISECONDS) + "ms");
   }
 }

@@ -65,7 +65,7 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
   }
 
   public void bind(final EffectModel model) {
-    Log.wtf(TAG, "bind: " + model.getEffectTemplate().getName());
+//    Log.wtf(TAG, "bind: " + model.getEffectTemplate().getName());
     mModel = model;
     final String name = model.getEffectTemplate().getName();
 

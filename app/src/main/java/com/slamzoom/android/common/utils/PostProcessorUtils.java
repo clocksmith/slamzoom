@@ -8,21 +8,28 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.util.Log;
 
 import com.google.common.collect.ImmutableList;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.mediacreation.WatermarkProvider;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import jp.co.cyberagent.android.gpuimage.GPUImage;
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageFilterGroup;
+import jp.co.cyberagent.android.gpuimage.GPUImageRenderer;
+import jp.co.cyberagent.android.gpuimage.PixelBuffer;
 
 /**
  * Created by clocksmith on 3/20/16.
  */
 public class PostProcessorUtils {
+  private static final String TAG = PostProcessorUtils.class.getSimpleName();
+
   public static Bitmap applyTiling(int numTilesInRow, Bitmap original) {
     int tileWidth = original.getWidth() / numTilesInRow;
     int tileHeight = original.getHeight() / numTilesInRow;
@@ -40,15 +47,57 @@ public class PostProcessorUtils {
     return tiledBitmap;
   }
 
-  public static Bitmap applyFilters(Context context, Bitmap original, List<GPUImageFilter> filters) {
-    for (GPUImageFilter filter : filters) {
-      GPUImage gpuImage = new GPUImage(context);
-      gpuImage.setFilter(filter);
-      original = gpuImage.getBitmapWithFilterApplied(original);
+  public static Bitmap applyFilters(Context context, Bitmap src, List<GPUImageFilter> filters) {
+    if (filters.isEmpty()) {
+      return src;
     }
-    return original;
+
+    Bitmap processed = src;
+    PixelBuffer buffer = new PixelBuffer(src.getWidth(), src.getHeight());
+    for (GPUImageFilter filter : filters) {
+      GPUImageRenderer renderer = new GPUImageRenderer(filter);
+      renderer.setImageBitmap(src, false);
+      buffer.setRenderer(renderer);
+      processed = buffer.getBitmap();
+      src.recycle();
+      renderer.deleteImage();
+      src = processed;
+      filter.destroy();
+    }
+    buffer.destroy();
+    return processed;
+
+//    final CountDownLatch latch = new CountDownLatch(filters.size());
+//    final Bitmap[] processed = new Bitmap[1];
+//    GPUImage.getBitmapForMultipleFilters(src, filters, new GPUImage.ResponseListener<Bitmap>() {
+//      @Override
+//      public void response(Bitmap item) {
+//        if (latch.getCount() == 1) {
+//          processed[0] = item;
+//        }
+//        latch.countDown();
+//      }
+//    });
+//    try {
+//      latch.await();
+//      return processed[0];
+//    } catch (InterruptedException e) {
+//      Log.e(TAG, "Latch interrupted", e);
+//      return null;
+//    }
+
+//    GPUImage gpuImage = new GPUImage(context);
+//    Bitmap processed = src;
+//    for (GPUImageFilter filter : filters) {
+//      gpuImage.setFilter(filter);
+//      processed = gpuImage.getBitmapWithFilterApplied(src);
+//      src.recycle();
+//      src = processed;
+//    }
+//    return processed;
   }
 
+  // TODO(clocksmith): figure out if this can be used
   public static Bitmap applyFiltersAsGroup(Context context, Bitmap original, ImmutableList<GPUImageFilter> filters) {
     GPUImageFilterGroup group = new GPUImageFilterGroup(filters);
     GPUImage gpuImage = new GPUImage(context);
