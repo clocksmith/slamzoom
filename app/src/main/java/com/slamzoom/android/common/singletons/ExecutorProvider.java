@@ -25,11 +25,4 @@ public class ExecutorProvider {
     }
     return ENCODE_FRAMES_EXECUTOR;
   }
-
-  public static ThreadPoolExecutor getGeneratePreviewsExecutor() {
-    if (GENERATE_PREVIEWS_EXECUTOR == null) {
-      GENERATE_PREVIEWS_EXECUTOR = ExecutorFactory.create(1, 1);
-    }
-    return GENERATE_PREVIEWS_EXECUTOR;
-  }
 }

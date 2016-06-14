@@ -141,7 +141,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     mTracker.startFiltering();
     Bitmap filteredFrameBitmap;
     if (!filters.isEmpty()) {
-      filteredFrameBitmap = PostProcessorUtils.applyFilters(mContext, scaledFrameBitmap, filters);
+      filteredFrameBitmap = PostProcessorUtils.applyFilters(scaledFrameBitmap, filters);
       scaledFrameBitmap.recycle();
     } else {
       filteredFrameBitmap = scaledFrameBitmap;

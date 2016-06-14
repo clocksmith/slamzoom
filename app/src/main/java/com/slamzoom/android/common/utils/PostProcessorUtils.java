@@ -47,54 +47,22 @@ public class PostProcessorUtils {
     return tiledBitmap;
   }
 
-  public static Bitmap applyFilters(Context context, Bitmap src, List<GPUImageFilter> filters) {
+  public static Bitmap applyFilters(Bitmap src, List<GPUImageFilter> filters) {
     if (filters.isEmpty()) {
       return src;
     }
 
-    Bitmap processed = src;
     PixelBuffer buffer = new PixelBuffer(src.getWidth(), src.getHeight());
     for (GPUImageFilter filter : filters) {
       GPUImageRenderer renderer = new GPUImageRenderer(filter);
-      renderer.setImageBitmap(src, false);
+      renderer.setImageBitmap(src, true);
       buffer.setRenderer(renderer);
-      processed = buffer.getBitmap();
-      src.recycle();
-      renderer.deleteImage();
-      src = processed;
-      filter.destroy();
+      src = buffer.getBitmap();
+//      renderer.deleteImage();
+//      filter.destroy();
     }
     buffer.destroy();
-    return processed;
-
-//    final CountDownLatch latch = new CountDownLatch(filters.size());
-//    final Bitmap[] processed = new Bitmap[1];
-//    GPUImage.getBitmapForMultipleFilters(src, filters, new GPUImage.ResponseListener<Bitmap>() {
-//      @Override
-//      public void response(Bitmap item) {
-//        if (latch.getCount() == 1) {
-//          processed[0] = item;
-//        }
-//        latch.countDown();
-//      }
-//    });
-//    try {
-//      latch.await();
-//      return processed[0];
-//    } catch (InterruptedException e) {
-//      Log.e(TAG, "Latch interrupted", e);
-//      return null;
-//    }
-
-//    GPUImage gpuImage = new GPUImage(context);
-//    Bitmap processed = src;
-//    for (GPUImageFilter filter : filters) {
-//      gpuImage.setFilter(filter);
-//      processed = gpuImage.getBitmapWithFilterApplied(src);
-//      src.recycle();
-//      src = processed;
-//    }
-//    return processed;
+    return src;
   }
 
   // TODO(clocksmith): figure out if this can be used
