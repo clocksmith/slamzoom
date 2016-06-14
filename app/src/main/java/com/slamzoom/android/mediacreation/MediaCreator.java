@@ -83,7 +83,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   public abstract E createEncoder();
 
   public void createAsync() {
-    Log.wtf(TAG, "createAsync() " + mEffectModel.getEffectTemplate().getName());
+    Log.wtf(TAG, "createAsync() " + (mIsPreview ? "preview_" : "") + mEffectModel.getEffectTemplate().getName());
     mStart = System.currentTimeMillis();
     List<EffectStep> steps = mEffectModel.getEffectTemplate().getEffectSteps();
     mTotalNumFramesToAdd = new AtomicInteger(0);
@@ -142,8 +142,8 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     mTracker.startFiltering();
     Bitmap filteredFrameBitmap = scaledFrameBitmap;
     if (!filters.isEmpty()) {
-      filteredFrameBitmap = PostProcessorUtils.applyFiltersAsGroup(mContext, scaledFrameBitmap, filters);
-//    filteredFrameBitmap = PostProcessorUtils.applyFilters(mContext, scaledFrameBitmap, filters);
+//      filteredFrameBitmap = PostProcessorUtils.applyFiltersAsGroup(mContext, scaledFrameBitmap, filters);
+    filteredFrameBitmap = PostProcessorUtils.applyFilters(mContext, scaledFrameBitmap, filters);
     }
     mTracker.stopFiltering();
 
@@ -152,7 +152,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       PostProcessorUtils.renderText(filteredFrameBitmap, textToRender);
     }
 
-    if (Constants.USE_WATERMARK) {
+    if (Constants.USE_WATERMARK && !mIsPreview) {
       PostProcessorUtils.renderWatermark(mContext, filteredFrameBitmap);
     }
 

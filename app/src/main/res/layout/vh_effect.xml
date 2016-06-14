@@ -6,13 +6,13 @@
     android:layout_height="match_parent">
   <FrameLayout
       android:layout_width="match_parent"
-      android:layout_height="0dp"
+      android:layout_height="120dp"
+      android:padding="8dp"
       android:layout_weight="1">
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/gifImageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="12dp"
         android:scaleType="fitCenter"/>
     <ProgressBar
         android:id="@+id/progressBar"
@@ -24,7 +24,11 @@
   <TextView
       android:id="@+id/nameTextView"
       android:layout_width="match_parent"
-      android:layout_height="30dp"
+      android:layout_height="18dp"
       android:textColor="@android:color/white"
       android:gravity="center"/>
+  <View
+      android:id="@+id/tabView"
+      android:layout_width="match_parent"
+      android:layout_height="18dp"/>
 </LinearLayout>

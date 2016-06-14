@@ -24,7 +24,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import com.google.common.base.Function;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.slamzoom.android.effects.EffectModelProvider;
 import com.slamzoom.android.common.BackInterceptingEditText;
@@ -46,6 +48,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.Bind;
@@ -95,7 +98,7 @@ public class CreateActivity extends AppCompatActivity {
     getSupportActionBar().setCustomView(mAddTextView,
         new Toolbar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-//    mSelectedEffectName = EffectModelProvider.getEffectModels().get(0).getEffectTemplate().getName();
+    mSelectedEffectName = EffectModelProvider.getEffectModels().get(0).getEffectTemplate().getName();
     mProgressBar.setVisibility(View.GONE);
 
     Intent intent = getIntent();
@@ -220,10 +223,12 @@ public class CreateActivity extends AppCompatActivity {
 
   @Subscribe
   public void on(GifService.GifReadyEvent event) throws IOException {
-    if (mSelectedEffectName.equals(event.effectName)) {
-      mSelectedGifBytes = event.gifBytes;
-      mProgressBar.setVisibility(View.GONE);
-      mGifImageView.setImageDrawable(new GifDrawable(mSelectedGifBytes));
+    if (!event.preview) {
+      if (mSelectedEffectName.equals(event.effectName)) {
+        mSelectedGifBytes = event.gifBytes;
+        mProgressBar.setVisibility(View.GONE);
+        mGifImageView.setImageDrawable(new GifDrawable(mSelectedGifBytes));
+      }
     }
   }
 
@@ -261,18 +266,21 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   private void updateGifPreviews() {
-    Map<String, GifConfig> configs = Maps.newHashMap();
-    for (EffectModel model : EffectModelProvider.getEffectModels()) {
-      configs.put(model.getEffectTemplate().getName(),
-          GifConfig.newBuilder()
-              .withHotspot(mSelectedHotspotForPreview)
-              .withBitmap(mSelectedBitmapForPreview)
-              .withEffectModel(model)
-              .withEndText(mSelectedEndText)
-              .build());
-    }
-    mGifService.resetWithConfigs(configs);
+    List<GifConfig> configs = Lists.transform(EffectModelProvider.getEffectModels(),
+        new Function<EffectModel, GifConfig>() {
+      @Override
+      public GifConfig apply(EffectModel model) {
+        return GifConfig.newBuilder()
+            .withHotspot(mSelectedHotspotForPreview)
+            .withBitmap(mSelectedBitmapForPreview)
+            .withEffectModel(model)
+            .withEndText(mSelectedEndText)
+            .build();
+      }
+    });
+
     mEffectChooser.setEffectModels(EffectModelProvider.getEffectModels());
+    mGifService.resetWithConfigs(configs);
   }
 
   private void launchImageChooser() {

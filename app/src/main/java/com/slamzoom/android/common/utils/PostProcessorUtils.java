@@ -70,17 +70,31 @@ public class PostProcessorUtils {
 
   public static void renderWatermark(Context context, Bitmap original) {
     if (Constants.USE_TEXT_WATERMARK) {
-      Canvas watermarkCanvas = new Canvas(original);
-      Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+      Canvas canvas = new Canvas(original);
+
+      Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
       textPaint.setColor(Color.WHITE); // Text Color
       textPaint.setTextSize(Constants.MAX_WATERMARK_TEXT_SIZE);
       textPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)); // Text Overlapping Pattern
       textPaint.setTextAlign(Paint.Align.LEFT);
+
       Rect textBounds = new Rect();
       textPaint.getTextBounds(Constants.WATERMARK_TEXT, 0, Constants.WATERMARK_TEXT.length(), textBounds);
-      watermarkCanvas.drawText(
+
+      Paint rectPaint = new Paint();
+      rectPaint.setColor(Color.BLACK);
+      rectPaint.setAlpha(128);
+
+      canvas.drawRect(
+          0,
+          original.getHeight() - textBounds.height() - Constants.WATERMARK_TEXT_PADDING,
+          original.getWidth(),
+          original.getHeight(),
+          rectPaint);
+
+      canvas.drawText(
           Constants.WATERMARK_TEXT,
-          original.getWidth() - textBounds.width() - Constants.WATERMARK_TEXT_PADDING,
+          (original.getWidth() - textBounds.width()) / 2,
           original.getHeight() - Constants.WATERMARK_TEXT_PADDING,
           textPaint);
     } else if (Constants.USE_IMAGE_WATERMARK) {

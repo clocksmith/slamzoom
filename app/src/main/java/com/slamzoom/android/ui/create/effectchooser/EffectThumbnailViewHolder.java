@@ -1,6 +1,7 @@
 package com.slamzoom.android.ui.create.effectchooser;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -37,32 +38,47 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
     }
   }
 
-  public class RequestCancelGifPreviewEvent {
+  public class RequestGifPreviewStopEvent {
     public final String effectName;
-    public RequestCancelGifPreviewEvent(String effectName) {
+    public RequestGifPreviewStopEvent(String effectName) {
       this.effectName = effectName;
     }
   }
 
-  @Bind(R.id.nameTextView) TextView mNameTextView;
   @Bind(R.id.gifImageView) GifImageView mGifImageView;
   @Bind(R.id.progressBar) ProgressBar mProgressBar;
+  @Bind(R.id.nameTextView) TextView mNameTextView;
+  @Bind(R.id.tabView) View mTabView;
 
   private EffectModel mModel;
+  private int mColor;
 
   public EffectThumbnailViewHolder(View itemView) {
     super(itemView);
     ButterKnife.bind(this, itemView);
   }
 
-  public void unbindCurrentAndBindNew(final EffectModel model) {
+  public void unbindCurrentAndBindNew(final EffectModel model, int color) {
+    mColor = color;
     unbind();
     bind(model);
   }
 
   public void bind(final EffectModel model) {
+    Log.wtf(TAG, "bind: " + model.getEffectTemplate().getName());
     mModel = model;
     final String name = model.getEffectTemplate().getName();
+
+    mTabView.setBackgroundColor(mColor);
+    mProgressBar.getIndeterminateDrawable().setColorFilter(mColor, android.graphics.PorterDuff.Mode.MULTIPLY);
+
+
+    itemView.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        BusProvider.getInstance().post(new ItemClickEvent(name));
+      }
+    });
 
     mNameTextView.setText(name);
 
@@ -81,18 +97,11 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
       mProgressBar.setVisibility(View.VISIBLE);
       BusProvider.getInstance().post(new RequestGifPreviewEvent(name));
     }
-
-    itemView.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        BusProvider.getInstance().post(new ItemClickEvent(name));
-      }
-    });
   }
 
   public void unbind() {
-    if (mModel != null) {
-      BusProvider.getInstance().post(new RequestCancelGifPreviewEvent(mModel.getEffectTemplate().getName()));
+    if (mModel != null && (mModel.getGifPreviewBytes() == null || mModel.getGifPreviewBytes().length == 0)) {
+      BusProvider.getInstance().post(new RequestGifPreviewStopEvent(mModel.getEffectTemplate().getName()));
     }
     mNameTextView.setText(null);
     mGifImageView.setImageDrawable(null);

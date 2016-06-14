@@ -19,7 +19,7 @@ public class EffectTemplateProvider {
   private static List<EffectTemplate> mTemplates = Lists.newArrayList();
 
   static {
-    mTemplates.addAll(DebugPackProvider.getPack());
+//    mTemplates.addAll(DebugPackProvider.getPack());
 
     mTemplates.addAll(SlamPackProvider.getPack());
     mTemplates.addAll(CrashPackProvider.getPack());

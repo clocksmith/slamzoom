@@ -1,5 +1,6 @@
 package com.slamzoom.android.ui.create.effectchooser;
 
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,8 +30,10 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
 
   @Override
   public void onBindViewHolder(EffectThumbnailViewHolder holder, int position) {
-//    Log.wtf(TAG, "binding position: " + position);
-    holder.unbindCurrentAndBindNew(mModels.get(position));
+    Log.wtf(TAG, "binding position: " + position);
+    holder.unbindCurrentAndBindNew(
+        mModels.get(position),
+        EffectColors.colors.get(position % EffectColors.colors.size()));
   }
 
   @Override
@@ -39,10 +42,18 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
   }
 
   public void setGifPreview(String effectName, byte[] gifBytes) {
+
     for (int position = 0; position < mModels.size(); position++) {
       if (mModels.get(position).getEffectTemplate().getName().equals(effectName)) {
         mModels.get(position).setGifPreviewBytes(gifBytes);
-        notifyItemChanged(position);
+        final int finalPos = position;
+//        notifyItemChanged(finalPos);
+        new Handler().post(new Runnable() {
+          @Override
+          public void run() {
+            notifyItemChanged(finalPos);
+          }
+        });
         break;
       }
     }
