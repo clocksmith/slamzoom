@@ -58,8 +58,8 @@ public class PostProcessorUtils {
       renderer.setImageBitmap(src, true);
       buffer.setRenderer(renderer);
       src = buffer.getBitmap();
-//      renderer.deleteImage();
-//      filter.destroy();
+      renderer.deleteImage();
+      filter.destroy();
     }
     buffer.destroy();
     return src;

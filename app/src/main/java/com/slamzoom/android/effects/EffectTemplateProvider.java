@@ -25,12 +25,12 @@ public class EffectTemplateProvider {
     mTemplates.addAll(SlamPackProvider.getPack());
     mTemplates.addAll(CrashPackProvider.getPack());
     mTemplates.addAll(DistortionPack1Provider.getPack());
-    mTemplates.addAll(DistortionPack2Provider.getPack());
-    mTemplates.addAll(SwirlPackProvider.getPack());
-    mTemplates.addAll(RumblePackProvider.getPack());
+//    mTemplates.addAll(DistortionPack2Provider.getPack());
+//    mTemplates.addAll(SwirlPackProvider.getPack());
+//    mTemplates.addAll(RumblePackProvider.getPack());
 
 
-    mTemplates.addAll(GrayPackProvider.getPack());
+//    mTemplates.addAll(GrayPackProvider.getPack());
 //    mTemplates.addAll(BlurPackProvider.getPack());
 //    mTemplates.addAll(TilePackProvider.getPack());
 //

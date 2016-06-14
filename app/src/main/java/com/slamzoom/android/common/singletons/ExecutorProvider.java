@@ -10,11 +10,10 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class ExecutorProvider {
   private static ThreadPoolExecutor COLLECT_FRAMES_EXECUTOR;
   private static ThreadPoolExecutor ENCODE_FRAMES_EXECUTOR;
-  private static ThreadPoolExecutor GENERATE_PREVIEWS_EXECUTOR;
 
   public static ThreadPoolExecutor getCollectFramesExecutor() {
     if (COLLECT_FRAMES_EXECUTOR == null) {
-      COLLECT_FRAMES_EXECUTOR = ExecutorFactory.create();
+      COLLECT_FRAMES_EXECUTOR = ExecutorFactory.create(2, 4);
     }
     return COLLECT_FRAMES_EXECUTOR;
   }

@@ -78,7 +78,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     mGifHeight = aspectRatio > 1 ? Math.round(gifSize / aspectRatio) : gifSize;
   }
 
-  public abstract MediaFrame createFrame(Bitmap bitmap, int delayMillis);
+  public abstract MediaFrame  createFrame(Bitmap bitmap, int delayMillis);
 
   public abstract E createEncoder();
 

@@ -32,13 +32,13 @@ public class GifFrame extends MediaFrame {
     byte[] bytes = new byte[pixelInts.length * 3];
 
     int byteIdx = 0;
-    for(int i=0; i < pixelInts.length; i++) {
+    for(int i = 0; i < pixelInts.length; i++) {
       int thisPixel = pixelInts[i];
       byte[] theseBytes = ByteBuffer.allocate(4).putInt(thisPixel).array();
       // RGB --> BGR
       bytes[byteIdx] = theseBytes[3];
-      bytes[byteIdx+1] = theseBytes[2];
-      bytes[byteIdx+2] = theseBytes[1];
+      bytes[byteIdx + 1] = theseBytes[2];
+      bytes[byteIdx + 2] = theseBytes[1];
       byteIdx += 3;
     }
     return bytes;
