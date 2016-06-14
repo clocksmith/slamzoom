@@ -9,6 +9,7 @@ public class ExposureCalculator extends BaseCalculator {
   // TODO(clocksmtih): Add max and base if needed.
   private float mBaseExposure = 0;
   private float mBaseMinExposure = -10;
+  private float mBaseMaxExposure = 10;
 
   public ExposureCalculator(FilterInterpolator filterInterpolator) {
     super(filterInterpolator);
@@ -26,5 +27,9 @@ public class ExposureCalculator extends BaseCalculator {
 
   public float getUnderExposureFromInterpolation() {
     return mBaseMinExposure * getInterpolationValue();
+  }
+
+  public float getOverExposureFromInterpolation() {
+    return mBaseMaxExposure * getInterpolationValue();
   }
 }

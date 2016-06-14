@@ -19,7 +19,7 @@ public class DebugUtils {
   public static final boolean DEBUG_SAVE_TRANSFORMED_FRAMES_AS_BITMAPS = false;
   public static final boolean DEBUG_SAVE_SCALED_FRAMES_AS_BITMAPS = false;
   public static final boolean DEBUG_SAVE_FILTERED_FRAMES_AS_BITMAPS = false;
-  public static final boolean DEBUG_USE_STATIC_RECTANGLE = true;
+  public static final boolean DEBUG_USE_STATIC_RECTANGLE = false;
   public static final boolean DEBUG_USE_CACHE = true;
 
   public static final float DEBUG_RECT_LEFT_FRACTION = 0.18f;
