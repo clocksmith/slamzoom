@@ -121,7 +121,7 @@ public class GifService extends Service {
                 int i = 0;
                 for (GifCreatorManager manager : mGifPreviewCreatorPriorityQueue) {
                   if (manager.getName().equals(name)) {
-                    FLog.f(TAG, "finished " + name + "\n" + manager.getTracker().getReport());
+                    FLog.f(TAG, "finished " + name + "\n" + manager.getTracker().getTotal());
                     mGifPreviewCreatorPriorityQueue.remove(i);
                     break;
                   }
@@ -197,6 +197,7 @@ public class GifService extends Service {
         }
         i++;
       }
+      continueGifPreviewGeneration();
     }
 
   private void continueGifPreviewGeneration() {

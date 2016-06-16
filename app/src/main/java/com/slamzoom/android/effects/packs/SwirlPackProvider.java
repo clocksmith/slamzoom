@@ -3,6 +3,8 @@ package com.slamzoom.android.effects.packs;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.EffectStep;
+import com.slamzoom.android.effects.interpolation.filter.group.BulgeEyesSwirlMouthFilterInterpoaltor;
+import com.slamzoom.android.effects.interpolation.filter.group.SwirlEyesTwistyMouthFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.group.UnswirlEyesFilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.filter.single.UnswirlAtHotspotFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.UnswirlAtHotspotOnHotspotFilterInterpolator;
@@ -30,14 +32,6 @@ public class SwirlPackProvider {
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
-        .withName("swirlout")
-        .addEffectStep(EffectStep.newBuilder()
-            .withScaleInterpolator(new ReverseLinearInterpolator())
-            .withFilterInterpolator(new UnswirlFilterInterpolator())
-            .withEndPauseSeconds(0.5f)
-            .build())
-        .build());
-    packModels.add(EffectTemplate.newBuilder()
         .withName("swirlinout")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new InAndOutInterpolator())
@@ -59,6 +53,15 @@ public class SwirlPackProvider {
             .withDurationSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolator(new UnswirlTurntableAtHotspotOnHotspotFilterInterpolator())
+            .withEndPauseSeconds(1)
+            .build())
+        .build());
+    packModels.add(EffectTemplate.newBuilder()
+        .withName("mctwisty")
+        .addEffectStep(EffectStep.newBuilder()
+            .withDurationSeconds(2)
+            .withScaleInterpolator(new LinearInterpolator())
+            .withFilterInterpolatorGroup(new SwirlEyesTwistyMouthFilterInterpolator())
             .withEndPauseSeconds(1)
             .build())
         .build());

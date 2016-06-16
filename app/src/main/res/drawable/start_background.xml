@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <item>
+    <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+      <solid android:color="#202020" />
+    </shape>
+  </item>
+  <item>
+    <bitmap xmlns:android="http://schemas.android.com/apk/res/android"
+            android:src="@drawable/faces3"
+            android:tileMode="repeat"
+            android:alpha="0.08"/>
+  </item>
+
+</layer-list>

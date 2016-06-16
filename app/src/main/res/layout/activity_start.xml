@@ -3,12 +3,12 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:padding="32dp">
+              android:background="@drawable/start_background"
+              android:padding="24dp">
   <ImageView
       android:layout_width="match_parent"
-      android:layout_height="80dp"
-      android:src="@drawable/slamzoom"
-      android:tint="@color/colorAccent"/>
+      android:layout_height="60dp"
+      android:src="@drawable/sz_rb"/>
   <FrameLayout
       android:layout_width="match_parent"
       android:layout_height="0dp"
@@ -36,6 +36,15 @@
       android:id="@+id/createSlamzoomButton"
       android:text="@string/create_slamzoom"
       android:layout_width="match_parent"
-      android:layout_height="80dp"
-      android:gravity="center"/>
+      android:layout_height="120dp"
+      android:gravity="center"
+      android:textSize="24dp"
+      android:background="@drawable/create_button"/>
+  <!--<com.slamzoom.android.ui.start.CreateButton-->
+      <!--android:id="@+id/createSlamzoomButton"-->
+      <!--android:text="@string/create_slamzoom"-->
+      <!--android:layout_width="match_parent"-->
+      <!--android:layout_height="120dp"-->
+      <!--android:gravity="center"-->
+      <!--android:textSize="24dp"/>-->
 </LinearLayout>

@@ -140,10 +140,10 @@ public class TeasePackProvider {
               }
             })
             .withTranslateInterpolator(new TranslateInterpolatorProvider() {
-              private BaseShakeInterpolatorProvider first = new BaseShakeInterpolatorProvider(8, 8);
-              private BaseShakeInterpolatorProvider second = new BaseShakeInterpolatorProvider(6, 12);
+              private BaseShakeInterpolatorProvider first = new BaseShakeInterpolatorProvider(6, 12);
+              private BaseShakeInterpolatorProvider second = new BaseShakeInterpolatorProvider(5, 15);
               private BaseShakeInterpolatorProvider third = new BaseShakeInterpolatorProvider(4, 20);
-              private BaseShakeInterpolatorProvider fourth = new BaseShakeInterpolatorProvider(2, 32);
+              private BaseShakeInterpolatorProvider fourth = new BaseShakeInterpolatorProvider(2, 30);
               @Override
               public Interpolator getXInterpolator() {
                 return new Interpolator() {

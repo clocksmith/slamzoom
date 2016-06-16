@@ -7,6 +7,7 @@ import com.slamzoom.android.effects.interpolation.filter.group.BulgeEyesSwirlMou
 import com.slamzoom.android.effects.interpolation.filter.group.UnswirlEyesFilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.filter.single.UnswirlAtHotspotFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.UnswirlAtHotspotOnHotspotFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.UnswirlFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashBounceDiagonalInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.FlushInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CircleCenterInterpolatorProvider;
@@ -14,6 +15,7 @@ import com.slamzoom.android.effects.interpolation.transform.translate.ShakeInter
 import com.slamzoom.android.interpolators.Interpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.UnderExposeFilterInterpolator;
 import com.slamzoom.android.interpolators.LinearInterpolator;
+import com.slamzoom.android.interpolators.ReverseLinearInterpolator;
 import com.slamzoom.android.interpolators.custom.InAndOutInterpolator;
 import com.slamzoom.android.interpolators.custom.SlamSoftInterpolator;
 
@@ -79,6 +81,15 @@ public class TheLabPackProvider {
             .withScaleAndTranslateInterpolatorProvider(new CircleCenterInterpolatorProvider())
             .withDurationSeconds(3f)
             .withEndPauseSeconds(1f)
+            .build())
+        .build());
+
+    packModels.add(EffectTemplate.newBuilder()
+        .withName("swirlout")
+        .addEffectStep(EffectStep.newBuilder()
+            .withScaleInterpolator(new ReverseLinearInterpolator())
+            .withFilterInterpolator(new UnswirlFilterInterpolator())
+            .withEndPauseSeconds(0.5f)
             .build())
         .build());
 
