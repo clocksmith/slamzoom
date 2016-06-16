@@ -97,12 +97,8 @@ public class StartActivity extends AppCompatActivity {
     final GifDrawable currentGifDrawable = mGifDrawables.get(gifIndex);
     showGifImageView(gifIndex);
 
-    ObjectAnimator scaleUpX = ObjectAnimator.ofFloat(currentGifImageView, "scaleX", 1f);
-    ObjectAnimator scaleUpY = ObjectAnimator.ofFloat(currentGifImageView, "scaleY", 1f);
-    AnimatorSet scaleUpAnimatorSet = new AnimatorSet();
-    scaleUpAnimatorSet.playTogether(scaleUpX, scaleUpY);
-    scaleUpAnimatorSet.setDuration(ANIMATION_DURATION_MS);
-    scaleUpAnimatorSet.addListener(new AnimationUtils.OnAnimationEndOnlyListener() {
+    AnimatorSet scaleUp = AnimationUtils.getScaleUpSet(currentGifImageView);
+    scaleUp.addListener(new AnimationUtils.OnAnimationEndOnlyListener() {
       @Override
       public void onAnimationEnd(Animator animation) {
         if (mGifAnimationListeners.containsKey(gifIndex)) {
@@ -116,12 +112,8 @@ public class StartActivity extends AppCompatActivity {
               @Override
               public void run() {
                 currentGifDrawable.stop();
-                ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(currentGifImageView, "scaleX", 0);
-                ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(currentGifImageView, "scaleY", 0);
-                AnimatorSet scaleDownAnimatorSet = new AnimatorSet();
-                scaleDownAnimatorSet.playTogether(scaleDownX, scaleDownY);
-                scaleDownAnimatorSet.setDuration(ANIMATION_DURATION_MS);
-                scaleDownAnimatorSet.addListener(new AnimationUtils.OnAnimationEndOnlyListener() {
+                AnimatorSet scaleDown = AnimationUtils.getScaleDownSet(currentGifImageView);
+                scaleDown.addListener(new AnimationUtils.OnAnimationEndOnlyListener() {
                   @Override
                   public void onAnimationEnd(Animator animation) {
                     new Handler().post(new Runnable() {
@@ -131,22 +123,18 @@ public class StartActivity extends AppCompatActivity {
                       }
                     });
                   }});
-
-                scaleDownAnimatorSet.start();
+                scaleDown.start();
               }
             }, gifIndex == 0 ? 1000 : 0);
           }
         };
-
         mGifAnimationListeners.put(gifIndex, animationListener);
         currentGifDrawable.addAnimationListener(animationListener);
-
         currentGifDrawable.start();
       }
     });
-
     currentGifDrawable.seekToFrame(0);
-    scaleUpAnimatorSet.start();
+    scaleUp.start();
   }
 }
 

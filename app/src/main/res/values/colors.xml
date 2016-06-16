@@ -7,5 +7,6 @@
     <color name="menu_ripple_color">#888888</color>
     <color name="menu_icon_color">#cccccc</color>
 
+    <color name="white">#ffffff</color>
     <color name="black">#000000</color>
 </resources>

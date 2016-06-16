@@ -40,6 +40,8 @@ public class GifService extends Service {
     }
   }
 
+  public class GifGenerationSartEvent {}
+
   public class GifServiceBinder extends Binder {
     public GifService getService() {
       return GifService.this;
@@ -158,6 +160,7 @@ public class GifService extends Service {
           previewManager.stop();
         }
       }
+      BusProvider.getInstance().post(new GifGenerationSartEvent());
       mGifCreatorManager.start();
     }
   }

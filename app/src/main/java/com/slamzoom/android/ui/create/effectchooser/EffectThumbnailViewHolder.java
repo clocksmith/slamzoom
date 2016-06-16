@@ -1,5 +1,7 @@
 package com.slamzoom.android.ui.create.effectchooser;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +12,7 @@ import android.widget.TextView;
 
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.singletons.BusProvider;
+import com.slamzoom.android.common.utils.AnimationUtils;
 
 import java.io.IOException;
 
@@ -65,13 +68,23 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
   }
 
   public void bind(final EffectModel model) {
-//    Log.wtf(TAG, "bind: " + model.getEffectTemplate().getName());
     mModel = model;
-    final String name = model.getEffectTemplate().getName();
+    final String name = mModel.getEffectTemplate().getName();
 
-    mTabView.setBackgroundColor(mColor);
-    mProgressBar.getIndeterminateDrawable().setColorFilter(mColor, android.graphics.PorterDuff.Mode.MULTIPLY);
+    mNameTextView.setText(name);
 
+    // Either show the gif or request it.
+    if (model.getGifPreviewBytes() != null && model.getGifPreviewBytes().length > 0) {
+//      showGif();
+      try {
+        mProgressBar.setVisibility(View.GONE);
+        mGifImageView.setImageDrawable(new GifDrawable(mModel.getGifPreviewBytes()));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    } else {
+      BusProvider.getInstance().post(new RequestGifPreviewEvent(name));
+    }
 
     itemView.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -79,24 +92,6 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
         BusProvider.getInstance().post(new ItemClickEvent(name));
       }
     });
-
-    mNameTextView.setText(name);
-
-    // Either the load the gif or request it.
-    if (model.getGifPreviewBytes() != null && model.getGifPreviewBytes().length > 0) {
-      try {
-        mGifImageView.setImageDrawable(new GifDrawable(model.getGifPreviewBytes()));
-        mProgressBar.setVisibility(View.GONE);
-      } catch (IOException e) {
-        mGifImageView.setImageDrawable(null);
-        mProgressBar.setVisibility(View.VISIBLE);
-        Log.e(TAG, "Could not create GifDrawable for: " + name);
-      }
-    } else {
-      mGifImageView.setImageDrawable(null);
-      mProgressBar.setVisibility(View.VISIBLE);
-      BusProvider.getInstance().post(new RequestGifPreviewEvent(name));
-    }
   }
 
   public void unbind() {
@@ -106,6 +101,29 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
     mNameTextView.setText(null);
     mGifImageView.setImageDrawable(null);
     itemView.setOnClickListener(null);
+
+    mTabView.setBackgroundColor(mColor);
+    mProgressBar.setVisibility(View.VISIBLE);
+    mProgressBar.getIndeterminateDrawable().setColorFilter(mColor, android.graphics.PorterDuff.Mode.MULTIPLY);
+  }
+
+  private void showGif(){
+    AnimatorSet scaleDown = AnimationUtils.getScaleDownSet(mProgressBar, 1000);
+    scaleDown.addListener(new AnimationUtils.OnAnimationEndOnlyListener() {
+      @Override
+      public void onAnimationEnd(Animator animation) {
+        mProgressBar.setVisibility(View.GONE);
+        try {
+          mGifImageView.setImageDrawable(new GifDrawable(mModel.getGifPreviewBytes()));
+        } catch (IOException e) {
+          mGifImageView.setImageDrawable(null);
+          mProgressBar.setVisibility(View.VISIBLE);
+          Log.e(TAG, "Could not create GifDrawable for: " + mModel.getEffectTemplate().getName());
+        }
+        AnimationUtils.getScaleUpSet(mGifImageView, 1000).start();
+      }
+    });
+    scaleDown.start();
   }
 }
 

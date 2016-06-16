@@ -1,12 +1,15 @@
 package com.slamzoom.android.ui.create;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Environment;
@@ -23,11 +26,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.slamzoom.android.common.utils.AnimationUtils;
 import com.slamzoom.android.effects.EffectModelProvider;
 import com.slamzoom.android.common.BackInterceptingEditText;
 import com.slamzoom.android.common.utils.BitmapUtils;
@@ -62,9 +67,11 @@ public class CreateActivity extends AppCompatActivity {
   @Bind(R.id.actionBar) Toolbar mActionBar;
   @Bind(R.id.gifImageView) GifImageView mGifImageView;
   @Bind(R.id.progressBar) ProgressBar mProgressBar;
+  @Bind(R.id.zeroStateMessage) TextView mZeroStateMessage;
   @Bind(R.id.effectChooser) EffectChooser mEffectChooser;
   private AddTextView mAddTextView;
 
+  private View mGifAreaView;
   private boolean mIsAddTextViewShowing = false;
 
   private Uri mSelectedUri;
@@ -98,8 +105,12 @@ public class CreateActivity extends AppCompatActivity {
     getSupportActionBar().setCustomView(mAddTextView,
         new Toolbar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-    mSelectedEffectName = EffectModelProvider.getEffectModels().get(0).getEffectTemplate().getName();
     mProgressBar.setVisibility(View.GONE);
+    mProgressBar.setScaleX(0);
+    mProgressBar.setScaleY(0);
+    mProgressBar.getIndeterminateDrawable().setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.MULTIPLY);
+    mZeroStateMessage.setVisibility(View.VISIBLE);
+    mGifAreaView = mZeroStateMessage;
 
     Intent intent = getIntent();
     if (Intent.ACTION_SEND.equals(intent.getAction())) {
@@ -192,10 +203,10 @@ public class CreateActivity extends AppCompatActivity {
         mGifImageView.setImageBitmap(null);
 
         resetProgresses();
-        updateProgressBar();
-
+        if (mSelectedEffectName != null) {
+          updateGif();
+        }
         updateGifPreviews();
-//        updateGif();
       } else {
         if (mSelectedHotspot == null) {
           finish();
@@ -216,7 +227,7 @@ public class CreateActivity extends AppCompatActivity {
   @Subscribe
   public void on(EffectThumbnailViewHolder.ItemClickEvent event) throws IOException {
     mSelectedEffectName = event.effectName;
-    mGifImageView.setImageBitmap(null);
+    mZeroStateMessage.setVisibility(View.GONE);
     updateProgressBar();
     updateGif();
   }
@@ -225,11 +236,16 @@ public class CreateActivity extends AppCompatActivity {
   public void on(GifService.GifReadyEvent event) throws IOException {
     if (!event.preview) {
       if (mSelectedEffectName.equals(event.effectName)) {
+        mZeroStateMessage.setVisibility(View.GONE);
         mSelectedGifBytes = event.gifBytes;
-        mProgressBar.setVisibility(View.GONE);
-        mGifImageView.setImageDrawable(new GifDrawable(mSelectedGifBytes));
+        showCurrentGif();
       }
     }
+  }
+
+  @Subscribe
+  public void on(GifService.GifGenerationSartEvent event) {
+    showProgressBar();
   }
 
   @Subscribe
@@ -341,6 +357,42 @@ public class CreateActivity extends AppCompatActivity {
     invalidateOptionsMenu();
   }
 
+  private void showCurrentGif() {
+    if (mGifAreaView != mProgressBar) {
+      mProgressBar.setVisibility(View.GONE);
+    }
+    AnimatorSet scaleDown = AnimationUtils.getScaleDownSet(mGifAreaView);
+    scaleDown.addListener(new AnimationUtils.OnAnimationEndOnlyListener() {
+      @Override
+      public void onAnimationEnd(Animator animation) {
+        try {
+          mProgressBar.setVisibility(View.GONE);
+          mGifImageView.setImageDrawable(new GifDrawable(mSelectedGifBytes));
+        } catch (IOException e) {
+          Log.e(TAG, "Could not set gif", e);
+        }
+        AnimationUtils.getScaleUpSet(mGifImageView).start();
+      }
+    });
+    scaleDown.start();
+    mGifAreaView = mGifImageView;
+  }
+
+  private void showProgressBar() {
+    AnimatorSet scaleDown = AnimationUtils.getScaleDownSet(mGifAreaView);
+    scaleDown.addListener(new AnimationUtils.OnAnimationEndOnlyListener() {
+      @Override
+      public void onAnimationEnd(Animator animation) {
+        mGifImageView.setImageBitmap(null);
+        mProgressBar.setVisibility(View.VISIBLE);
+        AnimationUtils.getScaleUpSet(mProgressBar).start();
+      }
+    });
+    scaleDown.start();
+    mGifAreaView = mProgressBar;
+  }
+
+
   private File addCurrentGifToLibrary() {
     if (ContextCompat.checkSelfPermission(
         this,
@@ -395,7 +447,6 @@ public class CreateActivity extends AppCompatActivity {
       }
     }
   }
-
   private class GifServiceConnection implements ServiceConnection {
     @Override
     public void onServiceConnected(ComponentName className, IBinder iBinder) {

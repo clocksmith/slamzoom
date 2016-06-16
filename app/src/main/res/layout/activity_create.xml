@@ -37,6 +37,13 @@
         android:background="@drawable/circle_shape"
         style="?android:attr/progressBarStyleHorizontal"
         android:max="100"/>
+    <TextView
+        android:id="@+id/zeroStateMessage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="@string/zero_state_message"
+        android:textColor="@color/white"/>
   </FrameLayout>
 
   <com.slamzoom.android.ui.create.effectchooser.EffectChooser
