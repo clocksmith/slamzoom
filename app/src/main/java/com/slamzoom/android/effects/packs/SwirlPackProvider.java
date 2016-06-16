@@ -28,7 +28,7 @@ public class SwirlPackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolator(new UnswirlFilterInterpolator())
-            .withEndPauseSeconds(0.5f)
+            .withEndPauseSeconds(2)
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
@@ -44,7 +44,7 @@ public class SwirlPackProvider {
             .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolator(new UnswirlAtHotspotOnHotspotFilterInterpolator())
             .withDurationSeconds(3f)
-            .withEndPauseSeconds(0.5f)
+            .withEndPauseSeconds(2)
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
@@ -53,7 +53,7 @@ public class SwirlPackProvider {
             .withDurationSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolator(new UnswirlTurntableAtHotspotOnHotspotFilterInterpolator())
-            .withEndPauseSeconds(1)
+            .withEndPauseSeconds(2)
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
@@ -62,7 +62,7 @@ public class SwirlPackProvider {
             .withDurationSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolatorGroup(new SwirlEyesTwistyMouthFilterInterpolator())
-            .withEndPauseSeconds(1)
+            .withEndPauseSeconds(2)
             .build())
         .build());
 

@@ -86,6 +86,7 @@ public class GifService extends Service {
   public void resetWithConfigs(List<GifConfig> configs) {
     if (mGifCreatorManager != null) {
       mGifCreatorManager.cancel();
+      mGifCreatorManager = null;
     }
     for (GifCreatorManager previewManager : mGifPreviewCreatorBackQueue) {
       previewManager.cancel();

@@ -9,9 +9,9 @@ public class OutAndInInterpolator extends Interpolator {
   @Override
   protected float getRangePercent(float t) {
     if (t < 0.5) {
-      return 2 * (1 - t);
+      return 1 - 2 * t;
     } else {
-      return 2 * t;
+      return 2 * t - 1;
     }
   }
 }

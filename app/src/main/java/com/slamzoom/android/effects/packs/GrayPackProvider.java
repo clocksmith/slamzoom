@@ -27,7 +27,7 @@ public class GrayPackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolator(new UnsaturateFilterInterpolator())
-            .withEndPauseSeconds(1f)
+            .withEndPauseSeconds(2f)
             .build())
         .build());
 
@@ -44,7 +44,7 @@ public class GrayPackProvider {
                     .add(1f, 0)
                     .build())))
             .withFilterInterpolator(new UnsaturateFilterInterpolator())
-            .withEndPauseSeconds(1f)
+            .withEndPauseSeconds(2f)
             .build())
         .build());
 
@@ -64,7 +64,7 @@ public class GrayPackProvider {
                     .add(0.5f, 0)
                     .add(1f, 1f)
                     .build())))
-            .withEndPauseSeconds(1f)
+            .withEndPauseSeconds(2f)
             .build())
         .build());
 
@@ -74,7 +74,7 @@ public class GrayPackProvider {
             .withScaleInterpolator(new LinearInterpolator())
             .withTranslateInterpolator(new ShakeInterpolatorProvider())
             .withFilterInterpolator(new UnsaturateFilterInterpolator())
-            .withEndPauseSeconds(1f)
+            .withEndPauseSeconds(2f)
             .build())
         .build());
 
@@ -83,7 +83,7 @@ public class GrayPackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new OutAndInInterpolator())
             .withFilterInterpolator(new UnsaturateFilterInterpolator(new LinearInterpolator()))
-            .withEndPauseSeconds(1f)
+            .withEndPauseSeconds(2f)
             .build())
         .build());
 

@@ -8,10 +8,7 @@ import com.slamzoom.android.effects.interpolation.filter.group.BulgeEyesFilterIn
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeLeftRightSwapFilterInterpolationGroup;
 import com.slamzoom.android.effects.interpolation.filter.group.DeflateFaceFilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.filter.group.SumoBulge2FilterInterpolator;
-import com.slamzoom.android.effects.interpolation.filter.group.SumoBulgeFilterInterpolator;
-import com.slamzoom.android.effects.interpolation.filter.group.InflateFaceFilterInterpolatorGroup;
 import com.slamzoom.android.interpolators.LinearInterpolator;
-import com.slamzoom.android.interpolators.custom.HalfInAndOutInterpolator;
 
 import java.util.List;
 
@@ -26,7 +23,7 @@ public class DistortionPack2Provider {
         .withName("doublebulge")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
-            .withEndPauseSeconds(1)
+            .withEndPauseSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolatorGroup(new BulgeDoubleLeftRightFilterInterpolatorGroup())
             .build())
@@ -36,7 +33,7 @@ public class DistortionPack2Provider {
         .withName("magoo")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
-            .withEndPauseSeconds(1)
+            .withEndPauseSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolatorGroup(new BulgeEyesFilterInterpolatorGroup())
             .build())
@@ -48,7 +45,7 @@ public class DistortionPack2Provider {
             .withDurationSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolatorGroup(new DeflateFaceFilterInterpolatorGroup())
-            .withEndPauseSeconds(1)
+            .withEndPauseSeconds(2)
             .build())
         .build());
 
@@ -56,7 +53,7 @@ public class DistortionPack2Provider {
         .withName("bulgeswap")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
-            .withEndPauseSeconds(1)
+            .withEndPauseSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolatorGroup(new BulgeLeftRightSwapFilterInterpolationGroup())
             .build())
@@ -68,7 +65,7 @@ public class DistortionPack2Provider {
             .withDurationSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolatorGroup(new SumoBulge2FilterInterpolator())
-            .withEndPauseSeconds(1)
+            .withEndPauseSeconds(2)
             .build())
         .build());
 

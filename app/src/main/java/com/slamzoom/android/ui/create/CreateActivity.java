@@ -64,6 +64,8 @@ import pl.droidsonroids.gif.GifImageView;
 public class CreateActivity extends AppCompatActivity {
   private static final String TAG = CreateActivity.class.getSimpleName();
 
+  private static final String SELECTED_EFFECT_NAME = "selectedEffectName";
+
   @Bind(R.id.actionBar) Toolbar mActionBar;
   @Bind(R.id.gifImageView) GifImageView mGifImageView;
   @Bind(R.id.progressBar) ProgressBar mProgressBar;
@@ -127,6 +129,41 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (requestCode == Constants.REQUEST_PICK_IMAGE) {
+      if (resultCode == RESULT_OK) {
+        handleIncomingUri(data.getData());
+      } else {
+        if (mSelectedBitmap == null) {
+          finish();
+        }
+      }
+    } else if (requestCode == Constants.REQUEST_CROP_IMAGE) {
+      if (resultCode == RESULT_OK) {
+        mSelectedHotspot = data.getParcelableExtra(Constants.CROP_RECT);
+        float ratio = (float) mSelectedBitmap.getWidth() / mSelectedBitmapForPreview.getWidth();
+        mSelectedHotspotForPreview = new Rect(
+            (int) (mSelectedHotspot.left / ratio),
+            (int) (mSelectedHotspot.top / ratio),
+            (int) (mSelectedHotspot.right / ratio),
+            (int) (mSelectedHotspot.bottom / ratio));
+
+        mSelectedEndText = null;
+        mSelectedGifBytes = null;
+        mGifImageView.setImageBitmap(null);
+
+        updateGifPreviews();
+        resetProgresses();
+        if (mSelectedEffectName != null) {
+          updateGif();
+        }
+      } else if (mSelectedHotspot == null) {
+        finish();
+      }
+    }
+  }
+
+  @Override
   public void onDestroy() {
     super.onDestroy();
     if (mBound) {
@@ -134,6 +171,13 @@ public class CreateActivity extends AppCompatActivity {
       mBound = false;
     }
   }
+
+//  @Override
+//  protected void onSaveInstanceState(Bundle bundle) {
+//    Log.wtf(TAG, "onSaveInstanceState");
+//    super.onSaveInstanceState(bundle);
+//    bundle.putString(SELECTED_EFFECT_NAME, mSelectedEffectName);
+//  }
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
@@ -176,43 +220,6 @@ public class CreateActivity extends AppCompatActivity {
     menu.findItem(R.id.action_share).setVisible(!mIsAddTextViewShowing);
     menu.findItem(R.id.action_ok).setVisible(mIsAddTextViewShowing);
     return super.onPrepareOptionsMenu(menu);
-  }
-
-  @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    if (requestCode == Constants.REQUEST_PICK_IMAGE) {
-      if (resultCode == RESULT_OK) {
-        handleIncomingUri(data.getData());
-      } else {
-        if (mSelectedBitmap == null) {
-          finish();
-        }
-      }
-    } else if (requestCode == Constants.REQUEST_CROP_IMAGE) {
-      if (resultCode == RESULT_OK) {
-        mSelectedHotspot = data.getParcelableExtra(Constants.CROP_RECT);
-        float ratio = (float) mSelectedBitmap.getWidth() / mSelectedBitmapForPreview.getWidth();
-        mSelectedHotspotForPreview = new Rect(
-            (int) (mSelectedHotspot.left / ratio),
-            (int) (mSelectedHotspot.top / ratio),
-            (int) (mSelectedHotspot.right / ratio),
-            (int) (mSelectedHotspot.bottom / ratio));
-
-        mSelectedEndText = null;
-        mSelectedGifBytes = null;
-        mGifImageView.setImageBitmap(null);
-
-        resetProgresses();
-        if (mSelectedEffectName != null) {
-          updateGif();
-        }
-        updateGifPreviews();
-      } else {
-        if (mSelectedHotspot == null) {
-          finish();
-        }
-      }
-    }
   }
 
   @Override
@@ -267,7 +274,7 @@ public class CreateActivity extends AppCompatActivity {
 
   private void updateProgressBar() {
     mProgressBar.setVisibility(View.VISIBLE);
-    if (!Strings.isNullOrEmpty(mSelectedEffectName)) {
+    if (mSelectedEffectName != null) {
       mProgressBar.setProgress((int) Math.round(100 * mGifProgresses.get(mSelectedEffectName)));
     }
   }
@@ -284,16 +291,16 @@ public class CreateActivity extends AppCompatActivity {
   private void updateGifPreviews() {
     List<GifConfig> configs = Lists.transform(EffectModelProvider.getEffectModels(),
         new Function<EffectModel, GifConfig>() {
-      @Override
-      public GifConfig apply(EffectModel model) {
-        return GifConfig.newBuilder()
-            .withHotspot(mSelectedHotspotForPreview)
-            .withBitmap(mSelectedBitmapForPreview)
-            .withEffectModel(model)
-            .withEndText(mSelectedEndText)
-            .build();
-      }
-    });
+          @Override
+          public GifConfig apply(EffectModel model) {
+            return GifConfig.newBuilder()
+                .withHotspot(mSelectedHotspotForPreview)
+                .withBitmap(mSelectedBitmapForPreview)
+                .withEffectModel(model)
+                .withEndText(mSelectedEndText)
+                .build();
+          }
+        });
 
     mEffectChooser.setEffectModels(EffectModelProvider.getEffectModels());
     mGifService.resetWithConfigs(configs);

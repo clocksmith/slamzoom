@@ -57,7 +57,7 @@ public class TeasePackProvider {
                     return (float) Math.pow(Math.sin(3 * Math.PI * t), 10);
                   }
                 }))
-            .withEndPauseSeconds(1)
+            .withEndPauseSeconds(2)
             .build())
         .build());
 
@@ -87,7 +87,7 @@ public class TeasePackProvider {
                     return (float) Math.pow(Math.sin(3 * Math.PI * t), 10);
                   }
                 }))
-            .withEndPauseSeconds(1)
+            .withEndPauseSeconds(2)
             .build())
         .build());
 
@@ -117,7 +117,7 @@ public class TeasePackProvider {
                     return (float) Math.pow(Math.sin(3 * Math.PI * t), 10);
                   }
                 }))
-            .withEndPauseSeconds(1)
+            .withEndPauseSeconds(2)
             .build())
         .build());
 
@@ -209,7 +209,7 @@ public class TeasePackProvider {
                     return (float) Math.pow(Math.sin(3.5 * Math.PI * (t + 2f / 7)), 2);
                   }
                 }))
-            .withEndPauseSeconds(1)
+            .withEndPauseSeconds(2)
             .build())
         .build());
 

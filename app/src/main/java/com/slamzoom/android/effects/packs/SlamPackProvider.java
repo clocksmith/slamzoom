@@ -26,7 +26,7 @@ public class SlamPackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withStartPauseSeconds(1.4f)
             .withDurationSeconds(0.6f)
-            .withEndPauseSeconds(1)
+            .withEndPauseSeconds(2)
             .withScaleInterpolator(new SlamHardNoPauseInterpolator())
             .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(new LinearSplineInterpolator(
                 PointListBuilder.create()
@@ -44,7 +44,7 @@ public class SlamPackProvider {
         .addEffectStep(EffectStep.newBuilder()
 //            .withStartPauseSeconds(1.2f)
 //            .withDurationSeconds(0.8f)
-            .withEndPauseSeconds(1f)
+            .withEndPauseSeconds(2)
 //            .withScaleInterpolator(new SlamSoftOutNoPauseInterpolator())
             .withScaleInterpolator(new SlamSoftOutInterpolator())
             .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(new LinearSplineInterpolator(

@@ -25,7 +25,7 @@ public class CrashPackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withStartPauseSeconds(0.75f)
             .withDurationSeconds(0.75f)
-            .withEndPauseSeconds(0.5f)
+            .withEndPauseSeconds(2f)
             .withScaleAndTranslateInterpolatorProvider(new CrashInterpolatorProvider())
             .build())
         .build());
@@ -34,7 +34,7 @@ public class CrashPackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withStartPauseSeconds(0.5f)
             .withDurationSeconds(1f)
-            .withEndPauseSeconds(0.5f)
+            .withEndPauseSeconds(2f)
             .withScaleAndTranslateInterpolatorProvider(new CrashBounceBottomInterpolatorProvider())
             .build())
         .build());
@@ -43,7 +43,7 @@ public class CrashPackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withStartPauseSeconds(0.5f)
             .withDurationSeconds(1f)
-            .withEndPauseSeconds(0.5f)
+            .withEndPauseSeconds(2f)
             .withScaleInterpolator(new OvershootInterpolator())
             .build())
         .build());
@@ -52,7 +52,7 @@ public class CrashPackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withStartPauseSeconds(0.75f)
             .withDurationSeconds(0.75f)
-            .withEndPauseSeconds(0.5f)
+            .withEndPauseSeconds(2f)
             .withScaleAndTranslateInterpolatorProvider(new CrashTaranInterpolatorProvider())
             .withFilterInterpolator(new GaussianBlurFilterInterpolator(
                 new LinearSplineInterpolator(PointListBuilder.create()

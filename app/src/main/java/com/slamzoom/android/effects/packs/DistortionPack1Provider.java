@@ -25,7 +25,7 @@ public class DistortionPack1Provider {
         .withName("bulger")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
-            .withEndPauseSeconds(1)
+            .withEndPauseSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolator(new BulgeInAtHotspotFilterInterpolator())
             .build())
@@ -37,7 +37,7 @@ public class DistortionPack1Provider {
             .withDurationSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolator(new ShrinkInAtHotspotFilterInterpolator())
-            .withEndPauseSeconds(1)
+            .withEndPauseSeconds(2)
             .build())
         .build());
 
@@ -45,7 +45,7 @@ public class DistortionPack1Provider {
         .withName("smush")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
-            .withEndPauseSeconds(1)
+            .withEndPauseSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolatorGroup(new BulgeFaceFilterInterpolatorGroup())
             .build())
@@ -57,7 +57,7 @@ public class DistortionPack1Provider {
             .withDurationSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolatorGroup(new InflateFaceFilterInterpolatorGroup())
-            .withEndPauseSeconds(1)
+            .withEndPauseSeconds(2)
             .build())
         .build());
 
@@ -67,7 +67,7 @@ public class DistortionPack1Provider {
             .withDurationSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
             .withFilterInterpolatorGroup(new SumoBulgeFilterInterpolator())
-            .withEndPauseSeconds(1)
+            .withEndPauseSeconds(2)
             .build())
         .build());
 
