@@ -1,50 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="@drawable/start_background"
-              android:padding="24dp">
+<android.support.percent.PercentRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/start_background"
+    android:padding="0dp">
   <ImageView
-      android:layout_width="match_parent"
-      android:layout_height="60dp"
-      android:src="@drawable/sz_rb"/>
-  <FrameLayout
+      android:id="@+id/logo"
       android:layout_width="match_parent"
       android:layout_height="0dp"
-      android:layout_weight="1">
+      android:layout_weight="1"
+      android:padding="16dp"
+      android:background="@color/colorPrimary"
+      android:scaleType="fitCenter"
+      android:src="@drawable/sz_rb"/>
+
+  <android.support.percent.PercentRelativeLayout
+      android:id="@+id/gifs"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      app:layout_widthPercent="100%"
+      app:layout_aspectRatio="100%"
+      android:layout_below="@+id/logo">
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/gifImageView1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        app:layout_widthPercent="100%"
+        app:layout_aspectRatio="100%"
         android:scaleType="fitCenter"
         android:visibility="gone"/>
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/gifImageView2"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        app:layout_widthPercent="100%"
+        app:layout_aspectRatio="100%"
         android:scaleType="fitCenter"
         android:visibility="gone"/>
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/gifImageView3"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        app:layout_widthPercent="100%"
+        app:layout_aspectRatio="100%"
         android:scaleType="fitCenter"
         android:visibility="gone"/>
-  </FrameLayout>
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/gifImageView4"
+        app:layout_widthPercent="100%"
+        app:layout_aspectRatio="100%"
+        android:scaleType="fitCenter"
+        android:visibility="gone"/>
+  </android.support.percent.PercentRelativeLayout>
+
   <Button
+      android:layout_below="@+id/gifs"
       android:id="@+id/createSlamzoomButton"
       android:text="@string/create_slamzoom"
       android:layout_width="match_parent"
-      android:layout_height="120dp"
+      android:layout_height="match_parent"
       android:gravity="center"
-      android:textSize="24dp"
-      android:background="@drawable/create_button"/>
+      android:textSize="36dp"
+      android:typeface="monospace"
+      android:fontFamily="serif-monospace"
+      android:background="@color/colorPrimary"/>
+
   <!--<com.slamzoom.android.ui.start.CreateButton-->
-      <!--android:id="@+id/createSlamzoomButton"-->
-      <!--android:text="@string/create_slamzoom"-->
-      <!--android:layout_width="match_parent"-->
-      <!--android:layout_height="120dp"-->
-      <!--android:gravity="center"-->
-      <!--android:textSize="24dp"/>-->
-</LinearLayout>
+  <!--android:id="@+id/createSlamzoomButton"-->
+  <!--android:text="@string/create_slamzoom"-->
+  <!--android:layout_width="match_parent"-->
+  <!--android:layout_height="120dp"-->
+  <!--android:gravity="center"-->
+  <!--android:textSize="24dp"/>-->
+</android.support.percent.PercentRelativeLayout>

@@ -151,9 +151,9 @@ public class CreateActivity extends AppCompatActivity {
         mSelectedEndText = null;
         mSelectedGifBytes = null;
         mGifImageView.setImageBitmap(null);
+        resetProgresses();
 
         updateGifPreviews();
-        resetProgresses();
         if (mSelectedEffectName != null) {
           updateGif();
         }

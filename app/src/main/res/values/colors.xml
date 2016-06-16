@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#303030</color>
-    <color name="colorPrimaryDark">#282828</color>
-    <color name="colorAccent">#f4bd4a</color>
+    <color name="colorPrimary">#202020</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#ffffff</color>
 
-    <color name="menu_ripple_color">#888888</color>
+    <color name="menu_ripple_color">#aaaaaa</color>
     <color name="menu_icon_color">#cccccc</color>
 
     <color name="white">#ffffff</color>

@@ -33,13 +33,14 @@ import pl.droidsonroids.gif.GifImageView;
 public class StartActivity extends AppCompatActivity {
   private static final String TAG = StartActivity.class.getSimpleName();
 
-  private static final int NUM_GIFS_IN_SHOW = 3;
+  private static final int NUM_GIFS_IN_SHOW = 4;
   private static final int ANIMATION_DURATION_MS = 350;
 
   @Bind(R.id.createSlamzoomButton) Button mCreateSlamzoomButton;
   @Bind(R.id.gifImageView1) GifImageView mGifImageView1;
   @Bind(R.id.gifImageView2) GifImageView mGifImageView2;
   @Bind(R.id.gifImageView3) GifImageView mGifImageView3;
+  @Bind(R.id.gifImageView4) GifImageView mGifImageView4;
 
   private List<GifImageView> mGifImageViews;
   private List<GifDrawable> mGifDrawables;
