@@ -2,11 +2,10 @@ package com.slamzoom.android.effects.packs;
 
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectStep;
-import com.slamzoom.android.effects.EffectTemplate;
+import com.slamzoom.android.effects.templates.EffectTemplate;
 import com.slamzoom.android.effects.interpolation.filter.single.GaussianBlurFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.GaussianUnblurFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.translate.ShakeInterpolatorProvider;
-import com.slamzoom.android.interpolators.Interpolator;
 import com.slamzoom.android.interpolators.LinearInterpolator;
 import com.slamzoom.android.interpolators.custom.SlamHardInterpolator;
 import com.slamzoom.android.interpolators.spline.CubicSplineInterpolator;
@@ -62,7 +61,7 @@ public class BlurPackProvider {
         .build());
 
     packModels.add(EffectTemplate.newBuilder()
-        .withName("blurtease")
+        .withName("blursmith")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new LinearSplineInterpolator(PointListBuilder.create()
                 .add(0, 0)
@@ -78,36 +77,6 @@ public class BlurPackProvider {
                     .add(1, 0)
                     .build())))
             .withEndPauseSeconds(1f)
-            .build())
-        .build());
-
-    packModels.add(EffectTemplate.newBuilder()
-        .withName("blurtease2")
-        .addEffectStep(EffectStep.newBuilder()
-            .withStartPauseSeconds(1)
-            .withDurationSeconds(4f)
-            .withScaleInterpolator(new Interpolator() {
-              @Override
-              protected float getRangePercent(float t) {
-                if (t < 0.1667) {
-                  return 0;
-                } else if (t < 0.5) {
-                  return 0.15f;
-                } else if (t < 0.8333) {
-                  return 0.50f;
-                } else {
-                  return 1;
-                }
-              }
-            })
-            .withFilterInterpolator(new GaussianBlurFilterInterpolator(
-                new Interpolator() {
-                  @Override
-                  protected float getRangePercent(float t) {
-                    return (float) Math.pow(Math.sin(3 * Math.PI * t), 6);
-                  }
-                }))
-            .withEndPauseSeconds(1)
             .build())
         .build());
 

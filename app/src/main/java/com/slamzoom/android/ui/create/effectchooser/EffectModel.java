@@ -1,7 +1,7 @@
 package com.slamzoom.android.ui.create.effectchooser;
 
 import com.google.common.base.Objects;
-import com.slamzoom.android.effects.EffectTemplate;
+import com.slamzoom.android.effects.templates.EffectTemplate;
 
 /**
  * Created by clocksmith on 3/25/16.

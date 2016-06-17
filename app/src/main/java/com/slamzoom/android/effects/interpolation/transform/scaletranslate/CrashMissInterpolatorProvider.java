@@ -8,7 +8,7 @@ import com.slamzoom.android.effects.interpolation.transform.ScaleAndTranslateInt
 /**
  * Created by clocksmith on 3/12/16.
  */
-public class CrashInterpolatorProvider implements ScaleAndTranslateInterpolatorProvider {
+public class CrashMissInterpolatorProvider implements ScaleAndTranslateInterpolatorProvider {
   @Override
   public Interpolator getScaleInterpolator() {
     return new LinearSplineInterpolator(PointListBuilder.create()

@@ -2,7 +2,7 @@ package com.slamzoom.android.effects.packs;
 
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectStep;
-import com.slamzoom.android.effects.EffectTemplate;
+import com.slamzoom.android.effects.templates.EffectTemplate;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeDoubleLeftRightFilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeEyesFilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeLeftRightSwapFilterInterpolationGroup;

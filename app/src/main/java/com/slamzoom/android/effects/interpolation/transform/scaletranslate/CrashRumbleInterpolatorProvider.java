@@ -4,7 +4,6 @@ import com.slamzoom.android.effects.interpolation.transform.ScaleAndTranslateInt
 import com.slamzoom.android.effects.interpolation.transform.TranslateInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.translate.BaseShakeInterpolatorProvider;
 import com.slamzoom.android.interpolators.Interpolator;
-import com.slamzoom.android.interpolators.custom.SlamHardNoPauseInterpolator;
 
 /**
  * Created by clocksmith on 6/6/16.
@@ -26,7 +25,7 @@ public class CrashRumbleInterpolatorProvider implements ScaleAndTranslateInterpo
     };
   }
 
-  private CrashInterpolatorProvider mCrashIP = new CrashInterpolatorProvider();
+  private CrashMissInterpolatorProvider mCrashIP = new CrashMissInterpolatorProvider();
   private TranslateInterpolatorProvider mShakeIP = new BaseShakeInterpolatorProvider(3, 3);
 
   @Override

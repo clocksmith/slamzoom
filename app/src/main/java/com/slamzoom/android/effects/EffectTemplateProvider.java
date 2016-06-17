@@ -1,7 +1,6 @@
 package com.slamzoom.android.effects;
 
 import com.google.common.collect.Lists;
-import com.slamzoom.android.effects.packs.DebugPackProvider;
 import com.slamzoom.android.effects.packs.DistortionPack1Provider;
 import com.slamzoom.android.effects.packs.CrashPackProvider;
 import com.slamzoom.android.effects.packs.GrayPackProvider;
@@ -10,7 +9,7 @@ import com.slamzoom.android.effects.packs.DistortionPack2Provider;
 import com.slamzoom.android.effects.packs.SlamPackProvider;
 import com.slamzoom.android.effects.packs.SwirlPackProvider;
 import com.slamzoom.android.effects.packs.TeasePackProvider;
-import com.slamzoom.android.mediacreation.gif.GifCreator;
+import com.slamzoom.android.effects.templates.EffectTemplate;
 
 import java.util.List;
 

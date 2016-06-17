@@ -34,6 +34,27 @@ public class CubicSplineInterpolator extends Interpolator {
     mPolynomialSplineFunction = new SplineInterpolator().interpolate(xArray, yArray);
   }
 
+  public static Builder newBuilder() {
+    return new Builder();
+  }
+
+  public static class Builder {
+    private List<PointF> mPoints;
+
+    public Builder() {
+      mPoints = Lists.newArrayList();
+    }
+
+    public Builder withPoint(float x, float y) {
+      mPoints.add(new PointF(x, y));
+      return this;
+    }
+
+    public CubicSplineInterpolator build() {
+      return new CubicSplineInterpolator(mPoints);
+    }
+  }
+
   @Override
   protected float getRangePercent(float t) {
     return (float) mPolynomialSplineFunction.value(t);

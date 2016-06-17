@@ -1,7 +1,7 @@
 package com.slamzoom.android.effects.packs;
 
 import com.google.common.collect.Lists;
-import com.slamzoom.android.effects.EffectTemplate;
+import com.slamzoom.android.effects.templates.EffectTemplate;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.ShakeSwitchInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.translate.MegaShakeInterpolatorProvider;

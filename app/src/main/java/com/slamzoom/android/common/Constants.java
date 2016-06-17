@@ -8,7 +8,7 @@ import android.graphics.PointF;
 public class Constants {
   // Flags
   public static final boolean USE_IMAGE_WATERMARK = false;
-  public static final boolean USE_TEXT_WATERMARK = false;
+  public static final boolean USE_TEXT_WATERMARK = true;
   public static final boolean USE_WATERMARK = USE_IMAGE_WATERMARK || USE_TEXT_WATERMARK;
 
   public static final String WATERMARK_TEXT = "slamzoom.com";

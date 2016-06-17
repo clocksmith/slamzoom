@@ -2,25 +2,14 @@ package com.slamzoom.android.effects.packs;
 
 import com.google.common.collect.Lists;
 import com.slamzoom.android.effects.EffectStep;
-import com.slamzoom.android.effects.EffectTemplate;
-import com.slamzoom.android.effects.interpolation.filter.group.BulgeEyesSwirlMouthFilterInterpoaltor;
-import com.slamzoom.android.effects.interpolation.filter.group.UnswirlEyesFilterInterpolatorGroup;
+import com.slamzoom.android.effects.templates.EffectTemplate;
 import com.slamzoom.android.effects.interpolation.filter.single.GaussianBlurFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.OverExposeFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.UnderExposeFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.UnsaturateFilterInterpolator;
-import com.slamzoom.android.effects.interpolation.filter.single.UnswirlAtHotspotFilterInterpolator;
-import com.slamzoom.android.effects.interpolation.filter.single.UnswirlAtHotspotOnHotspotFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.TranslateInterpolatorProvider;
-import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CircleCenterInterpolatorProvider;
-import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashBounceDiagonalInterpolatorProvider;
-import com.slamzoom.android.effects.interpolation.transform.scaletranslate.FlushInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.translate.BaseShakeInterpolatorProvider;
-import com.slamzoom.android.effects.interpolation.transform.translate.ShakeInterpolatorProvider;
 import com.slamzoom.android.interpolators.Interpolator;
-import com.slamzoom.android.interpolators.LinearInterpolator;
-import com.slamzoom.android.interpolators.custom.InAndOutInterpolator;
-import com.slamzoom.android.interpolators.custom.SlamSoftInterpolator;
 
 import java.util.List;
 

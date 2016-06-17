@@ -59,7 +59,7 @@ public class StartActivity extends AppCompatActivity {
       }
     });
 
-    mGifImageViews = Lists.newArrayList(mGifImageView1, mGifImageView2, mGifImageView3);
+    mGifImageViews = Lists.newArrayList(mGifImageView1, mGifImageView2, mGifImageView3, mGifImageView4);
     mGifDrawables = Lists.newArrayList();
     for (int gifNum = 1; gifNum <= NUM_GIFS_IN_SHOW; gifNum++) {
       try {

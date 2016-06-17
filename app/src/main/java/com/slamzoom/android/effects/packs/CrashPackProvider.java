@@ -1,7 +1,7 @@
 package com.slamzoom.android.effects.packs;
 
 import com.google.common.collect.Lists;
-import com.slamzoom.android.effects.EffectTemplate;
+import com.slamzoom.android.effects.templates.EffectTemplate;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.effects.interpolation.filter.single.GaussianBlurFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashRumbleInterpolatorProvider;
@@ -10,7 +10,7 @@ import com.slamzoom.android.interpolators.custom.OvershootInterpolator;
 import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
 import com.slamzoom.android.interpolators.spline.PointListBuilder;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashBounceBottomInterpolatorProvider;
-import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashMissInterpolatorProvider;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ public class CrashPackProvider {
             .withStartPauseSeconds(0.75f)
             .withDurationSeconds(0.75f)
             .withEndPauseSeconds(2f)
-            .withScaleAndTranslateInterpolatorProvider(new CrashInterpolatorProvider())
+            .withScaleAndTranslateInterpolatorProvider(new CrashMissInterpolatorProvider())
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()

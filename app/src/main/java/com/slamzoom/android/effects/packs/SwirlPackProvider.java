@@ -1,17 +1,13 @@
 package com.slamzoom.android.effects.packs;
 
 import com.google.common.collect.Lists;
-import com.slamzoom.android.effects.EffectTemplate;
+import com.slamzoom.android.effects.templates.EffectTemplate;
 import com.slamzoom.android.effects.EffectStep;
-import com.slamzoom.android.effects.interpolation.filter.group.BulgeEyesSwirlMouthFilterInterpoaltor;
 import com.slamzoom.android.effects.interpolation.filter.group.SwirlEyesTwistyMouthFilterInterpolator;
-import com.slamzoom.android.effects.interpolation.filter.group.UnswirlEyesFilterInterpolatorGroup;
-import com.slamzoom.android.effects.interpolation.filter.single.UnswirlAtHotspotFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.UnswirlAtHotspotOnHotspotFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.UnswirlFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.UnswirlTurntableAtHotspotOnHotspotFilterInterpolator;
 import com.slamzoom.android.interpolators.LinearInterpolator;
-import com.slamzoom.android.interpolators.ReverseLinearInterpolator;
 import com.slamzoom.android.interpolators.custom.InAndOutInterpolator;
 
 import java.util.List;

@@ -3,6 +3,7 @@ package com.slamzoom.android.interpolators.spline;
 import android.graphics.PointF;
 
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Doubles;
 import com.slamzoom.android.interpolators.Interpolator;
@@ -32,6 +33,27 @@ public class LinearSplineInterpolator extends Interpolator {
       }
     }));
     mPolynomialSplineFunction = new LinearInterpolator().interpolate(xArray, yArray);
+  }
+
+  public static Builder newBuilder() {
+    return new Builder();
+  }
+
+  public static class Builder {
+    private List<PointF> mPoints;
+
+    public Builder() {
+      mPoints = Lists.newArrayList();
+    }
+
+    public Builder withPoint(float x, float y) {
+      mPoints.add(new PointF(x, y));
+      return this;
+    }
+
+    public LinearSplineInterpolator build() {
+      return new LinearSplineInterpolator(mPoints);
+    }
   }
 
   @Override
