@@ -1,8 +1,7 @@
-package com.slamzoom.android.effects.templates;
+package com.slamzoom.android.effects;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
-import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.group.FilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.transform.ScaleAndTranslateInterpolatorProvider;
@@ -37,6 +36,10 @@ public class EffectTemplate {
 
   public String getPackName() {
     return mPackName;
+  }
+
+  public void setPackName(String packName) {
+    mPackName = packName;
   }
 
   public String getName() {

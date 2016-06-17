@@ -13,9 +13,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.FLog;
-import com.slamzoom.android.effects.EffectTemplateProvider;
-import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.singletons.BusProvider;
+import com.slamzoom.android.effects.Effects;
 import com.slamzoom.android.ui.create.effectchooser.EffectThumbnailViewHolder;
 import com.squareup.otto.Subscribe;
 
@@ -63,7 +62,7 @@ public class GifService extends Service {
         .maximumSize(DebugUtils.DEBUG_USE_CACHE ? MAIN_CACHE_SIZE : 0)
         .build();
     mGifPreviewCache = CacheBuilder.newBuilder()
-        .maximumSize(DebugUtils.DEBUG_USE_CACHE ? EffectTemplateProvider.getTemplates().size() : 0)
+        .maximumSize(DebugUtils.DEBUG_USE_CACHE ? Effects.listEffects().size() : 0)
         .build();
 
     mGifPreviewCreatorBackQueue = Lists.newArrayList();

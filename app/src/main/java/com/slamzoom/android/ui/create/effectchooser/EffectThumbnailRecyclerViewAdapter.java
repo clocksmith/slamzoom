@@ -33,7 +33,7 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
 //    Log.wtf(TAG, "binding position: " + position);
     holder.unbindCurrentAndBindNew(
         mModels.get(position),
-        EffectColors.colors.get(position % EffectColors.colors.size()));
+        EffectColors.list().get(position % EffectColors.list().size()));
   }
 
   @Override

@@ -1,0 +1,640 @@
+package com.slamzoom.android.effects;
+
+import android.util.Log;
+
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.slamzoom.android.effects.interpolation.filter.group.BulgeDoubleLeftRightFilterInterpolatorGroup;
+import com.slamzoom.android.effects.interpolation.filter.group.BulgeEyesFilterInterpolatorGroup;
+import com.slamzoom.android.effects.interpolation.filter.group.BulgeEyesSwirlMouthFilterInterpoaltor;
+import com.slamzoom.android.effects.interpolation.filter.group.BulgeFaceFilterInterpolatorGroup;
+import com.slamzoom.android.effects.interpolation.filter.group.BulgeLeftRightSwapFilterInterpolationGroup;
+import com.slamzoom.android.effects.interpolation.filter.group.DeflateFaceFilterInterpolatorGroup;
+import com.slamzoom.android.effects.interpolation.filter.group.InflateFaceFilterInterpolatorGroup;
+import com.slamzoom.android.effects.interpolation.filter.group.SumoBulge2FilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.group.SumoBulgeFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.group.SwirlEyesTwistyMouthFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.group.UnswirlEyesFilterInterpolatorGroup;
+import com.slamzoom.android.effects.interpolation.filter.single.BulgeInAtHotspotFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.GaussianBlurFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.GaussianUnblurFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.GuassianSuperBlurFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.OverExposeFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.ShrinkInAtHotspotFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.UnderExposeFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.UnsaturateFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.UnswirlAtHotspotFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.UnswirlAtHotspotOnHotspotFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.UnswirlFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.UnswirlTurntableAtHotspotOnHotspotFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.single.ZoomBlurAtHotspotFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.transform.TranslateInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CircleCenterInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashBounceBottomInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashBounceDiagonalInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashMissInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashRumbleInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashTaranInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.scaletranslate.FlushInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.scaletranslate.ShakeSwitchInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.translate.BaseShakeInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.translate.MegaShakeInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.translate.ShakeInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.translate.SuperShakeInterpolatorProvider;
+import com.slamzoom.android.interpolators.Interpolator;
+import com.slamzoom.android.interpolators.LinearInterpolator;
+import com.slamzoom.android.interpolators.ReverseLinearInterpolator;
+import com.slamzoom.android.interpolators.custom.HalfInAndOutInterpolator;
+import com.slamzoom.android.interpolators.custom.InAndOutInterpolator;
+import com.slamzoom.android.interpolators.custom.OutAndInInterpolator;
+import com.slamzoom.android.interpolators.custom.OvershootInterpolator;
+import com.slamzoom.android.interpolators.custom.SlamHardInterpolator;
+import com.slamzoom.android.interpolators.custom.SlamHardNoPauseInterpolator;
+import com.slamzoom.android.interpolators.custom.SlamSoftInterpolator;
+import com.slamzoom.android.interpolators.custom.SlamSoftOutInterpolator;
+import com.slamzoom.android.interpolators.spline.CubicSplineInterpolator;
+import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by clocksmith on 6/16/16.
+ *
+ * All effects. Keep alphabetized.
+ */
+public class Effects {
+  private static final String TAG = Effects.class.getSimpleName();
+
+  private static ImmutableList<EffectTemplate> EFFECT_TEMPLATES_LIST = ImmutableList.<EffectTemplate>builder()
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("blacktease")
+          .withStartDurationEndSeconds(1, 4, 2)
+          .withScaleInterpolator(new Interpolator() {
+            @Override
+            protected float getRangePercent(float t) {
+              if (t < 0.1667) {
+                return 0;
+              } else if (t < 0.5) {
+                return 0.2f;
+              } else if (t < 0.8333) {
+                return 0.45f;
+              } else {
+                return 1;
+              }
+            }
+          })
+          .withFilterInterpolator(new UnderExposeFilterInterpolator(
+              new Interpolator() {
+                @Override
+                protected float getRangePercent(float t) {
+                  return (float) Math.pow(Math.sin(3 * Math.PI * t), 10);
+                }
+              }))
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("blurcrash")
+          .withStartDurationEndSeconds(0.5f, 0.8f, 1)
+          .withScaleInterpolator(new SlamHardInterpolator())
+          .withFilterInterpolator(new GaussianUnblurFilterInterpolator())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("blurmagic")
+          .withStartDurationEndSeconds(0, 2, 1)
+          .withScaleInterpolator(LinearSplineInterpolator.newBuilder()
+              .withPoint(0, 0)
+              .withPoint(0.4999f, 0)
+              .withPoint(0.5f, 1)
+              .withPoint(1, 1)
+              .build())
+          .withFilterInterpolator(new GuassianSuperBlurFilterInterpolator(LinearSplineInterpolator.newBuilder()
+              .withPoint(0, 0)
+              .withPoint(0.5f, 1)
+              .withPoint(1, 0)
+              .build()))
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("blurslam")
+          .withStartDurationEndSeconds(0, 2, 1)
+          .withScaleInterpolator(new SlamHardInterpolator())
+          .withFilterInterpolator(new GaussianUnblurFilterInterpolator())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("blurshake")
+          .withStartDurationEndSeconds(0, 2, 1)
+          .withScaleInterpolator(new LinearInterpolator())
+          .withTranslateInterpolator(new ShakeInterpolatorProvider())
+          .withFilterInterpolator(new GaussianUnblurFilterInterpolator())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("blursmith")
+          .withStartDurationEndSeconds(0, 2, 1)
+          .withScaleInterpolator(LinearSplineInterpolator.newBuilder()
+              .withPoint(0, 0)
+              .withPoint(0.4f, 0)
+              .withPoint(0.6f, 1)
+              .withPoint(1, 1)
+              .build())
+          .withFilterInterpolator(new GaussianBlurFilterInterpolator(LinearSplineInterpolator.newBuilder()
+              .withPoint(0, 0)
+              .withPoint(0.4f, 0)
+              .withPoint(0.6f, 1)
+              .withPoint(1, 1)
+              .build()))
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("blurtease")
+          .withStartDurationEndSeconds(1, 4, 2)
+          .withScaleInterpolator(new Interpolator() {
+            @Override
+            protected float getRangePercent(float t) {
+              if (t < 0.1667) {
+                return 0;
+              } else if (t < 0.5) {
+                return 0.2f;
+              } else if (t < 0.8333) {
+                return 0.45f;
+              } else {
+                return 1;
+              }
+            }
+          })
+          .withFilterInterpolator(new GaussianBlurFilterInterpolator(
+              new Interpolator() {
+                @Override
+                protected float getRangePercent(float t) {
+                  return (float) Math.pow(Math.sin(3 * Math.PI * t), 10);
+                }
+              }))
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("bulger")
+          .withStartDurationEndSeconds(0, 2, 2)
+          .withScaleInterpolator(new LinearInterpolator())
+          .withFilterInterpolator(new BulgeInAtHotspotFilterInterpolator())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("bulgeswap")
+          .withStartDurationEndSeconds(0, 2, 2)
+          .withScaleInterpolator(new LinearInterpolator())
+          .withFilterInterpolatorGroup(new BulgeLeftRightSwapFilterInterpolationGroup())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("crashblur")
+          .withStartDurationEndSeconds(0.75f, 0.75f, 2)
+          .withScaleAndTranslateInterpolatorProvider(new CrashTaranInterpolatorProvider())
+          .withFilterInterpolator(new GaussianBlurFilterInterpolator(LinearSplineInterpolator.newBuilder()
+              .withPoint(0, 0)
+              .withPoint(0.3f, 1)
+              .withPoint(0.6f, 1)
+              .withPoint(0.9f, 0)
+              .withPoint(1, 0)
+              .build()))
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("crashdiag")
+          .withStartDurationEndSeconds(0.5f, 1, 2)
+          .withScaleAndTranslateInterpolatorProvider(new CrashBounceDiagonalInterpolatorProvider())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("crashin")
+          .withStartDurationEndSeconds(0.5f, 1, 2)
+          .withScaleAndTranslateInterpolatorProvider(new CrashBounceBottomInterpolatorProvider())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("crashmiss")
+          .withStartDurationEndSeconds(0.75f, 0.75f, 2)
+          .withScaleAndTranslateInterpolatorProvider(new CrashMissInterpolatorProvider())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("crashrumble")
+          .withStartDurationEndSeconds(0.5f, 1.5f, 0)
+          .withScaleAndTranslateInterpolatorProvider(new CrashRumbleInterpolatorProvider())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("deflate")
+          .withStartDurationEndSeconds(0, 2, 2)
+          .withScaleInterpolator(new LinearInterpolator())
+          .withFilterInterpolatorGroup(new DeflateFaceFilterInterpolatorGroup())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("djswirls")
+          .withStartDurationEndSeconds(0, 2, 2)
+          .withScaleInterpolator(new LinearInterpolator())
+          .withFilterInterpolator(new UnswirlTurntableAtHotspotOnHotspotFilterInterpolator())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("doublebulge")
+          .withStartDurationEndSeconds(0, 2, 2)
+          .withScaleInterpolator(new LinearInterpolator())
+          .withFilterInterpolatorGroup(new BulgeDoubleLeftRightFilterInterpolatorGroup())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("earthquake")
+          .withStartDurationEndSeconds(0, 2, 0)
+          .withScaleInterpolator(new HalfInAndOutInterpolator())
+          .withTranslateInterpolator(new SuperShakeInterpolatorProvider())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("flush")
+          .withStartDurationEndSeconds(0, 3, 1)
+          .withScaleAndTranslateInterpolatorProvider(new FlushInterpolatorProvider())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("grayfreeze")
+          .withStartDurationEndSeconds(0.5f, 2, 2)
+          .withScaleInterpolator(CubicSplineInterpolator.newBuilder()
+              .withPoint(0, 0)
+              .withPoint(0.15f, 1f)
+              .withPoint(1f, 1f)
+              .build())
+          .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(LinearSplineInterpolator.newBuilder()
+              .withPoint(0, 0)
+              .withPoint(0.7f, 0)
+              .withPoint(0.9f, 1f)
+              .withPoint(0.9999f, 1f)
+              .withPoint(1f, 0)
+              .build()))
+          .withFilterInterpolator(new UnsaturateFilterInterpolator())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("grayrumble")
+          .withStartDurationEndSeconds(0, 2, 2)
+          .withScaleInterpolator(new LinearInterpolator())
+          .withTranslateInterpolator(new ShakeInterpolatorProvider())
+          .withFilterInterpolator(new UnsaturateFilterInterpolator())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("grayslam")
+          .withStartDurationEndSeconds(0, 2, 2)
+          .withScaleInterpolator(new SlamHardInterpolator())
+          .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(LinearSplineInterpolator.newBuilder()
+              .withPoint(0, 0)
+              .withPoint(0.7f, 0)
+              .withPoint(0.9f, 1f)
+              .withPoint(0.9999f, 1f)
+              .withPoint(1f, 0)
+              .build()))
+          .withFilterInterpolator(new UnsaturateFilterInterpolator())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("graytake")
+          .withStartDurationEndSeconds(0, 2, 2)
+          .withScaleInterpolator(new OutAndInInterpolator())
+          .withFilterInterpolator(new UnsaturateFilterInterpolator(new LinearInterpolator()))
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("inflate")
+          .withStartDurationEndSeconds(0, 2, 2)
+          .withScaleInterpolator(new LinearInterpolator())
+          .withFilterInterpolatorGroup(new InflateFaceFilterInterpolatorGroup())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("magoo")
+          .withStartDurationEndSeconds(0, 2, 2)
+          .withScaleInterpolator(new LinearInterpolator())
+          .withFilterInterpolatorGroup(new BulgeEyesFilterInterpolatorGroup())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("mctwisty")
+          .withStartDurationEndSeconds(0, 2, 2)
+          .withScaleInterpolator(new LinearInterpolator())
+          .withFilterInterpolatorGroup(new SwirlEyesTwistyMouthFilterInterpolator())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("overcrash")
+          .withStartDurationEndSeconds(0.5f, 1, 2)
+          .withScaleInterpolator(new OvershootInterpolator())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("rumble")
+          .withStartDurationEndSeconds(0, 2, 0)
+          .withScaleInterpolator(new HalfInAndOutInterpolator())
+          .withTranslateInterpolator(new ShakeInterpolatorProvider())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("rumbleslam")
+          .withStartDurationEndSeconds(0, 2, 1)
+          .withScaleInterpolator(new SlamHardInterpolator())
+          .withTranslateInterpolator(new ShakeInterpolatorProvider())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("rumbletease")
+          .withStartDurationEndSeconds(0, 6, 0)
+          .withScaleInterpolator(new Interpolator() {
+            @Override
+            protected float getRangePercent(float t) {
+              if (t < 0.25) {
+                return 0;
+              } else if (t < 0.5) {
+                return 0.2f;
+              } else if (t < 0.75) {
+                return 0.45f;
+              } else {
+                return 1;
+              }
+            }
+          })
+          .withTranslateInterpolator(new TranslateInterpolatorProvider() {
+            private BaseShakeInterpolatorProvider first = new BaseShakeInterpolatorProvider(6, 12);
+            private BaseShakeInterpolatorProvider second = new BaseShakeInterpolatorProvider(5, 15);
+            private BaseShakeInterpolatorProvider third = new BaseShakeInterpolatorProvider(4, 20);
+            private BaseShakeInterpolatorProvider fourth = new BaseShakeInterpolatorProvider(2, 30);
+            @Override
+            public Interpolator getXInterpolator() {
+              return new Interpolator() {
+                @Override
+                protected float getRangePercent(float t) {
+                  if (t < 0.25) {
+                    return first.getXInterpolator().getInterpolation(t);
+                  } else if (t < 0.5) {
+                    return second.getXInterpolator().getInterpolation(t);
+                  } else if (t < 0.75) {
+                    return third.getXInterpolator().getInterpolation(t);
+                  } else {
+                    return fourth.getXInterpolator().getInterpolation(t);
+                  }
+                }
+              };
+            }
+
+            @Override
+            public Interpolator getYInterpolator() {
+              return new Interpolator() {
+                @Override
+                protected float getRangePercent(float t) {
+                  if (t < 0.25) {
+                    return first.getYInterpolator().getInterpolation(t);
+                  } else if (t < 0.5) {
+                    return second.getYInterpolator().getInterpolation(t);
+                  } else if (t < 0.75) {
+                    return third.getYInterpolator().getInterpolation(t);
+                  } else {
+                    return fourth.getYInterpolator().getInterpolation(t);
+                  }
+                }
+              };
+            }
+          })
+          .withTranslateInterpolator(new ShakeInterpolatorProvider())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("rumblestiltskin")
+          .withStartDurationEndSeconds(0, 3, 0)
+          .withScaleAndTranslateInterpolatorProvider(new ShakeSwitchInterpolatorProvider())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("shakezilla")
+          .withStartDurationEndSeconds(0, 2, 0)
+          .withScaleInterpolator(new HalfInAndOutInterpolator())
+          .withTranslateInterpolator(new MegaShakeInterpolatorProvider())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("shrinkydink")
+          .withStartDurationEndSeconds(0, 2, 2)
+          .withScaleInterpolator(new LinearInterpolator())
+          .withFilterInterpolator(new ShrinkInAtHotspotFilterInterpolator())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("slamin")
+          .withStartDurationEndSeconds(1.4f, 0.6f, 2)
+          .withScaleInterpolator(new SlamHardNoPauseInterpolator())
+          .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(LinearSplineInterpolator.newBuilder()
+              .withPoint(0, 0)
+              .withPoint(0.9f, 1)
+              .withPoint(0.9999f, 1)
+              .withPoint(1, 0)
+              .build()))
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("slamio")
+          .withStartDurationEndSeconds(0, 2, 2)
+          .withScaleInterpolator(new SlamSoftOutInterpolator())
+          .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(LinearSplineInterpolator.newBuilder()
+              .withPoint(0, 0)
+              .withPoint(0.8f, 1)
+              .withPoint(1, 0)
+              .build()))
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("slamout")
+          .withStartDurationEndSeconds(0, 2, 2)
+          .withScaleInterpolator(new SlamSoftOutInterpolator())
+          .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(LinearSplineInterpolator.newBuilder()
+              .withPoint(0, 0)
+              .withPoint(0.8f, 1)
+              .withPoint(1, 0)
+              .build()))
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("smush")
+          .withStartDurationEndSeconds(0, 2, 2)
+          .withScaleInterpolator(new LinearInterpolator())
+          .withFilterInterpolatorGroup(new BulgeFaceFilterInterpolatorGroup())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("spiral")
+          .withStartDurationEndSeconds(0, 3, 1)
+          .withScaleAndTranslateInterpolatorProvider(new CircleCenterInterpolatorProvider())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("sumo")
+          .withStartDurationEndSeconds(0, 2, 2)
+          .withScaleInterpolator(new LinearInterpolator())
+          .withFilterInterpolatorGroup(new SumoBulgeFilterInterpolator())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("swirleyes")
+          .withStartDurationEndSeconds(0, 2, 2)
+          .withScaleInterpolator(new LinearInterpolator())
+          .withFilterInterpolatorGroup(new UnswirlEyesFilterInterpolatorGroup())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("swirlin")
+          .withStartDurationEndSeconds(0, 2, 2)
+          .withScaleInterpolator(new LinearInterpolator())
+          .withFilterInterpolator(new UnswirlFilterInterpolator())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("swirlio")
+          .withStartDurationEndSeconds(0, 2, 0)
+          .withScaleInterpolator(new InAndOutInterpolator())
+          .withFilterInterpolator(new UnswirlFilterInterpolator())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("swirlout")
+          .withStartDurationEndSeconds(0, 2, 2)
+          .withScaleInterpolator(new ReverseLinearInterpolator())
+          .withFilterInterpolator(new UnswirlFilterInterpolator())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("swirlslam")
+          .withStartDurationEndSeconds(0, 2, 2)
+          .withScaleInterpolator(new SlamSoftInterpolator())
+          .withTranslateInterpolator(new ShakeInterpolatorProvider())
+          .withFilterInterpolator(new UnswirlAtHotspotFilterInterpolator())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("swirlspot")
+          .withStartDurationEndSeconds(0, 2, 2)
+          .withScaleInterpolator(new LinearInterpolator())
+          .withFilterInterpolator(new UnswirlAtHotspotOnHotspotFilterInterpolator())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("swirlyeyes")
+          .withStartDurationEndSeconds(0, 2, 0)
+          .withScaleInterpolator(new InAndOutInterpolator())
+          .withFilterInterpolatorGroup(new UnswirlEyesFilterInterpolatorGroup())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("swirlyspot")
+          .withStartDurationEndSeconds(0, 2, 0)
+          .withScaleInterpolator(new InAndOutInterpolator())
+          .withFilterInterpolator(new UnswirlAtHotspotOnHotspotFilterInterpolator())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("twistyfroggy")
+          .withStartDurationEndSeconds(0, 2, 0)
+          .withScaleInterpolator(new InAndOutInterpolator())
+          .withFilterInterpolatorGroup(new BulgeEyesSwirlMouthFilterInterpoaltor())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("weirdo")
+          .withStartDurationEndSeconds(0, 2, 2)
+          .withScaleInterpolator(new LinearInterpolator())
+          .withFilterInterpolatorGroup(new SumoBulge2FilterInterpolator())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("whitetease")
+          .withStartDurationEndSeconds(1, 4, 2)
+          .withScaleInterpolator(new Interpolator() {
+            @Override
+            protected float getRangePercent(float t) {
+              if (t < 0.1667) {
+                return 0;
+              } else if (t < 0.5) {
+                return 0.2f;
+              } else if (t < 0.8333) {
+                return 0.45f;
+              } else {
+                return 1;
+              }
+            }
+          })
+          .withFilterInterpolator(new OverExposeFilterInterpolator(
+              new Interpolator() {
+                @Override
+                protected float getRangePercent(float t) {
+                  return (float) Math.pow(Math.sin(3 * Math.PI * t), 10);
+                }
+              }))
+          .build())
+      .build();
+
+  private static Map<String, EffectTemplate> EFFECT_TEMPLATES_MAP =
+      Maps.newHashMap(Maps.uniqueIndex(EFFECT_TEMPLATES_LIST,
+          new Function<EffectTemplate, String>() {
+            @Override
+            public String apply(EffectTemplate input) {
+              return input.getName();
+            }
+          }));
+
+  private static ImmutableList<EffectPack> EFFECT_PACKS = ImmutableList.<EffectPack>builder()
+      .add(EffectPack.newBuilder()
+          .withName("green pack")
+          .withEffectTemplate("smush")
+          .withEffectTemplate("slamin")
+          .withEffectTemplate("sumo")
+          .withEffectTemplate("overcrash")
+          .withEffectTemplate("crashrumble")
+          .withEffectTemplate("crashdiag")
+          .withEffectTemplate("mctwisty")
+          .withEffectTemplate("doublebulge")
+          .withEffectTemplate("earthquake")
+          .withEffectTemplate("swirlspot")
+          .build())
+      .add(EffectPack.newBuilder()
+          .withName("blue pack")
+          .withEffectTemplate("rumblestiltskin")
+          .withEffectTemplate("inflate")
+          .withEffectTemplate("blurcrash")
+          .withEffectTemplate("blursmith")
+          .withEffectTemplate("magoo")
+          .withEffectTemplate("djswirls")
+          .withEffectTemplate("slamout")
+          .withEffectTemplate("flush")
+          .withEffectTemplate("swirleyes")
+          .withEffectTemplate("graytake")
+          .build())
+      .add(EffectPack.newBuilder()
+          .withName("purple pack")
+          .withEffectTemplate("crashmiss")
+          .withEffectTemplate("rumbletease")
+          .withEffectTemplate("shrinkydink")
+          .withEffectTemplate("blurshake")
+          .withEffectTemplate("grayfreeze")
+          .withEffectTemplate("slamio")
+          .withEffectTemplate("blurslam")
+          .withEffectTemplate("rumble")
+          .withEffectTemplate("swirlio")
+          .withEffectTemplate("spiral")
+          .build())
+      .add(EffectPack.newBuilder()
+          .withName("red pack")
+          .withEffectTemplate("crashin")
+          .withEffectTemplate("bulger")
+          .withEffectTemplate("blurtease")
+          .withEffectTemplate("whitetease")
+          .withEffectTemplate("shakezilla")
+          .withEffectTemplate("bulgeswap")
+          .withEffectTemplate("grayslam")
+          .withEffectTemplate("swirlout")
+          .withEffectTemplate("twistyfroggy")
+          .withEffectTemplate("swirlyeyes")
+          .build())
+      .add(EffectPack.newBuilder()
+          .withName("orange pack")
+          .withEffectTemplate("crashblur")
+          .withEffectTemplate("weirdo")
+          .withEffectTemplate("blurmagic")
+          .withEffectTemplate("blacktease")
+          .withEffectTemplate("deflate")
+          .withEffectTemplate("rumbleslam")
+          .withEffectTemplate("grayrumble")
+          .withEffectTemplate("swirlin")
+          .withEffectTemplate("swirlslam")
+          .withEffectTemplate("swirlyspot")
+          .build())
+
+      .build();
+
+  private static ImmutableList<EffectTemplate> EFFECT_TEMPLATES_FROM_PACKS =
+      ImmutableList.copyOf(Iterables.concat(Lists.transform(EFFECT_PACKS,
+          new Function<EffectPack, List<EffectTemplate>>() {
+            @Override
+            public List<EffectTemplate> apply(EffectPack input) {
+              return input.getEffectTemplates();
+            }
+          })));
+
+  public static ImmutableList<EffectPack> listPacks() {
+    return EFFECT_PACKS;
+  }
+
+  public static ImmutableList<EffectTemplate> listEffects() {
+    return EFFECT_TEMPLATES_FROM_PACKS;
+  }
+
+  public static EffectTemplate get(String name) {
+    if (EFFECT_TEMPLATES_MAP.containsKey(name)) {
+      return EFFECT_TEMPLATES_MAP.remove(name);
+    } else {
+      Log.e(TAG, "Effect: \"" + name + "\" does not exists or has already been used.");
+      return null;
+    }
+  }
+}

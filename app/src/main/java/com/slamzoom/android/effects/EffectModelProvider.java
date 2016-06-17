@@ -2,7 +2,6 @@ package com.slamzoom.android.effects;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.slamzoom.android.effects.templates.EffectTemplate;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 
 import java.util.List;
@@ -15,7 +14,7 @@ public class EffectModelProvider {
 
   public static List<EffectModel> getEffectModels() {
     if (mModels == null) {
-      mModels = Lists.newArrayList(Lists.transform(EffectTemplateProvider.getTemplates(),
+      mModels = Lists.newArrayList(Lists.transform(Effects.listEffects(),
           new Function<EffectTemplate, EffectModel>() {
             @Override
             public EffectModel apply(EffectTemplate input) {
