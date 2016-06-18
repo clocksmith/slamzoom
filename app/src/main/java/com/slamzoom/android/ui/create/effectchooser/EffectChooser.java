@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.google.common.collect.Lists;
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.singletons.BusProvider;
 import com.slamzoom.android.mediacreation.gif.GifService;
@@ -46,10 +47,12 @@ public class EffectChooser extends LinearLayout {
     mRecyclerView.setLayoutManager(linearLayoutManager);
   }
 
-  public void setEffectModels(List<EffectModel> effectModels) {
-    mAdapter = new EffectThumbnailRecyclerViewAdapter(effectModels);
-    mAdapter.unbindAll();
-    mRecyclerView.setAdapter(mAdapter);
+  public void set(List<EffectModel> effectModels) {
+      if (mAdapter != null) {
+        mAdapter.unbindAll();
+      }
+      mAdapter = new EffectThumbnailRecyclerViewAdapter(Lists.newArrayList(effectModels));
+      mRecyclerView.setAdapter(mAdapter);
   }
 
   @Subscribe

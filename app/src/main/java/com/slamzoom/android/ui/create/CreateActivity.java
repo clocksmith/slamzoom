@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Environment;
@@ -29,7 +28,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.common.base.Function;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.slamzoom.android.common.utils.AnimationUtils;
@@ -110,16 +108,14 @@ public class CreateActivity extends AppCompatActivity {
     mProgressBar.setVisibility(View.GONE);
     mProgressBar.setScaleX(0);
     mProgressBar.setScaleY(0);
-    mProgressBar.getIndeterminateDrawable().setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.MULTIPLY);
     mZeroStateMessage.setVisibility(View.VISIBLE);
     mGifAreaView = mZeroStateMessage;
+    mGifProgresses = Maps.newHashMap();
 
     Intent intent = getIntent();
     if (Intent.ACTION_SEND.equals(intent.getAction())) {
       handleIncomingUri((Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM));
     }
-
-    mGifProgresses = Maps.newHashMap();
 
     bindService(new Intent(this, GifService.class), mConnection, Context.BIND_AUTO_CREATE);
 
@@ -152,7 +148,6 @@ public class CreateActivity extends AppCompatActivity {
         mSelectedGifBytes = null;
         mGifImageView.setImageBitmap(null);
         resetProgresses();
-
         updateGifPreviews();
         if (mSelectedEffectName != null) {
           updateGif();
@@ -171,13 +166,6 @@ public class CreateActivity extends AppCompatActivity {
       mBound = false;
     }
   }
-
-//  @Override
-//  protected void onSaveInstanceState(Bundle bundle) {
-//    Log.wtf(TAG, "onSaveInstanceState");
-//    super.onSaveInstanceState(bundle);
-//    bundle.putString(SELECTED_EFFECT_NAME, mSelectedEffectName);
-//  }
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
@@ -302,7 +290,7 @@ public class CreateActivity extends AppCompatActivity {
           }
         });
 
-    mEffectChooser.setEffectModels(EffectModelProvider.getEffectModels());
+    mEffectChooser.set(EffectModelProvider.getEffectModels());
     mGifService.resetWithConfigs(configs);
   }
 

@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.singletons.BusProvider;
 import com.slamzoom.android.common.utils.AnimationUtils;
+import com.slamzoom.android.common.utils.FLog;
 
 import java.io.IOException;
 
@@ -68,6 +69,7 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
   }
 
   public void bind(final EffectModel model) {
+    FLog.f(TAG, "bind: " + getAdapterPosition());
     mModel = model;
     final String name = mModel.getEffectTemplate().getName();
 
@@ -75,7 +77,6 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
 
     // Either show the gif or request it.
     if (model.getGifPreviewBytes() != null && model.getGifPreviewBytes().length > 0) {
-//      showGif();
       try {
         mProgressBar.setVisibility(View.GONE);
         mGifImageView.setImageDrawable(new GifDrawable(mModel.getGifPreviewBytes()));
@@ -95,6 +96,7 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
   }
 
   public void unbind() {
+    FLog.f(TAG, "unbind: " + getAdapterPosition());
     if (mModel != null && (mModel.getGifPreviewBytes() == null || mModel.getGifPreviewBytes().length == 0)) {
       BusProvider.getInstance().post(new RequestGifPreviewStopEvent(mModel.getEffectTemplate().getName()));
     }

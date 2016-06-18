@@ -123,14 +123,14 @@ public class GifService extends Service {
                 int i = 0;
                 for (GifCreatorManager manager : mGifPreviewCreatorPriorityQueue) {
                   if (manager.getName().equals(name)) {
-                    FLog.f(TAG, "finished " + name + "\n" + manager.getTracker().getTotal());
+                    FLog.f(TAG, "finished " + name + " in " + manager.getTracker().getTotal());
                     mGifPreviewCreatorPriorityQueue.remove(i);
                     break;
                   }
                   i++;
                 }
                 if (mGifPreviewCreatorPriorityQueue.isEmpty()) {
-                  FLog.f(TAG, "finished generating all previews in: " + (System.currentTimeMillis() - mStart) + "ms");
+                  FLog.f(TAG, "time since starting first preview: " + (System.currentTimeMillis() - mStart) + "ms");
                 }
               } else {
                 FLog.f(TAG, "finished " + name + "\n" + mGifCreatorManager.getTracker().getReport());

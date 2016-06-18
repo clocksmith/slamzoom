@@ -6,7 +6,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.google.common.collect.Lists;
 import com.slamzoom.android.R;
+import com.slamzoom.android.common.singletons.BusProvider;
 
 import java.util.List;
 
@@ -18,7 +20,7 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
 
   private List<EffectModel> mModels;
 
-  public EffectThumbnailRecyclerViewAdapter(List<EffectModel>  models) {
+  public EffectThumbnailRecyclerViewAdapter(List<EffectModel> models) {
     mModels = models;
   }
 
@@ -40,6 +42,14 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
   public int getItemCount() {
     return mModels.size();
   }
+
+//  @Override
+//  public void onViewDetachedFromWindow(EffectThumbnailViewHolder holder) {
+//    holder.
+//    if (mModel != null && (mModel.getGifPreviewBytes() == null || mModel.getGifPreviewBytes().length == 0)) {
+//      BusProvider.getInstance().post(new RequestGifPreviewStopEvent(mModel.getEffectTemplate().getName()));
+//    }
+//  }
 
   public void setGifPreview(String effectName, byte[] gifBytes) {
 
@@ -63,6 +73,6 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
     for (EffectModel model : mModels) {
       model.setGifPreviewBytes(null);
     }
-    notifyItemRangeChanged(0, getItemCount());
+    notifyItemRangeChanged(0, mModels.size());
   }
 }
