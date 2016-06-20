@@ -9,7 +9,7 @@ import android.view.View;
  * Created by clocksmith on 6/10/16.
  */
 public class AnimationUtils {
-  private static final int DEFAULT_ANIMATION_DURATION_MS = 175;
+  public static final int DEFAULT_ANIMATION_DURATION_MS = 175;
 
   public static abstract class OnAnimationEndOnlyListener implements Animator.AnimatorListener {
     @Override

@@ -37,14 +37,10 @@ public class DebugUtils {
   public static void saveFrameAsBitmap(Bitmap finalBitmap, String type, int frameIndex) {
       File direct = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "/SlamZoom");
       File file = new File(direct, "debug_" + frameIndex + "_" + type + ".png");
-      Log.e(TAG, "w: " + finalBitmap.getWidth() + " h: " + finalBitmap.getHeight());
       if (!file.getParentFile().isDirectory()) {
-        Log.e(TAG, "No directory exitsts: " + file.getParentFile());
+        Log.d(TAG, "No directory exists: " + file.getParentFile());
         if (!file.getParentFile().mkdirs()) {
-          Log.e(TAG, "Cannot make directory: " + file.getParentFile());
-        }
-        {
-          Log.d(TAG, direct + " successfully created.");
+          SzLog.e(TAG, "Cannot make directory: " + file.getParentFile());
         }
       } else {
         Log.d(TAG, direct + " already exists.");
@@ -53,7 +49,6 @@ public class DebugUtils {
         FileOutputStream out = null;
         try {
           out = new FileOutputStream(file);
-          Log.e(TAG, "w: " + finalBitmap.getWidth() + " h: " + finalBitmap.getHeight());
           finalBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
         } catch (Exception e) {
           e.printStackTrace();
@@ -63,7 +58,7 @@ public class DebugUtils {
               out.close();
             }
           } catch (IOException e) {
-            Log.e(TAG, "Cannot save bitmap");
+            SzLog.e(TAG, "Cannot save bitmap");
           }
         }
       }

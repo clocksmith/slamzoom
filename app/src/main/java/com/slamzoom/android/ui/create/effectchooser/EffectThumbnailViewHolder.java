@@ -2,18 +2,20 @@ package com.slamzoom.android.ui.create.effectchooser;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
-import android.content.Context;
+import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.singletons.BusProvider;
 import com.slamzoom.android.common.utils.AnimationUtils;
-import com.slamzoom.android.common.utils.FLog;
+import com.slamzoom.android.common.utils.SzLog;
+import com.squareup.otto.Subscribe;
 
 import java.io.IOException;
 
@@ -30,8 +32,10 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
 
   public class ItemClickEvent {
     public final String effectName;
-    public ItemClickEvent(String effectName) {
+    public final int position;
+    public ItemClickEvent(String effectName, int position) {
       this.effectName = effectName;
+      this.position = position;
     }
   }
 
@@ -57,19 +61,25 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
   private EffectModel mModel;
   private int mColor;
 
+  private int mInitialTabHeight;
+  private boolean mTabExpanded;
+
   public EffectThumbnailViewHolder(View itemView) {
     super(itemView);
     ButterKnife.bind(this, itemView);
+    BusProvider.getInstance().register(this);
+    mInitialTabHeight = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.effect_chooser_tab_height);
   }
 
   public void unbindCurrentAndBindNew(final EffectModel model, int color) {
     mColor = color;
     unbind();
     bind(model);
+    mTabExpanded = false;
   }
 
   public void bind(final EffectModel model) {
-    FLog.f(TAG, "bind: " + getAdapterPosition());
+    SzLog.f(TAG, "bind: " + getAdapterPosition());
     mModel = model;
     final String name = mModel.getEffectTemplate().getName();
 
@@ -90,13 +100,16 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
     itemView.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        BusProvider.getInstance().post(new ItemClickEvent(name));
+        BusProvider.getInstance().post(new ItemClickEvent(name, getAdapterPosition()));
+        expandTab();
       }
     });
   }
 
   public void unbind() {
-    FLog.f(TAG, "unbind: " + getAdapterPosition());
+    SzLog.f(TAG, "unbind: " + getAdapterPosition());
+    collapseTab(false);
+
     if (mModel != null && (mModel.getGifPreviewBytes() == null || mModel.getGifPreviewBytes().length == 0)) {
       BusProvider.getInstance().post(new RequestGifPreviewStopEvent(mModel.getEffectTemplate().getName()));
     }
@@ -107,6 +120,57 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
     mTabView.setBackgroundColor(mColor);
     mProgressBar.setVisibility(View.VISIBLE);
     mProgressBar.getIndeterminateDrawable().setColorFilter(mColor, android.graphics.PorterDuff.Mode.MULTIPLY);
+  }
+
+  @Subscribe
+  public void on(EffectThumbnailViewHolder.ItemClickEvent event) throws IOException {
+    if (getAdapterPosition() != event.position) {
+      collapseTab(true);
+    }
+  }
+
+  private void expandTab() {
+    if (!mTabExpanded) {
+      mTabExpanded = true;
+      mProgressBar.getIndeterminateDrawable().setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.MULTIPLY);
+      ValueAnimator anim = ValueAnimator.ofInt(mInitialTabHeight, itemView.getMeasuredHeight());
+      anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        @Override
+        public void onAnimationUpdate(ValueAnimator valueAnimator) {
+          int val = (Integer) valueAnimator.getAnimatedValue();
+          ViewGroup.LayoutParams layoutParams = mTabView.getLayoutParams();
+          layoutParams.height = val;
+          mTabView.setLayoutParams(layoutParams);
+        }
+      });
+      anim.setDuration(AnimationUtils.DEFAULT_ANIMATION_DURATION_MS);
+      anim.start();
+    }
+  }
+
+  private void collapseTab(boolean animate) {
+    if (mTabExpanded) {
+      mTabExpanded = false;
+      mProgressBar.getIndeterminateDrawable().setColorFilter(mColor, android.graphics.PorterDuff.Mode.MULTIPLY);
+      if (animate) {
+        ValueAnimator anim = ValueAnimator.ofInt(mTabView.getMeasuredHeight(), mInitialTabHeight);
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+          @Override
+          public void onAnimationUpdate(ValueAnimator valueAnimator) {
+            int val = (Integer) valueAnimator.getAnimatedValue();
+            ViewGroup.LayoutParams layoutParams = mTabView.getLayoutParams();
+            layoutParams.height = val;
+            mTabView.setLayoutParams(layoutParams);
+          }
+        });
+        anim.setDuration(AnimationUtils.DEFAULT_ANIMATION_DURATION_MS);
+        anim.start();
+      } else {
+        ViewGroup.LayoutParams layoutParams = mTabView.getLayoutParams();
+        layoutParams.height = mInitialTabHeight;
+        mTabView.setLayoutParams(layoutParams);
+      }
+    }
   }
 
   private void showGif(){
@@ -120,7 +184,7 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
         } catch (IOException e) {
           mGifImageView.setImageDrawable(null);
           mProgressBar.setVisibility(View.VISIBLE);
-          Log.e(TAG, "Could not create GifDrawable for: " + mModel.getEffectTemplate().getName());
+          SzLog.e(TAG, "Could not create GifDrawable for: " + mModel.getEffectTemplate().getName());
         }
         AnimationUtils.getScaleUpSet(mGifImageView, 1000).start();
       }

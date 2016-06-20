@@ -19,6 +19,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.slamzoom.android.common.singletons.ExecutorProvider;
 import com.slamzoom.android.common.utils.BitmapUtils;
+import com.slamzoom.android.common.utils.SzLog;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.utils.DebugUtils;
@@ -227,7 +228,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
 //          Log.wtf(TAG, "frame: " + frameIndex + " normRect: " + normalizedHotspot.toShortString() +
 //          " normW: " + normalizedHotspot.width() + " normH: " + normalizedHotspot.height());
         } catch (CloneNotSupportedException e) {
-          Log.wtf(TAG, "unable to clone", e);
+          SzLog.e(TAG, "unable to clone", e);
         }
 
         // TODO(clocksmith): extract this.

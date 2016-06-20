@@ -2,13 +2,11 @@ package com.slamzoom.android.ui.create.effectchooser;
 
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.google.common.collect.Lists;
 import com.slamzoom.android.R;
-import com.slamzoom.android.common.singletons.BusProvider;
+import com.slamzoom.android.common.utils.SzLog;
 
 import java.util.List;
 
@@ -32,7 +30,7 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
 
   @Override
   public void onBindViewHolder(EffectThumbnailViewHolder holder, int position) {
-//    Log.wtf(TAG, "binding position: " + position);
+    SzLog.f(TAG, "binding position: " + position);
     holder.unbindCurrentAndBindNew(
         mModels.get(position),
         EffectColors.list().get(position % EffectColors.list().size()));
@@ -43,13 +41,6 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
     return mModels.size();
   }
 
-//  @Override
-//  public void onViewDetachedFromWindow(EffectThumbnailViewHolder holder) {
-//    holder.
-//    if (mModel != null && (mModel.getGifPreviewBytes() == null || mModel.getGifPreviewBytes().length == 0)) {
-//      BusProvider.getInstance().post(new RequestGifPreviewStopEvent(mModel.getEffectTemplate().getName()));
-//    }
-//  }
 
   public void setGifPreview(String effectName, byte[] gifBytes) {
 
@@ -57,7 +48,6 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
       if (mModels.get(position).getEffectTemplate().getName().equals(effectName)) {
         mModels.get(position).setGifPreviewBytes(gifBytes);
         final int finalPos = position;
-//        notifyItemChanged(finalPos);
         new Handler().post(new Runnable() {
           @Override
           public void run() {

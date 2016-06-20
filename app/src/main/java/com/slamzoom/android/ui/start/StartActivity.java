@@ -15,6 +15,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.utils.AnimationUtils;
+import com.slamzoom.android.common.utils.SzLog;
 import com.slamzoom.android.ui.create.CreateActivity;
 
 import java.io.IOException;
@@ -65,7 +66,7 @@ public class StartActivity extends AppCompatActivity {
       try {
         mGifDrawables.add(new GifDrawable(getAssets(), "start_" + gifNum + ".gif"));
       } catch (IOException e) {
-        Log.e(TAG, "Could not open gif from assets");
+        SzLog.e(TAG, "Could not open gif from assets");
       }
     }
 

@@ -2,14 +2,11 @@ package com.slamzoom.android.ui.create.effectchooser;
 
 import android.animation.ArgbEvaluator;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.io.Resources;
 
 /**
  * Created by clocksmith on 6/14/16.
@@ -45,11 +42,11 @@ public class EffectColors {
   public static void init(Context context) {
     mContext = context;
     mColors = ImmutableList.<Integer>builder()
+        .addAll(getColorGroup("green"))
+        .addAll(getColorGroup("blue"))
+        .addAll(getColorGroup("purple"))
         .addAll(getColorGroup("red"))
-        .addAll(getColorGroup("deeporange"))
         .addAll(getColorGroup("orange"))
-        .addAll(getColorGroup("amber"))
-        .addAll(getColorGroup("yellow"))
         .build();
   }
 

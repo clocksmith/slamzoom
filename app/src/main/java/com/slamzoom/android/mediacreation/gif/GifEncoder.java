@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.singletons.ExecutorProvider;
+import com.slamzoom.android.common.utils.SzLog;
 import com.slamzoom.android.mediacreation.MediaCreatorTracker;
 import com.slamzoom.android.mediacreation.MediaEncoder;
 
@@ -108,7 +109,7 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
       mHeight = frame.height;
     }
     if (mWidth > 0 && mWidth != frame.width || mHeight > 0 & mHeight != frame.height) {
-      Log.e(TAG, "Bitmap does not have same dimensions as previous frames");
+      SzLog.e(TAG, "Bitmap does not have same dimensions as previous frames");
     }
   }
 
@@ -167,7 +168,7 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
           }
           writePixels(indexedPixels);
         } catch (IOException e) {
-          Log.e(TAG, "Could not write to output stream", e);
+          SzLog.e(TAG, "Could not write to output stream", e);
         }
       }
     };
@@ -352,7 +353,7 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
         try {
           writeString("GIF89a");
         } catch (IOException e) {
-          Log.e(TAG, "Could not write gif header", e);
+          SzLog.e(TAG, "Could not write gif header", e);
         }
 
         for (Runnable frameWriterToRun : mFrameWriters) {
@@ -366,7 +367,7 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
         try {
           mOut.flush();
         } catch (IOException e) {
-          Log.e(TAG, "Unable to flush output stream", e);
+          SzLog.e(TAG, "Unable to flush output stream", e);
         }
 
         byte[] gifBytes = mOut.toByteArray();

@@ -12,7 +12,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.common.utils.DebugUtils;
-import com.slamzoom.android.common.utils.FLog;
+import com.slamzoom.android.common.utils.SzLog;
 import com.slamzoom.android.common.singletons.BusProvider;
 import com.slamzoom.android.effects.Effects;
 import com.slamzoom.android.ui.create.effectchooser.EffectThumbnailViewHolder;
@@ -123,17 +123,17 @@ public class GifService extends Service {
                 int i = 0;
                 for (GifCreatorManager manager : mGifPreviewCreatorPriorityQueue) {
                   if (manager.getName().equals(name)) {
-                    FLog.f(TAG, "finished " + name + " in " + manager.getTracker().getTotal());
+                    SzLog.f(TAG, "finished " + name + " in " + manager.getTracker().getTotal());
                     mGifPreviewCreatorPriorityQueue.remove(i);
                     break;
                   }
                   i++;
                 }
                 if (mGifPreviewCreatorPriorityQueue.isEmpty()) {
-                  FLog.f(TAG, "time since starting first preview: " + (System.currentTimeMillis() - mStart) + "ms");
+                  SzLog.f(TAG, "time since starting first preview: " + (System.currentTimeMillis() - mStart) + "ms");
                 }
               } else {
-                FLog.f(TAG, "finished " + name + "\n" + mGifCreatorManager.getTracker().getReport());
+                SzLog.f(TAG, "finished " + name + "\n" + mGifCreatorManager.getTracker().getReport());
               }
               continueGifPreviewGeneration();
             }

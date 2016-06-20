@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.slamzoom.android.common.utils.SzLog;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeDoubleLeftRightFilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeEyesFilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeEyesSwirlMouthFilterInterpoaltor;
@@ -546,8 +547,8 @@ public class Effects {
   private static ImmutableList<EffectPack> EFFECT_PACKS = ImmutableList.<EffectPack>builder()
       .add(EffectPack.newBuilder()
           .withName("green pack")
-          .withEffectTemplate("smush")
           .withEffectTemplate("slamin")
+          .withEffectTemplate("smush")
           .withEffectTemplate("sumo")
           .withEffectTemplate("overcrash")
           .withEffectTemplate("crashrumble")
@@ -633,7 +634,7 @@ public class Effects {
     if (EFFECT_TEMPLATES_MAP.containsKey(name)) {
       return EFFECT_TEMPLATES_MAP.remove(name);
     } else {
-      Log.e(TAG, "Effect: \"" + name + "\" does not exists or has already been used.");
+      SzLog.e(TAG, "Effect: \"" + name + "\" does not exists or has already been used.");
       return null;
     }
   }

@@ -3,6 +3,7 @@ package com.slamzoom.android.common.utils;
 import android.util.Log;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.firebase.crash.FirebaseCrash;
 import com.slamzoom.android.mediacreation.gif.GifCreatorManager;
 import com.slamzoom.android.mediacreation.gif.GifService;
 import com.slamzoom.android.ui.create.effectchooser.EffectThumbnailViewHolder;
@@ -11,8 +12,10 @@ import java.util.Set;
 
 /**
  * Created by clocksmith on 6/14/16.
+ *
+ * Custom logger class that can do filtered logging and crash logging to firebase.
  */
-public class FLog {
+public class SzLog {
   // NOTE: Please keep in alphabetical order.
   private static Set<String> mAcceptedTags = ImmutableSet.of(
       EffectThumbnailViewHolder.class.getSimpleName(),
@@ -27,6 +30,18 @@ public class FLog {
       Log.d("F/" + tag, message);
     } else {
       Log.d(tag, message);
+    }
+  }
+
+  public static void e(String tag, String message) {
+    e(tag, message, null);
+  }
+
+  public static void e(String tag, String message, Exception e) {
+    Log.e(tag, message);
+    FirebaseCrash.log(message);
+    if (e != null) {
+      FirebaseCrash.report(e);
     }
   }
 }

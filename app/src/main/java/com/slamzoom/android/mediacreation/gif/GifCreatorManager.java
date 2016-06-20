@@ -1,10 +1,9 @@
 package com.slamzoom.android.mediacreation.gif;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.common.utils.FLog;
+import com.slamzoom.android.common.utils.SzLog;
 import com.slamzoom.android.mediacreation.MediaCreatorTracker;
 
 /**
@@ -37,14 +36,14 @@ public class GifCreatorManager {
   }
 
   public void start() {
-    FLog.f(TAG, "start() " + (mIsPreview ? "preview_" : "") + mGifConfig.effectModel.getEffectTemplate().getName());
+    SzLog.f(TAG, "start() " + (mIsPreview ? "preview_" : "") + mGifConfig.effectModel.getEffectTemplate().getName());
     mIsRunning = true;
     mGifCreator = new GifCreator(mContext, mGifConfig, mGifSize, mCallback, mTracker);
     mGifCreator.createAsync();
   }
 
   public void stop() {
-    FLog.f(TAG, "stop() " + (mIsPreview ? "preview_" : "") + mGifConfig.effectModel.getEffectTemplate().getName());
+    SzLog.f(TAG, "stop() " + (mIsPreview ? "preview_" : "") + mGifConfig.effectModel.getEffectTemplate().getName());
     mIsRunning = false;
     if (mGifCreator != null) {
       mGifCreator.cancel();
