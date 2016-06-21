@@ -1,4 +1,4 @@
-package com.slamzoom.android.ui.cropper;
+package com.slamzoom.android.ui.create.hotspotchooser;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -24,8 +24,8 @@ import butterknife.ButterKnife;
 /**
  * Created by clocksmith on 3/5/16.
  */
-public class CropperActivity extends AppCompatActivity {
-  private static final String TAG = CropperActivity.class.getSimpleName();
+public class HotspotChooserActivity extends AppCompatActivity {
+  private static final String TAG = HotspotChooserActivity.class.getSimpleName();
 
   @Bind(R.id.imageCropView)
   CropRectProvidingImageCropView mImageCropView;

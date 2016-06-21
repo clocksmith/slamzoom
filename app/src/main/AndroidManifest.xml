@@ -33,7 +33,7 @@
     </activity>
 
     <activity
-        android:name=".ui.cropper.CropperActivity"
+        android:name=".ui.create.hotspotchooser.HotspotChooserActivity"
         android:screenOrientation="portrait"/>
 
     <service android:name=".mediacreation.gif.GifService" />

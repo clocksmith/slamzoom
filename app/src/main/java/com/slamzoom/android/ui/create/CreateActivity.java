@@ -3,7 +3,6 @@ package com.slamzoom.android.ui.create;
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
-import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -45,7 +44,7 @@ import com.slamzoom.android.mediacreation.gif.GifConfig;
 import com.slamzoom.android.mediacreation.gif.GifCreator;
 import com.slamzoom.android.mediacreation.gif.GifService;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
-import com.slamzoom.android.ui.cropper.CropperActivity;
+import com.slamzoom.android.ui.create.hotspotchooser.HotspotChooserActivity;
 import com.slamzoom.android.ui.create.effectchooser.EffectChooser;
 import com.slamzoom.android.ui.create.effectchooser.EffectThumbnailViewHolder;
 import com.squareup.otto.Subscribe;
@@ -54,7 +53,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import butterknife.Bind;
@@ -132,29 +130,12 @@ public class CreateActivity extends AppCompatActivity {
     if (requestCode == Constants.REQUEST_PICK_IMAGE) {
       if (resultCode == RESULT_OK) {
         handleIncomingUri(data.getData());
-      } else {
-        if (mSelectedBitmap == null) {
-          finish();
-        }
+      } else if (mSelectedBitmap == null) {
+        finish();
       }
     } else if (requestCode == Constants.REQUEST_CROP_IMAGE) {
       if (resultCode == RESULT_OK) {
-        mSelectedHotspot = data.getParcelableExtra(Constants.CROP_RECT);
-        float ratio = (float) mSelectedBitmap.getWidth() / mSelectedBitmapForPreview.getWidth();
-        mSelectedHotspotForPreview = new Rect(
-            (int) (mSelectedHotspot.left / ratio),
-            (int) (mSelectedHotspot.top / ratio),
-            (int) (mSelectedHotspot.right / ratio),
-            (int) (mSelectedHotspot.bottom / ratio));
-
-        mSelectedEndText = "";
-        mSelectedGifBytes = null;
-        mGifImageView.setImageBitmap(null);
-        resetProgresses();
-        updateGifPreviews();
-        if (mSelectedEffectName != null) {
-          updateGif();
-        }
+        handleCropRectSelected((Rect) data.getParcelableExtra(Constants.CROP_RECT));
       } else if (mSelectedHotspot == null) {
         launchImageChooser();
       }
@@ -227,7 +208,7 @@ public class CreateActivity extends AppCompatActivity {
     mSelectedEffectName = event.effectName;
     mZeroStateMessage.setVisibility(View.GONE);
     updateProgressBar();
-    updateGif();
+    udpateMainGif();
   }
 
   @Subscribe
@@ -257,59 +238,6 @@ public class CreateActivity extends AppCompatActivity {
     handleUpOrBackPressed();
   }
 
-  private void resetProgresses() {
-    for (EffectModel model : EffectModelProvider.getEffectModels()) {
-      mGifProgresses.put(model.getEffectTemplate().getName(), 0d);
-    }
-  }
-
-  private void updateProgressBar() {
-    mProgressBar.setVisibility(View.VISIBLE);
-    if (mSelectedEffectName != null) {
-      mProgressBar.setProgress((int) Math.round(100 * mGifProgresses.get(mSelectedEffectName)));
-    }
-  }
-
-  private void updateGif() {
-    mGifProgresses.put(mSelectedEffectName, 0d);
-    mGifService.requestGif(GifConfig.newBuilder()
-        .withHotspot(mSelectedHotspot)
-        .withBitmap(mSelectedBitmap)
-        .withEffectModel(EffectModelProvider.getEffectModel(mSelectedEffectName))
-        .withEndText(mSelectedEndText)
-        .build());
-  }
-
-  private void updateGifPreviews() {
-    List<GifConfig> configs = Lists.transform(EffectModelProvider.getEffectModels(),
-        new Function<EffectModel, GifConfig>() {
-          @Override
-          public GifConfig apply(EffectModel model) {
-            return GifConfig.newBuilder()
-                .withHotspot(mSelectedHotspotForPreview)
-                .withBitmap(mSelectedBitmapForPreview)
-                .withEffectModel(model)
-                .withEndText(mSelectedEndText)
-                .build();
-          }
-        });
-
-    mEffectChooser.set(EffectModelProvider.getEffectModels());
-    mGifService.resetWithConfigs(configs);
-  }
-
-  private void  launchImageChooser() {
-    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-    intent.setType("image/*");
-    startActivityForResult(Intent.createChooser(intent, "Select Image"), Constants.REQUEST_PICK_IMAGE);
-  }
-
-  private void launchHotspotChooser() {
-    Intent intent = new Intent(CreateActivity.this, CropperActivity.class);
-    intent.putExtra(Constants.IMAGE_URI, mSelectedUri);
-    startActivityForResult(intent, Constants.REQUEST_CROP_IMAGE);
-  }
-
   private void handleIncomingUri(Uri uri) {
     try {
       mSelectedUri = uri;
@@ -324,15 +252,19 @@ public class CreateActivity extends AppCompatActivity {
     }
   }
 
-  private void handleUpOrBackPressed() {
-    KeyboardUtils.hideKeyboard(this);
-    showAddTextView(false);
+  private void handleCropRectSelected(Rect selectedHotspot) {
+    mSelectedHotspot = selectedHotspot;
+    float ratio = (float) mSelectedBitmap.getWidth() / mSelectedBitmapForPreview.getWidth();
+    mSelectedHotspotForPreview = new Rect(
+        (int) (mSelectedHotspot.left / ratio),
+        (int) (mSelectedHotspot.top / ratio),
+        (int) (mSelectedHotspot.right / ratio),
+        (int) (mSelectedHotspot.bottom / ratio));
+
+    updateMainAndPreviewGifs();
   }
 
   private void handleAddTextPressed() {
-//    if (mSelectedEndText != null) {
-//      mAddTextView.getEditText().setText(mSelectedEndText);
-//    }
     mAddTextView.getEditText().requestFocus();
     KeyboardUtils.showKeyboard(this);
     showAddTextView(true);
@@ -340,17 +272,76 @@ public class CreateActivity extends AppCompatActivity {
 
   private void handleAddTextConfirmed() {
     mSelectedEndText = mAddTextView.getEditText().getText().toString();
+    updateMainAndPreviewGifs();
+    KeyboardUtils.hideKeyboard(this);
+    showAddTextView(false);
+  }
+
+  private void handleUpOrBackPressed() {
+    KeyboardUtils.hideKeyboard(this);
+    showAddTextView(false);
+  }
+
+  private void udpateMainGif() {
+    mGifProgresses.put(mSelectedEffectName, 0d);
+    mGifService.requestGif(GifConfig.newBuilder()
+        .withHotspot(mSelectedHotspot)
+        .withBitmap(mSelectedBitmap)
+        .withEffectModel(EffectModelProvider.getEffectModel(mSelectedEffectName))
+        .withEndText(mSelectedEndText)
+        .build());
+  }
+
+  private void updatePreviewGifs() {
+    mGifService.resetWithConfigs(Lists.transform(EffectModelProvider.getEffectModels(),
+        new Function<EffectModel, GifConfig>() {
+          @Override
+          public GifConfig apply(EffectModel model) {
+            return GifConfig.newBuilder()
+                .withHotspot(mSelectedHotspotForPreview)
+                .withBitmap(mSelectedBitmapForPreview)
+                .withEffectModel(model)
+                .withEndText(mSelectedEndText)
+                .build();
+          }
+        }));
+    mEffectChooser.set(EffectModelProvider.getEffectModels());
+  }
+
+  private void updateMainAndPreviewGifs() {
     mSelectedGifBytes = null;
     mGifImageView.setImageBitmap(null);
     resetProgresses();
-    updateGifPreviews();
+    updatePreviewGifs();
+
     if (mSelectedEffectName != null) {
-      updateGif();
+      udpateMainGif();
     }
+  }
 
+  private void resetProgresses() {
+    for (EffectModel model : EffectModelProvider.getEffectModels()) {
+      mGifProgresses.put(model.getEffectTemplate().getName(), 0d);
+    }
+  }
 
-    KeyboardUtils.hideKeyboard(this);
-    showAddTextView(false);
+  private void updateProgressBar() {
+    mProgressBar.setVisibility(View.VISIBLE);
+    if (mSelectedEffectName != null) {
+      mProgressBar.setProgress((int) Math.round(100 * mGifProgresses.get(mSelectedEffectName)));
+    }
+  }
+
+  private void launchImageChooser() {
+    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+    intent.setType("image/*");
+    startActivityForResult(Intent.createChooser(intent, "Select Image"), Constants.REQUEST_PICK_IMAGE);
+  }
+
+  private void launchHotspotChooser() {
+    Intent intent = new Intent(CreateActivity.this, HotspotChooserActivity.class);
+    intent.putExtra(Constants.IMAGE_URI, mSelectedUri);
+    startActivityForResult(intent, Constants.REQUEST_CROP_IMAGE);
   }
 
   private void showAddTextView(boolean show) {

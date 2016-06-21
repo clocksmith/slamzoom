@@ -13,15 +13,13 @@ public class EffectModelProvider {
   private static List<EffectModel> mModels;
 
   public static List<EffectModel> getEffectModels() {
-    if (mModels == null) {
-      mModels = Lists.newArrayList(Lists.transform(Effects.listEffects(),
+    mModels = Lists.newArrayList(Lists.transform(Effects.listEffects(),
           new Function<EffectTemplate, EffectModel>() {
             @Override
             public EffectModel apply(EffectTemplate input) {
               return new EffectModel(input);
             }
           }));
-    }
     return mModels;
   }
 

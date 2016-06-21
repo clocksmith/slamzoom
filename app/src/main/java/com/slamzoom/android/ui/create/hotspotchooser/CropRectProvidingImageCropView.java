@@ -1,4 +1,4 @@
-package com.slamzoom.android.ui.cropper;
+package com.slamzoom.android.ui.create.hotspotchooser;
 
 import android.content.Context;
 import android.graphics.Rect;
