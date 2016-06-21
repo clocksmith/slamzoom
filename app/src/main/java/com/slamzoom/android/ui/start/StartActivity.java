@@ -2,12 +2,10 @@ package com.slamzoom.android.ui.start;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -35,15 +33,10 @@ public class StartActivity extends AppCompatActivity {
   private static final String TAG = StartActivity.class.getSimpleName();
 
   private static final int NUM_GIFS_IN_SHOW = 4;
-  private static final int ANIMATION_DURATION_MS = 350;
 
   @Bind(R.id.createSlamzoomButton) Button mCreateSlamzoomButton;
   @Bind(R.id.gifImageView1) GifImageView mGifImageView1;
-  @Bind(R.id.gifImageView2) GifImageView mGifImageView2;
-  @Bind(R.id.gifImageView3) GifImageView mGifImageView3;
-  @Bind(R.id.gifImageView4) GifImageView mGifImageView4;
 
-  private List<GifImageView> mGifImageViews;
   private List<GifDrawable> mGifDrawables;
   private Map<Integer, AnimationListener> mGifAnimationListeners;
 
@@ -60,7 +53,6 @@ public class StartActivity extends AppCompatActivity {
       }
     });
 
-    mGifImageViews = Lists.newArrayList(mGifImageView1, mGifImageView2, mGifImageView3, mGifImageView4);
     mGifDrawables = Lists.newArrayList();
     for (int gifNum = 1; gifNum <= NUM_GIFS_IN_SHOW; gifNum++) {
       try {
@@ -70,16 +62,12 @@ public class StartActivity extends AppCompatActivity {
       }
     }
 
-    for (int i = 0; i < NUM_GIFS_IN_SHOW; i++) {
-      final GifImageView currentGifImageView = mGifImageViews.get(i);
-      final GifDrawable currentGifDrawable = mGifDrawables.get(i);
-
-      currentGifImageView.setScaleX(0f);
-      currentGifImageView.setScaleY(0f);
-      currentGifImageView.setImageDrawable(currentGifDrawable);
-      currentGifDrawable.stop();
-      currentGifDrawable.seekToFrame(0);
+    for (GifDrawable gifDrawable : mGifDrawables) {
+      gifDrawable.stop();
+      gifDrawable.seekToFrame(0);
     }
+    mGifImageView1.setScaleX(0f);
+    mGifImageView1.setScaleY(0f);
 
     mGifAnimationListeners = Maps.newHashMap();
 
@@ -87,34 +75,26 @@ public class StartActivity extends AppCompatActivity {
   }
 
 
-  private void showGifImageView(int gifIndex) {
-    for (int i = 0; i < NUM_GIFS_IN_SHOW; i++) {
-      mGifImageViews.get(i).setVisibility(i == gifIndex ? View.VISIBLE : View.GONE);
-    }
-  }
-
   private void runShow(final int step) {
     final int gifIndex = step % NUM_GIFS_IN_SHOW;
-    final GifImageView currentGifImageView = mGifImageViews.get(gifIndex);
     final GifDrawable currentGifDrawable = mGifDrawables.get(gifIndex);
-    showGifImageView(gifIndex);
+    mGifImageView1.setImageDrawable(currentGifDrawable);
 
-    AnimatorSet scaleUp = AnimationUtils.getScaleUpSet(currentGifImageView);
+    AnimatorSet scaleUp = AnimationUtils.getScaleUpSet(mGifImageView1);
     scaleUp.addListener(new AnimationUtils.OnAnimationEndOnlyListener() {
       @Override
       public void onAnimationEnd(Animator animation) {
         if (mGifAnimationListeners.containsKey(gifIndex)) {
           currentGifDrawable.removeAnimationListener(mGifAnimationListeners.get(gifIndex));
         }
-
-       AnimationListener animationListener = new AnimationListener() {
+        AnimationListener animationListener = new AnimationListener() {
           @Override
           public void onAnimationCompleted(int loopNumber) {
             new Handler().postDelayed(new Runnable() {
               @Override
               public void run() {
                 currentGifDrawable.stop();
-                AnimatorSet scaleDown = AnimationUtils.getScaleDownSet(currentGifImageView);
+                AnimatorSet scaleDown = AnimationUtils.getScaleDownSet(mGifImageView1);
                 scaleDown.addListener(new AnimationUtils.OnAnimationEndOnlyListener() {
                   @Override
                   public void onAnimationEnd(Animator animation) {

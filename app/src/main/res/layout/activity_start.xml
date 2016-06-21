@@ -17,41 +17,15 @@
       android:scaleType="fitCenter"
       android:src="@drawable/sz_rb"/>
 
-  <android.support.percent.PercentRelativeLayout
-      android:id="@+id/gifs"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
+  <pl.droidsonroids.gif.GifImageView
+      android:layout_below="@+id/logo"
+      android:id="@+id/gifImageView1"
       app:layout_widthPercent="100%"
       app:layout_aspectRatio="100%"
-      android:layout_below="@+id/logo">
-    <pl.droidsonroids.gif.GifImageView
-        android:id="@+id/gifImageView1"
-        app:layout_widthPercent="100%"
-        app:layout_aspectRatio="100%"
-        android:scaleType="fitCenter"
-        android:visibility="gone"/>
-    <pl.droidsonroids.gif.GifImageView
-        android:id="@+id/gifImageView2"
-        app:layout_widthPercent="100%"
-        app:layout_aspectRatio="100%"
-        android:scaleType="fitCenter"
-        android:visibility="gone"/>
-    <pl.droidsonroids.gif.GifImageView
-        android:id="@+id/gifImageView3"
-        app:layout_widthPercent="100%"
-        app:layout_aspectRatio="100%"
-        android:scaleType="fitCenter"
-        android:visibility="gone"/>
-    <pl.droidsonroids.gif.GifImageView
-        android:id="@+id/gifImageView4"
-        app:layout_widthPercent="100%"
-        app:layout_aspectRatio="100%"
-        android:scaleType="fitCenter"
-        android:visibility="gone"/>
-  </android.support.percent.PercentRelativeLayout>
+      android:scaleType="fitCenter"/>
 
   <Button
-      android:layout_below="@+id/gifs"
+      android:layout_below="@+id/gifImageView1"
       android:id="@+id/createSlamzoomButton"
       android:text="@string/create_slamzoom"
       android:layout_width="match_parent"
@@ -61,12 +35,4 @@
       android:typeface="monospace"
       android:fontFamily="serif-monospace"
       android:background="@color/colorPrimary"/>
-
-  <!--<com.slamzoom.android.ui.start.CreateButton-->
-  <!--android:id="@+id/createSlamzoomButton"-->
-  <!--android:text="@string/create_slamzoom"-->
-  <!--android:layout_width="match_parent"-->
-  <!--android:layout_height="120dp"-->
-  <!--android:gravity="center"-->
-  <!--android:textSize="24dp"/>-->
 </android.support.percent.PercentRelativeLayout>
