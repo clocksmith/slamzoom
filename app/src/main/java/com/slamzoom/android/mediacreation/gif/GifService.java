@@ -26,7 +26,8 @@ import java.util.List;
 public class GifService extends Service {
   private static final String TAG = GifService.class.getSimpleName();
 
-  private static int MAIN_CACHE_SIZE = 5;
+  private static int MAIN_CACHE_SIZE = 10;
+  private static int PREVIEW_CACHE_SIZE = Effects.listEffects().size();;
 
   public class GifReadyEvent {
     public final String effectName;
@@ -62,7 +63,7 @@ public class GifService extends Service {
         .maximumSize(DebugUtils.DEBUG_USE_CACHE ? MAIN_CACHE_SIZE : 0)
         .build();
     mGifPreviewCache = CacheBuilder.newBuilder()
-        .maximumSize(DebugUtils.DEBUG_USE_CACHE ? Effects.listEffects().size() : 0)
+        .maximumSize(DebugUtils.DEBUG_USE_CACHE ? PREVIEW_CACHE_SIZE : 0)
         .build();
 
     mGifPreviewCreatorBackQueue = Lists.newArrayList();

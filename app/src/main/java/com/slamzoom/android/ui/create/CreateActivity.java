@@ -156,7 +156,7 @@ public class CreateActivity extends AppCompatActivity {
           updateGif();
         }
       } else if (mSelectedHotspot == null) {
-        finish();
+        launchImageChooser();
       }
     }
   }
@@ -271,6 +271,7 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   private void updateGif() {
+    mGifProgresses.put(mSelectedEffectName, 0d);
     mGifService.requestGif(GifConfig.newBuilder()
         .withHotspot(mSelectedHotspot)
         .withBitmap(mSelectedBitmap)
