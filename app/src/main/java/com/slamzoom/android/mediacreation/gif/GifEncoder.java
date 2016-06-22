@@ -1,7 +1,6 @@
 package com.slamzoom.android.mediacreation.gif;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -120,6 +119,7 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
     int nPix = len / 3;
     final byte[] indexedPixels = new byte[nPix];
 
+    mTracker.startNeoQuanting();
     final NeuQuant nq;
     final byte[] colorTable;
     if (mUserLocalColorTables || firstFrame) {
@@ -139,9 +139,10 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
       nq = mGloabalNq;
       colorTable = mGlobalColorTable;
     }
+    mTracker.stopNeoQuanting();
 
 //    Log.d(TAG, "mapping pixels...");
-    long start = System.currentTimeMillis();
+    mTracker.startMapping();
     int k = 0;
     for (int i = 0; i < nPix; i++) {
       int index =
@@ -150,6 +151,7 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
               frame.pixelBytes[k++] & 0xff);
       indexedPixels[i] = (byte) index;
     }
+    mTracker.stopMapping();
 //    Log.d(TAG, "finished mapping pixels in " + (System.currentTimeMillis() - start) + "ms");
 
     Runnable runnable = new Runnable() {

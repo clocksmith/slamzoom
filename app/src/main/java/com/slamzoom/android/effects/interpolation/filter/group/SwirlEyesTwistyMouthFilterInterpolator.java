@@ -5,7 +5,6 @@ import android.graphics.PointF;
 import com.google.common.collect.ImmutableList;
 import com.slamzoom.android.effects.interpolation.filter.BaseSwirlFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
-import com.slamzoom.android.effects.interpolation.filter.single.BulgeInAtHotspotFilterInterpolator;
 import com.slamzoom.android.interpolators.Interpolator;
 
 import java.util.List;

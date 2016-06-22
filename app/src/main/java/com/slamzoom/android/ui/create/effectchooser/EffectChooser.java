@@ -5,7 +5,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.LinearLayout;
 
 import com.google.common.collect.Lists;
@@ -14,7 +13,6 @@ import com.slamzoom.android.common.singletons.BusProvider;
 import com.slamzoom.android.mediacreation.gif.GifService;
 import com.squareup.otto.Subscribe;
 
-import java.io.IOException;
 import java.util.List;
 
 import butterknife.Bind;

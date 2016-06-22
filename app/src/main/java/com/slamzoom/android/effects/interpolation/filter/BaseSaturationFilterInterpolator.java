@@ -1,7 +1,7 @@
 package com.slamzoom.android.effects.interpolation.filter;
 
-import com.slamzoom.android.effects.interpolation.filter.parameters.HasSaturation;
 import com.slamzoom.android.effects.interpolation.filter.calculators.FloatCalculator;
+import com.slamzoom.android.effects.interpolation.filter.parameters.HasSaturation;
 import com.slamzoom.android.interpolators.Interpolator;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;

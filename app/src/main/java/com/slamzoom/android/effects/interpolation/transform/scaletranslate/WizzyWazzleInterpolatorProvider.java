@@ -1,9 +1,9 @@
 package com.slamzoom.android.effects.interpolation.transform.scaletranslate;
 
+import com.slamzoom.android.effects.interpolation.transform.ScaleAndTranslateInterpolatorProvider;
 import com.slamzoom.android.interpolators.ConstantInterpolator;
 import com.slamzoom.android.interpolators.Interpolator;
 import com.slamzoom.android.interpolators.custom.HalfInAndOutInterpolator;
-import com.slamzoom.android.effects.interpolation.transform.ScaleAndTranslateInterpolatorProvider;
 
 /**
  * Created by clocksmith on 3/17/16.

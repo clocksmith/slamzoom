@@ -2,14 +2,12 @@ package com.slamzoom.android.mediacreation;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
@@ -17,14 +15,13 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.slamzoom.android.common.singletons.ExecutorProvider;
-import com.slamzoom.android.common.utils.BitmapUtils;
-import com.slamzoom.android.common.utils.SzLog;
-import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.common.Constants;
+import com.slamzoom.android.common.singletons.ExecutorProvider;
 import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.PostProcessorUtils;
+import com.slamzoom.android.common.utils.SzLog;
 import com.slamzoom.android.effects.EffectStep;
+import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.interpolators.Interpolator;
 import com.slamzoom.android.interpolators.LinearInterpolator;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
@@ -268,7 +265,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
 
   private Bitmap transformSelectedBitmap(Matrix transformationMatrix) {
     Bitmap targetBitmap = Bitmap.createBitmap(
-        mSelectedBitmap.getWidth(), mSelectedBitmap.getHeight(), Bitmap.Config.RGB_565);
+        mSelectedBitmap.getWidth(), mSelectedBitmap.getHeight(), Bitmap.Config.ARGB_8888);
     Canvas canvas = new Canvas(targetBitmap);
     Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
     paint.setFilterBitmap(true);
@@ -277,7 +274,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   }
 
   private Bitmap transformAndScaleSelectedBitmap(Matrix transformationMatrix) {
-    Bitmap targetBitmap = Bitmap.createBitmap(mGifWidth, mGifHeight, Bitmap.Config.RGB_565);
+    Bitmap targetBitmap = Bitmap.createBitmap(mGifWidth, mGifHeight, Bitmap.Config.ARGB_8888);
     Canvas canvas = new Canvas(targetBitmap);
     Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
     paint.setFilterBitmap(true);

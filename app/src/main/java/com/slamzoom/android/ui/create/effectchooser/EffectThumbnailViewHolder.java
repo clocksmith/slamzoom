@@ -5,7 +5,6 @@ import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;

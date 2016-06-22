@@ -6,14 +6,14 @@ import android.util.Log;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.group.FilterInterpolatorGroup;
-import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.interpolators.Interpolator;
 import com.slamzoom.android.effects.interpolation.transform.ScaleAndTranslateInterpolatorProvider;
-import com.slamzoom.android.interpolators.custom.NoScaleInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.TranslateInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.translate.NoTranslateInterpolatorProvider;
+import com.slamzoom.android.interpolators.Interpolator;
+import com.slamzoom.android.interpolators.custom.NoScaleInterpolator;
 
 import java.util.List;
 

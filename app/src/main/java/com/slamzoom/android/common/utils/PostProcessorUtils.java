@@ -8,15 +8,12 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
-import android.util.Log;
 
 import com.google.common.collect.ImmutableList;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.mediacreation.WatermarkProvider;
 
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import jp.co.cyberagent.android.gpuimage.GPUImage;
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
@@ -71,7 +68,7 @@ public class PostProcessorUtils {
     GPUImage gpuImage = new GPUImage(context);
     gpuImage.setFilter(group);
     Bitmap filtered = gpuImage.getBitmapWithFilterApplied(original);
-    original.recycle();
+//    original.recycle();
     return filtered;
   }
 

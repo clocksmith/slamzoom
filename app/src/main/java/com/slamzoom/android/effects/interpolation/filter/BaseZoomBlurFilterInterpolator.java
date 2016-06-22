@@ -3,10 +3,10 @@ package com.slamzoom.android.effects.interpolation.filter;
 import android.graphics.PointF;
 
 import com.slamzoom.android.effects.imagefilters.GPUImageZoomBlurFilter;
-import com.slamzoom.android.effects.interpolation.filter.parameters.HasBlurSize;
-import com.slamzoom.android.effects.interpolation.filter.parameters.HasCenter;
 import com.slamzoom.android.effects.interpolation.filter.calculators.CenterCalculator;
 import com.slamzoom.android.effects.interpolation.filter.calculators.FloatCalculator;
+import com.slamzoom.android.effects.interpolation.filter.parameters.HasBlurSize;
+import com.slamzoom.android.effects.interpolation.filter.parameters.HasCenter;
 import com.slamzoom.android.interpolators.Interpolator;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;

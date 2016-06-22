@@ -1,7 +1,7 @@
 package com.slamzoom.android.effects.interpolation.transform.scaletranslate;
 
-import com.slamzoom.android.interpolators.Interpolator;
 import com.slamzoom.android.effects.interpolation.transform.ScaleAndTranslateInterpolatorProvider;
+import com.slamzoom.android.interpolators.Interpolator;
 import com.slamzoom.android.interpolators.custom.EaseInSlamHardInterpolator;
 
 /**

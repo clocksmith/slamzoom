@@ -3,7 +3,6 @@ package com.slamzoom.android.interpolators.spline;
 import android.graphics.PointF;
 
 import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Doubles;
 import com.slamzoom.android.interpolators.Interpolator;

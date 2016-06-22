@@ -11,9 +11,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.slamzoom.android.common.utils.BitmapUtils;
-import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.R;
+import com.slamzoom.android.common.Constants;
+import com.slamzoom.android.common.utils.BitmapUtils;
 import com.slamzoom.android.common.utils.DebugUtils;
 
 import java.io.FileNotFoundException;

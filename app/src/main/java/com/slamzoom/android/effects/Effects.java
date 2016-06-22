@@ -1,7 +1,5 @@
 package com.slamzoom.android.effects;
 
-import android.util.Log;
-
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;

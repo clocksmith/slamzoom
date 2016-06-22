@@ -5,7 +5,6 @@ import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.net.Uri;
@@ -40,8 +39,7 @@ public class BitmapUtils {
           BitmapUtils.calculateInSampleSize(options, scaledSelectedBitmapWidth, scaledSelectedBitmapHeight);
       options.inSampleSize = inSampleSize;
       options.inJustDecodeBounds = false;
-      options.inPreferredConfig = Bitmap.Config.RGB_565;
-      options.inPreferQualityOverSpeed = true;
+      options.inPreferredConfig = Bitmap.Config.ARGB_8888;
       return BitmapFactory.decodeFileDescriptor(assetFileDescriptor.getFileDescriptor(), null, options);
     } else {
       throw new FileNotFoundException("Could not load bitmap for path: " + uri.toString());
@@ -62,86 +60,6 @@ public class BitmapUtils {
     return scaledBitmap;
   }
 
-  public static Bitmap createScaledBitmap2(Bitmap bm, int newWidth, int newHeight) {
-    int width = bm.getWidth();
-    int height = bm.getHeight();
-    float scaleWidth = ((float) newWidth) / width;
-    float scaleHeight = ((float) newHeight) / height;
-    // CREATE A MATRIX FOR THE MANIPULATION
-    Matrix matrix = new Matrix();
-    // RESIZE THE BIT MAP
-    matrix.postScale(scaleWidth, scaleHeight);
-
-    // "RECREATE" THE NEW BITMAP
-    Bitmap resizedBitmap = Bitmap.createBitmap(
-        bm, 0, 0, width, height, matrix, false);
-    bm.recycle();
-    return resizedBitmap;
-  }
-
-  public static Bitmap createScaledBitmap3(Bitmap bitmap, int newWidth, int newHeight) {
-    Bitmap scaledBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888);
-
-    float ratioX = newWidth / (float) bitmap.getWidth();
-    float ratioY = newHeight / (float) bitmap.getHeight();
-    float middleX = newWidth / 2.0f;
-    float middleY = newHeight / 2.0f;
-
-    Matrix scaleMatrix = new Matrix();
-    scaleMatrix.setScale(ratioX, ratioY, middleX, middleY);
-
-    Canvas canvas = new Canvas(scaledBitmap);
-    canvas.setMatrix(scaleMatrix);
-    canvas.drawBitmap(
-        bitmap,
-        middleX - bitmap.getWidth() / 2,
-        middleY - bitmap.getHeight() / 2,
-        new Paint(Paint.FILTER_BITMAP_FLAG));
-
-    return scaledBitmap;
-  }
-
-  public static Bitmap createScaledBitmap4(Bitmap bitmap, int newWidth, int newHeight) {
-    Bitmap scaledBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888);
-
-    float scaleX = newWidth / (float) bitmap.getWidth();
-    float scaleY = newHeight / (float) bitmap.getHeight();
-    float pivotX = 0;
-    float pivotY = 0;
-
-    Matrix scaleMatrix = new Matrix();
-    scaleMatrix.setScale(scaleX, scaleY, pivotX, pivotY);
-
-    Canvas canvas = new Canvas(scaledBitmap);
-    canvas.setMatrix(scaleMatrix);
-    Paint paint = new Paint();
-    paint.setAntiAlias(true);
-    paint.setFilterBitmap(true);
-    paint.setDither(true  );
-    canvas.drawBitmap(bitmap, 0, 0, paint);
-
-    return scaledBitmap;
-  }
-
-  public static Bitmap createScaledBitmap5(Bitmap bitmap, int newWidth, int newHeight) {
-    Bitmap scaledBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888);
-
-    float scaleX = newWidth / (float) bitmap.getWidth();
-    float scaleY = newHeight / (float) bitmap.getHeight();
-    float pivotX = 0;
-    float pivotY = 0;
-
-    Matrix scaleMatrix = new Matrix();
-    scaleMatrix.setScale(scaleX, scaleY, pivotX, pivotY);
-
-    Canvas canvas = new Canvas(scaledBitmap);
-    canvas.setMatrix(scaleMatrix);
-    Paint paint = new Paint();
-    paint.setFilterBitmap(true);
-    canvas.drawBitmap(scaledBitmap, scaleMatrix, paint);
-
-    return scaledBitmap;
-  }
 
   private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
     // Raw height and width of image

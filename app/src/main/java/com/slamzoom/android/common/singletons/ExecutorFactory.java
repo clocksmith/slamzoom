@@ -1,9 +1,6 @@
 package com.slamzoom.android.common.singletons;
 
-import android.util.Log;
-
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;

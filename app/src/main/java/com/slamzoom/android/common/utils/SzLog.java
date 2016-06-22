@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.firebase.crash.FirebaseCrash;
-import com.slamzoom.android.mediacreation.gif.GifCreatorManager;
 import com.slamzoom.android.mediacreation.gif.GifService;
 import com.slamzoom.android.ui.create.effectchooser.EffectThumbnailViewHolder;
 
@@ -20,7 +19,7 @@ public class SzLog {
   private static Set<String> mAcceptedTags = ImmutableSet.of(
       EffectThumbnailViewHolder.class.getSimpleName(),
 //      GifCreatorManager.class.getSimpleName(),
-//      GifService.class.getSimpleName(),
+      GifService.class.getSimpleName(),
 
       "" // This is so we can always have a trailing comma.
   );

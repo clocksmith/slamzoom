@@ -2,11 +2,11 @@ package com.slamzoom.android.effects.interpolation.filter;
 
 import android.graphics.PointF;
 
+import com.slamzoom.android.effects.interpolation.filter.calculators.CenterCalculator;
+import com.slamzoom.android.effects.interpolation.filter.calculators.FloatCalculator;
 import com.slamzoom.android.effects.interpolation.filter.parameters.HasCenter;
 import com.slamzoom.android.effects.interpolation.filter.parameters.HasRadius;
 import com.slamzoom.android.effects.interpolation.filter.parameters.HasScale;
-import com.slamzoom.android.effects.interpolation.filter.calculators.CenterCalculator;
-import com.slamzoom.android.effects.interpolation.filter.calculators.FloatCalculator;
 import com.slamzoom.android.interpolators.Interpolator;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageBulgeDistortionFilter;

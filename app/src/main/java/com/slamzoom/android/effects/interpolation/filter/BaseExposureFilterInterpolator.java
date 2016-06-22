@@ -1,7 +1,7 @@
 package com.slamzoom.android.effects.interpolation.filter;
 
-import com.slamzoom.android.effects.interpolation.filter.parameters.HasExposure;
 import com.slamzoom.android.effects.interpolation.filter.calculators.ExposureCalculator;
+import com.slamzoom.android.effects.interpolation.filter.parameters.HasExposure;
 import com.slamzoom.android.interpolators.Interpolator;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageExposureFilter;

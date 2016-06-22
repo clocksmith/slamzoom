@@ -4,8 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.google.common.base.Strings;
-import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.common.singletons.BusProvider;
+import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.mediacreation.CreateMediaCallback;
 import com.slamzoom.android.mediacreation.MediaCreator;
 import com.slamzoom.android.mediacreation.MediaCreatorTracker;
@@ -59,7 +59,7 @@ public class GifCreator extends MediaCreator implements GifEncoder.ProgressUpdat
   @Override
   public GifFrame createFrame(Bitmap bitmap, int delayMillis) {
     mTracker.startPixelizing();
-    GifFrame frame =  new GifFrame(bitmap, delayMillis);
+    GifFrame frame =  new GifFrame(bitmap, delayMillis, mTracker);
     mTracker.stopPixelizing();
     if (!mIsPreview) {
       BusProvider.getInstance().post(
