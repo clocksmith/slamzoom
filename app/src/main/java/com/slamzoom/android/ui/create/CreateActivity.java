@@ -152,6 +152,7 @@ public class CreateActivity extends AppCompatActivity {
   public void onDestroy() {
     super.onDestroy();
     SzLog.f(TAG, "onDestroy()");
+    BusProvider.getInstance().unregister(this);
     if (mBound) {
       unbindService(mConnection);
       mBound = false;
@@ -221,7 +222,7 @@ public class CreateActivity extends AppCompatActivity {
   @Subscribe
   public void on(GifService.GifReadyEvent event) throws IOException {
     if (!event.preview) {
-      Log.wtf(TAG, event.effectName);
+      SzLog.f(TAG, event.effectName);
       if (mSelectedEffectName.equals(event.effectName)) {
         mZeroStateMessage.setVisibility(View.GONE);
         mSelectedGifBytes = event.gifBytes;

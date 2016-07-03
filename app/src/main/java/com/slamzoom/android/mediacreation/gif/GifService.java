@@ -60,35 +60,37 @@ public class GifService extends Service {
   public void onCreate() {
     super.onCreate();
     SzLog.f(TAG, "onCreate()");
-    BusProvider.getInstance().register(this);
+
+    mGifCache = CacheBuilder.newBuilder()
+        .maximumSize(DebugUtils.DEBUG_USE_CACHE ? MAIN_CACHE_SIZE : 0)
+        .build();
+    mGifPreviewCache = CacheBuilder.newBuilder()
+        .maximumSize(DebugUtils.DEBUG_USE_CACHE ? PREVIEW_CACHE_SIZE : 0)
+        .build();
+
+    mGifPreviewCreatorBackQueue = Lists.newArrayList();
+    mGifPreviewCreatorPriorityQueue = Lists.newArrayList();
   }
 
   @Override
   public void onDestroy() {
     super.onDestroy();
     SzLog.f(TAG, "onDestroy()");
-    BusProvider.getInstance().unregister(this);
-  }
-
-  @Override
-  public int onStartCommand(Intent intent, int flags, int startId) {
-    super.onStartCommand(intent, flags, startId);
-    SzLog.f(TAG, "onStartCommand()");
-    return START_STICKY;
+    stopCreatorsAndClearCaches();
   }
 
   @Nullable
   @Override
   public IBinder onBind(Intent intent) {
     SzLog.f(TAG, "onBind()");
-    init();
+    BusProvider.getInstance().register(this);
     return mBinder;
   }
 
   @Override
   public boolean onUnbind(Intent intent) {
     SzLog.f(TAG, "onUnbind()");
-    stopCreatorsAndClearCaches();
+    BusProvider.getInstance().unregister(this);
     return super.onUnbind(intent);
   }
 
@@ -125,18 +127,6 @@ public class GifService extends Service {
       BusProvider.getInstance().post(new GifGenerationSartEvent());
       mGifCreatorManager.start();
     }
-  }
-
-  private void init() {
-    mGifCache = CacheBuilder.newBuilder()
-        .maximumSize(DebugUtils.DEBUG_USE_CACHE ? MAIN_CACHE_SIZE : 0)
-        .build();
-    mGifPreviewCache = CacheBuilder.newBuilder()
-        .maximumSize(DebugUtils.DEBUG_USE_CACHE ? PREVIEW_CACHE_SIZE : 0)
-        .build();
-
-    mGifPreviewCreatorBackQueue = Lists.newArrayList();
-    mGifPreviewCreatorPriorityQueue = Lists.newArrayList();
   }
 
   private void stopCreatorsAndClearCaches() {
@@ -187,16 +177,17 @@ public class GifService extends Service {
   }
 
   private void stopPreviewCreators() {
-    for (GifCreatorManager previewManager : mGifPreviewCreatorBackQueue) {
+    stopCreatorQueue(mGifPreviewCreatorBackQueue);
+    stopCreatorQueue(mGifPreviewCreatorPriorityQueue);
+  }
+
+  private void stopCreatorQueue(List<GifCreatorManager> queue) {
+    for (GifCreatorManager previewManager : queue) {
       if (previewManager.isRunning()) {
         previewManager.stop();
       }
     }
-    for (GifCreatorManager previewManager : mGifPreviewCreatorPriorityQueue) {
-      if (previewManager.isRunning()) {
-        previewManager.stop();
-      }
-    }
+    queue.clear();
   }
   @Subscribe
   public void on(EffectThumbnailViewHolder.RequestGifPreviewEvent event) {
