@@ -55,46 +55,45 @@ public class GifService extends Service {
   private GifCreatorManager mGifCreatorManager;
   private List<GifCreatorManager> mGifPreviewCreatorBackQueue;
   private List<GifCreatorManager> mGifPreviewCreatorPriorityQueue;
-  private long mStart;
 
   @Override
   public void onCreate() {
     super.onCreate();
     SzLog.f(TAG, "onCreate()");
-    mGifCache = CacheBuilder.newBuilder()
-        .maximumSize(DebugUtils.DEBUG_USE_CACHE ? MAIN_CACHE_SIZE : 0)
-        .build();
-    mGifPreviewCache = CacheBuilder.newBuilder()
-        .maximumSize(DebugUtils.DEBUG_USE_CACHE ? PREVIEW_CACHE_SIZE : 0)
-        .build();
-
-    mGifPreviewCreatorBackQueue = Lists.newArrayList();
-    mGifPreviewCreatorPriorityQueue = Lists.newArrayList();
     BusProvider.getInstance().register(this);
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+    SzLog.f(TAG, "onDestroy()");
+    BusProvider.getInstance().unregister(this);
+  }
+
+  @Override
+  public int onStartCommand(Intent intent, int flags, int startId) {
+    super.onStartCommand(intent, flags, startId);
+    SzLog.f(TAG, "onStartCommand()");
+    return START_STICKY;
   }
 
   @Nullable
   @Override
   public IBinder onBind(Intent intent) {
     SzLog.f(TAG, "onBind()");
+    init();
     return mBinder;
   }
 
   @Override
   public boolean onUnbind(Intent intent) {
-    resetCreatorsAndCache();
+    SzLog.f(TAG, "onUnbind()");
+    stopCreatorsAndClearCaches();
     return super.onUnbind(intent);
   }
 
-  @Override
-  public int onStartCommand(Intent intent, int flags, int startId) {
-    SzLog.f(TAG, "onStartCommand()");
-    super.onStartCommand(intent, flags, startId);
-    return START_STICKY;
-  }
-
-  public void resetWithConfigs(List<GifConfig> configs) {
-    resetCreatorsAndCache();
+  public void requestPreviewGifs(List<GifConfig> configs) {
+    stopCreatorsAndClearCaches();
 
     if (DebugUtils.DEBUG_GENERATE_PREVIEWS) {
       mGifPreviewCreatorBackQueue = Lists.newArrayList(Lists.transform(configs, new Function<GifConfig, GifCreatorManager>() {
@@ -106,15 +105,42 @@ public class GifService extends Service {
     } else {
       mGifPreviewCreatorBackQueue = Lists.newArrayList();
     }
-
-    mStart = System.currentTimeMillis();
   }
 
-  private void resetCreatorsAndCache() {
-    if (mGifCreatorManager != null) {
-      mGifCreatorManager.cancel();
-      mGifCreatorManager = null;
+  public void requestMainGif(final GifConfig config) {
+    final String name = config.effectModel.getEffectTemplate().getName();
+    if (mGifCache.asMap().containsKey(name)) {
+      fireGifReadyEvent(name, false);
+    } else {
+      if (mGifCreatorManager != null && !mGifCreatorManager.getName().equals(name)) {
+        mGifCreatorManager.stop();
+        mGifCreatorManager = getManager(config, false, mGifCache);
+      } else if (mGifCreatorManager == null) {
+        mGifCreatorManager = getManager(config, false, mGifCache);
+      } else {
+        return;
+      }
+
+      stopPreviewCreators();
+      BusProvider.getInstance().post(new GifGenerationSartEvent());
+      mGifCreatorManager.start();
     }
+  }
+
+  private void init() {
+    mGifCache = CacheBuilder.newBuilder()
+        .maximumSize(DebugUtils.DEBUG_USE_CACHE ? MAIN_CACHE_SIZE : 0)
+        .build();
+    mGifPreviewCache = CacheBuilder.newBuilder()
+        .maximumSize(DebugUtils.DEBUG_USE_CACHE ? PREVIEW_CACHE_SIZE : 0)
+        .build();
+
+    mGifPreviewCreatorBackQueue = Lists.newArrayList();
+    mGifPreviewCreatorPriorityQueue = Lists.newArrayList();
+  }
+
+  private void stopCreatorsAndClearCaches() {
+    stopMainCreator();
     stopPreviewCreators();
 
     mGifCache.invalidateAll();
@@ -138,14 +164,11 @@ public class GifService extends Service {
                 int i = 0;
                 for (GifCreatorManager manager : mGifPreviewCreatorPriorityQueue) {
                   if (manager.getName().equals(name)) {
-                    SzLog.f(TAG, "finished " + name + " in " + manager.getTracker().getTotalString());
+//                    SzLog.f(TAG, "finished " + name + " in " + manager.getTracker().getTotalString());
                     mGifPreviewCreatorPriorityQueue.remove(i);
                     break;
                   }
                   i++;
-                }
-                if (mGifPreviewCreatorPriorityQueue.isEmpty()) {
-                  SzLog.f(TAG, "time since starting first preview: " + (System.currentTimeMillis() - mStart) + "ms");
                 }
               }
               continueGifPreviewGeneration();
@@ -154,23 +177,12 @@ public class GifService extends Service {
         });
   }
 
-  public void requestGif(final GifConfig config) {
-    final String name = config.effectModel.getEffectTemplate().getName();
-    if (mGifCache.asMap().containsKey(name)) {
-      fireGifReadyEvent(name, false);
-    } else {
-      if (mGifCreatorManager != null && !mGifCreatorManager.getName().equals(name)) {
+  private void stopMainCreator() {
+    if (mGifCreatorManager != null) {
+      if (mGifCreatorManager.isRunning()) {
         mGifCreatorManager.stop();
-        mGifCreatorManager = getManager(config, false, mGifCache);
-      } else if (mGifCreatorManager == null) {
-        mGifCreatorManager = getManager(config, false, mGifCache);
-      } else {
-        return;
       }
-
-      stopPreviewCreators();
-      BusProvider.getInstance().post(new GifGenerationSartEvent());
-      mGifCreatorManager.start();
+      mGifCreatorManager = null;
     }
   }
 
@@ -253,7 +265,7 @@ public class GifService extends Service {
           .withEndScale(currentManager.getEndScale())
           .log(this);
     } else {
-      SzLog.e(TAG, "Currentx GifCreatorManager for onGifReadyEvent is null!");
+      SzLog.e(TAG, "Current GifCreatorManager for onGifReadyEvent is null!");
     }
   }
 

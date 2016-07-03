@@ -31,7 +31,6 @@ import android.widget.TextView;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.BackInterceptingEditText;
 import com.slamzoom.android.common.Constants;
@@ -288,7 +287,7 @@ public class CreateActivity extends AppCompatActivity {
 
   private void udpateMainGif() {
     mGifProgresses.put(mSelectedEffectName, 0d);
-    mGifService.requestGif(GifConfig.newBuilder()
+    mGifService.requestMainGif(GifConfig.newBuilder()
         .withHotspot(mSelectedHotspot)
         .withBitmap(mSelectedBitmap)
         .withEffectModel(EffectModelProvider.getEffectModel(mSelectedEffectName))
@@ -297,7 +296,7 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   private void updatePreviewGifs() {
-    mGifService.resetWithConfigs(Lists.transform(EffectModelProvider.getEffectModels(),
+    mGifService.requestPreviewGifs(Lists.transform(EffectModelProvider.getEffectModels(),
         new Function<EffectModel, GifConfig>() {
           @Override
           public GifConfig apply(EffectModel model) {

@@ -41,7 +41,7 @@ public class LzwEncoder {
   int n_bits; // number of bits/code
   int maxbits = BITS; // user settable max # bits/code
   int maxcode; // maximum code, given n_bits
-  int maxmaxcode = 1 << BITS; // should NEVER requestGif this code
+  int maxmaxcode = 1 << BITS; // should NEVER requestMainGif this code
 
   int[] htab = new int[HSIZE];
   int[] codetab = new int[HSIZE];
