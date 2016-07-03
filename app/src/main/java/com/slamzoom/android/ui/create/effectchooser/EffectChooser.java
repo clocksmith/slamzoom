@@ -51,6 +51,7 @@ public class EffectChooser extends LinearLayout {
       }
       mAdapter = new EffectThumbnailRecyclerViewAdapter(Lists.newArrayList(effectModels));
       mRecyclerView.setAdapter(mAdapter);
+      mAdapter.notifyDataSetChanged();
   }
 
   @Subscribe

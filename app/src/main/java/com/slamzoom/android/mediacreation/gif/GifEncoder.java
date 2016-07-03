@@ -7,7 +7,7 @@ import com.google.common.collect.Sets;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.singletons.ExecutorProvider;
 import com.slamzoom.android.common.utils.SzLog;
-import com.slamzoom.android.mediacreation.MediaCreatorTracker;
+import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
 import com.slamzoom.android.mediacreation.MediaEncoder;
 
 import java.io.ByteArrayOutputStream;
@@ -26,9 +26,14 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
     void onProgressUpdate(double amountToUpdate);
   }
 
+  public static final String STOPWATCH_ENCODING = "encoding";
+  public static final String STOPWATCH_QUANTING = "quanting";
+  public static final String STOPWATCH_MAPPING = "mapping";
+  public static final String STOPWATCH_WRITING= "writing";
+
   private static final int COLOR_DEPTH = 8; // number of bit planes
   private static final int PAL_SIZE = 7; // color table size (bits-1)
-  private static final int SAMPLE = 10;
+  private static final int SAMPLE = 20;
 
   private int mWidth;
   private int mHeight;
@@ -47,7 +52,7 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
   private ProgressUpdateListener mProgressUpdateListener;
   private long mEncodingFramesStart;
 
-  private MediaCreatorTracker mTracker;
+  private MultiPhaseStopwatch mTracker;
 
   public GifEncoder() {
     this(Constants.DEFAULT_USE_LOCAL_COLOR_PALETTE);
@@ -59,7 +64,7 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
     mUserLocalColorTables = useLocalColorTables;
   }
 
-  public void setTracker(MediaCreatorTracker tracker) {
+  public void setTracker(MultiPhaseStopwatch tracker) {
     mTracker = tracker;
   }
 
@@ -98,7 +103,7 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
 
     GetFirstFrameWriterTask getFirstFrameWriterTask = new GetFirstFrameWriterTask();
     mTasks.add(getFirstFrameWriterTask);
-    mTracker.startEncoding();
+    mTracker.start(STOPWATCH_ENCODING);
     getFirstFrameWriterTask.executeOnExecutor(ExecutorProvider.getEncodeFramesExecutor());
   }
 
@@ -117,9 +122,10 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
 
     int len = frame.pixelBytes.length;
     int nPix = len / 3;
+//    final ByteBuffer indexedPixelsBuffer = ByteBuffer.allocate(nPix);
     final byte[] indexedPixels = new byte[nPix];
 
-    mTracker.startNeoQuanting();
+    mTracker.start(STOPWATCH_QUANTING);
     final NeuQuant nq;
     final byte[] colorTable;
     if (mUserLocalColorTables || firstFrame) {
@@ -139,20 +145,19 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
       nq = mGloabalNq;
       colorTable = mGlobalColorTable;
     }
-    mTracker.stopNeoQuanting();
+    mTracker.stop(STOPWATCH_QUANTING);
 
-//    Log.d(TAG, "mapping pixels...");
-    mTracker.startMapping();
+    mTracker.start(STOPWATCH_MAPPING);
     int k = 0;
     for (int i = 0; i < nPix; i++) {
       int index =
           nq.map(frame.pixelBytes[k++] & 0xff,
               frame.pixelBytes[k++] & 0xff,
               frame.pixelBytes[k++] & 0xff);
+//      indexedPixelsBuffer.put((byte) index);
       indexedPixels[i] = (byte) index;
     }
-    mTracker.stopMapping();
-//    Log.d(TAG, "finished mapping pixels in " + (System.currentTimeMillis() - start) + "ms");
+    mTracker.stop(STOPWATCH_MAPPING);
 
     Runnable runnable = new Runnable() {
       @Override
@@ -168,6 +173,7 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
           if (!firstFrame) {
             writePalette(colorTable);
           }
+//          writePixels(indexedPixelsBuffer.array());
           writePixels(indexedPixels);
         } catch (IOException e) {
           SzLog.e(TAG, "Could not write to output stream", e);
@@ -338,11 +344,11 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
 //      Log.wtf(TAG, "executed frame writer task for frame: " + mFrameIndex);
 
       if (mTotalNumFrameWritersToAdd.decrementAndGet() == 0) {
-        mTracker.stopEncoding();
+        mTracker.stop(STOPWATCH_ENCODING);
 //        Log.wtf(TAG, "Finished encoding frames in " + (System.currentTimeMillis() - mEncodingFramesStart) + "ms");
         WriteFramesTask writeFramesTask = new WriteFramesTask();
         mTasks.add(writeFramesTask);
-        mTracker.startWriting();
+        mTracker.start(STOPWATCH_WRITING);
         new WriteFramesTask().execute();
       }
     }
@@ -350,8 +356,6 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
     private class WriteFramesTask extends AsyncTask<Void, Void, Void> {
       @Override
       protected Void doInBackground(Void... params) {
-        long start = System.currentTimeMillis();
-
         try {
           writeString("GIF89a");
         } catch (IOException e) {
@@ -373,7 +377,7 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
         }
 
         byte[] gifBytes = mOut.toByteArray();
-        mTracker.stopWriting();
+        mTracker.stop(STOPWATCH_WRITING);
 //        Log.wtf(TAG, "Finished writing frames in " + (System.currentTimeMillis() - start) + "ms");
         mCallback.onCreateGif(gifBytes);
         return null;

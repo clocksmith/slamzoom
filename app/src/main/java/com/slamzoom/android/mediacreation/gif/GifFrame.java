@@ -2,7 +2,7 @@ package com.slamzoom.android.mediacreation.gif;
 
 import android.graphics.Bitmap;
 
-import com.slamzoom.android.mediacreation.MediaCreatorTracker;
+import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
 import com.slamzoom.android.mediacreation.MediaFrame;
 
 import java.nio.ByteBuffer;
@@ -11,26 +11,25 @@ import java.nio.ByteBuffer;
  * Created by clocksmith on 3/11/16.
  */
 public class GifFrame extends MediaFrame {
-//  public Bitmap bitmap;
+  public static final String STOPWATCH_CONVERTING_PIXELS_TO_BYTES = "pixel to byte converting";
+
   public int delayMillis;
   byte[] pixelBytes;
   int width;
   int height;
-  private MediaCreatorTracker mTracker;
+  private MultiPhaseStopwatch mTracker;
 
-  public GifFrame(Bitmap bitmap, int delayMillis, MediaCreatorTracker tracker) {
+  public GifFrame(Bitmap bitmap, int delayMillis, MultiPhaseStopwatch tracker) {
     width = bitmap.getWidth();
     height = bitmap.getHeight();
     mTracker = tracker;
 
-    mTracker.startGettingPixels();
     int[] pixelInts = new int[width * height];
     bitmap.getPixels(pixelInts, 0, width, 0, 0, width, height);
     bitmap.recycle();
-    mTracker.stopGettingPixels();
-    mTracker.startConvertingToBytes();
+    mTracker.start(STOPWATCH_CONVERTING_PIXELS_TO_BYTES);
     this.pixelBytes = getPixelBytes(pixelInts);
-    mTracker.stopConvertingToBytes();
+    mTracker.stop(STOPWATCH_CONVERTING_PIXELS_TO_BYTES);
 
     this.delayMillis = delayMillis;
   }

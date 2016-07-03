@@ -38,6 +38,9 @@ import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
 public abstract class MediaCreator<E extends MediaEncoder> {
   public static final String TAG = MediaCreator.class.getSimpleName();
 
+  public static final String STOPWATCH_TRANSFORMING = "transforming";
+  public static final String STOPWATCH_FILTERING = "filtering";
+
   protected long mStart;
   protected List<List<MediaFrame>> mAllFrames;
   protected AtomicInteger mTotalNumFramesToAdd;
@@ -54,7 +57,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   protected EffectModel mEffectModel;
   protected CreateMediaCallback mCallback;
   protected int mNumTilesInRow;
-  protected MediaCreatorTracker mTracker;
+  protected MultiPhaseStopwatch mTracker;
 
   public MediaCreator(
       Context context,
@@ -62,7 +65,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       EffectModel effectModel,
       int gifSize,
       CreateMediaCallback callback,
-      MediaCreatorTracker tracker) {
+      MultiPhaseStopwatch tracker) {
     mContext = context;
     mSelectedBitmap = selectedBitmap;
     mEffectModel = effectModel;
@@ -124,9 +127,9 @@ public abstract class MediaCreator<E extends MediaEncoder> {
 //    Bitmap scaledFrameBitmap = Bitmap.createScaledBitmap(frameBitmap, mGifWidth, mGifHeight, true);
 //    Bitmap scaledFrameBitmap = BitmapUtils.createScaledBitmap3(frameBitmap, mGifWidth, mGifHeight);
 
-    mTracker.startTransforming();
+    mTracker.start(STOPWATCH_TRANSFORMING);
     Bitmap scaledFrameBitmap = transformAndScaleSelectedBitmap(transformationMatrix);
-    mTracker.stopTransforming();
+    mTracker.stop(STOPWATCH_TRANSFORMING);
 
     if (DebugUtils.DEBUG_SAVE_SCALED_FRAMES_AS_BITMAPS && !mIsPreview) {
       DebugUtils.saveFrameAsBitmap(scaledFrameBitmap, "scaled", frameIndex);
@@ -136,7 +139,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       scaledFrameBitmap = PostProcessorUtils.applyTiling(mNumTilesInRow, scaledFrameBitmap);
     }
 
-    mTracker.startFiltering();
+    mTracker.start(STOPWATCH_FILTERING);
     Bitmap filteredFrameBitmap;
     if (!filters.isEmpty()) {
       filteredFrameBitmap = PostProcessorUtils.applyFilters(scaledFrameBitmap, filters);
@@ -144,7 +147,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     } else {
       filteredFrameBitmap = scaledFrameBitmap;
     }
-    mTracker.stopFiltering();
+    mTracker.stop(STOPWATCH_FILTERING);
 
     if (!Strings.isNullOrEmpty(textToRender)) {
       delayMillis += 1000;

@@ -8,7 +8,7 @@ import com.slamzoom.android.common.singletons.BusProvider;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.mediacreation.CreateMediaCallback;
 import com.slamzoom.android.mediacreation.MediaCreator;
-import com.slamzoom.android.mediacreation.MediaCreatorTracker;
+import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 
 /**
@@ -20,6 +20,8 @@ public class GifCreator extends MediaCreator implements GifEncoder.ProgressUpdat
   public interface CreateGifCallback extends CreateMediaCallback {
     void onCreateGif(byte[] gifBytes);
   }
+
+  public static final String STOPWATCH_PIXELIZING = "pixelizing";
 
   @Override
   public void onProgressUpdate(double amountToUpdate) {
@@ -40,7 +42,7 @@ public class GifCreator extends MediaCreator implements GifEncoder.ProgressUpdat
       GifConfig gifConfig,
       int gifSize,
       CreateGifCallback callback,
-      MediaCreatorTracker tracker) {
+      MultiPhaseStopwatch tracker) {
     super(context, gifConfig.bitmap, getAdjustedEffectModel(gifConfig), gifSize, callback, tracker);
   }
 
@@ -58,9 +60,9 @@ public class GifCreator extends MediaCreator implements GifEncoder.ProgressUpdat
 
   @Override
   public GifFrame createFrame(Bitmap bitmap, int delayMillis) {
-    mTracker.startPixelizing();
+    mTracker.start(STOPWATCH_PIXELIZING);
     GifFrame frame =  new GifFrame(bitmap, delayMillis, mTracker);
-    mTracker.stopPixelizing();
+    mTracker.stop(STOPWATCH_PIXELIZING);
     if (!mIsPreview) {
       BusProvider.getInstance().post(
           new ProgressUpdateEvent(mEffectModel.getEffectTemplate().getName(), 1.0 / 3 / mTotalNumFrames));

@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.utils.SzLog;
-import com.slamzoom.android.mediacreation.MediaCreatorTracker;
+import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
 
 /**
  * Created by clocksmith on 6/12/16.
@@ -17,10 +17,11 @@ public class GifCreatorManager {
   private boolean mIsPreview;
   private int mGifSize;
   private GifCreator.CreateGifCallback mCallback;
-  private MediaCreatorTracker mTracker;
+  private MultiPhaseStopwatch mTracker;
 
   private GifCreator mGifCreator;
   private boolean mIsRunning;
+  private boolean mHasStopped;
 
   public GifCreatorManager(
       Context context,
@@ -32,7 +33,7 @@ public class GifCreatorManager {
     mIsPreview = preview;
     mGifSize = preview ? Constants.DEFAULT_GIF_PREVIEW_SIZE_PX : Constants.DEFAULT_GIF_SIZE_PX;
     mCallback = callback;
-    mTracker = new MediaCreatorTracker();
+    mTracker = new MultiPhaseStopwatch();
   }
 
   public void start() {
@@ -44,7 +45,9 @@ public class GifCreatorManager {
 
   public void stop() {
     SzLog.f(TAG, "stop() " + (mIsPreview ? "preview_" : "") + mGifConfig.effectModel.getEffectTemplate().getName());
+    mHasStopped = true;
     mIsRunning = false;
+    mTracker.stopAll();
     if (mGifCreator != null) {
       mGifCreator.cancel();
     }
@@ -59,11 +62,22 @@ public class GifCreatorManager {
     return mIsRunning;
   }
 
+  public boolean hasStopped() {
+    return mHasStopped;
+  }
+
+  public int getGifSize() {
+    return mGifSize;
+  }
+
   public String getName() {
     return mGifConfig.effectModel.getEffectTemplate().getName();
   }
 
-  public MediaCreatorTracker getTracker() {
+  public float getEndScale() {
+    return (float) mGifConfig.hotspot.width() / mGifConfig.bitmap.getWidth();
+  }
+  public MultiPhaseStopwatch getTracker() {
     return mTracker;
   }
 }

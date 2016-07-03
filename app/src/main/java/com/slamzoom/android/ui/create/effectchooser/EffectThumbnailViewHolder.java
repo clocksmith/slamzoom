@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.singletons.BusProvider;
 import com.slamzoom.android.common.utils.AnimationUtils;
+import com.slamzoom.android.common.utils.SzAnalytics;
 import com.slamzoom.android.common.utils.SzLog;
 import com.squareup.otto.Subscribe;
 
@@ -99,6 +100,11 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
     itemView.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+            SzAnalytics.newSelectContentEvent()
+                .withContentType("effect")
+                .withItemId(name)
+                .log(itemView.getContext());
+
         BusProvider.getInstance().post(new ItemClickEvent(name, getAdapterPosition()));
         expandTab();
       }

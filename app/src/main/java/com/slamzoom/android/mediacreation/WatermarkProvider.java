@@ -14,7 +14,7 @@ public class WatermarkProvider {
 
   public static Bitmap getWatermarkBitmap(Context context) {
     if (mWatermarkBitmap == null) {
-      mWatermarkBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.sz_blk);
+      mWatermarkBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.sz_wm);
     }
     return mWatermarkBitmap;
   }

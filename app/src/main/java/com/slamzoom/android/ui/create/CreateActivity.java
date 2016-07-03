@@ -31,6 +31,7 @@ import android.widget.TextView;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.BackInterceptingEditText;
 import com.slamzoom.android.common.Constants;
@@ -94,13 +95,17 @@ public class CreateActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    SzLog.f(TAG, "onCreate()");
     setContentView(R.layout.activity_create);
     ButterKnife.bind(this);
     BusProvider.getInstance().register(this);
+
     mConnection = new GifServiceConnection();
 
     setSupportActionBar(mActionBar);
     assert getSupportActionBar() != null;
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    getSupportActionBar().setHomeButtonEnabled(true);
     getSupportActionBar().setTitle(getString(R.string.app_name));
     mAddTextView = new AddTextView(this);
     getSupportActionBar().setCustomView(mAddTextView,
@@ -119,6 +124,8 @@ public class CreateActivity extends AppCompatActivity {
     }
 
     bindService(new Intent(this, GifService.class), mConnection, Context.BIND_AUTO_CREATE);
+
+    mEffectChooser.set(EffectModelProvider.getEffectModels());
 
     if (mSelectedBitmap == null) {
       launchImageChooser();
@@ -145,7 +152,9 @@ public class CreateActivity extends AppCompatActivity {
   @Override
   public void onDestroy() {
     super.onDestroy();
+    SzLog.f(TAG, "onDestroy()");
     if (mBound) {
+      mGifService.stop();
       unbindService(mConnection);
       mBound = false;
     }
@@ -162,7 +171,7 @@ public class CreateActivity extends AppCompatActivity {
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
       case android.R.id.home:
-        handleUpOrBackPressed();
+        onBackPressed();
         return true;
       case R.id.action_add_text:
         handleAddTextPressed();
@@ -197,7 +206,8 @@ public class CreateActivity extends AppCompatActivity {
   @Override
   public void onBackPressed() {
     if (mIsAddTextViewShowing) {
-      handleUpOrBackPressed();
+      KeyboardUtils.hideKeyboard(this);
+      showAddTextView(false);
     } else {
       super.onBackPressed();
     }
@@ -235,7 +245,7 @@ public class CreateActivity extends AppCompatActivity {
 
   @Subscribe
   public void on(BackInterceptingEditText.OnBackPressedEvent event) {
-    handleUpOrBackPressed();
+    onBackPressed();
   }
 
   private void handleIncomingUri(Uri uri) {
@@ -273,11 +283,6 @@ public class CreateActivity extends AppCompatActivity {
   private void handleAddTextConfirmed() {
     mSelectedEndText = mAddTextView.getEditText().getText().toString();
     updateMainAndPreviewGifs();
-    KeyboardUtils.hideKeyboard(this);
-    showAddTextView(false);
-  }
-
-  private void handleUpOrBackPressed() {
     KeyboardUtils.hideKeyboard(this);
     showAddTextView(false);
   }
@@ -346,8 +351,8 @@ public class CreateActivity extends AppCompatActivity {
 
   private void showAddTextView(boolean show) {
     assert getSupportActionBar() != null;
-    getSupportActionBar().setDisplayHomeAsUpEnabled(show);
-    getSupportActionBar().setHomeButtonEnabled(show);
+//    getSupportActionBar().setDisplayHomeAsUpEnabled(show);
+//    getSupportActionBar().setHomeButtonEnabled(show);
     getSupportActionBar().setDisplayShowCustomEnabled(show);
     getSupportActionBar().setDisplayShowTitleEnabled(!show);
     mIsAddTextViewShowing = show;
