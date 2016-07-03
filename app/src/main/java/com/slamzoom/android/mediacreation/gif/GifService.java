@@ -81,6 +81,12 @@ public class GifService extends Service {
   }
 
   @Override
+  public boolean onUnbind(Intent intent) {
+    resetCreatorsAndCache();
+    return super.onUnbind(intent);
+  }
+
+  @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     SzLog.f(TAG, "onStartCommand()");
     super.onStartCommand(intent, flags, startId);
@@ -111,8 +117,8 @@ public class GifService extends Service {
     }
     stopPreviewCreators();
 
-    mGifCache.asMap().clear();
-    mGifPreviewCache.asMap().clear();
+    mGifCache.invalidateAll();
+    mGifPreviewCache.invalidateAll();
   }
 
   private GifCreatorManager getManager(GifConfig config, final boolean preview, final Cache<String, byte[]> cache) {
@@ -166,11 +172,6 @@ public class GifService extends Service {
       BusProvider.getInstance().post(new GifGenerationSartEvent());
       mGifCreatorManager.start();
     }
-  }
-
-  public void stop() {
-    resetCreatorsAndCache();
-    stopSelf();
   }
 
   private void stopPreviewCreators() {
@@ -252,7 +253,7 @@ public class GifService extends Service {
           .withEndScale(currentManager.getEndScale())
           .log(this);
     } else {
-      SzLog.e(TAG, "Current GifCreatorManager for onGifReadyEvent is null!");
+      SzLog.e(TAG, "Currentx GifCreatorManager for onGifReadyEvent is null!");
     }
   }
 

@@ -154,7 +154,6 @@ public class CreateActivity extends AppCompatActivity {
     super.onDestroy();
     SzLog.f(TAG, "onDestroy()");
     if (mBound) {
-      mGifService.stop();
       unbindService(mConnection);
       mBound = false;
     }
@@ -216,7 +215,6 @@ public class CreateActivity extends AppCompatActivity {
   @Subscribe
   public void on(EffectThumbnailViewHolder.ItemClickEvent event) throws IOException {
     mSelectedEffectName = event.effectName;
-    mZeroStateMessage.setVisibility(View.GONE);
     updateProgressBar();
     udpateMainGif();
   }
@@ -224,6 +222,7 @@ public class CreateActivity extends AppCompatActivity {
   @Subscribe
   public void on(GifService.GifReadyEvent event) throws IOException {
     if (!event.preview) {
+      Log.wtf(TAG, event.effectName);
       if (mSelectedEffectName.equals(event.effectName)) {
         mZeroStateMessage.setVisibility(View.GONE);
         mSelectedGifBytes = event.gifBytes;
@@ -362,11 +361,18 @@ public class CreateActivity extends AppCompatActivity {
   private void showCurrentGif() {
     if (mGifAreaView != mProgressBar) {
       mProgressBar.setVisibility(View.GONE);
+    } else {
+      mGifImageView.setImageDrawable(null);
     }
-    AnimatorSet scaleDown = AnimationUtils.getScaleDownSet(mGifAreaView);
-    scaleDown.addListener(new AnimationUtils.OnAnimationEndOnlyListener() {
+    if (mGifAreaView != mZeroStateMessage) {
+      mZeroStateMessage.setVisibility(View.GONE);
+    } else {
+      mGifImageView.setImageDrawable(null);
+    }
+
+    final Runnable scaleUp = new Runnable() {
       @Override
-      public void onAnimationEnd(Animator animation) {
+      public void run() {
         try {
           mProgressBar.setVisibility(View.GONE);
           mGifImageView.setImageDrawable(new GifDrawable(mSelectedGifBytes));
@@ -374,10 +380,22 @@ public class CreateActivity extends AppCompatActivity {
           SzLog.e(TAG, "Could not set gif", e);
         }
         AnimationUtils.getScaleUpSet(mGifImageView).start();
+        mGifAreaView = mGifImageView;
       }
-    });
-    scaleDown.start();
-    mGifAreaView = mGifImageView;
+    };
+
+    if (mGifAreaView != mZeroStateMessage) {
+      final AnimatorSet scaleDown = AnimationUtils.getScaleDownSet(mGifAreaView);
+      scaleDown.addListener(new AnimationUtils.OnAnimationEndOnlyListener() {
+        @Override
+        public void onAnimationEnd(Animator animation) {
+          scaleUp.run();
+        }
+      });
+      scaleDown.start();
+    } else {
+      scaleUp.run();
+    }
   }
 
   private void showProgressBar() {
