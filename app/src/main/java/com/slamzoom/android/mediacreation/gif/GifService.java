@@ -26,17 +26,17 @@ import java.util.List;
 public class GifService extends Service {
   private static final String TAG = GifService.class.getSimpleName();
 
-  private static int MAIN_CACHE_SIZE = 10;
-  private static int PREVIEW_CACHE_SIZE = Effects.listEffects().size();;
+  private static final int MAIN_CACHE_SIZE = 10;
+  private static final int THUMBNAIL_CACHE_SIZE = Effects.listEffects().size();;
 
   public class GifReadyEvent {
     public final String effectName;
     public final byte[] gifBytes;
-    public boolean preview;
-    public GifReadyEvent(String effectName, byte[] gifBytes, boolean preview) {
+    public boolean thumbnail;
+    public GifReadyEvent(String effectName, byte[] gifBytes, boolean thumbnail) {
       this.effectName = effectName;
       this.gifBytes = gifBytes;
-      this.preview = preview;
+      this.thumbnail = thumbnail;
     }
   }
 
@@ -50,26 +50,26 @@ public class GifService extends Service {
 
   private final IBinder mBinder = new GifServiceBinder();
 
-  private Cache<String, byte[]> mGifCache;
-  private Cache<String, byte[]> mGifPreviewCache;
+  private Cache<String, byte[]> mMainGifCache;
+  private Cache<String, byte[]> mThumbnailGifCache;
   private GifCreatorManager mGifCreatorManager;
-  private List<GifCreatorManager> mGifPreviewCreatorBackQueue;
-  private List<GifCreatorManager> mGifPreviewCreatorPriorityQueue;
+  private List<GifCreatorManager> mThumbnailGifCreatorBackQueue;
+  private List<GifCreatorManager> mThumbnailGifCreatorPriorityQueue;
 
   @Override
   public void onCreate() {
     super.onCreate();
     SzLog.f(TAG, "onCreate()");
 
-    mGifCache = CacheBuilder.newBuilder()
+    mMainGifCache = CacheBuilder.newBuilder()
         .maximumSize(DebugUtils.DEBUG_USE_CACHE ? MAIN_CACHE_SIZE : 0)
         .build();
-    mGifPreviewCache = CacheBuilder.newBuilder()
-        .maximumSize(DebugUtils.DEBUG_USE_CACHE ? PREVIEW_CACHE_SIZE : 0)
+    mThumbnailGifCache = CacheBuilder.newBuilder()
+        .maximumSize(DebugUtils.DEBUG_USE_CACHE ? THUMBNAIL_CACHE_SIZE : 0)
         .build();
 
-    mGifPreviewCreatorBackQueue = Lists.newArrayList();
-    mGifPreviewCreatorPriorityQueue = Lists.newArrayList();
+    mThumbnailGifCreatorBackQueue = Lists.newArrayList();
+    mThumbnailGifCreatorPriorityQueue = Lists.newArrayList();
   }
 
   @Override
@@ -94,36 +94,36 @@ public class GifService extends Service {
     return super.onUnbind(intent);
   }
 
-  public void requestPreviewGifs(List<GifConfig> configs) {
+  public void requestThumbnailGifs(List<GifConfig> configs) {
     stopCreatorsAndClearCaches();
 
-    if (DebugUtils.DEBUG_GENERATE_PREVIEWS) {
-      mGifPreviewCreatorBackQueue = Lists.newArrayList(Lists.transform(configs, new Function<GifConfig, GifCreatorManager>() {
+    if (DebugUtils.DEBUG_GENERATE_THUMBNAIL_GIFS) {
+      mThumbnailGifCreatorBackQueue = Lists.newArrayList(Lists.transform(configs, new Function<GifConfig, GifCreatorManager>() {
         @Override
         public GifCreatorManager apply(GifConfig input) {
-          return getManager(input, true, mGifPreviewCache);
+          return getManager(input, true, mThumbnailGifCache);
         }
       }));
     } else {
-      mGifPreviewCreatorBackQueue = Lists.newArrayList();
+      mThumbnailGifCreatorBackQueue = Lists.newArrayList();
     }
   }
 
   public void requestMainGif(final GifConfig config) {
     final String name = config.effectModel.getEffectTemplate().getName();
-    if (mGifCache.asMap().containsKey(name)) {
+    if (mMainGifCache.asMap().containsKey(name)) {
       fireGifReadyEvent(name, false);
     } else {
       if (mGifCreatorManager != null && !mGifCreatorManager.getName().equals(name)) {
         mGifCreatorManager.stop();
-        mGifCreatorManager = getManager(config, false, mGifCache);
+        mGifCreatorManager = getManager(config, false, mMainGifCache);
       } else if (mGifCreatorManager == null) {
-        mGifCreatorManager = getManager(config, false, mGifCache);
+        mGifCreatorManager = getManager(config, false, mMainGifCache);
       } else {
         return;
       }
 
-      stopPreviewCreators();
+      stopThumbnailCreators();
       BusProvider.getInstance().post(new GifGenerationSartEvent());
       mGifCreatorManager.start();
     }
@@ -131,37 +131,37 @@ public class GifService extends Service {
 
   private void stopCreatorsAndClearCaches() {
     stopMainCreator();
-    stopPreviewCreators();
+    stopThumbnailCreators();
 
-    mGifCache.invalidateAll();
-    mGifPreviewCache.invalidateAll();
+    mMainGifCache.invalidateAll();
+    mThumbnailGifCache.invalidateAll();
   }
 
-  private GifCreatorManager getManager(GifConfig config, final boolean preview, final Cache<String, byte[]> cache) {
+  private GifCreatorManager getManager(GifConfig config, final boolean thumbnail, final Cache<String, byte[]> cache) {
     final String name = config.effectModel.getEffectTemplate().getName();
     return new GifCreatorManager(
         getApplicationContext(),
         config,
-        preview,
+        thumbnail,
         new GifCreator.CreateGifCallback() {
           @Override
           public void onCreateGif(byte[] gifBytes) {
             if (gifBytes != null) {
               cache.put(name, gifBytes);
-              onGifReadyEvent(name, preview);
-              fireGifReadyEvent(name, preview);
-              if (preview) {
+              onGifReadyEvent(name, thumbnail);
+              fireGifReadyEvent(name, thumbnail);
+              if (thumbnail) {
                 int i = 0;
-                for (GifCreatorManager manager : mGifPreviewCreatorPriorityQueue) {
+                for (GifCreatorManager manager : mThumbnailGifCreatorPriorityQueue) {
                   if (manager.getName().equals(name)) {
 //                    SzLog.f(TAG, "finished " + name + " in " + manager.getTracker().getTotalString());
-                    mGifPreviewCreatorPriorityQueue.remove(i);
+                    mThumbnailGifCreatorPriorityQueue.remove(i);
                     break;
                   }
                   i++;
                 }
               }
-              continueGifPreviewGeneration();
+              continueThumbnailGifGeneration();
             }
           }
         });
@@ -176,31 +176,32 @@ public class GifService extends Service {
     }
   }
 
-  private void stopPreviewCreators() {
-    stopCreatorQueue(mGifPreviewCreatorBackQueue);
-    stopCreatorQueue(mGifPreviewCreatorPriorityQueue);
+  private void stopThumbnailCreators() {
+    stopCreatorQueue(mThumbnailGifCreatorBackQueue);
+    stopCreatorQueue(mThumbnailGifCreatorPriorityQueue);
   }
 
   private void stopCreatorQueue(List<GifCreatorManager> queue) {
-    for (GifCreatorManager previewManager : queue) {
-      if (previewManager.isRunning()) {
-        previewManager.stop();
+    for (GifCreatorManager thumbnailManager : queue) {
+      if (thumbnailManager.isRunning()) {
+        thumbnailManager.stop();
       }
     }
     queue.clear();
   }
+
   @Subscribe
-  public void on(EffectThumbnailViewHolder.RequestGifPreviewEvent event) {
+  public void on(EffectThumbnailViewHolder.RequestThumbnailGifEvent event) {
     final String name = event.effectName;
-    if (mGifPreviewCache.asMap().containsKey(name)) {
+    if (mThumbnailGifCache.asMap().containsKey(name)) {
       fireGifReadyEvent(name, true);
     } else {
       int i = 0;
-      for (GifCreatorManager previewManager : mGifPreviewCreatorBackQueue) {
-        if (previewManager.getName().equals(name)) {
-          GifCreatorManager managerWithPriority = mGifPreviewCreatorBackQueue.remove(i);
-          mGifPreviewCreatorPriorityQueue.add(managerWithPriority);
-          continueGifPreviewGeneration();
+      for (GifCreatorManager thumbnailManager : mThumbnailGifCreatorBackQueue) {
+        if (thumbnailManager.getName().equals(name)) {
+          GifCreatorManager managerWithPriority = mThumbnailGifCreatorBackQueue.remove(i);
+          mThumbnailGifCreatorPriorityQueue.add(managerWithPriority);
+          continueThumbnailGifGeneration();
           break;
         }
         i++;
@@ -209,45 +210,45 @@ public class GifService extends Service {
   }
 
   @Subscribe
-  public void on(EffectThumbnailViewHolder.RequestGifPreviewStopEvent event) {
+  public void on(EffectThumbnailViewHolder.RequestStopThumbnailGifGenerationEvent event) {
     final String name = event.effectName;
     int i = 0;
-    for (GifCreatorManager previewManager : mGifPreviewCreatorPriorityQueue) {
-      if (previewManager.getName().equals(name)) {
-        GifCreatorManager managerToCancel = mGifPreviewCreatorPriorityQueue.remove(i);
+    for (GifCreatorManager thumbnailManager : mThumbnailGifCreatorPriorityQueue) {
+      if (thumbnailManager.getName().equals(name)) {
+        GifCreatorManager managerToCancel = mThumbnailGifCreatorPriorityQueue.remove(i);
         if (managerToCancel.isRunning()) {
           managerToCancel.stop();
         }
-        mGifPreviewCreatorBackQueue.add(managerToCancel);
+        mThumbnailGifCreatorBackQueue.add(managerToCancel);
         break;
       }
       i++;
     }
-    continueGifPreviewGeneration();
+    continueThumbnailGifGeneration();
   }
 
-  private void continueGifPreviewGeneration() {
-    if (!mGifPreviewCreatorPriorityQueue.isEmpty() && !mGifPreviewCreatorPriorityQueue.get(0).isRunning()) {
-      mGifPreviewCreatorPriorityQueue.get(0).start();
-    } else if (mGifPreviewCreatorPriorityQueue.isEmpty() && !mGifPreviewCreatorBackQueue.isEmpty()) {
-      mGifPreviewCreatorPriorityQueue.add(mGifPreviewCreatorBackQueue.remove(0));
-      continueGifPreviewGeneration();
+  private void continueThumbnailGifGeneration() {
+    if (!mThumbnailGifCreatorPriorityQueue.isEmpty() && !mThumbnailGifCreatorPriorityQueue.get(0).isRunning()) {
+      mThumbnailGifCreatorPriorityQueue.get(0).start();
+    } else if (mThumbnailGifCreatorPriorityQueue.isEmpty() && !mThumbnailGifCreatorBackQueue.isEmpty()) {
+      mThumbnailGifCreatorPriorityQueue.add(mThumbnailGifCreatorBackQueue.remove(0));
+      continueThumbnailGifGeneration();
     }
   }
 
-  private void onGifReadyEvent(String name, boolean preview) {
-    if (!preview) {
+  private void onGifReadyEvent(String name, boolean thumbnail) {
+    if (!thumbnail) {
       SzLog.f(TAG, "name: " + name + "\n" + mGifCreatorManager.getTracker().getReport());
     }
 
-    GifCreatorManager currentPreviewManager = null;
-    for (GifCreatorManager previewManager : mGifPreviewCreatorPriorityQueue) {
-      if (previewManager.getName().equals(name)) {
-        currentPreviewManager = previewManager;
+    GifCreatorManager currentThumbnailManager = null;
+    for (GifCreatorManager thumbnailManager : mThumbnailGifCreatorPriorityQueue) {
+      if (thumbnailManager.getName().equals(name)) {
+        currentThumbnailManager = thumbnailManager;
         break;
       }
     }
-    GifCreatorManager currentManager = preview ? currentPreviewManager : mGifCreatorManager;
+    GifCreatorManager currentManager = thumbnail ? currentThumbnailManager : mGifCreatorManager;
     if (currentManager != null) {
       SzAnalytics.newGifGeneratedEvent()
           .withItemId(name)
@@ -260,11 +261,11 @@ public class GifService extends Service {
     }
   }
 
-  private void fireGifReadyEvent(String name, boolean preview) {
+  private void fireGifReadyEvent(String name, boolean thumbnail) {
     BusProvider.getInstance().post(
         new GifReadyEvent(
             name,
-            preview ? mGifPreviewCache.asMap().get(name) : mGifCache.asMap().get(name),
-            preview));
+            thumbnail ? mThumbnailGifCache.asMap().get(name) : mMainGifCache.asMap().get(name),
+            thumbnail));
   }
 }

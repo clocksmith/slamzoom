@@ -42,11 +42,11 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
   }
 
 
-  public void setGifPreview(String effectName, byte[] gifBytes) {
+  public void setGif(String effectName, byte[] gifBytes) {
 
     for (int position = 0; position < mModels.size(); position++) {
       if (mModels.get(position).getEffectTemplate().getName().equals(effectName)) {
-        mModels.get(position).setGifPreviewBytes(gifBytes);
+        mModels.get(position).setGifThumbnailBytes(gifBytes);
         final int finalPos = position;
         new Handler().post(new Runnable() {
           @Override
@@ -61,7 +61,7 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
 
   public void unbindAll() {
     for (EffectModel model : mModels) {
-      model.setGifPreviewBytes(null);
+      model.setGifThumbnailBytes(null);
     }
     notifyItemRangeChanged(0, mModels.size());
   }

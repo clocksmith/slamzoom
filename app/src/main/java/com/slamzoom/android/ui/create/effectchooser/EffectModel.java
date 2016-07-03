@@ -10,7 +10,7 @@ import com.slamzoom.android.effects.EffectTemplate;
  */
 public class EffectModel {
   private EffectTemplate mEffectTemplate;
-  private byte[] mGifPreviewBytes;
+  private byte[] mGifThumbnailBytes;
 
   public EffectModel(EffectTemplate effectTemplate) {
     mEffectTemplate = effectTemplate;
@@ -20,12 +20,12 @@ public class EffectModel {
     return mEffectTemplate;
   }
 
-  public byte[] getGifPreviewBytes() {
-    return mGifPreviewBytes;
+  public byte[] getGifThumbnailBytes() {
+    return mGifThumbnailBytes;
   }
 
-  public void setGifPreviewBytes(byte[] gifPreviewBytes) {
-    mGifPreviewBytes = gifPreviewBytes;
+  public void setGifThumbnailBytes(byte[] gifThumbnailBytes) {
+    mGifThumbnailBytes = gifThumbnailBytes;
   }
 
   @Override

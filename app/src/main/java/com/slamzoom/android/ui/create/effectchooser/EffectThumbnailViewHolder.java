@@ -39,16 +39,16 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
     }
   }
 
-  public class RequestGifPreviewEvent {
+  public class RequestThumbnailGifEvent {
     public final String effectName;
-    public RequestGifPreviewEvent(String effectName) {
+    public RequestThumbnailGifEvent(String effectName) {
       this.effectName = effectName;
     }
   }
 
-  public class RequestGifPreviewStopEvent {
+  public class RequestStopThumbnailGifGenerationEvent {
     public final String effectName;
-    public RequestGifPreviewStopEvent(String effectName) {
+    public RequestStopThumbnailGifGenerationEvent(String effectName) {
       this.effectName = effectName;
     }
   }
@@ -86,15 +86,15 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
     mNameTextView.setText(name);
 
     // Either show the gif or request it.
-    if (model.getGifPreviewBytes() != null && model.getGifPreviewBytes().length > 0) {
+    if (model.getGifThumbnailBytes() != null && model.getGifThumbnailBytes().length > 0) {
       try {
         mProgressBar.setVisibility(View.GONE);
-        mGifImageView.setImageDrawable(new GifDrawable(mModel.getGifPreviewBytes()));
+        mGifImageView.setImageDrawable(new GifDrawable(mModel.getGifThumbnailBytes()));
       } catch (IOException e) {
         e.printStackTrace();
       }
     } else {
-      BusProvider.getInstance().post(new RequestGifPreviewEvent(name));
+      BusProvider.getInstance().post(new RequestThumbnailGifEvent(name));
     }
 
     itemView.setOnClickListener(new View.OnClickListener() {
@@ -115,8 +115,8 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
     SzLog.f(TAG, "unbind: " + getAdapterPosition());
     collapseTab(false);
 
-    if (mModel != null && (mModel.getGifPreviewBytes() == null || mModel.getGifPreviewBytes().length == 0)) {
-      BusProvider.getInstance().post(new RequestGifPreviewStopEvent(mModel.getEffectTemplate().getName()));
+    if (mModel != null && (mModel.getGifThumbnailBytes() == null || mModel.getGifThumbnailBytes().length == 0)) {
+      BusProvider.getInstance().post(new RequestStopThumbnailGifGenerationEvent(mModel.getEffectTemplate().getName()));
     }
     mNameTextView.setText(null);
     mGifImageView.setImageDrawable(null);
@@ -185,7 +185,7 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
       public void onAnimationEnd(Animator animation) {
         mProgressBar.setVisibility(View.GONE);
         try {
-          mGifImageView.setImageDrawable(new GifDrawable(mModel.getGifPreviewBytes()));
+          mGifImageView.setImageDrawable(new GifDrawable(mModel.getGifThumbnailBytes()));
         } catch (IOException e) {
           mGifImageView.setImageDrawable(null);
           mProgressBar.setVisibility(View.VISIBLE);

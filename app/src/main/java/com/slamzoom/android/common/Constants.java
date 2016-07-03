@@ -27,8 +27,8 @@ public class Constants {
 
   public static final int DEFAULT_FPS = 24;
   public static final int DEFAULT_GIF_SIZE_PX = 320;
-  public static final int GIF_PREVIEW_DIVIDER = 4;
-  public static final int DEFAULT_GIF_PREVIEW_SIZE_PX = DEFAULT_GIF_SIZE_PX / GIF_PREVIEW_DIVIDER;
+  public static final int GIF_THUMBNAIL_DIVIDER = 4;
+  public static final int DEFAULT_GIF_PREVIEW_SIZE_PX = DEFAULT_GIF_SIZE_PX / GIF_THUMBNAIL_DIVIDER;
   public static final boolean DEFAULT_USE_LOCAL_COLOR_PALETTE = true;
 
   // arbitrary

@@ -79,9 +79,9 @@ public class CreateActivity extends AppCompatActivity {
   private byte[] mSelectedGifBytes;
 
   private Bitmap mSelectedBitmap;
-  private Bitmap mSelectedBitmapForPreview;
+  private Bitmap mSelectedBitmapForThumbnail;
   private Rect mSelectedHotspot;
-  private Rect mSelectedHotspotForPreview;
+  private Rect mSelectedHotspotForThumbnail;
 
   private String mSelectedEffectName;
   private String mSelectedEndText;
@@ -216,12 +216,12 @@ public class CreateActivity extends AppCompatActivity {
   public void on(EffectThumbnailViewHolder.ItemClickEvent event) throws IOException {
     mSelectedEffectName = event.effectName;
     updateProgressBar();
-    udpateMainGif();
+    updateMainGif();
   }
 
   @Subscribe
   public void on(GifService.GifReadyEvent event) throws IOException {
-    if (!event.preview) {
+    if (!event.thumbnail) {
       SzLog.f(TAG, event.effectName);
       if (mSelectedEffectName.equals(event.effectName)) {
         mZeroStateMessage.setVisibility(View.GONE);
@@ -251,10 +251,10 @@ public class CreateActivity extends AppCompatActivity {
     try {
       mSelectedUri = uri;
       mSelectedBitmap = BitmapUtils.readScaledBitmap(mSelectedUri, this.getContentResolver());
-      mSelectedBitmapForPreview = BitmapUtils.readScaledBitmap(
+      mSelectedBitmapForThumbnail = BitmapUtils.readScaledBitmap(
           mSelectedUri,
           this.getContentResolver(),
-          Constants.MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX / Constants.GIF_PREVIEW_DIVIDER);
+          Constants.MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX / Constants.GIF_THUMBNAIL_DIVIDER);
       launchHotspotChooser();
     } catch (FileNotFoundException e) {
       SzLog.e(TAG, "Cannot get bitmap for path: " + uri.toString());
@@ -263,14 +263,14 @@ public class CreateActivity extends AppCompatActivity {
 
   private void handleCropRectSelected(Rect selectedHotspot) {
     mSelectedHotspot = selectedHotspot;
-    float ratio = (float) mSelectedBitmap.getWidth() / mSelectedBitmapForPreview.getWidth();
-    mSelectedHotspotForPreview = new Rect(
+    float ratio = (float) mSelectedBitmap.getWidth() / mSelectedBitmapForThumbnail.getWidth();
+    mSelectedHotspotForThumbnail = new Rect(
         (int) (mSelectedHotspot.left / ratio),
         (int) (mSelectedHotspot.top / ratio),
         (int) (mSelectedHotspot.right / ratio),
         (int) (mSelectedHotspot.bottom / ratio));
 
-    updateMainAndPreviewGifs();
+    updateMainAndThumbnailGifs();
   }
 
   private void handleAddTextPressed() {
@@ -281,12 +281,12 @@ public class CreateActivity extends AppCompatActivity {
 
   private void handleAddTextConfirmed() {
     mSelectedEndText = mAddTextView.getEditText().getText().toString();
-    updateMainAndPreviewGifs();
+    updateMainAndThumbnailGifs();
     KeyboardUtils.hideKeyboard(this);
     showAddTextView(false);
   }
 
-  private void udpateMainGif() {
+  private void updateMainGif() {
     mGifProgresses.put(mSelectedEffectName, 0d);
     mGifService.requestMainGif(GifConfig.newBuilder()
         .withHotspot(mSelectedHotspot)
@@ -296,14 +296,14 @@ public class CreateActivity extends AppCompatActivity {
         .build());
   }
 
-  private void updatePreviewGifs() {
-    mGifService.requestPreviewGifs(Lists.transform(EffectModelProvider.getEffectModels(),
+  private void updateThumbnailGifs() {
+    mGifService.requestThumbnailGifs(Lists.transform(EffectModelProvider.getEffectModels(),
         new Function<EffectModel, GifConfig>() {
           @Override
           public GifConfig apply(EffectModel model) {
             return GifConfig.newBuilder()
-                .withHotspot(mSelectedHotspotForPreview)
-                .withBitmap(mSelectedBitmapForPreview)
+                .withHotspot(mSelectedHotspotForThumbnail)
+                .withBitmap(mSelectedBitmapForThumbnail)
                 .withEffectModel(model)
                 .withEndText(mSelectedEndText)
                 .build();
@@ -312,14 +312,14 @@ public class CreateActivity extends AppCompatActivity {
     mEffectChooser.set(EffectModelProvider.getEffectModels());
   }
 
-  private void updateMainAndPreviewGifs() {
+  private void updateMainAndThumbnailGifs() {
     mSelectedGifBytes = null;
     mGifImageView.setImageBitmap(null);
     resetProgresses();
-    updatePreviewGifs();
+    updateThumbnailGifs();
 
     if (mSelectedEffectName != null) {
-      udpateMainGif();
+      updateMainGif();
     }
   }
 

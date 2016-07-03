@@ -56,8 +56,8 @@ public class EffectChooser extends LinearLayout {
 
   @Subscribe
   public void on(GifService.GifReadyEvent event) {
-    if (mAdapter != null && event.preview) {
-      mAdapter.setGifPreview(event.effectName, event.gifBytes);
+    if (mAdapter != null && event.thumbnail) {
+      mAdapter.setGif(event.effectName, event.gifBytes);
     }
   }
 }
