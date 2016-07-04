@@ -38,6 +38,7 @@ import com.slamzoom.android.effects.interpolation.transform.scaletranslate.Crash
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashRumbleInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashTaranInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.FlushInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.scaletranslate.RumbleTeaseInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.ShakeSwitchInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.translate.BaseShakeInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.translate.MegaShakeInterpolatorProvider;
@@ -301,48 +302,7 @@ public class Effects {
           .withName("rumbletease")
           .withStartDurationEndSeconds(0, 6, 0)
           .withScaleInterpolator(new TeaseInterpolator())
-          .withTranslateInterpolator(new TranslateInterpolatorProvider() {
-            private BaseShakeInterpolatorProvider first = new BaseShakeInterpolatorProvider(6, 12);
-            private BaseShakeInterpolatorProvider second = new BaseShakeInterpolatorProvider(5, 15);
-            private BaseShakeInterpolatorProvider third = new BaseShakeInterpolatorProvider(4, 20);
-            private BaseShakeInterpolatorProvider fourth = new BaseShakeInterpolatorProvider(2, 30);
-            @Override
-            public Interpolator getXInterpolator() {
-              return new Interpolator() {
-                @Override
-                protected float getValue(float t) {
-                  if (t < 0.25) {
-                    return first.getXInterpolator().getInterpolation(t);
-                  } else if (t < 0.5) {
-                    return second.getXInterpolator().getInterpolation(t);
-                  } else if (t < 0.75) {
-                    return third.getXInterpolator().getInterpolation(t);
-                  } else {
-                    return fourth.getXInterpolator().getInterpolation(t);
-                  }
-                }
-              };
-            }
-
-            @Override
-            public Interpolator getYInterpolator() {
-              return new Interpolator() {
-                @Override
-                protected float getValue(float t) {
-                  if (t < 0.25) {
-                    return first.getYInterpolator().getInterpolation(t);
-                  } else if (t < 0.5) {
-                    return second.getYInterpolator().getInterpolation(t);
-                  } else if (t < 0.75) {
-                    return third.getYInterpolator().getInterpolation(t);
-                  } else {
-                    return fourth.getYInterpolator().getInterpolation(t);
-                  }
-                }
-              };
-            }
-          })
-          .withTranslateInterpolator(new ShakeInterpolatorProvider())
+          .withTranslateInterpolator(new RumbleTeaseInterpolatorProvider())
           .build())
       .add(EffectTemplate.newSingleStepBuilder()
           .withName("rumblestiltskin")
