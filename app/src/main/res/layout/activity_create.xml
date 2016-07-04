@@ -35,6 +35,8 @@
         android:indeterminate="false"
         android:progressDrawable="@drawable/circular_progress_bar"
         android:background="@drawable/circle_shape"
+        android:scaleX="0"
+        android:scaleY="0"
         style="?android:attr/progressBarStyleHorizontal"
         android:max="100"/>
     <TextView
@@ -42,6 +44,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
+        android:visibility="visible"
         android:text="@string/zero_state_message"
         android:textColor="@color/white"/>
   </FrameLayout>

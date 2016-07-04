@@ -26,15 +26,15 @@ public class EffectColors {
 
   private static final ImmutableList<String> SUFFIXES = ImmutableList.of(
       "900",
-      "867",
-      "833",
+      "850",
       "800",
-      "767",
-      "733",
+      "750",
       "700",
-      "667",
-      "633",
-      "600");
+      "650",
+      "600",
+      "550",
+      "500",
+      "450");
 
   private static ImmutableList<Integer> mColors;
   private static Context mContext;
@@ -42,11 +42,11 @@ public class EffectColors {
   public static void init(Context context) {
     mContext = context;
     mColors = ImmutableList.<Integer>builder()
-        .addAll(getColorGroup("green"))
-        .addAll(getColorGroup("blue"))
-        .addAll(getColorGroup("purple"))
-        .addAll(getColorGroup("red"))
-        .addAll(getColorGroup("orange"))
+        .addAll(getColorGroup("teal"))
+        .addAll(getColorGroup("lime"))
+        .addAll(getColorGroup("deeppurple"))
+        .addAll(getColorGroup("deeporange"))
+        .addAll(getColorGroup("lightblue"))
         .build();
   }
 
@@ -66,11 +66,11 @@ public class EffectColors {
           "color",
           mContext.getPackageName()));
     } else {
-      return getDerivedColor(color, suffix);
+      return getInterpolatedColor(color, suffix);
     }
   }
 
-  private static int getDerivedColor(String color, String suffix) {
+  private static int getInterpolatedColor(String color, String suffix) {
     String lowerResSuffix = suffix.charAt(0) + "00";
     String upperResSuffix = (Integer.parseInt(String.valueOf(suffix.charAt(0))) + 1) + "00";
     int lowerColor = ContextCompat.getColor(mContext, mContext.getResources().getIdentifier(

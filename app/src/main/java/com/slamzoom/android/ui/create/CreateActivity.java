@@ -63,8 +63,6 @@ import pl.droidsonroids.gif.GifImageView;
 public class CreateActivity extends AppCompatActivity {
   private static final String TAG = CreateActivity.class.getSimpleName();
 
-  private static final String SELECTED_EFFECT_NAME = "selectedEffectName";
-
   @Bind(R.id.actionBar) Toolbar mActionBar;
   @Bind(R.id.gifImageView) GifImageView mGifImageView;
   @Bind(R.id.progressBar) ProgressBar mProgressBar;
@@ -100,33 +98,17 @@ public class CreateActivity extends AppCompatActivity {
     BusProvider.getInstance().register(this);
 
     mConnection = new GifServiceConnection();
+    bindService(new Intent(this, GifService.class), mConnection, Context.BIND_AUTO_CREATE);
 
-    setSupportActionBar(mActionBar);
-    assert getSupportActionBar() != null;
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    getSupportActionBar().setHomeButtonEnabled(true);
-    getSupportActionBar().setTitle(getString(R.string.app_name));
-    mAddTextView = new AddTextView(this);
-    getSupportActionBar().setCustomView(mAddTextView,
-        new Toolbar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    initActionBar();
 
-    mProgressBar.setVisibility(View.GONE);
-    mProgressBar.setScaleX(0);
-    mProgressBar.setScaleY(0);
-    mZeroStateMessage.setVisibility(View.VISIBLE);
-    mGifAreaView = mZeroStateMessage;
     mGifProgresses = Maps.newHashMap();
+    mGifAreaView = mZeroStateMessage;
 
     Intent intent = getIntent();
     if (Intent.ACTION_SEND.equals(intent.getAction())) {
       handleIncomingUri((Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM));
-    }
-
-    bindService(new Intent(this, GifService.class), mConnection, Context.BIND_AUTO_CREATE);
-
-    mEffectChooser.set(EffectModelProvider.getEffectModels());
-
-    if (mSelectedBitmap == null) {
+    } else if (mSelectedBitmap == null) {
       launchImageChooser();
     }
   }
@@ -247,6 +229,17 @@ public class CreateActivity extends AppCompatActivity {
     onBackPressed();
   }
 
+  private void initActionBar() {
+    setSupportActionBar(mActionBar);
+    assert getSupportActionBar() != null;
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    getSupportActionBar().setHomeButtonEnabled(true);
+    getSupportActionBar().setTitle(getString(R.string.app_name));
+    mAddTextView = new AddTextView(this);
+    getSupportActionBar().setCustomView(mAddTextView,
+        new Toolbar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+  }
+
   private void handleIncomingUri(Uri uri) {
     try {
       mSelectedUri = uri;
@@ -270,7 +263,7 @@ public class CreateActivity extends AppCompatActivity {
         (int) (mSelectedHotspot.right / ratio),
         (int) (mSelectedHotspot.bottom / ratio));
 
-    updateMainAndThumbnailGifs();
+    resetAndUpdateAll();
   }
 
   private void handleAddTextPressed() {
@@ -281,7 +274,7 @@ public class CreateActivity extends AppCompatActivity {
 
   private void handleAddTextConfirmed() {
     mSelectedEndText = mAddTextView.getEditText().getText().toString();
-    updateMainAndThumbnailGifs();
+    resetAndUpdateAll();
     KeyboardUtils.hideKeyboard(this);
     showAddTextView(false);
   }
@@ -312,12 +305,11 @@ public class CreateActivity extends AppCompatActivity {
     mEffectChooser.set(EffectModelProvider.getEffectModels());
   }
 
-  private void updateMainAndThumbnailGifs() {
+  private void resetAndUpdateAll() {
     mSelectedGifBytes = null;
     mGifImageView.setImageBitmap(null);
     resetProgresses();
     updateThumbnailGifs();
-
     if (mSelectedEffectName != null) {
       updateMainGif();
     }
@@ -350,8 +342,6 @@ public class CreateActivity extends AppCompatActivity {
 
   private void showAddTextView(boolean show) {
     assert getSupportActionBar() != null;
-//    getSupportActionBar().setDisplayHomeAsUpEnabled(show);
-//    getSupportActionBar().setHomeButtonEnabled(show);
     getSupportActionBar().setDisplayShowCustomEnabled(show);
     getSupportActionBar().setDisplayShowTitleEnabled(!show);
     mIsAddTextViewShowing = show;
