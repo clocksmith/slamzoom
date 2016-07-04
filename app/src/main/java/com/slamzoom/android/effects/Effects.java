@@ -55,8 +55,10 @@ import com.slamzoom.android.interpolators.custom.SlamHardInterpolator;
 import com.slamzoom.android.interpolators.custom.SlamHardNoPauseInterpolator;
 import com.slamzoom.android.interpolators.custom.SlamSoftInterpolator;
 import com.slamzoom.android.interpolators.custom.SlamSoftOutInterpolator;
+import com.slamzoom.android.interpolators.custom.TeaseInterpolator;
 import com.slamzoom.android.interpolators.spline.CubicSplineInterpolator;
 import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
+import com.slamzoom.android.interpolators.spline.StepInterpolator;
 
 import java.util.List;
 import java.util.Map;
@@ -73,24 +75,11 @@ public class Effects {
       .add(EffectTemplate.newSingleStepBuilder()
           .withName("blacktease")
           .withStartDurationEndSeconds(1, 4, 2)
-          .withScaleInterpolator(new Interpolator() {
-            @Override
-            protected float getRangePercent(float t) {
-              if (t < 0.1667) {
-                return 0;
-              } else if (t < 0.5) {
-                return 0.2f;
-              } else if (t < 0.8333) {
-                return 0.45f;
-              } else {
-                return 1;
-              }
-            }
-          })
+          .withScaleInterpolator(new TeaseInterpolator())
           .withFilterInterpolator(new UnderExposeFilterInterpolator(
               new Interpolator() {
                 @Override
-                protected float getRangePercent(float t) {
+                protected float getValue(float t) {
                   return (float) Math.pow(Math.sin(3 * Math.PI * t), 10);
                 }
               }))
@@ -148,24 +137,11 @@ public class Effects {
       .add(EffectTemplate.newSingleStepBuilder()
           .withName("blurtease")
           .withStartDurationEndSeconds(1, 4, 2)
-          .withScaleInterpolator(new Interpolator() {
-            @Override
-            protected float getRangePercent(float t) {
-              if (t < 0.1667) {
-                return 0;
-              } else if (t < 0.5) {
-                return 0.2f;
-              } else if (t < 0.8333) {
-                return 0.45f;
-              } else {
-                return 1;
-              }
-            }
-          })
+          .withScaleInterpolator(new TeaseInterpolator())
           .withFilterInterpolator(new GaussianBlurFilterInterpolator(
               new Interpolator() {
                 @Override
-                protected float getRangePercent(float t) {
+                protected float getValue(float t) {
                   return (float) Math.pow(Math.sin(3 * Math.PI * t), 10);
                 }
               }))
@@ -324,20 +300,7 @@ public class Effects {
       .add(EffectTemplate.newSingleStepBuilder()
           .withName("rumbletease")
           .withStartDurationEndSeconds(0, 6, 0)
-          .withScaleInterpolator(new Interpolator() {
-            @Override
-            protected float getRangePercent(float t) {
-              if (t < 0.25) {
-                return 0;
-              } else if (t < 0.5) {
-                return 0.2f;
-              } else if (t < 0.75) {
-                return 0.45f;
-              } else {
-                return 1;
-              }
-            }
-          })
+          .withScaleInterpolator(new TeaseInterpolator())
           .withTranslateInterpolator(new TranslateInterpolatorProvider() {
             private BaseShakeInterpolatorProvider first = new BaseShakeInterpolatorProvider(6, 12);
             private BaseShakeInterpolatorProvider second = new BaseShakeInterpolatorProvider(5, 15);
@@ -347,7 +310,7 @@ public class Effects {
             public Interpolator getXInterpolator() {
               return new Interpolator() {
                 @Override
-                protected float getRangePercent(float t) {
+                protected float getValue(float t) {
                   if (t < 0.25) {
                     return first.getXInterpolator().getInterpolation(t);
                   } else if (t < 0.5) {
@@ -365,7 +328,7 @@ public class Effects {
             public Interpolator getYInterpolator() {
               return new Interpolator() {
                 @Override
-                protected float getRangePercent(float t) {
+                protected float getValue(float t) {
                   if (t < 0.25) {
                     return first.getYInterpolator().getInterpolation(t);
                   } else if (t < 0.5) {
@@ -510,24 +473,11 @@ public class Effects {
       .add(EffectTemplate.newSingleStepBuilder()
           .withName("whitetease")
           .withStartDurationEndSeconds(1, 4, 2)
-          .withScaleInterpolator(new Interpolator() {
-            @Override
-            protected float getRangePercent(float t) {
-              if (t < 0.1667) {
-                return 0;
-              } else if (t < 0.5) {
-                return 0.2f;
-              } else if (t < 0.8333) {
-                return 0.45f;
-              } else {
-                return 1;
-              }
-            }
-          })
+          .withScaleInterpolator(new TeaseInterpolator())
           .withFilterInterpolator(new OverExposeFilterInterpolator(
               new Interpolator() {
                 @Override
-                protected float getRangePercent(float t) {
+                protected float getValue(float t) {
                   return (float) Math.pow(Math.sin(3 * Math.PI * t), 10);
                 }
               }))

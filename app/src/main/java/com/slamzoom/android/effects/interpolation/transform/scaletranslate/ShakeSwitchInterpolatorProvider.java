@@ -17,7 +17,7 @@ public class ShakeSwitchInterpolatorProvider implements ScaleAndTranslateInterpo
   public Interpolator getScaleInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getRangePercent(float t) {
+      protected float getValue(float t) {
         if (t < PERCENT_IN_CIRCLE) {
           return 0;
         } else {
@@ -31,7 +31,7 @@ public class ShakeSwitchInterpolatorProvider implements ScaleAndTranslateInterpo
   public Interpolator getXInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getRangePercent(float t) {
+      protected float getValue(float t) {
         if (t < PERCENT_IN_CIRCLE) {
           return CIRCLE_SHAKE_IP.getXInterpolator().getInterpolation(t);
         } else {
@@ -45,7 +45,7 @@ public class ShakeSwitchInterpolatorProvider implements ScaleAndTranslateInterpo
   public Interpolator getYInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getRangePercent(float t) {
+      protected float getValue(float t) {
         if (t < PERCENT_IN_CIRCLE) {
           return CIRCLE_SHAKE_IP.getYInterpolator().getInterpolation(t);
         } else {

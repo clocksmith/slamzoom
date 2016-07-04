@@ -9,18 +9,18 @@ import java.util.List;
 /**
  * Created by clocksmith on 3/20/16.
  */
-public class PointListBuilder {
+public class PointsBuilder {
   private List<PointF> mPointList;
 
-  public PointListBuilder() {
+  public PointsBuilder() {
     mPointList = Lists.newArrayList();
   }
 
-  public static PointListBuilder create() {
-    return new PointListBuilder();
+  public static PointsBuilder create() {
+    return new PointsBuilder();
   }
 
-  public PointListBuilder add(float x, float y) {
+  public PointsBuilder withPoint(float x, float y) {
     mPointList.add(new PointF(x, y));
     return this;
   }

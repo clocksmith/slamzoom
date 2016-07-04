@@ -32,7 +32,7 @@ public abstract class Interpolator implements Cloneable {
    * @return the interpolation value with respect to the range.
    */
   public float getInterpolation(float t) {
-    return getStart() + getRangePercent(t) * (getEnd() - getStart());
+    return getStart() + getValue(t) * (getEnd() - getStart());
   }
 
   /**
@@ -42,7 +42,7 @@ public abstract class Interpolator implements Cloneable {
    * @param t original input to the interpolator. See {@link #getInterpolation(float)}.
    * @return value to multiple to the range of the interpolator.
    */
-  protected abstract float getRangePercent(float t);
+  protected abstract float getValue(float t);
 
   @Override
   public Interpolator clone() throws CloneNotSupportedException {

@@ -34,7 +34,7 @@ import com.google.common.collect.Maps;
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.BackInterceptingEditText;
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.common.singletons.BusProvider;
+import com.slamzoom.android.common.bus.BusProvider;
 import com.slamzoom.android.common.utils.AnimationUtils;
 import com.slamzoom.android.common.utils.BitmapUtils;
 import com.slamzoom.android.common.utils.KeyboardUtils;

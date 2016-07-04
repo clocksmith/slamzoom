@@ -1,4 +1,4 @@
-package com.slamzoom.android.common.singletons;
+package com.slamzoom.android.common.executor;
 
 import java.util.concurrent.ThreadPoolExecutor;
 

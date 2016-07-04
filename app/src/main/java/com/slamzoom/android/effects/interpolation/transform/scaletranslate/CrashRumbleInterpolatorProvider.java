@@ -15,7 +15,7 @@ public class CrashRumbleInterpolatorProvider implements ScaleAndTranslateInterpo
   public Interpolator getScaleInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getRangePercent(float t) {
+      protected float getValue(float t) {
         if (t <= PERCENT_CRASH) {
           return mCrashIP.getScaleInterpolator().getInterpolation(t / PERCENT_CRASH);
         } else {
@@ -32,7 +32,7 @@ public class CrashRumbleInterpolatorProvider implements ScaleAndTranslateInterpo
   public Interpolator getXInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getRangePercent(float t) {
+      protected float getValue(float t) {
         if (t <= PERCENT_CRASH) {
           return mCrashIP.getXInterpolator().getInterpolation(t / PERCENT_CRASH);
         } else {
@@ -46,7 +46,7 @@ public class CrashRumbleInterpolatorProvider implements ScaleAndTranslateInterpo
   public Interpolator getYInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getRangePercent(float t) {
+      protected float getValue(float t) {
         if (t <= PERCENT_CRASH) {
           return mCrashIP.getYInterpolator().getInterpolation(t / PERCENT_CRASH);
         } else {

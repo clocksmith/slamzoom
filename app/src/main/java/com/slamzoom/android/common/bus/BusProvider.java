@@ -1,4 +1,4 @@
-package com.slamzoom.android.common.singletons;
+package com.slamzoom.android.common.bus;
 
 import android.os.Handler;
 import android.os.Looper;

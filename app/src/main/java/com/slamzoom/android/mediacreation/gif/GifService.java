@@ -10,7 +10,7 @@ import com.google.common.base.Function;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
-import com.slamzoom.android.common.singletons.BusProvider;
+import com.slamzoom.android.common.bus.BusProvider;
 import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.SzAnalytics;
 import com.slamzoom.android.common.utils.SzLog;

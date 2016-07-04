@@ -23,7 +23,7 @@ public class FlushInterpolatorProvider implements ScaleAndTranslateInterpolatorP
   public Interpolator getXInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getRangePercent(float t) {
+      protected float getValue(float t) {
         double tt = 1 - Math.pow(t, EXPONENT_0);
         return (float) (RADIUS * Math.pow(tt, EXPONENT_1) *
             Math.cos(FREQUENCY * 2 * Math.PI * Math.pow(tt, EXPONENT_2)));
@@ -35,7 +35,7 @@ public class FlushInterpolatorProvider implements ScaleAndTranslateInterpolatorP
   public Interpolator getYInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getRangePercent(float t) {
+      protected float getValue(float t) {
         double tt = 1 - Math.pow(t, EXPONENT_0);
         return (float) (RADIUS * Math.pow(tt, EXPONENT_1) *
             Math.sin(FREQUENCY * 2 * Math.PI * Math.pow(tt, EXPONENT_2)));

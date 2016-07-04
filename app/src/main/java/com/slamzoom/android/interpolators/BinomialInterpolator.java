@@ -27,7 +27,7 @@ public class BinomialInterpolator extends Interpolator {
   }
 
   @Override
-  protected float getRangePercent(float t) {
+  protected float getValue(float t) {
     return (float) (c1 * Math.pow(t, e1) + c2 * Math.pow(t, e2));
   }
 }

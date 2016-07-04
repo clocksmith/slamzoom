@@ -8,7 +8,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
@@ -17,7 +16,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.common.singletons.ExecutorProvider;
+import com.slamzoom.android.common.executor.ExecutorProvider;
 import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.PostProcessorUtils;
 import com.slamzoom.android.common.utils.SzLog;

@@ -56,7 +56,7 @@ public class CubicSplineInterpolator extends Interpolator {
   }
 
   @Override
-  protected float getRangePercent(float t) {
+  protected float getValue(float t) {
     return (float) mPolynomialSplineFunction.value(t);
   }
 }

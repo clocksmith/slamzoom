@@ -9,7 +9,7 @@ import android.widget.LinearLayout;
 
 import com.google.common.collect.Lists;
 import com.slamzoom.android.R;
-import com.slamzoom.android.common.singletons.BusProvider;
+import com.slamzoom.android.common.bus.BusProvider;
 import com.slamzoom.android.mediacreation.gif.GifService;
 import com.squareup.otto.Subscribe;
 

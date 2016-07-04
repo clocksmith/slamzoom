@@ -17,7 +17,7 @@ public class SpiralShakeInterpolatorProvider implements TranslateInterpolatorPro
   public Interpolator getXInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getRangePercent(float t) {
+      protected float getValue(float t) {
         return mSpiralIP.getXInterpolator().getInterpolation(t) + mShakeIP.getXInterpolator().getInterpolation(t);
       }
     };
@@ -27,7 +27,7 @@ public class SpiralShakeInterpolatorProvider implements TranslateInterpolatorPro
   public Interpolator getYInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getRangePercent(float t) {
+      protected float getValue(float t) {
         return mSpiralIP.getYInterpolator().getInterpolation(t) + mShakeIP.getYInterpolator().getInterpolation(t);
       }
     };

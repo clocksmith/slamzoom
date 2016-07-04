@@ -20,7 +20,7 @@ public class CircleCenterInterpolatorProvider implements ScaleAndTranslateInterp
   public Interpolator getXInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getRangePercent(float t) {
+      protected float getValue(float t) {
         if (t < PERCENT_IN_CIRCLE) {
           return (float) (RADIUS * Math.sin(2 * Math.PI * t / PERCENT_IN_CIRCLE));
         } else {
@@ -34,7 +34,7 @@ public class CircleCenterInterpolatorProvider implements ScaleAndTranslateInterp
   public Interpolator getYInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getRangePercent(float t) {
+      protected float getValue(float t) {
         if (t < PERCENT_IN_CIRCLE) {
           return (float) (RADIUS * Math.cos(2 * Math.PI * t / PERCENT_IN_CIRCLE));
         } else {

@@ -52,7 +52,7 @@ import com.slamzoom.android.interpolators.custom.SlamSoftOutInterpolator;
 import com.slamzoom.android.interpolators.custom.SlamSoftOutNoPauseInterpolator;
 import com.slamzoom.android.interpolators.spline.CubicSplineInterpolator;
 import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
-import com.slamzoom.android.interpolators.spline.PointListBuilder;
+import com.slamzoom.android.interpolators.spline.PointsBuilder;
 
 import java.util.List;
 
@@ -176,16 +176,16 @@ public class TheOldLabPackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withStartPauseSeconds(0.5f)
             .withDurationSeconds(0.8f)
-            .withScaleInterpolator(new CubicSplineInterpolator(PointListBuilder.create()
-                .add(0, 0)
-                .add(0.3f, 1f)
-                .add(1f, 1f)
+            .withScaleInterpolator(new CubicSplineInterpolator(PointsBuilder.create()
+                .withPoint(0, 0)
+                .withPoint(0.3f, 1f)
+                .withPoint(1f, 1f)
                 .build()))
             .withFilterInterpolator(new GaussianUnblurFilterInterpolator(
-                new CubicSplineInterpolator(PointListBuilder.create()
-                    .add(0, 0f)
-                    .add(0.8f, 0)
-                    .add(1, 1)
+                new CubicSplineInterpolator(PointsBuilder.create()
+                    .withPoint(0, 0f)
+                    .withPoint(0.8f, 0)
+                    .withPoint(1, 1)
                     .build())))
             .withEndPauseSeconds(0.5f)
             .build())
@@ -204,18 +204,18 @@ public class TheOldLabPackProvider {
     packModels.add(EffectTemplate.newBuilder()
         .withName("blursmith")
         .addEffectStep(EffectStep.newBuilder()
-            .withScaleInterpolator(new LinearSplineInterpolator(PointListBuilder.create()
-                .add(0, 0)
-                .add(0.4f, 0)
-                .add(0.6f, 1)
-                .add(1, 1)
+            .withScaleInterpolator(new LinearSplineInterpolator(PointsBuilder.create()
+                .withPoint(0, 0)
+                .withPoint(0.4f, 0)
+                .withPoint(0.6f, 1)
+                .withPoint(1, 1)
                 .build()))
             .withFilterInterpolator(new GaussianBlurFilterInterpolator(new LinearSplineInterpolator(
-                PointListBuilder.create()
-                    .add(0, 0)
-                    .add(0.4f, 1)
-                    .add(0.6f, 1)
-                    .add(1, 0)
+                PointsBuilder.create()
+                    .withPoint(0, 0)
+                    .withPoint(0.4f, 1)
+                    .withPoint(0.6f, 1)
+                    .withPoint(1, 0)
                     .build())))
             .withEndPauseSeconds(1f)
             .build())
@@ -224,17 +224,17 @@ public class TheOldLabPackProvider {
     packModels.add(EffectTemplate.newBuilder()
         .withName("blurmagic")
         .addEffectStep(EffectStep.newBuilder()
-            .withScaleInterpolator(new LinearSplineInterpolator(PointListBuilder.create()
-                .add(0, 0)
-                .add(0.4999f, 0)
-                .add(0.5f, 1)
-                .add(1, 1)
+            .withScaleInterpolator(new LinearSplineInterpolator(PointsBuilder.create()
+                .withPoint(0, 0)
+                .withPoint(0.4999f, 0)
+                .withPoint(0.5f, 1)
+                .withPoint(1, 1)
                 .build()))
 //            .withFilterInterpolator(new GuassianBlurFilterInterpolator(new LinearSplineInterpolator(
 //                PointListBuilder.create()
-//                    .add(0, 0)
-//                    .add(0.5f, 1)
-//                    .add(1, 0)
+//                    .withPoint(0, 0)
+//                    .withPoint(0.5f, 1)
+//                    .withPoint(1, 0)
 //                    .build())) {
 //              @Override
 //              public float getBlurSize() {
@@ -281,12 +281,12 @@ public class TheOldLabPackProvider {
             .withEndPauseSeconds(2f)
             .withScaleAndTranslateInterpolatorProvider(new CrashTaranInterpolatorProvider())
             .withFilterInterpolator(new GaussianBlurFilterInterpolator(
-                new LinearSplineInterpolator(PointListBuilder.create()
-                    .add(0, 0)
-                    .add(0.3f, 1)
-                    .add(0.6f, 1)
-                    .add(0.9f, 0)
-                    .add(1, 0)
+                new LinearSplineInterpolator(PointsBuilder.create()
+                    .withPoint(0, 0)
+                    .withPoint(0.3f, 1)
+                    .withPoint(0.6f, 1)
+                    .withPoint(0.9f, 0)
+                    .withPoint(1, 0)
                     .build())) {
               @Override
               public float getBlurSize() {
@@ -457,12 +457,12 @@ public class TheOldLabPackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new SlamHardInterpolator())
             .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(new LinearSplineInterpolator(
-                PointListBuilder.create()
-                    .add(0, 0)
-                    .add(0.7f, 0)
-                    .add(0.9f, 1f)
-                    .add(0.9999f, 1f)
-                    .add(1f, 0)
+                PointsBuilder.create()
+                    .withPoint(0, 0)
+                    .withPoint(0.7f, 0)
+                    .withPoint(0.9f, 1f)
+                    .withPoint(0.9999f, 1f)
+                    .withPoint(1f, 0)
                     .build())))
             .withFilterInterpolator(new UnsaturateFilterInterpolator())
             .withEndPauseSeconds(2f)
@@ -474,16 +474,16 @@ public class TheOldLabPackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withStartPauseSeconds(0.5f)
             .withDurationSeconds(2f)
-            .withScaleInterpolator(new CubicSplineInterpolator(PointListBuilder.create()
-                .add(0, 0)
-                .add(0.15f, 1f)
-                .add(1f, 1f)
+            .withScaleInterpolator(new CubicSplineInterpolator(PointsBuilder.create()
+                .withPoint(0, 0)
+                .withPoint(0.15f, 1f)
+                .withPoint(1f, 1f)
                 .build()))
             .withFilterInterpolator(new UnsaturateFilterInterpolator(
-                new CubicSplineInterpolator(PointListBuilder.create()
-                    .add(0, 0)
-                    .add(0.5f, 0)
-                    .add(1f, 1f)
+                new CubicSplineInterpolator(PointsBuilder.create()
+                    .withPoint(0, 0)
+                    .withPoint(0.5f, 0)
+                    .withPoint(1f, 1f)
                     .build())))
             .withEndPauseSeconds(2f)
             .build())
@@ -553,11 +553,11 @@ public class TheOldLabPackProvider {
             .withEndPauseSeconds(2)
             .withScaleInterpolator(new SlamHardNoPauseInterpolator())
             .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(new LinearSplineInterpolator(
-                PointListBuilder.create()
-                    .add(0, 0)
-                    .add(0.9f, 1)
-                    .add(0.9999f, 1)
-                    .add(1, 0)
+                PointsBuilder.create()
+                    .withPoint(0, 0)
+                    .withPoint(0.9f, 1)
+                    .withPoint(0.9999f, 1)
+                    .withPoint(1, 0)
                     .build())))
             .build())
         .build());
@@ -572,10 +572,10 @@ public class TheOldLabPackProvider {
 //            .withScaleInterpolator(new SlamSoftOutNoPauseInterpolator())
             .withScaleInterpolator(new SlamSoftOutInterpolator())
             .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(new LinearSplineInterpolator(
-                PointListBuilder.create()
-                    .add(0, 0)
-                    .add(0.8f, 1)
-                    .add(1, 0)
+                PointsBuilder.create()
+                    .withPoint(0, 0)
+                    .withPoint(0.8f, 1)
+                    .withPoint(1, 0)
                     .build())))
             .build())
         .build());
@@ -587,16 +587,16 @@ public class TheOldLabPackProvider {
             .withDurationSeconds(1f)
             .withScaleInterpolator(new SlamHardInAndOutInterpolator())
             .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(new LinearSplineInterpolator(
-                PointListBuilder.create()
-                    .add(0, 0)
-                    .add(0.35f, 0)
-                    .add(0.45f, 1f)
-                    .add(0.4999f, 1f)
-                    .add(0.5f, 0)
-                    .add(0.85f, 0)
-                    .add(0.95f, 1f)
-                    .add(0.9999f, 1f)
-                    .add(1f, 0)
+                PointsBuilder.create()
+                    .withPoint(0, 0)
+                    .withPoint(0.35f, 0)
+                    .withPoint(0.45f, 1f)
+                    .withPoint(0.4999f, 1f)
+                    .withPoint(0.5f, 0)
+                    .withPoint(0.85f, 0)
+                    .withPoint(0.95f, 1f)
+                    .withPoint(0.9999f, 1f)
+                    .withPoint(1f, 0)
                     .build())))
             .build())
         .build());
@@ -608,11 +608,11 @@ public class TheOldLabPackProvider {
             .withDurationSeconds(0.5f)
             .withScaleInterpolator(new SlamHardNoPauseInterpolator())
             .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(new LinearSplineInterpolator(
-                PointListBuilder.create()
-                    .add(0, 0)
-                    .add(0.9f, 1f)
-                    .add(0.9999f, 1f)
-                    .add(1f, 0)
+                PointsBuilder.create()
+                    .withPoint(0, 0)
+                    .withPoint(0.9f, 1f)
+                    .withPoint(0.9999f, 1f)
+                    .withPoint(1f, 0)
                     .build())))
             .build())
         .build());
@@ -624,11 +624,11 @@ public class TheOldLabPackProvider {
             .withDurationSeconds(0.5f)
             .withScaleInterpolator(new SlamSoftOutNoPauseInterpolator())
             .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(new LinearSplineInterpolator(
-                PointListBuilder.create()
-                    .add(0, 0)
-                    .add(0.9f, 1f)
-                    .add(0.9999f, 1f)
-                    .add(1f, 0)
+                PointsBuilder.create()
+                    .withPoint(0, 0)
+                    .withPoint(0.9f, 1f)
+                    .withPoint(0.9999f, 1f)
+                    .withPoint(1f, 0)
                     .build())))
             .build())
         .build());
@@ -682,7 +682,7 @@ public class TheOldLabPackProvider {
             .withDurationSeconds(4f)
             .withScaleInterpolator(new Interpolator() {
               @Override
-              protected float getRangePercent(float t) {
+              protected float getValue(float t) {
                 if (t < 0.1667) {
                   return 0;
                 } else if (t < 0.5) {
@@ -697,7 +697,7 @@ public class TheOldLabPackProvider {
             .withFilterInterpolator(new UnderExposeFilterInterpolator(
                 new Interpolator() {
                   @Override
-                  protected float getRangePercent(float t) {
+                  protected float getValue(float t) {
                     return (float) Math.pow(Math.sin(3 * Math.PI * t), 10);
                   }
                 }))
@@ -712,7 +712,7 @@ public class TheOldLabPackProvider {
             .withDurationSeconds(4)
             .withScaleInterpolator(new Interpolator() {
               @Override
-              protected float getRangePercent(float t) {
+              protected float getValue(float t) {
                 if (t < 0.1667) {
                   return 0;
                 } else if (t < 0.5) {
@@ -727,7 +727,7 @@ public class TheOldLabPackProvider {
             .withFilterInterpolator(new OverExposeFilterInterpolator(
                 new Interpolator() {
                   @Override
-                  protected float getRangePercent(float t) {
+                  protected float getValue(float t) {
                     return (float) Math.pow(Math.sin(3 * Math.PI * t), 10);
                   }
                 }))
@@ -742,7 +742,7 @@ public class TheOldLabPackProvider {
             .withDurationSeconds(4)
             .withScaleInterpolator(new Interpolator() {
               @Override
-              protected float getRangePercent(float t) {
+              protected float getValue(float t) {
                 if (t < 0.1667) {
                   return 0;
                 } else if (t < 0.5) {
@@ -757,7 +757,7 @@ public class TheOldLabPackProvider {
             .withFilterInterpolator(new GaussianBlurFilterInterpolator(
                 new Interpolator() {
                   @Override
-                  protected float getRangePercent(float t) {
+                  protected float getValue(float t) {
                     return (float) Math.pow(Math.sin(3 * Math.PI * t), 10);
                   }
                 }))
@@ -771,7 +771,7 @@ public class TheOldLabPackProvider {
             .withDurationSeconds(6)
             .withScaleInterpolator(new Interpolator() {
               @Override
-              protected float getRangePercent(float t) {
+              protected float getValue(float t) {
                 if (t < 0.25) {
                   return 0;
                 } else if (t < 0.5) {
@@ -792,7 +792,7 @@ public class TheOldLabPackProvider {
               public Interpolator getXInterpolator() {
                 return new Interpolator() {
                   @Override
-                  protected float getRangePercent(float t) {
+                  protected float getValue(float t) {
                     if (t < 0.25) {
                       return first.getXInterpolator().getInterpolation(t);
                     } else if (t < 0.5) {
@@ -810,7 +810,7 @@ public class TheOldLabPackProvider {
               public Interpolator getYInterpolator() {
                 return new Interpolator() {
                   @Override
-                  protected float getRangePercent(float t) {
+                  protected float getValue(float t) {
                     if (t < 0.25) {
                       return first.getYInterpolator().getInterpolation(t);
                     } else if (t < 0.5) {
@@ -834,7 +834,7 @@ public class TheOldLabPackProvider {
             .withDurationSeconds(4)
             .withScaleInterpolator(new Interpolator() {
               @Override
-              protected float getRangePercent(float t) {
+              protected float getValue(float t) {
                 if (t < 0.1667) {
                   return 0;
                 } else if (t < 0.5) {
@@ -849,7 +849,7 @@ public class TheOldLabPackProvider {
             .withFilterInterpolator(new UnsaturateFilterInterpolator(
                 new Interpolator() {
                   @Override
-                  protected float getRangePercent(float t) {
+                  protected float getValue(float t) {
                     return (float) Math.pow(Math.sin(3.5 * Math.PI * (t + 2f / 7)), 2);
                   }
                 }))

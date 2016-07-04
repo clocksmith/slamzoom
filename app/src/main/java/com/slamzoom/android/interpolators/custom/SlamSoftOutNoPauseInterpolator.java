@@ -7,7 +7,7 @@ import com.slamzoom.android.interpolators.Interpolator;
  */
 public class SlamSoftOutNoPauseInterpolator extends Interpolator {
   @Override
-  public float getRangePercent(float t) {
+  public float getValue(float t) {
     return (float) (1 - Math.pow(0.6 * (t + 0.6666), 5));
   }
 }

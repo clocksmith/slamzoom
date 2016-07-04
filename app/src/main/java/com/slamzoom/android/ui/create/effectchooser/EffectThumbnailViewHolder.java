@@ -11,7 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.slamzoom.android.R;
-import com.slamzoom.android.common.singletons.BusProvider;
+import com.slamzoom.android.common.bus.BusProvider;
 import com.slamzoom.android.common.utils.AnimationUtils;
 import com.slamzoom.android.common.utils.SzAnalytics;
 import com.slamzoom.android.common.utils.SzLog;

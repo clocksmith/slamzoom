@@ -5,7 +5,7 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.widget.EditText;
 
-import com.slamzoom.android.common.singletons.BusProvider;
+import com.slamzoom.android.common.bus.BusProvider;
 
 /**
  * Created by clocksmith on 3/30/16.
