@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 
 import com.google.common.base.Strings;
 import com.slamzoom.android.common.singletons.BusProvider;
+import com.slamzoom.android.common.utils.SzLog;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.mediacreation.CreateMediaCallback;
 import com.slamzoom.android.mediacreation.MediaCreator;
@@ -51,7 +52,8 @@ public class GifCreator extends MediaCreator implements GifEncoder.ProgressUpdat
     EffectModel effectModel = gifConfig.effectModel;
     for (EffectStep step :  effectModel.getEffectTemplate().getEffectSteps()) {
       step.setHotspot(gifConfig.hotspot);
-      if (!Strings.isNullOrEmpty(gifConfig.endText)) {
+      if (gifConfig.endText != null) {
+        SzLog.f(TAG, "gifConfig.endText: " + gifConfig.endText);
         step.setEndText(gifConfig.endText);
       }
     }

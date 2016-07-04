@@ -110,6 +110,7 @@ public class GifService extends Service {
   }
 
   public void requestMainGif(final GifConfig config) {
+    SzLog.f(TAG, "endText: " + config.endText);
     final String name = config.effectModel.getEffectTemplate().getName();
     if (mMainGifCache.asMap().containsKey(name)) {
       fireGifReadyEvent(name, false);

@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
