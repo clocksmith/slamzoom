@@ -33,7 +33,7 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
 
   private static final int COLOR_DEPTH = 8; // number of bit planes
   private static final int PAL_SIZE = 7; // color table size (bits-1)
-  private static final int SAMPLE = 20;
+  private static final int SAMPLE = 10;
 
   private int mWidth;
   private int mHeight;

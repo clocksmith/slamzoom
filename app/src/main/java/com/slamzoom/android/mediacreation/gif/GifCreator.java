@@ -42,7 +42,7 @@ public class GifCreator extends MediaCreator implements GifEncoder.ProgressUpdat
       int gifSize,
       CreateGifCallback callback,
       MultiPhaseStopwatch tracker) {
-    super(context, gifConfig.bitmap, getAdjustedEffectModel(gifConfig), gifSize, callback, tracker);
+    super(context, gifConfig.bitmap, getAdjustedEffectModel(gifConfig), gifSize, gifConfig.fps, callback, tracker);
   }
 
   private static EffectModel getAdjustedEffectModel(GifConfig gifConfig) {

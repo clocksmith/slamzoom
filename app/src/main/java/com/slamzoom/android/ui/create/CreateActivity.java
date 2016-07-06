@@ -286,6 +286,7 @@ public class CreateActivity extends AppCompatActivity {
         .withBitmap(mSelectedBitmap)
         .withEffectModel(EffectModelProvider.getEffectModel(mSelectedEffectName))
         .withEndText(mSelectedEndText)
+        .withFps(Constants.MAIN_FPS)
         .build());
   }
 
@@ -299,6 +300,7 @@ public class CreateActivity extends AppCompatActivity {
                 .withBitmap(mSelectedBitmapForThumbnail)
                 .withEffectModel(model)
                 .withEndText(mSelectedEndText)
+                .withFps(Constants.THUMBNAIL_FPS)
                 .build();
           }
         }));
@@ -403,7 +405,7 @@ public class CreateActivity extends AppCompatActivity {
   }
 
 
-  private File addCurrentGifToLibrary() {
+  private File saveCurrentGifToDisk() {
     if (ContextCompat.checkSelfPermission(
         this,
         Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -474,7 +476,7 @@ public class CreateActivity extends AppCompatActivity {
       mShareIntent = new Intent(android.content.Intent.ACTION_SEND);
       mShareIntent.setType("image/gif");
 
-      File gifFile = addCurrentGifToLibrary();
+      File gifFile = saveCurrentGifToDisk();
       if (gifFile != null) {
         mShareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(gifFile));
       } else {

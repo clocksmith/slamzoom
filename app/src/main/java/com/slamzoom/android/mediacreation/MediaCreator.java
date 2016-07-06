@@ -51,6 +51,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   protected E mMediaEncoder;
   protected boolean mIsCancelled;
   protected boolean mIsPreview;
+  protected int mFps;
 
   protected Context mContext;
   protected Bitmap mSelectedBitmap;
@@ -64,6 +65,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       Bitmap selectedBitmap,
       EffectModel effectModel,
       int gifSize,
+      int fps,
       CreateMediaCallback callback,
       MultiPhaseStopwatch tracker) {
     mContext = context;
@@ -77,6 +79,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     float aspectRatio = (float) mSelectedBitmap.getWidth() / mSelectedBitmap.getHeight();
     mGifWidth = aspectRatio > 1 ? gifSize : Math.round(gifSize * aspectRatio);
     mGifHeight = aspectRatio > 1 ? Math.round(gifSize / aspectRatio) : gifSize;
+    mFps = fps;
   }
 
   public abstract MediaFrame  createFrame(Bitmap bitmap, int delayMillis);
@@ -89,7 +92,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     mTotalNumFramesToAdd = new AtomicInteger(0);
     mAllFrames = Lists.newArrayListWithCapacity(steps.size());
     for (final EffectStep step : steps) {
-      final int numFramesForChunk = Math.round(Constants.DEFAULT_FPS * step.getDurationSeconds());
+      final int numFramesForChunk = Math.round(mFps * step.getDurationSeconds());
       List<MediaFrame> frames = Lists.newArrayListWithCapacity(numFramesForChunk);
       for (int i = 0; i < numFramesForChunk; i++) {
         mTotalNumFramesToAdd.incrementAndGet();
@@ -247,7 +250,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
           extraDelayMillis = Math.round(1000f * step.getEndPauseSeconds());
           textToRender = step.getEndText();
         }
-        int delayMillis = Math.round(1000f / Constants.DEFAULT_FPS) + extraDelayMillis;
+        int delayMillis = Math.round(1000f / mFps) + extraDelayMillis;
 
         CreateFrameTask createFrameTask = new CreateFrameTask(
             stepIndex,

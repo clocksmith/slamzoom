@@ -14,16 +14,18 @@ public class GifConfig {
   Bitmap bitmap;
   EffectModel effectModel;
   String endText;
+  int fps;
 
   public static Builder newBuilder() {
     return new Builder();
   }
 
-  public GifConfig(Rect hotspot, Bitmap bitmap, EffectModel effectModel, String endText) {
+  public GifConfig(Rect hotspot, Bitmap bitmap, EffectModel effectModel, String endText, int fps) {
     this.hotspot = hotspot;
     this.bitmap = bitmap;
     this.effectModel = effectModel;
     this.endText = endText;
+    this.fps = fps;
   }
 
   public static class Builder {
@@ -31,6 +33,7 @@ public class GifConfig {
     private Bitmap mBitmap;
     private EffectModel mEffectModel;
     private String mEndText;
+    private int mFps;
 
     public Builder() {
     }
@@ -55,14 +58,19 @@ public class GifConfig {
       return this;
     }
 
+    public Builder withFps(int fps) {
+      mFps = fps;
+      return this;
+    }
+
     public GifConfig build() {
-      return new GifConfig(mHotspot, mBitmap, mEffectModel, mEndText);
+      return new GifConfig(mHotspot, mBitmap, mEffectModel, mEndText, mFps);
     }
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(hotspot, bitmap, effectModel, endText);
+    return Objects.hashCode(hotspot, bitmap, effectModel, endText, fps);
   }
 
   @Override
@@ -77,6 +85,7 @@ public class GifConfig {
     return Objects.equal(hotspot, other.hotspot) &&
         Objects.equal(bitmap, other.bitmap) &&
         Objects.equal(effectModel, other.effectModel) &&
-        Objects.equal(endText, other.endText);
+        Objects.equal(endText, other.endText) &&
+        fps == other.fps;
   }
 }

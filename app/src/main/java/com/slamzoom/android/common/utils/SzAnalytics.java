@@ -23,6 +23,7 @@ public class SzAnalytics {
     public static final String DURATION_MS= "duration_ms";
     public static final String END_SCALE = "end_scale";
     public static final String GIF_SIZE = "gif_size";
+    public static final String FPS = "fps";
     public static final String HAS_STOPPED = "has_stopped";
   }
 
@@ -85,6 +86,11 @@ public class SzAnalytics {
 
     public Event withGifSize(int gifSize) {
       mBundle.putLong(CustomParam.GIF_SIZE, gifSize);
+      return this;
+    }
+
+    public Event withFps(int fps) {
+      mBundle.putLong(CustomParam.FPS, fps);
       return this;
     }
 

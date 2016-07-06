@@ -21,9 +21,9 @@ public class SzLog {
   private static Set<String> mAcceptedTags = ImmutableSet.of(
 //      CreateActivity.class.getSimpleName(),
 //      EffectThumbnailViewHolder.class.getSimpleName(),
-      GifCreator.class.getSimpleName(),
+//      GifCreator.class.getSimpleName(),
 //      GifCreatorManager.class.getSimpleName(),
-//      GifService.class.getSimpleName(),
+      GifService.class.getSimpleName(),
 
       "" // This is so we can always have a trailing comma.
   );

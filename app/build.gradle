@@ -8,8 +8,8 @@ android {
         applicationId "com.slamzoom.android"
         minSdkVersion 16
         targetSdkVersion 24
-        versionCode 3
-        versionName "0.9.1000"
+        versionCode 4
+        versionName "0.9.1001"
         multiDexEnabled true
     }
     buildTypes {

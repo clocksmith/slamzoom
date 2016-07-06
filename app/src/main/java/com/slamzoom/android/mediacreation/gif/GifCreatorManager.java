@@ -77,6 +77,11 @@ public class GifCreatorManager {
   public float getEndScale() {
     return (float) mGifConfig.hotspot.width() / mGifConfig.bitmap.getWidth();
   }
+
+  public int getFps() {
+    return mGifConfig.fps;
+  }
+
   public MultiPhaseStopwatch getTracker() {
     return mTracker;
   }

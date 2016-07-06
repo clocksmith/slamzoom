@@ -131,8 +131,9 @@ public class GifService extends Service {
   }
 
   private void stopCreatorsAndClearCaches() {
-    stopMainCreator();
+    stopAndDeleteMainCreator();
     stopThumbnailCreators();
+    clearThumbnailCreators();
 
     mMainGifCache.invalidateAll();
     mThumbnailGifCache.invalidateAll();
@@ -155,7 +156,6 @@ public class GifService extends Service {
                 int i = 0;
                 for (GifCreatorManager manager : mThumbnailGifCreatorPriorityQueue) {
                   if (manager.getName().equals(name)) {
-//                    SzLog.f(TAG, "finished " + name + " in " + manager.getTracker().getTotalString());
                     mThumbnailGifCreatorPriorityQueue.remove(i);
                     break;
                   }
@@ -168,7 +168,7 @@ public class GifService extends Service {
         });
   }
 
-  private void stopMainCreator() {
+  private void stopAndDeleteMainCreator() {
     if (mGifCreatorManager != null) {
       if (mGifCreatorManager.isRunning()) {
         mGifCreatorManager.stop();
@@ -182,13 +182,17 @@ public class GifService extends Service {
     stopCreatorQueue(mThumbnailGifCreatorPriorityQueue);
   }
 
+  private void clearThumbnailCreators() {
+    mThumbnailGifCreatorBackQueue.clear();
+    mThumbnailGifCreatorPriorityQueue.clear();
+  }
+
   private void stopCreatorQueue(List<GifCreatorManager> queue) {
     for (GifCreatorManager thumbnailManager : queue) {
       if (thumbnailManager.isRunning()) {
         thumbnailManager.stop();
       }
     }
-    queue.clear();
   }
 
   @Subscribe
@@ -229,17 +233,21 @@ public class GifService extends Service {
   }
 
   private void continueThumbnailGifGeneration() {
+    SzLog.f(TAG, "continueThumbnailGifGeneration()");
+
+    if (mThumbnailGifCreatorPriorityQueue.isEmpty() && !mThumbnailGifCreatorBackQueue.isEmpty()) {
+      mThumbnailGifCreatorPriorityQueue.add(mThumbnailGifCreatorBackQueue.remove(0));
+    }
+
     if (!mThumbnailGifCreatorPriorityQueue.isEmpty() && !mThumbnailGifCreatorPriorityQueue.get(0).isRunning()) {
       mThumbnailGifCreatorPriorityQueue.get(0).start();
-    } else if (mThumbnailGifCreatorPriorityQueue.isEmpty() && !mThumbnailGifCreatorBackQueue.isEmpty()) {
-      mThumbnailGifCreatorPriorityQueue.add(mThumbnailGifCreatorBackQueue.remove(0));
-      continueThumbnailGifGeneration();
     }
   }
 
   private void onGifReadyEvent(String name, boolean thumbnail) {
     if (!thumbnail) {
-      SzLog.f(TAG, "name: " + name + "\n" + mGifCreatorManager.getTracker().getReport());
+//      SzLog.f(TAG, "name: " + name + "\n" + mGifCreatorManager.getTracker().getReport());
+      SzLog.f(TAG, "name: " + name + "\n" + mGifCreatorManager.getTracker().getTotalString());
     }
 
     GifCreatorManager currentThumbnailManager = null;
@@ -256,6 +264,7 @@ public class GifService extends Service {
           .withDurationMs(currentManager.getTracker().getTotal())
           .withGifSize(currentManager.getGifSize())
           .withEndScale(currentManager.getEndScale())
+          .withFps(currentManager.getFps())
           .log(this);
     } else {
       SzLog.e(TAG, "Current GifCreatorManager for onGifReadyEvent is null!");

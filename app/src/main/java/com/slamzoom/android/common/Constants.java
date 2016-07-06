@@ -25,11 +25,12 @@ public class Constants {
   public static final float DEFAULT_START_PAUSE_SECONDS = 0;
   public static final float DEFAULT_END_PAUSE_SECONDS = 0;
 
-  public static final int DEFAULT_FPS = 24;
+  public static final int MAIN_FPS = 24;
+  public static final int THUMBNAIL_FPS = 12;
   public static final int DEFAULT_GIF_SIZE_PX = 320;
   public static final int GIF_THUMBNAIL_DIVIDER = 4;
   public static final int DEFAULT_GIF_PREVIEW_SIZE_PX = DEFAULT_GIF_SIZE_PX / GIF_THUMBNAIL_DIVIDER;
-  public static final boolean DEFAULT_USE_LOCAL_COLOR_PALETTE = true;
+  public static final boolean DEFAULT_USE_LOCAL_COLOR_PALETTE = true  ;
 
   // arbitrary
   public static final int MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX = DEFAULT_GIF_SIZE_PX * 4;
