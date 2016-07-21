@@ -2,6 +2,7 @@ package com.slamzoom.android.effects;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.slamzoom.android.ui.create.effectchooser.EffectChooser;
 
 import java.util.List;
 
@@ -11,11 +12,13 @@ import java.util.List;
 public class EffectPack {
   private String mName;
   private String mColorGroup;
+  private int mColor;
   private ImmutableList<EffectTemplate> mEffectTemplates;
 
-  public EffectPack(String name, String colorGroup, ImmutableList<EffectTemplate> effectTemplates) {
+  public EffectPack(String name, String colorGroup, int color, ImmutableList<EffectTemplate> effectTemplates) {
     mName = name;
     mColorGroup = colorGroup;
+    mColor = color;
     mEffectTemplates = effectTemplates;
   }
 
@@ -25,6 +28,10 @@ public class EffectPack {
 
   public String getColorGroup() {
     return mColorGroup;
+  }
+
+  public int getColor() {
+    return mColor;
   }
 
   public ImmutableList<EffectTemplate> getEffectTemplates() {
@@ -38,6 +45,7 @@ public class EffectPack {
   public static class Builder {
     private String mName;
     private String mColorGroup;
+    private int mColor;
     private List<EffectTemplate> mEffectTemplates;
 
     public Builder() {
@@ -60,13 +68,15 @@ public class EffectPack {
     }
 
     public EffectPack build() {
+      mColor = EffectColors.getColorGroup(mColorGroup).get(0);
       int count = 0;
       for (EffectTemplate effectTemplate : mEffectTemplates) {
         effectTemplate.setPackName(mName);
         effectTemplate.setColor(EffectColors.getColorGroup(mColorGroup).get(count));
         count++;
       }
-      return new EffectPack(mName, mColorGroup, ImmutableList.copyOf(mEffectTemplates));
+
+      return new EffectPack(mName, mColorGroup, mColor, ImmutableList.copyOf(mEffectTemplates));
     }
   }
 }

@@ -1,6 +1,9 @@
 package com.slamzoom.android.ui.create;
 
 import android.content.Context;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
@@ -8,9 +11,11 @@ import android.widget.TextView;
 
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.utils.SzLog;
+import com.slamzoom.android.effects.EffectColors;
 import com.slamzoom.android.effects.EffectPack;
 import com.slamzoom.android.effects.EffectPacks;
 import com.slamzoom.android.effects.EffectTemplate;
+import com.slamzoom.android.effects.EffectTemplates;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -27,18 +32,41 @@ public class BuyToUnlockDialogView extends LinearLayout {
   public BuyToUnlockDialogView(Context context, String effectName, String packName) {
     this(context, null);
 
-    mMessage.setText(String.format(getResources().getString(R.string.buy_dialog_text), packName, effectName.toUpperCase()));
+    EffectPack pack = EffectPacks.getPack(packName);
+    EffectTemplate effect = EffectTemplates.get(effectName);
 
-    EffectPack effectPack = EffectPacks.getPack(packName);
-    if (effectPack != null) {
+    if (pack == null) {
+      SzLog.e(TAG, "effectPack: " + packName + " is null!");
+    } else if (effect == null) {
+      SzLog.e(TAG, "effectName: " + effectName + " is null!");
+    } else {
+      String message =
+          String.format(getResources().getString(R.string.buy_dialog_text), packName, effectName.toUpperCase());
+      Spannable messageSpannable = new SpannableString(message);
+      int packStart = message.indexOf(packName);
+      int packEnd = packStart + packName.length();
+      messageSpannable.setSpan(
+          new ForegroundColorSpan(pack.getColor()),
+          packStart,
+          packEnd,
+          Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+      int effectStart = message.indexOf(effectName.toUpperCase());
+      int effectEnd = effectStart + effectName.length();
+      messageSpannable.setSpan(
+          new ForegroundColorSpan(effect.getColor()),
+          effectStart,
+          effectEnd,
+          Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+      mMessage.setText(messageSpannable);
+
       StringBuilder sb = new StringBuilder();
-      for (EffectTemplate otherEffect : effectPack.getEffectTemplates()) {
-        sb.append(otherEffect.getName().toUpperCase() );
-        sb.append("\n");
+      for (EffectTemplate otherEffect : pack.getEffectTemplates()) {
+        if (!otherEffect.getName().equals(effectName)) {
+          sb.append(otherEffect.getName().toUpperCase());
+          sb.append("\n");
+        }
       }
       mOtherEffects.setText(sb);
-    } else {
-      SzLog.e(TAG, "effectPack: " + packName + " is null!");
     }
   }
 
