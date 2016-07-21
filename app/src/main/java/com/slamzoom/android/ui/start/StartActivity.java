@@ -13,6 +13,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.utils.AnimationUtils;
+import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.SzLog;
 import com.slamzoom.android.ui.create.CreateActivity;
 
@@ -45,6 +46,10 @@ public class StartActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_start);
     ButterKnife.bind(this);
+
+    if (DebugUtils.DEBUG_SKIP_START_SCREEN) {
+      startActivity(new Intent(StartActivity.this, CreateActivity.class));
+    }
 
     mCreateSlamzoomButton.setOnClickListener(new View.OnClickListener() {
       @Override

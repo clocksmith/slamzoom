@@ -2,8 +2,6 @@ package com.slamzoom.android.effects;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.slamzoom.android.common.utils.SzLog;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeDoubleLeftRightFilterInterpolatorGroup;
@@ -30,7 +28,6 @@ import com.slamzoom.android.effects.interpolation.filter.single.UnswirlAtHotspot
 import com.slamzoom.android.effects.interpolation.filter.single.UnswirlFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.UnswirlTurntableAtHotspotOnHotspotFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.ZoomBlurAtHotspotFilterInterpolator;
-import com.slamzoom.android.effects.interpolation.transform.TranslateInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CircleCenterInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashBounceBottomInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashBounceDiagonalInterpolatorProvider;
@@ -40,15 +37,14 @@ import com.slamzoom.android.effects.interpolation.transform.scaletranslate.Crash
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.FlushInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.RumbleTeaseInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.ShakeSwitchInterpolatorProvider;
-import com.slamzoom.android.effects.interpolation.transform.translate.BaseShakeInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.translate.MegaShakeInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.translate.ShakeInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.translate.SuperShakeInterpolatorProvider;
-import com.slamzoom.android.interpolators.Interpolator;
 import com.slamzoom.android.interpolators.LinearInterpolator;
 import com.slamzoom.android.interpolators.ReverseLinearInterpolator;
 import com.slamzoom.android.interpolators.custom.HalfInAndOutInterpolator;
 import com.slamzoom.android.interpolators.custom.InAndOutInterpolator;
+import com.slamzoom.android.interpolators.custom.NoneToAllAtHalfInterpolator;
 import com.slamzoom.android.interpolators.custom.OutAndInInterpolator;
 import com.slamzoom.android.interpolators.custom.OvershootInterpolator;
 import com.slamzoom.android.interpolators.custom.SlamHardInAndOutInterpolator;
@@ -57,11 +53,10 @@ import com.slamzoom.android.interpolators.custom.SlamHardNoPauseInterpolator;
 import com.slamzoom.android.interpolators.custom.SlamSoftInterpolator;
 import com.slamzoom.android.interpolators.custom.SlamSoftOutInterpolator;
 import com.slamzoom.android.interpolators.custom.TeaseInterpolator;
+import com.slamzoom.android.interpolators.custom.ThreeEaseInHardOutInterpolator;
 import com.slamzoom.android.interpolators.spline.CubicSplineInterpolator;
 import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
-import com.slamzoom.android.interpolators.spline.StepInterpolator;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -69,21 +64,15 @@ import java.util.Map;
  *
  * All effects. Keep alphabetized.
  */
-public class Effects {
-  private static final String TAG = Effects.class.getSimpleName();
+public class EffectTemplates {
+  private static final String TAG = EffectTemplates.class.getSimpleName();
 
   private static ImmutableList<EffectTemplate> EFFECT_TEMPLATES_LIST = ImmutableList.<EffectTemplate>builder()
       .add(EffectTemplate.newSingleStepBuilder()
           .withName("blacktease")
           .withStartDurationEndSeconds(1, 4, 2)
           .withScaleInterpolator(new TeaseInterpolator())
-          .withFilterInterpolator(new UnderExposeFilterInterpolator(
-              new Interpolator() {
-                @Override
-                protected float getValue(float t) {
-                  return (float) Math.pow(Math.sin(3 * Math.PI * t), 10);
-                }
-              }))
+          .withFilterInterpolator(new UnderExposeFilterInterpolator(new ThreeEaseInHardOutInterpolator()))
           .build())
       .add(EffectTemplate.newSingleStepBuilder()
           .withName("blurcrash")
@@ -94,17 +83,8 @@ public class Effects {
       .add(EffectTemplate.newSingleStepBuilder()
           .withName("blurmagic")
           .withStartDurationEndSeconds(0, 2, 1)
-          .withScaleInterpolator(LinearSplineInterpolator.newBuilder()
-              .withPoint(0, 0)
-              .withPoint(0.4999f, 0)
-              .withPoint(0.5f, 1)
-              .withPoint(1, 1)
-              .build())
-          .withFilterInterpolator(new GuassianSuperBlurFilterInterpolator(LinearSplineInterpolator.newBuilder()
-              .withPoint(0, 0)
-              .withPoint(0.5f, 1)
-              .withPoint(1, 0)
-              .build()))
+          .withScaleInterpolator(new NoneToAllAtHalfInterpolator())
+          .withFilterInterpolator(new GuassianSuperBlurFilterInterpolator(new InAndOutInterpolator()))
           .build())
       .add(EffectTemplate.newSingleStepBuilder()
           .withName("blurslam")
@@ -128,24 +108,13 @@ public class Effects {
               .withPoint(0.6f, 1)
               .withPoint(1, 1)
               .build())
-          .withFilterInterpolator(new GaussianBlurFilterInterpolator(LinearSplineInterpolator.newBuilder()
-              .withPoint(0, 0)
-              .withPoint(0.4f, 0)
-              .withPoint(0.6f, 1)
-              .withPoint(1, 1)
-              .build()))
+          .withFilterInterpolator(new GaussianBlurFilterInterpolator(new InAndOutInterpolator()))
           .build())
       .add(EffectTemplate.newSingleStepBuilder()
           .withName("blurtease")
           .withStartDurationEndSeconds(1, 4, 2)
           .withScaleInterpolator(new TeaseInterpolator())
-          .withFilterInterpolator(new GaussianBlurFilterInterpolator(
-              new Interpolator() {
-                @Override
-                protected float getValue(float t) {
-                  return (float) Math.pow(Math.sin(3 * Math.PI * t), 10);
-                }
-              }))
+          .withFilterInterpolator(new GaussianBlurFilterInterpolator(new ThreeEaseInHardOutInterpolator()))
           .build())
       .add(EffectTemplate.newSingleStepBuilder()
           .withName("bulger")
@@ -225,15 +194,15 @@ public class Effects {
           .withStartDurationEndSeconds(1, 2, 2)
           .withScaleInterpolator(CubicSplineInterpolator.newBuilder()
               .withPoint(0, 0)
-              .withPoint(0.15f, 1f)
-              .withPoint(1f, 1f)
+              .withPoint(0.15f, 1)
+              .withPoint(1, 1)
               .build())
           .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(LinearSplineInterpolator.newBuilder()
               .withPoint(0, 0)
               .withPoint(0.7f, 0)
-              .withPoint(0.9f, 1f)
-              .withPoint(0.9999f, 1f)
-              .withPoint(1f, 0)
+              .withPoint(0.9f, 1)
+              .withPoint(0.9999f, 1)
+              .withPoint(1, 0)
               .build()))
           .withFilterInterpolator(new UnsaturateFilterInterpolator())
           .build())
@@ -251,9 +220,9 @@ public class Effects {
           .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(LinearSplineInterpolator.newBuilder()
               .withPoint(0, 0)
               .withPoint(0.7f, 0)
-              .withPoint(0.9f, 1f)
-              .withPoint(0.9999f, 1f)
-              .withPoint(1f, 0)
+              .withPoint(0.9f, 1)
+              .withPoint(0.9999f, 1)
+              .withPoint(1, 0)
               .build()))
           .withFilterInterpolator(new UnsaturateFilterInterpolator())
           .build())
@@ -434,17 +403,11 @@ public class Effects {
           .withName("whitetease")
           .withStartDurationEndSeconds(1, 4, 2)
           .withScaleInterpolator(new TeaseInterpolator())
-          .withFilterInterpolator(new OverExposeFilterInterpolator(
-              new Interpolator() {
-                @Override
-                protected float getValue(float t) {
-                  return (float) Math.pow(Math.sin(3 * Math.PI * t), 10);
-                }
-              }))
+          .withFilterInterpolator(new OverExposeFilterInterpolator(new ThreeEaseInHardOutInterpolator()))
           .build())
       .build();
 
-  private static Map<String, EffectTemplate> EFFECT_TEMPLATES_MAP =
+  private static Map<String, EffectTemplate> EFFECT_TEMPLATES_MAP_TO_USE =
       Maps.newHashMap(Maps.uniqueIndex(EFFECT_TEMPLATES_LIST,
           new Function<EffectTemplate, String>() {
             @Override
@@ -453,97 +416,24 @@ public class Effects {
             }
           }));
 
-  private static ImmutableList<EffectPack> EFFECT_PACKS = ImmutableList.<EffectPack>builder()
-      .add(EffectPack.newBuilder()
-          .withName("green pack")
-          .withEffectTemplate("slamin")
-          .withEffectTemplate("smush")
-          .withEffectTemplate("sumo")
-          .withEffectTemplate("overcrash")
-          .withEffectTemplate("crashrumble")
-          .withEffectTemplate("crashdiag")
-          .withEffectTemplate("mctwisty")
-          .withEffectTemplate("doublebulge")
-          .withEffectTemplate("earthquake")
-          .withEffectTemplate("swirlspot")
-          .build())
-      .add(EffectPack.newBuilder()
-          .withName("blue pack")
-          .withEffectTemplate("rumblestiltskin")
-          .withEffectTemplate("inflate")
-          .withEffectTemplate("blurcrash")
-          .withEffectTemplate("blursmith")
-          .withEffectTemplate("magoo")
-          .withEffectTemplate("djswirls")
-          .withEffectTemplate("slamout")
-          .withEffectTemplate("flush")
-          .withEffectTemplate("swirleyes")
-          .withEffectTemplate("graytake")
-          .build())
-      .add(EffectPack.newBuilder()
-          .withName("purple pack")
-          .withEffectTemplate("crashmiss")
-          .withEffectTemplate("rumbletease")
-          .withEffectTemplate("shrinkydink")
-          .withEffectTemplate("blurshake")
-          .withEffectTemplate("grayfreeze")
-          .withEffectTemplate("slamio")
-          .withEffectTemplate("blurslam")
-          .withEffectTemplate("rumble")
-          .withEffectTemplate("swirlio")
-          .withEffectTemplate("spiral")
-          .build())
-      .add(EffectPack.newBuilder()
-          .withName("red pack")
-          .withEffectTemplate("crashin")
-          .withEffectTemplate("bulger")
-          .withEffectTemplate("blurtease")
-          .withEffectTemplate("whitetease")
-          .withEffectTemplate("shakezilla")
-          .withEffectTemplate("bulgeswap")
-          .withEffectTemplate("grayslam")
-          .withEffectTemplate("swirlout")
-          .withEffectTemplate("twistyfroggy")
-          .withEffectTemplate("swirlyeyes")
-          .build())
-      .add(EffectPack.newBuilder()
-          .withName("orange pack")
-          .withEffectTemplate("crashblur")
-          .withEffectTemplate("weirdo")
-          .withEffectTemplate("blurmagic")
-          .withEffectTemplate("blacktease")
-          .withEffectTemplate("deflate")
-          .withEffectTemplate("rumbleslam")
-          .withEffectTemplate("grayrumble")
-          .withEffectTemplate("swirlin")
-          .withEffectTemplate("swirlslam")
-          .withEffectTemplate("swirlyspot")
-          .build())
+  // TODO(clocksmith): sloppy to reuse the code for this.
+  private static Map<String, EffectTemplate> USED_EFFECT_TEMPLATES_MAP = Maps.newHashMap();
 
-      .build();
-
-  private static ImmutableList<EffectTemplate> EFFECT_TEMPLATES_FROM_PACKS =
-      ImmutableList.copyOf(Iterables.concat(Lists.transform(EFFECT_PACKS,
-          new Function<EffectPack, List<EffectTemplate>>() {
-            @Override
-            public List<EffectTemplate> apply(EffectPack input) {
-              return input.getEffectTemplates();
-            }
-          })));
-
-  public static ImmutableList<EffectPack> listPacks() {
-    return EFFECT_PACKS;
-  }
-
-  public static ImmutableList<EffectTemplate> listEffects() {
-    return EFFECT_TEMPLATES_FROM_PACKS;
+  public static EffectTemplate consume(String name) {
+    if (EFFECT_TEMPLATES_MAP_TO_USE.containsKey(name)) {
+      USED_EFFECT_TEMPLATES_MAP.put(name, EFFECT_TEMPLATES_MAP_TO_USE.remove(name));
+      return USED_EFFECT_TEMPLATES_MAP.get(name);
+    } else {
+      SzLog.e(TAG, "Effect: \"" + name + "\" does not exist or has already been used.");
+      return null;
+    }
   }
 
   public static EffectTemplate get(String name) {
-    if (EFFECT_TEMPLATES_MAP.containsKey(name)) {
-      return EFFECT_TEMPLATES_MAP.remove(name);
+    if (USED_EFFECT_TEMPLATES_MAP.containsKey(name)) {
+      return USED_EFFECT_TEMPLATES_MAP.get(name);
     } else {
-      SzLog.e(TAG, "Effect: \"" + name + "\" does not exists or has already been used.");
+      SzLog.e(TAG, "Effect: \"" + name + "\" was never used.");
       return null;
     }
   }

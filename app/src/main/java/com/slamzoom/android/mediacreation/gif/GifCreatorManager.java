@@ -37,14 +37,14 @@ public class GifCreatorManager {
   }
 
   public void start() {
-    SzLog.f(TAG, "start() " + (mIsPreview ? "preview_" : "") + mGifConfig.effectModel.getEffectTemplate().getName());
+    SzLog.f(TAG, "start() " + (mIsPreview ? "preview_" : "") + mGifConfig.effectTemplate.getName());
     mIsRunning = true;
     mGifCreator = new GifCreator(mContext, mGifConfig, mGifSize, mCallback, mTracker);
     mGifCreator.createAsync();
   }
 
   public void stop() {
-    SzLog.f(TAG, "stop() " + (mIsPreview ? "preview_" : "") + mGifConfig.effectModel.getEffectTemplate().getName());
+    SzLog.f(TAG, "stop() " + (mIsPreview ? "preview_" : "") + mGifConfig.effectTemplate.getName());
     mHasStopped = true;
     mIsRunning = false;
     mTracker.stopAll();
@@ -71,7 +71,7 @@ public class GifCreatorManager {
   }
 
   public String getName() {
-    return mGifConfig.effectModel.getEffectTemplate().getName();
+    return mGifConfig.effectTemplate.getName();
   }
 
   public float getEndScale() {

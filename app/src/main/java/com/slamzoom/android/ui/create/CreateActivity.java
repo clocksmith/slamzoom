@@ -15,7 +15,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -28,10 +31,14 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.android.vending.billing.IInAppBillingService;
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.slamzoom.android.R;
+import com.slamzoom.android.billing.GetPurchasedPacksCallback;
+import com.slamzoom.android.billing.IabUtils;
 import com.slamzoom.android.common.BackInterceptingEditText;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.bus.BusProvider;
@@ -39,7 +46,9 @@ import com.slamzoom.android.common.utils.AnimationUtils;
 import com.slamzoom.android.common.utils.BitmapUtils;
 import com.slamzoom.android.common.utils.KeyboardUtils;
 import com.slamzoom.android.common.utils.SzLog;
-import com.slamzoom.android.effects.EffectModelProvider;
+import com.slamzoom.android.effects.EffectPacks;
+import com.slamzoom.android.effects.EffectTemplate;
+import com.slamzoom.android.effects.EffectTemplates;
 import com.slamzoom.android.mediacreation.gif.GifConfig;
 import com.slamzoom.android.mediacreation.gif.GifCreator;
 import com.slamzoom.android.mediacreation.gif.GifService;
@@ -53,6 +62,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.Bind;
@@ -63,47 +73,57 @@ import pl.droidsonroids.gif.GifImageView;
 public class CreateActivity extends AppCompatActivity {
   private static final String TAG = CreateActivity.class.getSimpleName();
 
+  private enum ServiceState {
+    UNBOUND, BINDING, BOUND;
+  }
+
+  @Bind(R.id.coordinatatorLayout) CoordinatorLayout mCoordinatorLayout;
   @Bind(R.id.actionBar) Toolbar mActionBar;
   @Bind(R.id.gifImageView) GifImageView mGifImageView;
   @Bind(R.id.progressBar) ProgressBar mProgressBar;
   @Bind(R.id.zeroStateMessage) TextView mZeroStateMessage;
   @Bind(R.id.effectChooser) EffectChooser mEffectChooser;
-  private AddTextView mAddTextView;
+  private AddTextView mAddTextView; // action bar custom view
 
   private View mGifAreaView;
   private boolean mIsAddTextViewShowing = false;
 
   private Uri mSelectedUri;
   private byte[] mSelectedGifBytes;
-
   private Bitmap mSelectedBitmap;
   private Bitmap mSelectedBitmapForThumbnail;
   private Rect mSelectedHotspot;
   private Rect mSelectedHotspotForThumbnail;
-
   private String mSelectedEffectName;
   private String mSelectedEndText;
+  private Map<String, Double> mGifProgresses;
 
   private GifService mGifService;
-  private GifServiceConnection mConnection;
-  private boolean mBound = false;
-  private Map<String, Double> mGifProgresses;
+  private GifServiceConnection mGifServiceConnection;
+  private ServiceState mGifServiceState;
+  private IInAppBillingService mBillingService;
+  private BillingServiceConnection mBillingServiceConnection;
+  private ServiceState mBillingServiceState;
+
+  private List<String> mPurchasedPackNames;
+  private boolean mNeedsUpdatePurchasePackNames;
+  private ImmutableList<EffectModel> mEffectModels;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     SzLog.f(TAG, "onCreate()");
+
     setContentView(R.layout.activity_create);
     ButterKnife.bind(this);
     BusProvider.getInstance().register(this);
 
-    mConnection = new GifServiceConnection();
-    bindService(new Intent(this, GifService.class), mConnection, Context.BIND_AUTO_CREATE);
+    mGifServiceState = ServiceState.UNBOUND;
+    mBillingServiceState = ServiceState.UNBOUND;
 
+    bindServices();
     initActionBar();
-
-    mGifProgresses = Maps.newHashMap();
-    mGifAreaView = mZeroStateMessage;
+    initGifArea();
 
     Intent intent = getIntent();
     if (Intent.ACTION_SEND.equals(intent.getAction())) {
@@ -134,10 +154,15 @@ public class CreateActivity extends AppCompatActivity {
   public void onDestroy() {
     super.onDestroy();
     SzLog.f(TAG, "onDestroy()");
+
+    ButterKnife.unbind(this);
     BusProvider.getInstance().unregister(this);
-    if (mBound) {
-      unbindService(mConnection);
-      mBound = false;
+
+    if (mGifService != null) {
+      unbindService(mGifServiceConnection);
+    }
+    if (mBillingService != null) {
+      unbindService(mBillingServiceConnection);
     }
   }
 
@@ -167,7 +192,7 @@ public class CreateActivity extends AppCompatActivity {
         handleAddTextConfirmed();
         return true;
       case R.id.action_share:
-        shareCurrentGif();
+        handleSharePressed();
         return true;
       default:
         return super.onOptionsItemSelected(item);
@@ -229,6 +254,29 @@ public class CreateActivity extends AppCompatActivity {
     onBackPressed();
   }
 
+  private void bindServices() {
+    bindGifService();
+    bindBillingService();
+  }
+
+  private void bindGifService() {
+    if (mGifServiceConnection == null) {
+      mGifServiceConnection = new GifServiceConnection();
+    }
+    mGifServiceState = ServiceState.BINDING;
+    bindService(new Intent(this, GifService.class), mGifServiceConnection, Context.BIND_AUTO_CREATE);
+  }
+
+  private void bindBillingService() {
+    if (mBillingServiceConnection == null) {
+      mBillingServiceConnection = new BillingServiceConnection();
+    }
+    Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
+    serviceIntent.setPackage("com.android.vending");
+    mBillingServiceState = ServiceState.BINDING;
+    bindService(serviceIntent, mBillingServiceConnection, Context.BIND_AUTO_CREATE);
+  }
+
   private void initActionBar() {
     setSupportActionBar(mActionBar);
     assert getSupportActionBar() != null;
@@ -238,6 +286,52 @@ public class CreateActivity extends AppCompatActivity {
     mAddTextView = new AddTextView(this);
     getSupportActionBar().setCustomView(mAddTextView,
         new Toolbar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+  }
+
+  private void initGifArea() {
+    mGifProgresses = Maps.newHashMap();
+    mGifAreaView = mZeroStateMessage;
+  }
+
+  private ImmutableList<EffectModel> getEffectModels() {
+    if (mEffectModels == null) {
+      mEffectModels = EffectPacks.listEffectModelsByPack(mPurchasedPackNames);
+    }
+    return mEffectModels;
+  }
+
+  private EffectModel getEffectModelForSelectedEffect() {
+    for (EffectModel effectModel : getEffectModels()) {
+      if (effectModel.getEffectTemplate().getName().equals(mSelectedEffectName)) {
+        return effectModel;
+      }
+    }
+    return null;
+  }
+
+  private void updatePurchasedPackNamesAndEffectModels() {
+    updatePurchasedPackNamesAndEffectModels(null);
+  }
+
+  private void updatePurchasedPackNamesAndEffectModels(final Runnable onDone) {
+    IabUtils.getPurchasedPackNames(mBillingService, new GetPurchasedPacksCallback() {
+      @Override
+      public void onSuccess(List<String> packNames) {
+        mPurchasedPackNames = packNames;
+        mNeedsUpdatePurchasePackNames = false;
+        mEffectModels = EffectPacks.listEffectModelsByPack(mPurchasedPackNames);
+        if (onDone != null) {
+          onDone.run();
+        }
+      }
+
+      @Override
+      public void onFailure() {
+        if (onDone != null) {
+          onDone.run();
+        }
+      }
+    });
   }
 
   private void handleIncomingUri(Uri uri) {
@@ -250,7 +344,7 @@ public class CreateActivity extends AppCompatActivity {
           Constants.MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX / Constants.GIF_THUMBNAIL_DIVIDER);
       launchHotspotChooser();
     } catch (FileNotFoundException e) {
-      SzLog.e(TAG, "Cannot get bitmap for path: " + uri.toString());
+      SzLog.e(TAG, "Cannot consume bitmap for path: " + uri.toString());
     }
   }
 
@@ -279,32 +373,53 @@ public class CreateActivity extends AppCompatActivity {
     showAddTextView(false);
   }
 
+  private void handleSharePressed() {
+    EffectModel effectModel = getEffectModelForSelectedEffect();
+    if (effectModel == null) {
+      // TODO(clocksmith): tell the user they must have an effect, or just disable share button.
+      Snackbar snackbar = Snackbar.make(mCoordinatorLayout, "Choose an effect first!", Snackbar.LENGTH_SHORT);
+      snackbar.show();
+    } else if (!effectModel.isLocked()) {
+      shareCurrentGif();
+    } else {
+      showBuyDialog(effectModel.getEffectTemplate().getName(), effectModel.getEffectTemplate().getPackName());
+    }
+  }
+
   private void updateMainGif() {
     mGifProgresses.put(mSelectedEffectName, 0d);
     mGifService.requestMainGif(GifConfig.newBuilder()
         .withHotspot(mSelectedHotspot)
         .withBitmap(mSelectedBitmap)
-        .withEffectModel(EffectModelProvider.getEffectModel(mSelectedEffectName))
+        .withEffectTemplate(EffectTemplates.get(mSelectedEffectName))
         .withEndText(mSelectedEndText)
         .withFps(Constants.MAIN_FPS)
         .build());
   }
 
   private void updateThumbnailGifs() {
-    mGifService.requestThumbnailGifs(Lists.transform(EffectModelProvider.getEffectModels(),
-        new Function<EffectModel, GifConfig>() {
-          @Override
-          public GifConfig apply(EffectModel model) {
-            return GifConfig.newBuilder()
-                .withHotspot(mSelectedHotspotForThumbnail)
-                .withBitmap(mSelectedBitmapForThumbnail)
-                .withEffectModel(model)
-                .withEndText(mSelectedEndText)
-                .withFps(Constants.THUMBNAIL_FPS)
-                .build();
-          }
-        }));
-    mEffectChooser.set(EffectModelProvider.getEffectModels());
+    if (mPurchasedPackNames == null || mNeedsUpdatePurchasePackNames) {
+      updatePurchasedPackNamesAndEffectModels(new Runnable() {
+        @Override
+        public void run() {
+          updateThumbnailGifs();
+        }
+      });
+    } else {
+      mGifService.requestThumbnailGifs(Lists.transform(EffectPacks.listEffectTemplatesByPack(), new Function<EffectTemplate, GifConfig>() {
+        @Override
+        public GifConfig apply(EffectTemplate effectTemplate) {
+          return GifConfig.newBuilder()
+              .withHotspot(mSelectedHotspotForThumbnail)
+              .withBitmap(mSelectedBitmapForThumbnail)
+              .withEffectTemplate(effectTemplate)
+              .withEndText(mSelectedEndText)
+              .withFps(Constants.THUMBNAIL_FPS)
+              .build();
+        }
+      }));
+      mEffectChooser.set(getEffectModels());
+    }
   }
 
   private void resetAndUpdateAll() {
@@ -318,7 +433,7 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   private void resetProgresses() {
-    for (EffectModel model : EffectModelProvider.getEffectModels()) {
+    for (EffectModel model : getEffectModels()) {
       mGifProgresses.put(model.getEffectTemplate().getName(), 0d);
     }
   }
@@ -404,7 +519,6 @@ public class CreateActivity extends AppCompatActivity {
     mGifAreaView = mProgressBar;
   }
 
-
   private File saveCurrentGifToDisk() {
     if (ContextCompat.checkSelfPermission(
         this,
@@ -415,22 +529,22 @@ public class CreateActivity extends AppCompatActivity {
               0);
     }
 
-    File direct = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "/SlamZoom");
+    File direct = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getPath(),
+        Constants.PUBLIC_DIRECTORY);
 
-    long now = System.currentTimeMillis();
-    String gifFilename = "slamzoom_" + now + ".gif";
-    File gifFile = new File(direct, gifFilename);
-
-    if (!gifFile.getParentFile().isDirectory()) {
-      Log.d(TAG, "No directory exitsts: " + gifFile.getParentFile());
-      if (!gifFile.getParentFile().mkdirs()) {
-        SzLog.e(TAG, "Cannot make directory: " + gifFile.getParentFile());
-      } {
+    if (!direct.exists()) {
+      if (!direct.mkdirs()) {
+        SzLog.e(TAG, "Cannot make directory: " + direct);
+      } else {
         Log.d(TAG, direct + " successfully created." );
       }
     } else {
       Log.d(TAG, direct + " already exists." );
     }
+
+    long now = System.currentTimeMillis();
+    String gifFilename = "slamzoom_" + mSelectedEffectName + "_" + now + ".gif";
+    File gifFile = new File(direct, gifFilename);
 
     if (mSelectedGifBytes != null) {
       try {
@@ -454,17 +568,38 @@ public class CreateActivity extends AppCompatActivity {
     // TODO(clocksmith): Put a message here telling the user they need to make a gif first.
   }
 
+  private void showBuyDialog(String effectName, String packName) {
+    DialogFragment newFragment = BuyToUnlockDialogFragment.newInstance(effectName, packName);
+    newFragment.show(getSupportFragmentManager(), BuyToUnlockDialogFragment.class.getSimpleName());
+  }
+
   private class GifServiceConnection implements ServiceConnection {
     @Override
     public void onServiceConnected(ComponentName className, IBinder iBinder) {
-      GifService.GifServiceBinder binder = (GifService.GifServiceBinder) iBinder;
-      mGifService = binder.getService();
-      mBound = true;
+      mGifService = ((GifService.GifServiceBinder) iBinder).getService();
+      mGifServiceState = ServiceState.BOUND;
     }
 
     @Override
     public void onServiceDisconnected(ComponentName arg0) {
-      mBound = false;
+      mGifService = null;
+      mGifServiceState = ServiceState.UNBOUND;
+    }
+  }
+
+  private class BillingServiceConnection implements ServiceConnection {
+    @Override
+    public void onServiceConnected(ComponentName name,
+        IBinder service) {
+      mBillingService = IInAppBillingService.Stub.asInterface(service);
+      mBillingServiceState = ServiceState.BOUND;
+      updatePurchasedPackNamesAndEffectModels();
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+      mBillingService = null;
+      mBillingServiceState = ServiceState.UNBOUND;
     }
   }
 

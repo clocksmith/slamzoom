@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 
 import com.google.common.base.Objects;
+import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 
 /**
@@ -12,7 +13,7 @@ import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 public class GifConfig {
   Rect hotspot;
   Bitmap bitmap;
-  EffectModel effectModel;
+  EffectTemplate effectTemplate;
   String endText;
   int fps;
 
@@ -20,10 +21,10 @@ public class GifConfig {
     return new Builder();
   }
 
-  public GifConfig(Rect hotspot, Bitmap bitmap, EffectModel effectModel, String endText, int fps) {
+  public GifConfig(Rect hotspot, Bitmap bitmap, EffectTemplate effectTemplate, String endText, int fps) {
     this.hotspot = hotspot;
     this.bitmap = bitmap;
-    this.effectModel = effectModel;
+    this.effectTemplate = effectTemplate;
     this.endText = endText;
     this.fps = fps;
   }
@@ -31,7 +32,7 @@ public class GifConfig {
   public static class Builder {
     private Rect mHotspot;
     private Bitmap mBitmap;
-    private EffectModel mEffectModel;
+    private EffectTemplate mEffectTemplate;
     private String mEndText;
     private int mFps;
 
@@ -48,8 +49,8 @@ public class GifConfig {
       return this;
     }
 
-    public Builder withEffectModel(EffectModel effectModel) {
-      mEffectModel = effectModel;
+    public Builder withEffectTemplate(EffectTemplate effectTemplate) {
+      mEffectTemplate = effectTemplate;
       return this;
     }
 
@@ -64,13 +65,13 @@ public class GifConfig {
     }
 
     public GifConfig build() {
-      return new GifConfig(mHotspot, mBitmap, mEffectModel, mEndText, mFps);
+      return new GifConfig(mHotspot, mBitmap, mEffectTemplate, mEndText, mFps);
     }
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(hotspot, bitmap, effectModel, endText, fps);
+    return Objects.hashCode(hotspot, bitmap, effectTemplate, endText, fps);
   }
 
   @Override
@@ -84,7 +85,7 @@ public class GifConfig {
     final GifConfig other = (GifConfig) obj;
     return Objects.equal(hotspot, other.hotspot) &&
         Objects.equal(bitmap, other.bitmap) &&
-        Objects.equal(effectModel, other.effectModel) &&
+        Objects.equal(effectTemplate, other.effectTemplate) &&
         Objects.equal(endText, other.endText) &&
         fps == other.fps;
   }

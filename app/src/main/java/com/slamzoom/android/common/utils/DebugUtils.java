@@ -16,9 +16,11 @@ public class DebugUtils {
   private static final String TAG = DebugUtils.class.getSimpleName();
 
   // Flags
+  public static final boolean DEBUG_USE_DEBUG_EFFECTS = false;
   public static final boolean DEBUG_SAVE_SCALED_FRAMES_AS_BITMAPS = false;
   public static final boolean DEBUG_SAVE_FILTERED_FRAMES_AS_BITMAPS = false;
-  public static final boolean DEBUG_USE_STATIC_RECTANGLE = false;
+  public static final boolean DEBUG_SKIP_START_SCREEN = true;
+  public static final boolean DEBUG_USE_STATIC_RECTANGLE = true;
   public static final boolean DEBUG_USE_CACHE = true;
   public static final boolean DEBUG_GENERATE_THUMBNAIL_GIFS = true;
 

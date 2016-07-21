@@ -13,7 +13,7 @@ import java.lang.reflect.Field;
 /**
  * Created by clocksmith on 3/24/16.
  *
- * Hack to get the damn crop rect.
+ * Hack to consume the damn crop rect.
  */
 public class CropRectProvidingImageCropView extends ImageCropView {
   public CropRectProvidingImageCropView(Context context) {

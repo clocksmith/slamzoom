@@ -43,7 +43,6 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
 
 
   public void setGif(String effectName, byte[] gifBytes) {
-
     for (int position = 0; position < mModels.size(); position++) {
       if (mModels.get(position).getEffectTemplate().getName().equals(effectName)) {
         mModels.get(position).setGifThumbnailBytes(gifBytes);

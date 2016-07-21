@@ -12,6 +12,6 @@ public class GuassianSuperBlurFilterInterpolator extends GaussianBlurFilterInter
 
   public GuassianSuperBlurFilterInterpolator(Interpolator interpolator) {
     super(interpolator);
-    mBlurCalculator.setBaseValue(10);
+    mBlurCalculator.setBaseValue(20);
   }
 }

@@ -14,7 +14,7 @@ import com.slamzoom.android.common.bus.BusProvider;
 import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.SzAnalytics;
 import com.slamzoom.android.common.utils.SzLog;
-import com.slamzoom.android.effects.Effects;
+import com.slamzoom.android.effects.EffectPacks;
 import com.slamzoom.android.ui.create.effectchooser.EffectThumbnailViewHolder;
 import com.squareup.otto.Subscribe;
 
@@ -27,7 +27,7 @@ public class GifService extends Service {
   private static final String TAG = GifService.class.getSimpleName();
 
   private static final int MAIN_CACHE_SIZE = 10;
-  private static final int THUMBNAIL_CACHE_SIZE = Effects.listEffects().size();;
+  private static final int THUMBNAIL_CACHE_SIZE = EffectPacks.listEffectTemplatesByPack().size();
 
   public class GifReadyEvent {
     public final String effectName;
@@ -111,7 +111,7 @@ public class GifService extends Service {
 
   public void requestMainGif(final GifConfig config) {
     SzLog.f(TAG, "endText: " + config.endText);
-    final String name = config.effectModel.getEffectTemplate().getName();
+    final String name = config.effectTemplate.getName();
     if (mMainGifCache.asMap().containsKey(name)) {
       fireGifReadyEvent(name, false);
     } else {
@@ -140,7 +140,7 @@ public class GifService extends Service {
   }
 
   private GifCreatorManager getManager(GifConfig config, final boolean thumbnail, final Cache<String, byte[]> cache) {
-    final String name = config.effectModel.getEffectTemplate().getName();
+    final String name = config.effectTemplate.getName();
     return new GifCreatorManager(
         getApplicationContext(),
         config,

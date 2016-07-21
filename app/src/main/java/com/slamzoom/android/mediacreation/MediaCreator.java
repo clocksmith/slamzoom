@@ -21,6 +21,7 @@ import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.PostProcessorUtils;
 import com.slamzoom.android.common.utils.SzLog;
 import com.slamzoom.android.effects.EffectStep;
+import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.interpolators.Interpolator;
 import com.slamzoom.android.interpolators.LinearInterpolator;
@@ -55,7 +56,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
 
   protected Context mContext;
   protected Bitmap mSelectedBitmap;
-  protected EffectModel mEffectModel;
+  protected EffectTemplate mEffectTemplate;
   protected CreateMediaCallback mCallback;
   protected int mNumTilesInRow;
   protected MultiPhaseStopwatch mTracker;
@@ -63,16 +64,16 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   public MediaCreator(
       Context context,
       Bitmap selectedBitmap,
-      EffectModel effectModel,
+      EffectTemplate effectTemplate,
       int gifSize,
       int fps,
       CreateMediaCallback callback,
       MultiPhaseStopwatch tracker) {
     mContext = context;
     mSelectedBitmap = selectedBitmap;
-    mEffectModel = effectModel;
+    mEffectTemplate = effectTemplate;
     mCallback = callback;
-    mNumTilesInRow = mEffectModel.getEffectTemplate().getNumTilesInRow();
+    mNumTilesInRow = mEffectTemplate.getNumTilesInRow();
     mTracker = tracker;
 
     mIsPreview = gifSize == Constants.DEFAULT_GIF_PREVIEW_SIZE_PX;
@@ -88,7 +89,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
 
   public void createAsync() {
     mStart = System.currentTimeMillis();
-    List<EffectStep> steps = mEffectModel.getEffectTemplate().getEffectSteps();
+    List<EffectStep> steps = mEffectTemplate.getEffectSteps();
     mTotalNumFramesToAdd = new AtomicInteger(0);
     mAllFrames = Lists.newArrayListWithCapacity(steps.size());
     for (final EffectStep step : steps) {
@@ -169,7 +170,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   }
 
   protected void collectFrames() {
-    List<EffectStep> steps = mEffectModel.getEffectTemplate().getEffectSteps();
+    List<EffectStep> steps = mEffectTemplate.getEffectSteps();
     EffectStep previousStep = null;
 
     for (int stepIndex = 0; stepIndex < steps.size(); stepIndex++) {
@@ -212,7 +213,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
 
         final RectF normalizedHotspot = new RectF(0, 0, 1, 1);
         try {
-          // Simple way to get normalized scale. We could hash out a formula, but this is easier to understand.
+          // Simple way to consume normalized scale. We could hash out a formula, but this is easier to understand.
           Interpolator normalizedScaleInterpolator = scaleInterpolator.clone();
           normalizedScaleInterpolator.setRange(0, 1);
           float normalizedScale = normalizedScaleInterpolator.getInterpolation(t);

@@ -5,8 +5,10 @@ import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -53,9 +55,11 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
     }
   }
 
+  @Bind(R.id.lockIcon) ImageView mLockIcon;
   @Bind(R.id.gifImageView) GifImageView mGifImageView;
   @Bind(R.id.progressBar) ProgressBar mProgressBar;
   @Bind(R.id.nameTextView) TextView mNameTextView;
+  @Bind(R.id.packNameTextView) TextView mPackNameTextView;
   @Bind(R.id.tabView) View mTabView;
 
   private EffectModel mModel;
@@ -82,8 +86,17 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
     SzLog.f(TAG, "bind: " + getAdapterPosition());
     mModel = model;
     final String name = mModel.getEffectTemplate().getName();
+    final String packName = mModel.getEffectTemplate().getPackName();
 
-    mNameTextView.setText(name);
+    mLockIcon.setVisibility(model.isLocked() ? View.VISIBLE : View.GONE);
+
+    mNameTextView.setText(name.toUpperCase());
+    mPackNameTextView.setText(packName);
+
+//    mPackNameTextView.setTextColor(mColor);
+    mTabView.setBackgroundColor(mColor);
+    mLockIcon.setColorFilter(mColor);
+    mProgressBar.getIndeterminateDrawable().setColorFilter(mColor, android.graphics.PorterDuff.Mode.MULTIPLY);
 
     // Either show the gif or request it.
     if (model.getGifThumbnailBytes() != null && model.getGifThumbnailBytes().length > 0) {
@@ -122,9 +135,7 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
     mGifImageView.setImageDrawable(null);
     itemView.setOnClickListener(null);
 
-    mTabView.setBackgroundColor(mColor);
     mProgressBar.setVisibility(View.VISIBLE);
-    mProgressBar.getIndeterminateDrawable().setColorFilter(mColor, android.graphics.PorterDuff.Mode.MULTIPLY);
   }
 
   @Subscribe

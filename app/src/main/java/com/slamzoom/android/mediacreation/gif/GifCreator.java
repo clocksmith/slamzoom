@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 
 import com.slamzoom.android.common.bus.BusProvider;
 import com.slamzoom.android.effects.EffectStep;
+import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.mediacreation.CreateMediaCallback;
 import com.slamzoom.android.mediacreation.MediaCreator;
 import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
@@ -24,7 +25,7 @@ public class GifCreator extends MediaCreator implements GifEncoder.ProgressUpdat
 
   @Override
   public void onProgressUpdate(double amountToUpdate) {
-    BusProvider.getInstance().post(new ProgressUpdateEvent(mEffectModel.getEffectTemplate().getName(), amountToUpdate));
+    BusProvider.getInstance().post(new ProgressUpdateEvent(mEffectTemplate.getName(), amountToUpdate));
   }
 
   public class ProgressUpdateEvent {
@@ -42,19 +43,19 @@ public class GifCreator extends MediaCreator implements GifEncoder.ProgressUpdat
       int gifSize,
       CreateGifCallback callback,
       MultiPhaseStopwatch tracker) {
-    super(context, gifConfig.bitmap, getAdjustedEffectModel(gifConfig), gifSize, gifConfig.fps, callback, tracker);
+    super(context, gifConfig.bitmap, getAdjustedEffectTemplate(gifConfig), gifSize, gifConfig.fps, callback, tracker);
   }
 
-  private static EffectModel getAdjustedEffectModel(GifConfig gifConfig) {
+  private static EffectTemplate getAdjustedEffectTemplate(GifConfig gifConfig) {
     // This is weird. Not yet sure how else to do this.
-    EffectModel effectModel = gifConfig.effectModel;
-    for (EffectStep step :  effectModel.getEffectTemplate().getEffectSteps()) {
+    EffectTemplate effectTemplate = gifConfig.effectTemplate;
+    for (EffectStep step : effectTemplate.getEffectSteps()) {
       step.setHotspot(gifConfig.hotspot);
       if (gifConfig.endText != null) {
         step.setEndText(gifConfig.endText);
       }
     }
-    return effectModel;
+    return effectTemplate;
   }
 
   @Override
@@ -64,7 +65,7 @@ public class GifCreator extends MediaCreator implements GifEncoder.ProgressUpdat
     mTracker.stop(STOPWATCH_PIXELIZING);
     if (!mIsPreview) {
       BusProvider.getInstance().post(
-          new ProgressUpdateEvent(mEffectModel.getEffectTemplate().getName(), 1.0 / 3 / mTotalNumFrames));
+          new ProgressUpdateEvent(mEffectTemplate.getName(), 1.0 / 3 / mTotalNumFrames));
     }
     return frame;
   }

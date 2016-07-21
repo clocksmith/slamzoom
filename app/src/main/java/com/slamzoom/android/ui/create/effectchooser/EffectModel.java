@@ -1,5 +1,7 @@
 package com.slamzoom.android.ui.create.effectchooser;
 
+import android.support.annotation.NonNull;
+
 import com.google.common.base.Objects;
 import com.slamzoom.android.effects.EffectTemplate;
 
@@ -11,17 +13,23 @@ import com.slamzoom.android.effects.EffectTemplate;
 public class EffectModel {
   private EffectTemplate mEffectTemplate;
   private byte[] mGifThumbnailBytes;
+  private boolean mLocked;
 
-  public EffectModel(EffectTemplate effectTemplate) {
+  public EffectModel(@NonNull EffectTemplate effectTemplate, boolean locked) {
     mEffectTemplate = effectTemplate;
+    mLocked = locked;
   }
 
-  public EffectTemplate getEffectTemplate() {
+  public @NonNull EffectTemplate getEffectTemplate() {
     return mEffectTemplate;
   }
 
   public byte[] getGifThumbnailBytes() {
     return mGifThumbnailBytes;
+  }
+
+  public boolean isLocked() {
+    return mLocked;
   }
 
   public void setGifThumbnailBytes(byte[] gifThumbnailBytes) {

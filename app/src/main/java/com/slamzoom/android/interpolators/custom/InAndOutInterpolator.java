@@ -1,17 +1,17 @@
 package com.slamzoom.android.interpolators.custom;
 
-import com.slamzoom.android.interpolators.Interpolator;
+import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
+import com.slamzoom.android.interpolators.spline.PointsBuilder;
 
 /**
  * Created by clocksmith on 3/22/16.
  */
-public class InAndOutInterpolator extends Interpolator {
-  @Override
-  protected float getValue(float t) {
-    if (t < 0.5) {
-      return 2 * t;
-    } else {
-      return 2 * (1 - t);
-    }
+public class InAndOutInterpolator extends LinearSplineInterpolator {
+  public InAndOutInterpolator() {
+    super(PointsBuilder.create()
+        .withPoint(0, 0)
+        .withPoint(0.5f, 1)
+        .withPoint(1, 0)
+        .build());
   }
 }

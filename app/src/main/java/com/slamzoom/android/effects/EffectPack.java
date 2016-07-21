@@ -41,8 +41,9 @@ public class EffectPack {
       mName = name;
       return this;
     }
+
     public Builder withEffectTemplate(String effectName) {
-      mEffectTemplates.add(Effects.get(effectName));
+      mEffectTemplates.add(EffectTemplates.consume(effectName));
       return this;
     }
 
