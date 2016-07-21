@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.utils.SzLog;
+import com.slamzoom.android.effects.EffectColors;
 
 import java.util.List;
 
@@ -31,9 +32,7 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
   @Override
   public void onBindViewHolder(EffectThumbnailViewHolder holder, int position) {
     SzLog.f(TAG, "binding position: " + position);
-    holder.unbindCurrentAndBindNew(
-        mModels.get(position),
-        EffectColors.list().get(position % EffectColors.list().size()));
+    holder.unbindCurrentAndBindNew(mModels.get(position));
   }
 
   @Override

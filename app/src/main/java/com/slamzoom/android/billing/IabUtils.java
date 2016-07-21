@@ -26,10 +26,10 @@ public class IabUtils {
 
   // TODO(clocksmith): This would be perfect for remote config. Maybe Extract elsewhere to also hide packs not for sale.
   private static final Map<String, String> PURCHASE_IDS_TO_PACK_NAMES = ImmutableMap.of(
-      "packs.exp1.1", "expansion a",
-      "packs.exp1.2", "expansion b",
-      "packs.exp1.3", "expansion c",
-      "packs.exp1.4", "expansion d");
+      "packs.exp1.1", "yellow pack",
+      "packs.exp1.2", "purple pack",
+      "packs.exp1.3", "orange pack",
+      "packs.exp1.4", "blue pack");
 
   public static void getBuyIntent(
       final String productId,
@@ -86,7 +86,7 @@ public class IabUtils {
 //            })
 //            .filter(Predicates.notNull())
 //            .toList());
-        callback.onSuccess(ImmutableList.of("expansion a", "expansion b", "expansion c", "expansion d"));
+        callback.onSuccess(ImmutableList.of("yellow pack", "purple pack", "orange pack", "blue pack"));
       }
 
       @Override

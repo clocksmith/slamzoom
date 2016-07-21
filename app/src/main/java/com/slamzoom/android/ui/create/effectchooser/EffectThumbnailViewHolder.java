@@ -75,8 +75,7 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
     mInitialTabHeight = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.effect_chooser_tab_height);
   }
 
-  public void unbindCurrentAndBindNew(final EffectModel model, int color) {
-    mColor = color;
+  public void unbindCurrentAndBindNew(final EffectModel model) {
     unbind();
     bind(model);
     mTabExpanded = false;
@@ -85,6 +84,7 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
   public void bind(final EffectModel model) {
     SzLog.f(TAG, "bind: " + getAdapterPosition());
     mModel = model;
+    mColor = model.getEffectTemplate().getColor();
     final String name = mModel.getEffectTemplate().getName();
     final String packName = mModel.getEffectTemplate().getPackName();
 

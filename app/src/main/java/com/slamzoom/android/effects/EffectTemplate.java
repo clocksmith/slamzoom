@@ -16,6 +16,7 @@ import java.util.List;
 public class EffectTemplate {
   private String mPackName;
   private String mName;
+  private int mColor;
   private List<EffectStep> mEffectSteps;
   private int mNumTilesInRow;
 
@@ -27,9 +28,10 @@ public class EffectTemplate {
     return new Builder();
   }
 
-  private EffectTemplate(String packName, String name, List<EffectStep> effectSteps, int numTilesInRow) {
+  private EffectTemplate(String packName, String name, int color, List<EffectStep> effectSteps, int numTilesInRow) {
     mPackName = packName;
     mName = name;
+    mColor = color;
     mEffectSteps = effectSteps;
     mNumTilesInRow = numTilesInRow;
   }
@@ -46,6 +48,14 @@ public class EffectTemplate {
     return mName;
   }
 
+  public int getColor() {
+    return mColor;
+  }
+
+  public void setColor(int color) {
+    mColor = color;
+  }
+
   public List<EffectStep> getEffectSteps() {
     return mEffectSteps;
   }
@@ -57,16 +67,12 @@ public class EffectTemplate {
   public static class SingleEffectStepBuilder {
     private String mPackName;
     private String mName;
+    private int mColor;
     private EffectStep.Builder mEffectStepBuilder;
     private int mNumTilesInRow = 1;
 
     public SingleEffectStepBuilder() {
       mEffectStepBuilder = EffectStep.newBuilder();
-    }
-
-    public SingleEffectStepBuilder withPackName(String packName) {
-      mPackName = packName;
-      return this;
     }
 
     public SingleEffectStepBuilder withName(String name) {
@@ -136,6 +142,7 @@ public class EffectTemplate {
       return new EffectTemplate(
           mPackName,
           mName,
+          mColor,
           Lists.newArrayList(mEffectStepBuilder.build()),
           mNumTilesInRow);
     }
@@ -144,6 +151,7 @@ public class EffectTemplate {
   public static class Builder {
     private String mPackName;
     private String mName;
+    private int mColor;
     private List<EffectStep> mEffectSteps;
     private int mNumTilesInRow = 1;
 
@@ -161,6 +169,11 @@ public class EffectTemplate {
       return this;
     }
 
+    public Builder withColor(int color) {
+      mColor = color;
+      return this;
+    }
+
     public Builder addEffectStep(EffectStep effectStep) {
       mEffectSteps.add(effectStep);
       return this;
@@ -172,7 +185,7 @@ public class EffectTemplate {
     }
 
     public EffectTemplate build() {
-      return new EffectTemplate(mPackName, mName, mEffectSteps, mNumTilesInRow);
+      return new EffectTemplate(mPackName, mName, mColor, mEffectSteps, mNumTilesInRow);
     }
   }
 

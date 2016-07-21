@@ -1,4 +1,4 @@
-package com.slamzoom.android.ui.create.effectchooser;
+package com.slamzoom.android.effects;
 
 import android.animation.ArgbEvaluator;
 import android.content.Context;
@@ -7,6 +7,9 @@ import android.support.v4.content.ContextCompat;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
+import java.util.Map;
 
 /**
  * Created by clocksmith on 6/14/16.
@@ -36,27 +39,23 @@ public class EffectColors {
       "500",
       "450");
 
-  private static ImmutableList<Integer> mColors;
+  private static Map<String, ImmutableList<Integer>> mColorGroups = Maps.newHashMap();
   private static Context mContext;
 
   public static void init(Context context) {
     mContext = context;
-    mColors = ImmutableList.<Integer>builder()
-        .addAll(getColorGroup("teal"))
-        .addAll(getColorGroup("lime"))
-        .addAll(getColorGroup("deeppurple"))
-        .addAll(getColorGroup("deeporange"))
-        .addAll(getColorGroup("lightblue"))
-        .build();
   }
 
-  private static ImmutableList<Integer> getColorGroup(final String color) {
-    return ImmutableList.copyOf(Lists.transform(SUFFIXES, new Function<String, Integer>() {
-      @Override
-      public Integer apply(String input) {
-        return getColor(color, input);
-      }
-    }));
+  public static ImmutableList<Integer> getColorGroup(final String colorGroup) {
+    if (!mColorGroups.containsKey(colorGroup)) {
+      mColorGroups.put(colorGroup, ImmutableList.copyOf(Lists.transform(SUFFIXES, new Function<String, Integer>() {
+        @Override
+        public Integer apply(String input) {
+          return getColor(colorGroup, input);
+        }
+      })));
+    }
+    return mColorGroups.get(colorGroup);
   }
 
   private static int getColor(String color, String suffix) {
@@ -83,9 +82,5 @@ public class EffectColors {
         mContext.getPackageName()));
     float percent = Float.parseFloat(suffix.substring(1)) / 100;
     return (int) (new ArgbEvaluator().evaluate(percent, lowerColor, upperColor));
-  }
-
-  public static ImmutableList<Integer> list() {
-    return mColors;
   }
 }

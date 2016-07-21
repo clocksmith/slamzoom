@@ -10,15 +10,21 @@ import java.util.List;
  */
 public class EffectPack {
   private String mName;
+  private String mColorGroup;
   private ImmutableList<EffectTemplate> mEffectTemplates;
 
-  public EffectPack(String name, ImmutableList<EffectTemplate> effectTemplates) {
+  public EffectPack(String name, String colorGroup, ImmutableList<EffectTemplate> effectTemplates) {
     mName = name;
+    mColorGroup = colorGroup;
     mEffectTemplates = effectTemplates;
   }
 
   public String getName() {
     return mName;
+  }
+
+  public String getColorGroup() {
+    return mColorGroup;
   }
 
   public ImmutableList<EffectTemplate> getEffectTemplates() {
@@ -31,6 +37,7 @@ public class EffectPack {
 
   public static class Builder {
     private String mName;
+    private String mColorGroup;
     private List<EffectTemplate> mEffectTemplates;
 
     public Builder() {
@@ -42,16 +49,24 @@ public class EffectPack {
       return this;
     }
 
+    public Builder withColorGroup(String colorGroup) {
+      mColorGroup = colorGroup;
+      return this;
+    }
+
     public Builder withEffectTemplate(String effectName) {
       mEffectTemplates.add(EffectTemplates.consume(effectName));
       return this;
     }
 
     public EffectPack build() {
+      int count = 0;
       for (EffectTemplate effectTemplate : mEffectTemplates) {
         effectTemplate.setPackName(mName);
+        effectTemplate.setColor(EffectColors.getColorGroup(mColorGroup).get(count));
+        count++;
       }
-      return new EffectPack(mName, ImmutableList.copyOf(mEffectTemplates));
+      return new EffectPack(mName, mColorGroup, ImmutableList.copyOf(mEffectTemplates));
     }
   }
 }
