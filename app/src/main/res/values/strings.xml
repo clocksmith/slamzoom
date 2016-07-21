@@ -14,8 +14,8 @@
   <string name="action_done">done</string>
 
   <string name="buy_dialog_title">Unlock effect to share</string>
-  <string name="buy_dialog_text">
-    You must buy the __ pack for $0.99 to share the __ effect.
+  <string name="buy_dialog_text" formatted="false">
+    You must buy the %s for $0.99 to share the %s effect.
     Unlock this effect and also get access to 9 other effects free!</string>
   <string name="buy_ok">BUY</string>
   <string name="buy_cancel">MAYBE LATER</string>

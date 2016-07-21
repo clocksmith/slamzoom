@@ -122,6 +122,15 @@ public class EffectPacks {
             })));
   }
 
+  public static EffectPack getPack(String packName) {
+    for (EffectPack effectPack : EFFECT_PACKS) {
+      if (effectPack.getName().equals(packName)) {
+        return effectPack;
+      }
+    }
+    return null;
+  }
+
   public static ImmutableList<EffectTemplate> listEffectTemplatesByPack() {
     return DebugUtils.DEBUG_USE_DEBUG_EFFECTS ?
         DEBUG_EFFECT_TEMPLATES_FROM_PACKS : EFFECT_TEMPLATES_FROM_PACKS;
