@@ -3,41 +3,32 @@ package com.slamzoom.android.effects;
 import android.animation.ArgbEvaluator;
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import java.util.List;
 import java.util.Map;
 
 /**
  * Created by clocksmith on 6/14/16.
  */
 public class EffectColors {
-  private static final ImmutableList<String> SUFFIXES_AS_RESOUCRES = ImmutableList.of(
-      "900",
-      "800",
-      "700",
-      "600",
-      "500",
-      "400",
-      "300",
-      "200",
-      "100",
-      "50");
+  private static final int NUM_COLORS_IN_GROUP = 10;
 
-  private static final ImmutableList<String> SUFFIXES = ImmutableList.of(
-      "900",
-      "850",
-      "800",
-      "750",
-      "700",
-      "650",
-      "600",
-      "550",
-      "500",
-      "450");
+  private static final ImmutableList<Integer> SUFFIXES_AS_RESOUCRES = ImmutableList.of(
+      900,
+      800,
+      700,
+      600,
+      500,
+      400,
+      300,
+      200,
+      100); // excluding 50, too light
 
   private static Map<String, ImmutableList<Integer>> mColorGroups = Maps.newHashMap();
   private static Context mContext;
@@ -47,31 +38,37 @@ public class EffectColors {
   }
 
   public static ImmutableList<Integer> getColorGroup(final String colorGroup) {
+    String[] frags = colorGroup.split("_");
+    int start = Integer.parseInt(frags[1]);
+    int end = Integer.parseInt(frags[2]);
+    int range = end - start;
+    double inc = ((double) range) / NUM_COLORS_IN_GROUP;
     if (!mColorGroups.containsKey(colorGroup)) {
-      mColorGroups.put(colorGroup, ImmutableList.copyOf(Lists.transform(SUFFIXES, new Function<String, Integer>() {
-        @Override
-        public Integer apply(String input) {
-          return getColor(colorGroup, input);
-        }
-      })));
+      List<Integer> colors = Lists.newArrayList();
+      for (int i = 0; i < NUM_COLORS_IN_GROUP; i++) {
+        colors.add(getColor(frags[0], (int) Math.round(start + inc * i)));
+      }
+      mColorGroups.put(colorGroup, ImmutableList.copyOf(colors));
     }
     return mColorGroups.get(colorGroup);
   }
 
-  private static int getColor(String color, String suffix) {
-    if (SUFFIXES_AS_RESOUCRES.contains(suffix)) {
+  private static int getColor(String color, int value) {
+    if (SUFFIXES_AS_RESOUCRES.contains(value)) {
       return ContextCompat.getColor(mContext, mContext.getResources().getIdentifier(
-          "md_" + color + suffix,
+          "md_" + color + value,
           "color",
           mContext.getPackageName()));
     } else {
-      return getInterpolatedColor(color, suffix);
+      return getInterpolatedColor(color, value);
     }
   }
 
-  private static int getInterpolatedColor(String color, String suffix) {
-    String lowerResSuffix = suffix.charAt(0) + "00";
-    String upperResSuffix = (Integer.parseInt(String.valueOf(suffix.charAt(0))) + 1) + "00";
+  private static int getInterpolatedColor(String color, int value) {
+    // Dependent on all res being ordered multiple of 100
+    int lowerResSuffix = value / 100 * 100;
+    int upperResSuffix = lowerResSuffix + 100;
+
     int lowerColor = ContextCompat.getColor(mContext, mContext.getResources().getIdentifier(
         "md_" + color + lowerResSuffix,
         "color",
@@ -80,7 +77,7 @@ public class EffectColors {
         "md_" + color + upperResSuffix,
         "color",
         mContext.getPackageName()));
-    float percent = Float.parseFloat(suffix.substring(1)) / 100;
+    float percent = (value - lowerResSuffix) / 100f;
     return (int) (new ArgbEvaluator().evaluate(percent, lowerColor, upperColor));
   }
 }

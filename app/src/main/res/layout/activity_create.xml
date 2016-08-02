@@ -57,7 +57,7 @@
     <com.slamzoom.android.ui.create.effectchooser.EffectChooser
         android:id="@+id/effectChooser"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/effect_chooser_height">
+        android:layout_height="wrap_content">
     </com.slamzoom.android.ui.create.effectchooser.EffectChooser>
   </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

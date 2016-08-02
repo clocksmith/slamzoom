@@ -15,9 +15,8 @@ public class EffectModel {
   private byte[] mGifThumbnailBytes;
   private boolean mLocked;
 
-  public EffectModel(@NonNull EffectTemplate effectTemplate, boolean locked) {
+  public EffectModel(@NonNull EffectTemplate effectTemplate) {
     mEffectTemplate = effectTemplate;
-    mLocked = locked;
   }
 
   public @NonNull EffectTemplate getEffectTemplate() {
@@ -28,12 +27,16 @@ public class EffectModel {
     return mGifThumbnailBytes;
   }
 
+  public void setGifThumbnailBytes(byte[] gifThumbnailBytes) {
+    mGifThumbnailBytes = gifThumbnailBytes;
+  }
+
   public boolean isLocked() {
     return mLocked;
   }
 
-  public void setGifThumbnailBytes(byte[] gifThumbnailBytes) {
-    mGifThumbnailBytes = gifThumbnailBytes;
+  public void setLocked(boolean locked) {
+    mLocked = locked;
   }
 
   @Override

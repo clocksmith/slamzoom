@@ -8,11 +8,15 @@ import android.os.RemoteException;
 import com.android.vending.billing.IInAppBillingService;
 import com.google.common.base.Function;
 import com.google.common.base.Predicates;
+import com.google.common.collect.BiMap;
 import com.google.common.collect.FluentIterable;
+import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.common.Constants;
+import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.SzLog;
 
 import java.util.List;
@@ -24,14 +28,23 @@ import java.util.Map;
 public class IabUtils {
   private static final String TAG = IabUtils.class.getSimpleName();
 
-  // TODO(clocksmith): This would be perfect for remote config. Maybe Extract elsewhere to also hide packs not for sale.
-  private static final Map<String, String> PURCHASE_IDS_TO_PACK_NAMES = ImmutableMap.of(
-      "packs.exp1.1", "yellow pack",
-      "packs.exp1.2", "purple pack",
-      "packs.exp1.3", "orange pack",
-      "packs.exp1.4", "blue pack");
+  private static final ImmutableList<String> GIFTED_PACK_NAMES = ImmutableList.of("STARTER");
 
-  public static void getBuyIntent(
+  // TODO(clocksmith): This would be perfect for remote config. Maybe Extract elsewhere to also hide packs not for sale.
+  private static final BiMap<String, String> PURCHASE_IDS_TO_PACK_NAMES = ImmutableBiMap.of(
+      "packs.v1.a", "A",
+      "packs.v2.b", "B",
+      "packs.v3.c", "C",
+      "packs.v4.d", "D");
+
+  public static void getBuyIntentByPack(
+      final String packName,
+      final IInAppBillingService service,
+      final GetBuyIntentCallback callback) {
+    getBuyIntentByProduct(PURCHASE_IDS_TO_PACK_NAMES.inverse().get(packName), service, callback);
+  }
+
+  public static void getBuyIntentByProduct(
       final String productId,
       final IInAppBillingService service,
       final GetBuyIntentCallback callback) {
@@ -77,16 +90,23 @@ public class IabUtils {
     getPurchases(service, new GetPurchasesCallback() {
       @Override
       public void onSuccess(List<Purchase> purchases) {
-//        callback.onSuccess(FluentIterable.from(purchases)
-//            .transform(new Function<Purchase, String>() {
-//              @Override
-//              public String apply(Purchase input) {
-//                return PURCHASE_IDS_TO_PACK_NAMES.consume(input.productId);
-//              }
-//            })
-//            .filter(Predicates.notNull())
-//            .toList());
-        callback.onSuccess(ImmutableList.of("yellow pack", "purple pack", "orange pack", "blue pack"));
+
+        if (DebugUtils.DEBUG_UNLOCK_ALL_PACKS) {
+          callback.onSuccess(
+              ImmutableList.copyOf(Iterables.concat(GIFTED_PACK_NAMES, PURCHASE_IDS_TO_PACK_NAMES.values())));
+        } else {
+          // TODO(clocksmith): make this add purchased packs.
+          callback.onSuccess(Lists.newArrayList(Iterables.concat(GIFTED_PACK_NAMES, FluentIterable.from(purchases)
+              .transform(new Function<Purchase, String>() {
+                @Override
+                public String apply(Purchase input) {
+                  // TODO(clocksmith): verify.
+                  return PURCHASE_IDS_TO_PACK_NAMES.get(input.productId);
+                }
+              })
+              .filter(Predicates.notNull())
+              .toList())));
+        }
       }
 
       @Override

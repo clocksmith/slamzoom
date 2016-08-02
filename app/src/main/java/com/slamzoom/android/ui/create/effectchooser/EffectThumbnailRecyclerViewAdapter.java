@@ -18,9 +18,11 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
   private static final String TAG = EffectThumbnailRecyclerViewAdapter.class.getSimpleName();
 
   private List<EffectModel> mModels;
+  private boolean mClickable;
 
-  public EffectThumbnailRecyclerViewAdapter(List<EffectModel> models) {
+  public EffectThumbnailRecyclerViewAdapter(List<EffectModel> models, boolean clickable) {
     mModels = models;
+    mClickable = clickable;
   }
 
   @Override
@@ -32,14 +34,13 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
   @Override
   public void onBindViewHolder(EffectThumbnailViewHolder holder, int position) {
     SzLog.f(TAG, "binding position: " + position);
-    holder.unbindCurrentAndBindNew(mModels.get(position));
+    holder.unbindCurrentAndBindNew(mModels.get(position), mClickable);
   }
 
   @Override
   public int getItemCount() {
     return mModels.size();
   }
-
 
   public void setGif(String effectName, byte[] gifBytes) {
     for (int position = 0; position < mModels.size(); position++) {

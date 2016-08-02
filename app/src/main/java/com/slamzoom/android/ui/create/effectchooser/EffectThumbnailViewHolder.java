@@ -75,13 +75,13 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
     mInitialTabHeight = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.effect_chooser_tab_height);
   }
 
-  public void unbindCurrentAndBindNew(final EffectModel model) {
+  public void unbindCurrentAndBindNew(final EffectModel model, boolean clickable) {
     unbind();
-    bind(model);
+    bind(model, clickable);
     mTabExpanded = false;
   }
 
-  public void bind(final EffectModel model) {
+  public void bind(final EffectModel model, boolean clickable) {
     SzLog.f(TAG, "bind: " + getAdapterPosition());
     mModel = model;
     mColor = model.getEffectTemplate().getColor();
@@ -90,7 +90,7 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
 
     mLockIcon.setVisibility(model.isLocked() ? View.VISIBLE : View.GONE);
 
-    mNameTextView.setText(name.toUpperCase());
+    mNameTextView.setText(name);
     mPackNameTextView.setText(packName);
 
 //    mPackNameTextView.setTextColor(mColor);
@@ -110,18 +110,22 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
       BusProvider.getInstance().post(new RequestThumbnailGifEvent(name));
     }
 
-    itemView.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-            SzAnalytics.newSelectContentEvent()
-                .withContentType("effect")
-                .withItemId(name)
-                .log(itemView.getContext());
+    if (clickable) {
+      itemView.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          SzAnalytics.newSelectContentEvent()
+              .withContentType("effect")
+              .withItemId(name)
+              .log(itemView.getContext());
 
-        BusProvider.getInstance().post(new ItemClickEvent(name, getAdapterPosition()));
-        expandTab();
-      }
-    });
+          BusProvider.getInstance().post(new ItemClickEvent(name, getAdapterPosition()));
+          expandTab();
+        }
+      });
+    } else {
+      itemView.setOnClickListener(null);
+    }
   }
 
   public void unbind() {

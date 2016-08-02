@@ -3,11 +3,14 @@ package com.slamzoom.android.ui.create;
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.net.Uri;
@@ -15,12 +18,15 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -33,10 +39,13 @@ import android.widget.TextView;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.slamzoom.android.R;
+import com.slamzoom.android.billing.GetBuyIntentCallback;
 import com.slamzoom.android.billing.GetPurchasedPacksCallback;
 import com.slamzoom.android.billing.IabUtils;
 import com.slamzoom.android.common.BackInterceptingEditText;
@@ -44,7 +53,9 @@ import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.bus.BusProvider;
 import com.slamzoom.android.common.utils.AnimationUtils;
 import com.slamzoom.android.common.utils.BitmapUtils;
+import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.KeyboardUtils;
+import com.slamzoom.android.common.utils.SzAnalytics;
 import com.slamzoom.android.common.utils.SzLog;
 import com.slamzoom.android.effects.EffectPacks;
 import com.slamzoom.android.effects.EffectTemplate;
@@ -74,7 +85,7 @@ public class CreateActivity extends AppCompatActivity {
   private static final String TAG = CreateActivity.class.getSimpleName();
 
   private enum ServiceState {
-    UNBOUND, BINDING, BOUND;
+    UNBOUND, BINDING, BOUND
   }
 
   @Bind(R.id.coordinatatorLayout) CoordinatorLayout mCoordinatorLayout;
@@ -120,6 +131,7 @@ public class CreateActivity extends AppCompatActivity {
 
     mGifServiceState = ServiceState.UNBOUND;
     mBillingServiceState = ServiceState.UNBOUND;
+    mEffectModels = EffectPacks.listEffectModelsByPack();
 
     bindServices();
     initActionBar();
@@ -146,6 +158,10 @@ public class CreateActivity extends AppCompatActivity {
         handleCropRectSelected((Rect) data.getParcelableExtra(Constants.CROP_RECT));
       } else if (mSelectedHotspot == null) {
         launchImageChooser();
+      }
+    } else if (requestCode == Constants.REQUEST_BUY_PACK) {
+      if (resultCode == RESULT_OK) {
+        updatePurchasedPackNamesAndEffectModelsAndThumbnailGifs();
       }
     }
   }
@@ -254,6 +270,34 @@ public class CreateActivity extends AppCompatActivity {
     onBackPressed();
   }
 
+  @Subscribe
+  public void on(final BuyToUnlockDialogFragment.OnBuyClickedEvent event) {
+    IabUtils.getBuyIntentByPack(event.packName, mBillingService, new GetBuyIntentCallback() {
+      @Override
+      public void onSuccess(PendingIntent buyIntent) {
+        try {
+          startIntentSenderForResult(buyIntent.getIntentSender(), Constants.REQUEST_BUY_PACK, new Intent(), 0, 0, 0);
+        } catch (IntentSender.SendIntentException e) {
+          SzLog.e(TAG, "Could not start buy intent", e);
+        }
+      }
+
+      @Override
+      public void onFailure() {
+        SzLog.e(TAG, "Could not get buy intent for pack: " + event.packName);
+      }
+    });
+  }
+
+  public List<EffectModel> getEffectModelsForPack(final String packName) {
+    return FluentIterable.from(mEffectModels).filter(new Predicate<EffectModel>() {
+      @Override
+      public boolean apply(EffectModel input) {
+        return packName.equals(input.getEffectTemplate().getPackName());
+      }
+    }).toList();
+  }
+
   private void bindServices() {
     bindGifService();
     bindBillingService();
@@ -293,20 +337,22 @@ public class CreateActivity extends AppCompatActivity {
     mGifAreaView = mZeroStateMessage;
   }
 
-  private ImmutableList<EffectModel> getEffectModels() {
-    if (mEffectModels == null) {
-      mEffectModels = EffectPacks.listEffectModelsByPack(mPurchasedPackNames);
-    }
-    return mEffectModels;
-  }
-
   private EffectModel getEffectModelForSelectedEffect() {
-    for (EffectModel effectModel : getEffectModels()) {
+    for (EffectModel effectModel : mEffectModels) {
       if (effectModel.getEffectTemplate().getName().equals(mSelectedEffectName)) {
         return effectModel;
       }
     }
     return null;
+  }
+
+  private void updatePurchasedPackNamesAndEffectModelsAndThumbnailGifs() {
+    updatePurchasedPackNamesAndEffectModels(new Runnable() {
+      @Override
+      public void run() {
+        updateThumbnailGifs();
+      }
+    });
   }
 
   private void updatePurchasedPackNamesAndEffectModels() {
@@ -319,7 +365,7 @@ public class CreateActivity extends AppCompatActivity {
       public void onSuccess(List<String> packNames) {
         mPurchasedPackNames = packNames;
         mNeedsUpdatePurchasePackNames = false;
-        mEffectModels = EffectPacks.listEffectModelsByPack(mPurchasedPackNames);
+        updateEffectModels();
         if (onDone != null) {
           onDone.run();
         }
@@ -332,6 +378,13 @@ public class CreateActivity extends AppCompatActivity {
         }
       }
     });
+  }
+
+  private void updateEffectModels() {
+    for (EffectModel model : mEffectModels) {
+      model.setLocked(!mPurchasedPackNames.contains(model.getEffectTemplate().getPackName()));
+    }
+    mEffectChooser.set(mEffectModels, true);
   }
 
   private void handleIncomingUri(Uri uri) {
@@ -399,12 +452,7 @@ public class CreateActivity extends AppCompatActivity {
 
   private void updateThumbnailGifs() {
     if (mPurchasedPackNames == null || mNeedsUpdatePurchasePackNames) {
-      updatePurchasedPackNamesAndEffectModels(new Runnable() {
-        @Override
-        public void run() {
-          updateThumbnailGifs();
-        }
-      });
+      updatePurchasedPackNamesAndEffectModelsAndThumbnailGifs();
     } else {
       mGifService.requestThumbnailGifs(Lists.transform(EffectPacks.listEffectTemplatesByPack(), new Function<EffectTemplate, GifConfig>() {
         @Override
@@ -418,7 +466,7 @@ public class CreateActivity extends AppCompatActivity {
               .build();
         }
       }));
-      mEffectChooser.set(getEffectModels());
+      mEffectChooser.set(mEffectModels, true);
     }
   }
 
@@ -433,7 +481,7 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   private void resetProgresses() {
-    for (EffectModel model : getEffectModels()) {
+    for (EffectModel model : mEffectModels) {
       mGifProgresses.put(model.getEffectTemplate().getName(), 0d);
     }
   }
@@ -552,6 +600,13 @@ public class CreateActivity extends AppCompatActivity {
         FileOutputStream gifOutputStream = new FileOutputStream(gifFile);
         gifOutputStream.write(mSelectedGifBytes);
         gifOutputStream.close();
+
+        SzAnalytics.newGifSavedEvent()
+            .withItemId(mSelectedEffectName)
+            .withEndScale(mSelectedHotspot.width() / mSelectedBitmap.getWidth())
+            .withEndTextLength(mSelectedEndText == null ? 0 : mSelectedEndText.length())
+            .log(this);
+
         return gifFile;
       } catch (IOException e) {
         SzLog.e(TAG, "cannot save gif", e);
@@ -604,16 +659,44 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   private class ShareGifTask extends AsyncTask<Void, Void, Boolean> {
+    private List<Intent> mTargetedShareIntents;
+    private Intent mBaseIntent;
     private Intent mShareIntent;
 
     @Override
     protected Boolean doInBackground(Void... params) {
-      mShareIntent = new Intent(android.content.Intent.ACTION_SEND);
-      mShareIntent.setType("image/gif");
-
       File gifFile = saveCurrentGifToDisk();
       if (gifFile != null) {
-        mShareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(gifFile));
+        mTargetedShareIntents = Lists.newArrayList();
+        mBaseIntent = new Intent(android.content.Intent.ACTION_SEND);
+        mBaseIntent.setType("image/gif");
+        Uri uri = Uri.fromFile(gifFile);
+
+        if (DebugUtils.DEBUG_TRACK_INTENTS) {
+          List<ResolveInfo> resInfo = getPackageManager().queryIntentActivities(mBaseIntent, 0);
+          for (ResolveInfo resolveInfo : resInfo) {
+            String packageName = resolveInfo.activityInfo.packageName;
+            String className = resolveInfo.activityInfo.name;
+
+            Intent targetedShareIntent = new Intent(android.content.Intent.ACTION_SEND);
+            targetedShareIntent.setType("image/gif");
+            targetedShareIntent.setPackage(packageName);
+            targetedShareIntent.setClassName(packageName, className);
+            targetedShareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+            mTargetedShareIntents.add(targetedShareIntent);
+          }
+          // TODO(clocksmith): put these in order of recency
+          // See https://developer.android.com/reference/android/widget/ShareActionProvider.html
+          if (!mTargetedShareIntents.isEmpty()) {
+            mShareIntent = Intent.createChooser(
+                mTargetedShareIntents.remove(mTargetedShareIntents.size() - 1), "Share via");
+            mShareIntent.putExtra(
+                Intent.EXTRA_INITIAL_INTENTS,
+                mTargetedShareIntents.toArray(new Parcelable[mTargetedShareIntents.size()]));
+          }
+        } else {
+          mBaseIntent.putExtra(Intent.EXTRA_STREAM, uri);
+        }
       } else {
         SzLog.e(TAG, "gif file is null");
         return false;
@@ -624,7 +707,7 @@ public class CreateActivity extends AppCompatActivity {
     @Override
     protected void onPostExecute(Boolean result) {
       if (result) {
-        startActivity(Intent.createChooser(mShareIntent, "Share via"));
+        startActivity(DebugUtils.DEBUG_TRACK_INTENTS ? mShareIntent : mBaseIntent);
       }
     }
   }

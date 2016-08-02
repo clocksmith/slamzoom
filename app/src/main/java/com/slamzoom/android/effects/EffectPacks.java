@@ -26,8 +26,8 @@ public class EffectPacks {
 
     EFFECT_PACKS = ImmutableList.<EffectPack>builder()
         .add(EffectPack.newBuilder()
-            .withName("teal pack")
-            .withColorGroup("teal")
+            .withName("STARTER")
+            .withColorGroup("lightblue_500_600")
             .withEffectTemplate("slamin")
             .withEffectTemplate("smush")
             .withEffectTemplate("sumo")
@@ -40,8 +40,8 @@ public class EffectPacks {
             .withEffectTemplate("swirlspot")
             .build())
         .add(EffectPack.newBuilder()
-            .withName("yellow pack")
-            .withColorGroup("yellow")
+            .withName("A")
+            .withColorGroup("teal_500_600")
             .withEffectTemplate("rumblestiltskin")
             .withEffectTemplate("inflate")
             .withEffectTemplate("blurcrash")
@@ -54,8 +54,8 @@ public class EffectPacks {
             .withEffectTemplate("graytake")
             .build())
         .add(EffectPack.newBuilder()
-            .withName("purple pack")
-            .withColorGroup("deeppurple")
+            .withName("B")
+            .withColorGroup("lightgreen_500_600")
             .withEffectTemplate("crashmiss")
             .withEffectTemplate("rumbletease")
             .withEffectTemplate("shrinkydink")
@@ -68,8 +68,8 @@ public class EffectPacks {
             .withEffectTemplate("spiral")
             .build())
         .add(EffectPack.newBuilder()
-            .withName("orange pack")
-            .withColorGroup("deeporange")
+            .withName("C")
+            .withColorGroup("amber_500_600")
             .withEffectTemplate("crashin")
             .withEffectTemplate("bulger")
             .withEffectTemplate("blurtease")
@@ -82,8 +82,8 @@ public class EffectPacks {
             .withEffectTemplate("swirlyeyes")
             .build())
         .add(EffectPack.newBuilder()
-            .withName("blue pack")
-            .withColorGroup("lightblue")
+            .withName("D")
+            .withColorGroup("deeporange_500_600")
             .withEffectTemplate("crashblur")
             .withEffectTemplate("weirdo")
             .withEffectTemplate("blurmagic")
@@ -100,6 +100,7 @@ public class EffectPacks {
     DEBUG_EFFECT_PACKS = ImmutableList.<EffectPack>builder()
         .add(EffectPack.newBuilder()
             .withName("debug")
+            .withColorGroup("bluegrey_500_600")
             .build())
         .build();
 
@@ -136,12 +137,12 @@ public class EffectPacks {
         DEBUG_EFFECT_TEMPLATES_FROM_PACKS : EFFECT_TEMPLATES_FROM_PACKS;
   }
 
-  public static ImmutableList<EffectModel> listEffectModelsByPack(@NonNull final List<String> unlockedPackNames) {
+  public static ImmutableList<EffectModel> listEffectModelsByPack() {
     return ImmutableList.copyOf(Lists.transform(EffectPacks.listEffectTemplatesByPack(),
         new Function<EffectTemplate, EffectModel>() {
           @Override
           public EffectModel apply(EffectTemplate input) {
-            return new EffectModel(input, unlockedPackNames.contains(input.getPackName()));
+            return new EffectModel(input);
           }
         }));
   }

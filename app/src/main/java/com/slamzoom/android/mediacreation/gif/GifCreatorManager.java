@@ -66,20 +66,24 @@ public class GifCreatorManager {
     return mHasStopped;
   }
 
+  public String getName() {
+    return mGifConfig.effectTemplate.getName();
+  }
+
   public int getGifSize() {
     return mGifSize;
   }
 
-  public String getName() {
-    return mGifConfig.effectTemplate.getName();
+  public int getFps() {
+    return mGifConfig.fps;
   }
 
   public float getEndScale() {
     return (float) mGifConfig.hotspot.width() / mGifConfig.bitmap.getWidth();
   }
 
-  public int getFps() {
-    return mGifConfig.fps;
+  public String getEndText() {
+    return mGifConfig.endText;
   }
 
   public MultiPhaseStopwatch getTracker() {

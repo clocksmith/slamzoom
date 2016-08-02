@@ -7,10 +7,11 @@
   <TextView
       android:id="@+id/message"
       android:layout_width="wrap_content"
-      android:layout_height="wrap_content"/>
-  <TextView
-      android:id="@+id/otherEffects"
-      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:maxLines="9"/>
+      android:textColor="@color/buy_dialog_text"
+      android:padding="@dimen/buy_dialog_content_padding"/>
+  <com.slamzoom.android.ui.create.effectchooser.EffectChooser
+      android:id="@+id/otherEffects"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"/>
 </LinearLayout>

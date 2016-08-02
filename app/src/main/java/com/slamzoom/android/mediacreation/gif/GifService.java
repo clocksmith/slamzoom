@@ -261,10 +261,12 @@ public class GifService extends Service {
     if (currentManager != null) {
       SzAnalytics.newGifGeneratedEvent()
           .withItemId(name)
-          .withDurationMs(currentManager.getTracker().getTotal())
           .withGifSize(currentManager.getGifSize())
-          .withEndScale(currentManager.getEndScale())
           .withFps(currentManager.getFps())
+          .withEndScale(currentManager.getEndScale())
+          .withEndTextLength(currentManager.getEndText() == null ? 0 : currentManager.getEndText().length())
+          .withDurationMs(currentManager.getTracker().getTotal())
+          .withHasStopped(currentManager.hasStopped())
           .log(this);
     } else {
       SzLog.e(TAG, "Current GifCreatorManager for onGifReadyEvent is null!");

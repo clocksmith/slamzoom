@@ -1,6 +1,9 @@
 package com.slamzoom.android.ui.create;
 
 import android.content.Context;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -9,6 +12,7 @@ import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.common.collect.Lists;
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.utils.SzLog;
 import com.slamzoom.android.effects.EffectColors;
@@ -16,6 +20,11 @@ import com.slamzoom.android.effects.EffectPack;
 import com.slamzoom.android.effects.EffectPacks;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.EffectTemplates;
+import com.slamzoom.android.ui.create.effectchooser.EffectChooser;
+import com.slamzoom.android.ui.create.effectchooser.EffectModel;
+import com.slamzoom.android.ui.create.effectchooser.EffectThumbnailRecyclerViewAdapter;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -26,10 +35,14 @@ import butterknife.ButterKnife;
 public class BuyToUnlockDialogView extends LinearLayout {
   public static final String TAG = BuyToUnlockDialogView.class.getSimpleName();
 
-  @Bind(R.id.message) TextView mMessage;
-  @Bind(R.id.otherEffects) TextView mOtherEffects;
+  private static final int GRID_SPAN_COUNT = 3;
 
-  public BuyToUnlockDialogView(Context context, String effectName, String packName) {
+  @Bind(R.id.message) TextView mMessage;
+  @Bind(R.id.otherEffects) EffectChooser mOtherEffects;
+
+  private EffectThumbnailRecyclerViewAdapter mAdapter;
+
+  public BuyToUnlockDialogView(Context context, String effectName, String packName, List<EffectModel> effectModes) {
     this(context, null);
 
     EffectPack pack = EffectPacks.getPack(packName);
@@ -40,8 +53,7 @@ public class BuyToUnlockDialogView extends LinearLayout {
     } else if (effect == null) {
       SzLog.e(TAG, "effectName: " + effectName + " is null!");
     } else {
-      String message =
-          String.format(getResources().getString(R.string.buy_dialog_text), packName, effectName.toUpperCase());
+      String message = String.format(getResources().getString(R.string.buy_dialog_text), packName, effectName);
       Spannable messageSpannable = new SpannableString(message);
       int packStart = message.indexOf(packName);
       int packEnd = packStart + packName.length();
@@ -50,7 +62,7 @@ public class BuyToUnlockDialogView extends LinearLayout {
           packStart,
           packEnd,
           Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-      int effectStart = message.indexOf(effectName.toUpperCase());
+      int effectStart = message.indexOf(effectName);
       int effectEnd = effectStart + effectName.length();
       messageSpannable.setSpan(
           new ForegroundColorSpan(effect.getColor()),
@@ -59,14 +71,16 @@ public class BuyToUnlockDialogView extends LinearLayout {
           Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
       mMessage.setText(messageSpannable);
 
-      StringBuilder sb = new StringBuilder();
-      for (EffectTemplate otherEffect : pack.getEffectTemplates()) {
-        if (!otherEffect.getName().equals(effectName)) {
-          sb.append(otherEffect.getName().toUpperCase());
-          sb.append("\n");
-        }
-      }
-      mOtherEffects.setText(sb);
+//      StringBuilder sb = new StringBuilder();
+//      for (EffectTemplate otherEffect : pack.getEffectTemplates()) {
+//        if (!otherEffect.getName().equals(effectName)) {
+//          sb.append(otherEffect.getName().toUpperCase());
+//          sb.append("\n");
+//        }
+//      }
+//      mOtherEffects.setText(sb);
+
+      mOtherEffects.set(effectModes, false);
     }
   }
 
@@ -79,6 +93,4 @@ public class BuyToUnlockDialogView extends LinearLayout {
     LayoutInflater.from(context).inflate(R.layout.view_buy_to_unlock_dialog, this);
     ButterKnife.bind(this);
   }
-
-
 }

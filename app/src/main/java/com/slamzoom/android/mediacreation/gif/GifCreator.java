@@ -9,7 +9,6 @@ import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.mediacreation.CreateMediaCallback;
 import com.slamzoom.android.mediacreation.MediaCreator;
 import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
-import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 
 /**
  * Created by clocksmith on 3/25/16.

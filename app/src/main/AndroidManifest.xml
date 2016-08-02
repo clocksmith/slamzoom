@@ -24,7 +24,8 @@
 
     <activity
         android:name=".ui.create.CreateActivity"
-        android:screenOrientation="portrait">
+        android:screenOrientation="portrait"
+        android:launchMode="singleTop">
       <intent-filter>
         <action android:name="android.intent.action.SEND" />
         <action android:name="android.intent.action.CHOOSER" />

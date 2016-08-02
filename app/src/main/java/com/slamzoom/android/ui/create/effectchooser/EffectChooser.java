@@ -45,11 +45,11 @@ public class EffectChooser extends LinearLayout {
     mRecyclerView.setLayoutManager(linearLayoutManager);
   }
 
-  public void set(List<EffectModel> effectModels) {
+  public void set(List<EffectModel> effectModels, boolean clickable) {
       if (mAdapter != null) {
         mAdapter.unbindAll();
       }
-      mAdapter = new EffectThumbnailRecyclerViewAdapter(Lists.newArrayList(effectModels));
+      mAdapter = new EffectThumbnailRecyclerViewAdapter(Lists.newArrayList(effectModels), clickable);
       mRecyclerView.setAdapter(mAdapter);
       mAdapter.notifyDataSetChanged();
   }
