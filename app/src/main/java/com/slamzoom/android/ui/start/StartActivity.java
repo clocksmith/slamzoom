@@ -47,7 +47,7 @@ public class StartActivity extends AppCompatActivity {
     setContentView(R.layout.activity_start);
     ButterKnife.bind(this);
 
-    if (DebugUtils.DEBUG_SKIP_START_SCREEN) {
+    if (DebugUtils.SKIP_START_SCREEN) {
       startActivity(new Intent(StartActivity.this, CreateActivity.class));
     }
 

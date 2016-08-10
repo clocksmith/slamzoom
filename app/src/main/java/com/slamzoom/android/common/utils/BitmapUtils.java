@@ -35,9 +35,8 @@ public class BitmapUtils {
           aspectRatio > 1 ? maxDimen : Math.round(maxDimen * aspectRatio);
       int scaledSelectedBitmapHeight =
           aspectRatio > 1 ? Math.round(maxDimen / aspectRatio) : maxDimen;
-      int inSampleSize =
-          BitmapUtils.calculateInSampleSize(options, scaledSelectedBitmapWidth, scaledSelectedBitmapHeight);
-      options.inSampleSize = inSampleSize;
+      options.inSampleSize =
+          BitmapUtils.calculateInSampleSize(options, scaledSelectedBitmapWidth, scaledSelectedBitmapHeight);;
       options.inJustDecodeBounds = false;
       options.inPreferredConfig = Bitmap.Config.ARGB_8888;
       return BitmapFactory.decodeFileDescriptor(assetFileDescriptor.getFileDescriptor(), null, options);

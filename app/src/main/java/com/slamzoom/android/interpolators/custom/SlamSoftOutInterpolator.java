@@ -8,6 +8,6 @@ import com.slamzoom.android.interpolators.Interpolator;
 public class SlamSoftOutInterpolator extends Interpolator {
   @Override
   protected float getValue(float t) {
-    return (float) (1 - Math.pow(t, 7));
+    return (float) (1 - Math.pow(t, 3));
   }
 }

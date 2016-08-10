@@ -1,7 +1,6 @@
 package com.slamzoom.android.effects;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
@@ -26,7 +25,7 @@ public class EffectPacks {
 
     EFFECT_PACKS = ImmutableList.<EffectPack>builder()
         .add(EffectPack.newBuilder()
-            .withName("STARTER")
+            .withName("ALPHA")
             .withColorGroup("lightblue_500_600")
             .withEffectTemplate("slamin")
             .withEffectTemplate("smush")
@@ -40,7 +39,7 @@ public class EffectPacks {
             .withEffectTemplate("swirlspot")
             .build())
         .add(EffectPack.newBuilder()
-            .withName("A")
+            .withName("BETA")
             .withColorGroup("teal_500_600")
             .withEffectTemplate("rumblestiltskin")
             .withEffectTemplate("inflate")
@@ -54,7 +53,7 @@ public class EffectPacks {
             .withEffectTemplate("graytake")
             .build())
         .add(EffectPack.newBuilder()
-            .withName("B")
+            .withName("GAMMA")
             .withColorGroup("lightgreen_500_600")
             .withEffectTemplate("crashmiss")
             .withEffectTemplate("rumbletease")
@@ -68,7 +67,7 @@ public class EffectPacks {
             .withEffectTemplate("spiral")
             .build())
         .add(EffectPack.newBuilder()
-            .withName("C")
+            .withName("DELTA")
             .withColorGroup("amber_500_600")
             .withEffectTemplate("crashin")
             .withEffectTemplate("bulger")
@@ -82,7 +81,7 @@ public class EffectPacks {
             .withEffectTemplate("swirlyeyes")
             .build())
         .add(EffectPack.newBuilder()
-            .withName("D")
+            .withName("EPSILON")
             .withColorGroup("deeporange_500_600")
             .withEffectTemplate("crashblur")
             .withEffectTemplate("weirdo")
@@ -101,6 +100,7 @@ public class EffectPacks {
         .add(EffectPack.newBuilder()
             .withName("debug")
             .withColorGroup("bluegrey_500_600")
+            .withEffectTemplate("debug1")
             .build())
         .build();
 
@@ -133,7 +133,7 @@ public class EffectPacks {
   }
 
   public static ImmutableList<EffectTemplate> listEffectTemplatesByPack() {
-    return DebugUtils.DEBUG_USE_DEBUG_EFFECTS ?
+    return DebugUtils.USE_DEBUG_EFFECTS ?
         DEBUG_EFFECT_TEMPLATES_FROM_PACKS : EFFECT_TEMPLATES_FROM_PACKS;
   }
 

@@ -19,3 +19,15 @@
 -dontwarn butterknife.**
 -dontwarn com.google.common.**
 -dontwarn org.apache.commons.**
+
+-keep class butterknife.** { *; }
+-dontwarn butterknife.internal.**
+-keep class **$$ViewBinder { *; }
+
+-keepclasseswithmembernames class * {
+  @butterknife.* <fields>;
+}
+
+-keepclasseswithmembernames class * {
+   @butterknife.* <methods>;
+}

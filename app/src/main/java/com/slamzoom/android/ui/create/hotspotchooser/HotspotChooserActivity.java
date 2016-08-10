@@ -41,7 +41,7 @@ public class HotspotChooserActivity extends AppCompatActivity {
     Uri uri = getIntent().getParcelableExtra(Constants.IMAGE_URI);
     try {
       Bitmap bitmap = BitmapUtils.readScaledBitmap(uri, this.getContentResolver());
-      if (DebugUtils.DEBUG_USE_STATIC_RECTANGLE) {
+      if (DebugUtils.USE_STATIC_RECTANGLE) {
         Rect debugCropRect = DebugUtils.getDebugRect(bitmap);
         Log.d(TAG, "using debug cropRect: " + debugCropRect.toString());
         finishWithCropRect(debugCropRect);

@@ -14,7 +14,7 @@
 
   <color name="black_22">#22000000</color>
 
-  <color name="buy_dialog_lock_icon">@color/black</color>
+  <color name="buy_dialog_lock_icon">@color/white</color>
   <color name="buy_dialog_background">@color/white</color>
   <color name="buy_dialog_text">@color/black</color>
 

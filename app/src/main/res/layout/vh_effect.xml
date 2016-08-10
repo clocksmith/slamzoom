@@ -1,66 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="120dp"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:padding="8dp">
-  <View
-      android:id="@+id/tabView"
-      android:layout_width="match_parent"
-      android:layout_height="@dimen/effect_chooser_tab_height"
-      android:layout_gravity="bottom"/>
-  <LinearLayout
-      android:orientation="vertical"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:background="@android:color/transparent">
-    <FrameLayout
-        android:background="@android:color/transparent"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp">
+  <FrameLayout
+      android:background="@android:color/transparent"
+      android:layout_width="@dimen/gif_thumbnail_view_width"
+      android:layout_height="@dimen/gif_thumbnail_view_width">
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/gifImageView"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:layout_weight="1">
-      <pl.droidsonroids.gif.GifImageView
-          android:id="@+id/gifImageView"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:scaleType="centerCrop"/>
-      <ProgressBar
-          android:id="@+id/progressBar"
-          android:visibility="gone"
-          android:layout_width="32dp"
-          android:layout_height="32dp"
-          android:layout_gravity="center"/>
-    </FrameLayout>
-    <TextView
-        android:id="@+id/nameTextView"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"/>
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:visibility="gone"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center"/>
+  </FrameLayout>
+
+  <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/effect_chooser_tab_height_expanded">
+    <View
+        android:id="@+id/tabView"
         android:layout_width="match_parent"
-        android:layout_height="18dp"
-        android:textSize="12dp"
-        android:textColor="@android:color/white"
-        android:fontFamily="monospace"
-        android:gravity="center"/>
+        android:layout_height="@dimen/effect_chooser_tab_height_collapsed"
+        android:layout_gravity="bottom"/>
     <LinearLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="14dp"
+        android:layout_height="wrap_content"
         android:gravity="center">
-      <ImageView
-          android:id="@+id/lockIcon"
-          android:layout_width="14dp"
-          android:layout_height="14dp"
-          android:background="@drawable/ic_lock"
-          android:layout_gravity="center"
-          android:layout_marginRight="2dp"/>
       <TextView
-          android:id="@+id/packNameTextView"
-          android:layout_width="wrap_content"
-          android:layout_height="14dp"
-          android:textColor="@color/buy_dialog_lock_icon"
+          android:id="@+id/nameTextView"
+          android:layout_width="match_parent"
+          android:layout_height="18dp"
           android:textSize="12dp"
+          android:textColor="@android:color/white"
           android:fontFamily="monospace"
-          android:textStyle="bold"
-          android:layout_gravity="center"/>
+          android:gravity="center"/>
+      <LinearLayout
+          android:orientation="horizontal"
+          android:layout_width="match_parent"
+          android:layout_height="18dp"
+          android:gravity="center">
+        <ImageView
+            android:id="@+id/lockIcon"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:background="@drawable/ic_lock"
+            android:layout_gravity="center"
+            android:layout_marginRight="2dp"/>
+        <TextView
+            android:id="@+id/packNameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="18dp"
+            android:textColor="@color/buy_dialog_lock_icon"
+            android:textSize="10dp"
+            android:fontFamily="monospace"
+            android:textStyle="bold"
+            android:layout_gravity="center"/>
+      </LinearLayout>
     </LinearLayout>
-  </LinearLayout>
-</FrameLayout>
+  </FrameLayout>
+</LinearLayout>

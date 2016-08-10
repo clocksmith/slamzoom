@@ -115,7 +115,7 @@ public class PostProcessorUtils {
       Bitmap watermarkBitmap = WatermarkProvider.getWatermarkBitmap(context);
       Canvas watermarkCanvas = new Canvas(original);
       Paint watermarkPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
-      int watermarkWidth = Math.min(original.getWidth() / 2, Constants.DEFAULT_GIF_SIZE_PX / 2);
+      int watermarkWidth = Math.min(100, Math.min(original.getWidth() / 2, Constants.DEFAULT_GIF_SIZE_PX / 2));
       int watermarkHeight = watermarkBitmap.getHeight() * watermarkWidth / watermarkBitmap.getWidth();
       watermarkCanvas.drawBitmap(
           watermarkBitmap,

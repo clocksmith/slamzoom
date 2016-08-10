@@ -1,6 +1,10 @@
 <resources>
-  <dimen name="effect_chooser_height">140dp</dimen>
-  <dimen name="effect_chooser_tab_height">12dp</dimen>
+  <!--<dimen name="effect_chooser_height">140dp</dimen>-->
+
+  <dimen name="gif_thumbnail_view_width">120dp</dimen>
+
+  <dimen name="effect_chooser_tab_height_collapsed">18dp</dimen>
+  <dimen name="effect_chooser_tab_height_expanded">36dp</dimen>
 
   <dimen name="buy_dialog_content_padding">28dp</dimen>
 </resources>

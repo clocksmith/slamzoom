@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.net.Uri;
@@ -18,15 +17,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
-import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -108,6 +104,7 @@ public class CreateActivity extends AppCompatActivity {
   private String mSelectedEffectName;
   private String mSelectedEndText;
   private Map<String, Double> mGifProgresses;
+  private boolean mGeneratingGif = false;
 
   private GifService mGifService;
   private GifServiceConnection mGifServiceConnection;
@@ -161,7 +158,8 @@ public class CreateActivity extends AppCompatActivity {
       }
     } else if (requestCode == Constants.REQUEST_BUY_PACK) {
       if (resultCode == RESULT_OK) {
-        updatePurchasedPackNamesAndEffectModelsAndThumbnailGifs();
+        updatePurchasedPackNamesAndEffectModels();
+        shareCurrentGif();
       }
     }
   }
@@ -249,13 +247,15 @@ public class CreateActivity extends AppCompatActivity {
       if (mSelectedEffectName.equals(event.effectName)) {
         mZeroStateMessage.setVisibility(View.GONE);
         mSelectedGifBytes = event.gifBytes;
+        mGeneratingGif = false;
         showCurrentGif();
       }
     }
   }
 
   @Subscribe
-  public void on(GifService.GifGenerationSartEvent event) {
+  public void on(GifService.GifGenerationStartEvent event) {
+    mGeneratingGif = true;
     showProgressBar();
   }
 
@@ -391,10 +391,15 @@ public class CreateActivity extends AppCompatActivity {
     try {
       mSelectedUri = uri;
       mSelectedBitmap = BitmapUtils.readScaledBitmap(mSelectedUri, this.getContentResolver());
+      if (DebugUtils.SAVE_SRC_AS_BITMAP) {
+        DebugUtils.saveFrameAsBitmap(mSelectedBitmap, "src", 0);
+      }
       mSelectedBitmapForThumbnail = BitmapUtils.readScaledBitmap(
           mSelectedUri,
           this.getContentResolver(),
           Constants.MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX / Constants.GIF_THUMBNAIL_DIVIDER);
+      mSelectedEndText = "";
+      mAddTextView.getEditText().setText("");
       launchHotspotChooser();
     } catch (FileNotFoundException e) {
       SzLog.e(TAG, "Cannot consume bitmap for path: " + uri.toString());
@@ -431,6 +436,10 @@ public class CreateActivity extends AppCompatActivity {
     if (effectModel == null) {
       // TODO(clocksmith): tell the user they must have an effect, or just disable share button.
       Snackbar snackbar = Snackbar.make(mCoordinatorLayout, "Choose an effect first!", Snackbar.LENGTH_SHORT);
+      snackbar.show();
+    } else if (mGeneratingGif) {
+      Snackbar snackbar = Snackbar.make(
+          mCoordinatorLayout, "Please wait till gif preview is finished!", Snackbar.LENGTH_SHORT);
       snackbar.show();
     } else if (!effectModel.isLocked()) {
       shareCurrentGif();
@@ -659,44 +668,16 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   private class ShareGifTask extends AsyncTask<Void, Void, Boolean> {
-    private List<Intent> mTargetedShareIntents;
     private Intent mBaseIntent;
-    private Intent mShareIntent;
 
     @Override
     protected Boolean doInBackground(Void... params) {
       File gifFile = saveCurrentGifToDisk();
       if (gifFile != null) {
-        mTargetedShareIntents = Lists.newArrayList();
         mBaseIntent = new Intent(android.content.Intent.ACTION_SEND);
         mBaseIntent.setType("image/gif");
         Uri uri = Uri.fromFile(gifFile);
-
-        if (DebugUtils.DEBUG_TRACK_INTENTS) {
-          List<ResolveInfo> resInfo = getPackageManager().queryIntentActivities(mBaseIntent, 0);
-          for (ResolveInfo resolveInfo : resInfo) {
-            String packageName = resolveInfo.activityInfo.packageName;
-            String className = resolveInfo.activityInfo.name;
-
-            Intent targetedShareIntent = new Intent(android.content.Intent.ACTION_SEND);
-            targetedShareIntent.setType("image/gif");
-            targetedShareIntent.setPackage(packageName);
-            targetedShareIntent.setClassName(packageName, className);
-            targetedShareIntent.putExtra(Intent.EXTRA_STREAM, uri);
-            mTargetedShareIntents.add(targetedShareIntent);
-          }
-          // TODO(clocksmith): put these in order of recency
-          // See https://developer.android.com/reference/android/widget/ShareActionProvider.html
-          if (!mTargetedShareIntents.isEmpty()) {
-            mShareIntent = Intent.createChooser(
-                mTargetedShareIntents.remove(mTargetedShareIntents.size() - 1), "Share via");
-            mShareIntent.putExtra(
-                Intent.EXTRA_INITIAL_INTENTS,
-                mTargetedShareIntents.toArray(new Parcelable[mTargetedShareIntents.size()]));
-          }
-        } else {
-          mBaseIntent.putExtra(Intent.EXTRA_STREAM, uri);
-        }
+        mBaseIntent.putExtra(Intent.EXTRA_STREAM, uri);
       } else {
         SzLog.e(TAG, "gif file is null");
         return false;
@@ -707,7 +688,7 @@ public class CreateActivity extends AppCompatActivity {
     @Override
     protected void onPostExecute(Boolean result) {
       if (result) {
-        startActivity(DebugUtils.DEBUG_TRACK_INTENTS ? mShareIntent : mBaseIntent);
+        startActivity(Intent.createChooser(mBaseIntent, "Share via"));
       }
     }
   }

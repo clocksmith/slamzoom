@@ -8,15 +8,14 @@ import android.graphics.PointF;
 public class Constants {
   public static final String PACKAGE_NAME = "com.slamzoom.android";
   // Flags
-  public static final boolean USE_IMAGE_WATERMARK = false;
-  public static final boolean USE_TEXT_WATERMARK = true;
+  public static final boolean USE_IMAGE_WATERMARK = true;
+  public static final boolean USE_TEXT_WATERMARK = false;
   public static final boolean USE_WATERMARK = USE_IMAGE_WATERMARK || USE_TEXT_WATERMARK;
 
   // Request codes
   public static final int REQUEST_PICK_IMAGE = 101;
   public static final int REQUEST_CROP_IMAGE = 201;
   public static final int REQUEST_BUY_PACK = 301;
-  public static final int REQUEST_SHARE = 401;
 
   // Params TODO(clocksmith): refactor to params
   public static final String IMAGE_URI = "imageUri";
@@ -34,7 +33,7 @@ public class Constants {
   public static final int DEFAULT_GIF_PREVIEW_SIZE_PX = DEFAULT_GIF_SIZE_PX / GIF_THUMBNAIL_DIVIDER;
   public static final boolean DEFAULT_USE_LOCAL_COLOR_PALETTE = true;
 
-  public static final int MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX = DEFAULT_GIF_SIZE_PX * 4; // arbitrary
+  public static final int MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX = DEFAULT_GIF_SIZE_PX * 2; // arbitrary
 
   public static final String WATERMARK_TEXT = "slamzoom.com";
   public static final int MAX_WATERMARK_TEXT_SIZE = 16;

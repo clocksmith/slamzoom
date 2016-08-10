@@ -12,7 +12,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.common.Constants;
@@ -20,7 +19,6 @@ import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.SzLog;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by clocksmith on 7/7/16.
@@ -28,14 +26,14 @@ import java.util.Map;
 public class IabUtils {
   private static final String TAG = IabUtils.class.getSimpleName();
 
-  private static final ImmutableList<String> GIFTED_PACK_NAMES = ImmutableList.of("STARTER");
+  private static final ImmutableList<String> GIFTED_PACK_NAMES = ImmutableList.of("ALPHA");
 
   // TODO(clocksmith): This would be perfect for remote config. Maybe Extract elsewhere to also hide packs not for sale.
   private static final BiMap<String, String> PURCHASE_IDS_TO_PACK_NAMES = ImmutableBiMap.of(
-      "packs.v1.a", "A",
-      "packs.v2.b", "B",
-      "packs.v3.c", "C",
-      "packs.v4.d", "D");
+      "packs.v1.a", "BETA",
+      "packs.v2.b", "GAMMA",
+      "packs.v3.c", "DELTA",
+      "packs.v4.d", "EPSILON");
 
   public static void getBuyIntentByPack(
       final String packName,
@@ -91,7 +89,7 @@ public class IabUtils {
       @Override
       public void onSuccess(List<Purchase> purchases) {
 
-        if (DebugUtils.DEBUG_UNLOCK_ALL_PACKS) {
+        if (DebugUtils.UNLOCK_ALL_PACKS) {
           callback.onSuccess(
               ImmutableList.copyOf(Iterables.concat(GIFTED_PACK_NAMES, PURCHASE_IDS_TO_PACK_NAMES.values())));
         } else {

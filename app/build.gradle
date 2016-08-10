@@ -1,34 +1,43 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'slamzoom'
+            keyPassword 'boxSocial5358'
+            storeFile file('/Users/antrob/keystore/slamzoom.jks')
+            storePassword 'boxSocial5358'
+        }
+    }
     compileSdkVersion 24
     buildToolsVersion "24.0.0"
-
     defaultConfig {
         applicationId "com.slamzoom.android"
         minSdkVersion 16
         targetSdkVersion 24
-        versionCode 4
-        versionName "0.9.1001"
+        versionCode 9
+        versionName "0.9.1006"
         multiDexEnabled true
     }
     buildTypes {
         release {
             shrinkResources true
             minifyEnabled true
+//            proguardFile 'proguard-rules.pro'
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            debuggable false
+            signingConfig signingConfigs.config
+            proguardFile '/Users/antrob/git/slamzoom_android/app/proguard-rules.pro'
         }
     }
-
     sourceSets {
         main.java.srcDirs += 'src-gen/main/java'
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-
     compile 'com.android.support:appcompat-v7:24.0.0'
     compile 'com.android.support:design:24.0.0'
     compile 'com.android.support:percent:24.0.0'
@@ -40,11 +49,8 @@ dependencies {
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.naver.android.helloyako:imagecropview:1.0.5'
     compile 'com.squareup:otto:1.3.8'
-
     compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
-
     compile 'org.apache.commons:commons-math3:3.0'
-
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.14'
 }
 

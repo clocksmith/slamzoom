@@ -405,6 +405,12 @@ public class EffectTemplates {
           .withScaleInterpolator(new TeaseInterpolator())
           .withFilterInterpolator(new OverExposeFilterInterpolator(new ThreeEaseInHardOutInterpolator()))
           .build())
+
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("debug1")
+          .withStartDurationEndSeconds(2, 0.2f, 2)
+          .withScaleInterpolator(new LinearInterpolator())
+          .build())
       .build();
 
   private static Map<String, EffectTemplate> EFFECT_TEMPLATES_MAP_TO_USE =

@@ -25,7 +25,6 @@ import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.interpolators.Interpolator;
 import com.slamzoom.android.interpolators.LinearInterpolator;
-import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 
 import java.util.List;
 import java.util.Set;
@@ -135,7 +134,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     Bitmap scaledFrameBitmap = transformAndScaleSelectedBitmap(transformationMatrix);
     mTracker.stop(STOPWATCH_TRANSFORMING);
 
-    if (DebugUtils.DEBUG_SAVE_SCALED_FRAMES_AS_BITMAPS && !mIsPreview) {
+    if (DebugUtils.SAVE_SCALED_FRAMES_AS_BITMAPS && !mIsPreview) {
       DebugUtils.saveFrameAsBitmap(scaledFrameBitmap, "scaled", frameIndex);
     }
 
@@ -162,7 +161,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       PostProcessorUtils.renderWatermark(mContext, filteredFrameBitmap);
     }
 
-    if (DebugUtils.DEBUG_SAVE_FILTERED_FRAMES_AS_BITMAPS && !mIsPreview) {
+    if (DebugUtils.SAVE_FILTERED_FRAMES_AS_BITMAPS && !mIsPreview) {
       DebugUtils.saveFrameAsBitmap(filteredFrameBitmap, "filtered", frameIndex);
     }
 
@@ -283,11 +282,11 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   private Bitmap transformAndScaleSelectedBitmap(Matrix transformationMatrix) {
     Bitmap targetBitmap = Bitmap.createBitmap(mGifWidth, mGifHeight, Bitmap.Config.ARGB_8888);
     Canvas canvas = new Canvas(targetBitmap);
-    Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
-    paint.setFilterBitmap(true);
+    // Paint.FILTER_BITMAP_FLAG | Paint.ANTI_ALIAS_FLAG
+    Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
     transformationMatrix.postScale(
         (float) mGifWidth / mSelectedBitmap.getWidth(),
-        (float )mGifHeight / mSelectedBitmap.getHeight(),
+        (float) mGifHeight / mSelectedBitmap.getHeight(),
         0,
         0);
     canvas.drawBitmap(mSelectedBitmap, transformationMatrix, paint);

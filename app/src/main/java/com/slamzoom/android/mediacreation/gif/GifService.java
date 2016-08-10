@@ -40,7 +40,7 @@ public class GifService extends Service {
     }
   }
 
-  public class GifGenerationSartEvent {}
+  public class GifGenerationStartEvent {}
 
   public class GifServiceBinder extends Binder {
     public GifService getService() {
@@ -62,10 +62,10 @@ public class GifService extends Service {
     SzLog.f(TAG, "onCreate()");
 
     mMainGifCache = CacheBuilder.newBuilder()
-        .maximumSize(DebugUtils.DEBUG_USE_CACHE ? MAIN_CACHE_SIZE : 0)
+        .maximumSize(DebugUtils.USE_GIF_CACHE ? MAIN_CACHE_SIZE : 0)
         .build();
     mThumbnailGifCache = CacheBuilder.newBuilder()
-        .maximumSize(DebugUtils.DEBUG_USE_CACHE ? THUMBNAIL_CACHE_SIZE : 0)
+        .maximumSize(DebugUtils.USE_GIF_CACHE ? THUMBNAIL_CACHE_SIZE : 0)
         .build();
 
     mThumbnailGifCreatorBackQueue = Lists.newArrayList();
@@ -97,7 +97,7 @@ public class GifService extends Service {
   public void requestThumbnailGifs(List<GifConfig> configs) {
     stopCreatorsAndClearCaches();
 
-    if (DebugUtils.DEBUG_GENERATE_THUMBNAIL_GIFS) {
+    if (DebugUtils.GENERATE_THUMBNAIL_GIFS) {
       mThumbnailGifCreatorBackQueue = Lists.newArrayList(Lists.transform(configs, new Function<GifConfig, GifCreatorManager>() {
         @Override
         public GifCreatorManager apply(GifConfig input) {
@@ -125,7 +125,7 @@ public class GifService extends Service {
       }
 
       stopThumbnailCreators();
-      BusProvider.getInstance().post(new GifGenerationSartEvent());
+      BusProvider.getInstance().post(new GifGenerationStartEvent());
       mGifCreatorManager.start();
     }
   }

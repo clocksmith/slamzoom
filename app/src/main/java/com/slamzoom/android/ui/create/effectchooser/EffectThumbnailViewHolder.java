@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.slamzoom.android.R;
+import com.slamzoom.android.common.FontLoader;
 import com.slamzoom.android.common.bus.BusProvider;
 import com.slamzoom.android.common.utils.AnimationUtils;
 import com.slamzoom.android.common.utils.SzAnalytics;
@@ -65,14 +66,23 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
   private EffectModel mModel;
   private int mColor;
 
-  private int mInitialTabHeight;
+  private int mCollpasedTabHeight;
+  private int mExpandedTabHeight;
   private boolean mTabExpanded;
 
   public EffectThumbnailViewHolder(View itemView) {
     super(itemView);
     ButterKnife.bind(this, itemView);
     BusProvider.getInstance().register(this);
-    mInitialTabHeight = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.effect_chooser_tab_height);
+
+    mCollpasedTabHeight =
+        itemView.getContext().getResources().getDimensionPixelSize(R.dimen.effect_chooser_tab_height_collapsed);
+    mExpandedTabHeight =
+        itemView.getContext().getResources().getDimensionPixelSize(R.dimen.effect_chooser_tab_height_expanded);
+
+
+    mNameTextView.setTypeface(FontLoader.getInstance().getDefaultFont());
+    mPackNameTextView.setTypeface(FontLoader.getInstance().getTitleFont());
   }
 
   public void unbindCurrentAndBindNew(final EffectModel model, boolean clickable) {
@@ -153,7 +163,7 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
     if (!mTabExpanded) {
       mTabExpanded = true;
       mProgressBar.getIndeterminateDrawable().setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.MULTIPLY);
-      ValueAnimator anim = ValueAnimator.ofInt(mInitialTabHeight, itemView.getMeasuredHeight());
+      ValueAnimator anim = ValueAnimator.ofInt(mCollpasedTabHeight, mExpandedTabHeight);
       anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
         @Override
         public void onAnimationUpdate(ValueAnimator valueAnimator) {
@@ -173,7 +183,7 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
       mTabExpanded = false;
       mProgressBar.getIndeterminateDrawable().setColorFilter(mColor, android.graphics.PorterDuff.Mode.MULTIPLY);
       if (animate) {
-        ValueAnimator anim = ValueAnimator.ofInt(mTabView.getMeasuredHeight(), mInitialTabHeight);
+        ValueAnimator anim = ValueAnimator.ofInt(mExpandedTabHeight, mCollpasedTabHeight);
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
           @Override
           public void onAnimationUpdate(ValueAnimator valueAnimator) {
@@ -187,7 +197,7 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
         anim.start();
       } else {
         ViewGroup.LayoutParams layoutParams = mTabView.getLayoutParams();
-        layoutParams.height = mInitialTabHeight;
+        layoutParams.height = mCollpasedTabHeight;
         mTabView.setLayoutParams(layoutParams);
       }
     }

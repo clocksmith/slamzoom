@@ -15,19 +15,27 @@ import java.io.IOException;
 public class DebugUtils {
   private static final String TAG = DebugUtils.class.getSimpleName();
 
-  // Flags
-  public static final boolean DEBUG_USE_DEBUG_EFFECTS = false;
-  public static final boolean DEBUG_SAVE_SCALED_FRAMES_AS_BITMAPS = false;
-  public static final boolean DEBUG_SAVE_FILTERED_FRAMES_AS_BITMAPS = false;
-  public static final boolean DEBUG_SKIP_START_SCREEN = true;
-  public static final boolean DEBUG_USE_STATIC_RECTANGLE = false;
-  public static final boolean DEBUG_USE_CACHE = true;
-  public static final boolean DEBUG_GENERATE_THUMBNAIL_GIFS = true;
-  public static final boolean DEBUG_UNLOCK_ALL_PACKS = true;
-  public static final boolean DEBUG_TRACK_INTENTS = false;
+  // TODO(cloksmith): convert these to build flags.
 
-  public static final float DEBUG_RECT_LEFT_FRACTION = 0.18f;
-  public static final float DEBUG_RECT_TOP_FRACTION = 0.12f;
+  // Superuser
+  public static final boolean UNLOCK_ALL_PACKS = true;
+
+  // Performance
+  public static final boolean USE_GIF_CACHE = true;
+  public static final boolean GENERATE_THUMBNAIL_GIFS = true;
+
+  // Debug gif quality
+  public static final boolean USE_DEBUG_EFFECTS = false;
+  public static final boolean SAVE_SRC_AS_BITMAP = false;
+  public static final boolean SAVE_SCALED_FRAMES_AS_BITMAPS = false;
+  public static final boolean SAVE_FILTERED_FRAMES_AS_BITMAPS = false;
+
+  // Convenience
+  public static final boolean SKIP_START_SCREEN = false;
+  public static final boolean USE_STATIC_RECTANGLE = false;
+
+  public static final float DEBUG_RECT_LEFT_FRACTION = 0.33f;
+  public static final float DEBUG_RECT_TOP_FRACTION = 0.22f;
   public static final float DEBUG_RECT_SIZE_FRACTION = 0.3333f;
 
   public static Rect getDebugRect(Bitmap src) {
