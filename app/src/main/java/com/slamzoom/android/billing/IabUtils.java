@@ -17,6 +17,8 @@ import com.google.common.collect.Lists;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.SzLog;
+import com.slamzoom.android.effects.EffectPack;
+import com.slamzoom.android.effects.EffectPacks;
 
 import java.util.List;
 
@@ -26,14 +28,14 @@ import java.util.List;
 public class IabUtils {
   private static final String TAG = IabUtils.class.getSimpleName();
 
-  private static final ImmutableList<String> GIFTED_PACK_NAMES = ImmutableList.of("ALPHA");
+  private static final ImmutableList<String> GIFTED_PACK_NAMES = ImmutableList.of(EffectPacks.Pack.ONE.getName());
 
   // TODO(clocksmith): This would be perfect for remote config. Maybe Extract elsewhere to also hide packs not for sale.
   private static final BiMap<String, String> PURCHASE_IDS_TO_PACK_NAMES = ImmutableBiMap.of(
-      "packs.v1.a", "BETA",
-      "packs.v2.b", "GAMMA",
-      "packs.v3.c", "DELTA",
-      "packs.v4.d", "EPSILON");
+      "packs.v1.2", EffectPacks.Pack.TWO.getName(),
+      "packs.v1.3", EffectPacks.Pack.THREE.getName(),
+      "packs.v1.4", EffectPacks.Pack.FOUR.getName(),
+      "packs.v1.5", EffectPacks.Pack.FIVE.getName());
 
   public static void getBuyIntentByPack(
       final String packName,

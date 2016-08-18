@@ -18,7 +18,7 @@ public class DebugUtils {
   // TODO(cloksmith): convert these to build flags.
 
   // Superuser
-  public static final boolean UNLOCK_ALL_PACKS = true;
+  public static final boolean UNLOCK_ALL_PACKS = false;
 
   // Performance
   public static final boolean USE_GIF_CACHE = true;

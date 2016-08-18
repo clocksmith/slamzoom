@@ -57,11 +57,4 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
       }
     }
   }
-
-  public void unbindAll() {
-    for (EffectModel model : mModels) {
-      model.setGifThumbnailBytes(null);
-    }
-    notifyItemRangeChanged(0, mModels.size());
-  }
 }

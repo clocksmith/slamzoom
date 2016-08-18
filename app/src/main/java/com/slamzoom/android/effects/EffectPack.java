@@ -71,7 +71,6 @@ public class EffectPack {
     }
 
     public EffectPack build() {
-      Log.wtf("!!!", mName + ": " + mColorGroup);
       mColor = EffectColors.getColorGroup(mColorGroup).get(0);
       int count = 0;
       for (EffectTemplate effectTemplate : mEffectTemplates) {

@@ -11,7 +11,7 @@ public class SlamHardInAndOutInterpolator extends Interpolator {
     if (t < 0.5) {
       return (float) Math.pow(0.5 * (t + 1.5), 20);
     } else {
-      return (float) (1 - Math.pow(0.5 * (t + 1), 10));
+      return (float) (1 - Math.pow(0.5 * (t + 1), 3));
     }
   }
 }

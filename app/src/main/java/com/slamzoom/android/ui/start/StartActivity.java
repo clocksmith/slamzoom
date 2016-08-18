@@ -12,6 +12,7 @@ import android.widget.Button;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.slamzoom.android.R;
+import com.slamzoom.android.common.FontLoader;
 import com.slamzoom.android.common.utils.AnimationUtils;
 import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.SzLog;
@@ -50,6 +51,8 @@ public class StartActivity extends AppCompatActivity {
     if (DebugUtils.SKIP_START_SCREEN) {
       startActivity(new Intent(StartActivity.this, CreateActivity.class));
     }
+
+    mCreateSlamzoomButton.setTypeface(FontLoader.getInstance().getDefaultFont());
 
     mCreateSlamzoomButton.setOnClickListener(new View.OnClickListener() {
       @Override

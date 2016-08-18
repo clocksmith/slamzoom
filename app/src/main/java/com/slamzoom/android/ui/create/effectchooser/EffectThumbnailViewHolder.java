@@ -96,7 +96,7 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
     mModel = model;
     mColor = model.getEffectTemplate().getColor();
     final String name = mModel.getEffectTemplate().getName();
-    final String packName = mModel.getEffectTemplate().getPackName();
+    final String packName = mModel.getEffectTemplate().getPackName() + " PACK";
 
     mLockIcon.setVisibility(model.isLocked() ? View.VISIBLE : View.GONE);
 

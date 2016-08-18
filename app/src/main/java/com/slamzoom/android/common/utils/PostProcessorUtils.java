@@ -11,6 +11,7 @@ import android.graphics.Rect;
 
 import com.google.common.collect.ImmutableList;
 import com.slamzoom.android.common.Constants;
+import com.slamzoom.android.common.FontLoader;
 import com.slamzoom.android.mediacreation.WatermarkProvider;
 
 import java.util.List;
@@ -91,31 +92,32 @@ public class PostProcessorUtils {
       textPaint.setTextSize(Constants.MAX_WATERMARK_TEXT_SIZE);
       textPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)); // Text Overlapping Pattern
       textPaint.setTextAlign(Paint.Align.LEFT);
+      textPaint.setTypeface(FontLoader.getInstance().getDefaultFont());
+      textPaint.setShadowLayer(2, 0, 0, Color.BLACK);
+
+//      Paint strokePaint = new Paint(textPaint);
+//      strokePaint.setStyle(Paint.Style.STROKE);
+//      strokePaint.setColor(Color.BLACK);
+//      strokePaint.setStrokeWidth(1);
 
       Rect textBounds = new Rect();
       textPaint.getTextBounds(Constants.WATERMARK_TEXT, 0, Constants.WATERMARK_TEXT.length(), textBounds);
 
-      Paint rectPaint = new Paint();
-      rectPaint.setColor(Color.BLACK);
-      rectPaint.setAlpha(128);
-
-      canvas.drawRect(
-          0,
-          original.getHeight() - textBounds.height() - Constants.WATERMARK_TEXT_PADDING,
-          original.getWidth(),
-          original.getHeight(),
-          rectPaint);
-
       canvas.drawText(
           Constants.WATERMARK_TEXT,
-          (original.getWidth() - textBounds.width()) / 2,
+          original.getWidth() - textBounds.width() - Constants.WATERMARK_TEXT_PADDING,
           original.getHeight() - Constants.WATERMARK_TEXT_PADDING,
           textPaint);
+//      canvas.drawText(
+//          Constants.WATERMARK_TEXT,
+//          original.getWidth() - textBounds.width() - Constants.WATERMARK_TEXT_PADDING,
+//          original.getHeight() - Constants.WATERMARK_TEXT_PADDING,
+//          strokePaint);
     } else if (Constants.USE_IMAGE_WATERMARK) {
       Bitmap watermarkBitmap = WatermarkProvider.getWatermarkBitmap(context);
       Canvas watermarkCanvas = new Canvas(original);
       Paint watermarkPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
-      int watermarkWidth = Math.min(100, Math.min(original.getWidth() / 2, Constants.DEFAULT_GIF_SIZE_PX / 2));
+      int watermarkWidth = Math.min(original.getWidth() / 2, Constants.DEFAULT_GIF_SIZE_PX / 3);
       int watermarkHeight = watermarkBitmap.getHeight() * watermarkWidth / watermarkBitmap.getWidth();
       watermarkCanvas.drawBitmap(
           watermarkBitmap,

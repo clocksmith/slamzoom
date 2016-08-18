@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 
@@ -22,6 +23,8 @@ import butterknife.ButterKnife;
  * Created by clocksmith on 2/27/16.
  */
 public class EffectChooser extends LinearLayout {
+  private static final String TAG = EffectChooser.class.getSimpleName();
+
   @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
 
   private EffectThumbnailRecyclerViewAdapter mAdapter;
@@ -46,12 +49,13 @@ public class EffectChooser extends LinearLayout {
   }
 
   public void set(List<EffectModel> effectModels, boolean clickable) {
-      if (mAdapter != null) {
-        mAdapter.unbindAll();
-      }
-      mAdapter = new EffectThumbnailRecyclerViewAdapter(Lists.newArrayList(effectModels), clickable);
+    Log.wtf(TAG, "set");
+
+    if (mAdapter == null) {
+      mAdapter = new EffectThumbnailRecyclerViewAdapter(effectModels, clickable);
       mRecyclerView.setAdapter(mAdapter);
-      mAdapter.notifyDataSetChanged();
+    }
+    mAdapter.notifyDataSetChanged();
   }
 
   @Subscribe

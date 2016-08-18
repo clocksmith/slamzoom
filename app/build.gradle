@@ -15,19 +15,17 @@ android {
         applicationId "com.slamzoom.android"
         minSdkVersion 16
         targetSdkVersion 24
-        versionCode 9
-        versionName "0.9.1006"
+        versionCode 14
+        versionName "0.9.1014"
         multiDexEnabled true
     }
     buildTypes {
         release {
             shrinkResources true
             minifyEnabled true
-//            proguardFile 'proguard-rules.pro'
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             debuggable false
             signingConfig signingConfigs.config
-            proguardFile '/Users/antrob/git/slamzoom_android/app/proguard-rules.pro'
         }
     }
     sourceSets {

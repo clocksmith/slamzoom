@@ -80,10 +80,6 @@ import pl.droidsonroids.gif.GifImageView;
 public class CreateActivity extends AppCompatActivity {
   private static final String TAG = CreateActivity.class.getSimpleName();
 
-  private enum ServiceState {
-    UNBOUND, BINDING, BOUND
-  }
-
   @Bind(R.id.coordinatatorLayout) CoordinatorLayout mCoordinatorLayout;
   @Bind(R.id.actionBar) Toolbar mActionBar;
   @Bind(R.id.gifImageView) GifImageView mGifImageView;
@@ -108,10 +104,8 @@ public class CreateActivity extends AppCompatActivity {
 
   private GifService mGifService;
   private GifServiceConnection mGifServiceConnection;
-  private ServiceState mGifServiceState;
   private IInAppBillingService mBillingService;
   private BillingServiceConnection mBillingServiceConnection;
-  private ServiceState mBillingServiceState;
 
   private List<String> mPurchasedPackNames;
   private boolean mNeedsUpdatePurchasePackNames;
@@ -126,8 +120,6 @@ public class CreateActivity extends AppCompatActivity {
     ButterKnife.bind(this);
     BusProvider.getInstance().register(this);
 
-    mGifServiceState = ServiceState.UNBOUND;
-    mBillingServiceState = ServiceState.UNBOUND;
     mEffectModels = EffectPacks.listEffectModelsByPack();
 
     bindServices();
@@ -307,7 +299,6 @@ public class CreateActivity extends AppCompatActivity {
     if (mGifServiceConnection == null) {
       mGifServiceConnection = new GifServiceConnection();
     }
-    mGifServiceState = ServiceState.BINDING;
     bindService(new Intent(this, GifService.class), mGifServiceConnection, Context.BIND_AUTO_CREATE);
   }
 
@@ -317,7 +308,6 @@ public class CreateActivity extends AppCompatActivity {
     }
     Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
     serviceIntent.setPackage("com.android.vending");
-    mBillingServiceState = ServiceState.BINDING;
     bindService(serviceIntent, mBillingServiceConnection, Context.BIND_AUTO_CREATE);
   }
 
@@ -480,18 +470,20 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   private void resetAndUpdateAll() {
+    resetEffectModelsAndProgresses();
+    updateThumbnailGifs();
+
     mSelectedGifBytes = null;
     mGifImageView.setImageBitmap(null);
-    resetProgresses();
-    updateThumbnailGifs();
     if (mSelectedEffectName != null) {
       updateMainGif();
     }
   }
 
-  private void resetProgresses() {
+  private void resetEffectModelsAndProgresses() {
     for (EffectModel model : mEffectModels) {
       mGifProgresses.put(model.getEffectTemplate().getName(), 0d);
+      model.setGifThumbnailBytes(null);
     }
   }
 
@@ -641,13 +633,11 @@ public class CreateActivity extends AppCompatActivity {
     @Override
     public void onServiceConnected(ComponentName className, IBinder iBinder) {
       mGifService = ((GifService.GifServiceBinder) iBinder).getService();
-      mGifServiceState = ServiceState.BOUND;
     }
 
     @Override
     public void onServiceDisconnected(ComponentName arg0) {
       mGifService = null;
-      mGifServiceState = ServiceState.UNBOUND;
     }
   }
 
@@ -656,14 +646,12 @@ public class CreateActivity extends AppCompatActivity {
     public void onServiceConnected(ComponentName name,
         IBinder service) {
       mBillingService = IInAppBillingService.Stub.asInterface(service);
-      mBillingServiceState = ServiceState.BOUND;
       updatePurchasedPackNamesAndEffectModels();
     }
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
       mBillingService = null;
-      mBillingServiceState = ServiceState.UNBOUND;
     }
   }
 

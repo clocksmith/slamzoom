@@ -20,26 +20,44 @@ public class EffectPacks {
   private static ImmutableList<EffectTemplate> EFFECT_TEMPLATES_FROM_PACKS;
   private static ImmutableList<EffectTemplate> DEBUG_EFFECT_TEMPLATES_FROM_PACKS;
 
+  public enum Pack {
+    ONE("SKY"), // lightblue
+    TWO("ICE"), // teal
+    THREE("LEAF"), // light  green
+    FOUR("AMBER"), // amber
+    FIVE("FIRE"); // deep orange
+
+    private String mName;
+
+    Pack(String name) {
+      mName = name;
+    }
+
+    public String getName() {
+      return mName;
+    }
+  }
+
   public static void init(Context context) {
     EffectColors.init(context);
 
     EFFECT_PACKS = ImmutableList.<EffectPack>builder()
         .add(EffectPack.newBuilder()
-            .withName("ALPHA")
+            .withName(Pack.ONE.getName())
             .withColorGroup("lightblue_500_600")
             .withEffectTemplate("slamin")
-            .withEffectTemplate("smush")
-            .withEffectTemplate("sumo")
             .withEffectTemplate("overcrash")
+            .withEffectTemplate("sumo")
             .withEffectTemplate("crashrumble")
             .withEffectTemplate("crashdiag")
-            .withEffectTemplate("mctwisty")
-            .withEffectTemplate("doublebulge")
+            .withEffectTemplate("smush")
             .withEffectTemplate("earthquake")
+            .withEffectTemplate("doublebulge")
             .withEffectTemplate("swirlspot")
+            .withEffectTemplate("mctwisty")
             .build())
         .add(EffectPack.newBuilder()
-            .withName("BETA")
+            .withName(Pack.TWO.getName())
             .withColorGroup("teal_500_600")
             .withEffectTemplate("rumblestiltskin")
             .withEffectTemplate("inflate")
@@ -53,7 +71,7 @@ public class EffectPacks {
             .withEffectTemplate("graytake")
             .build())
         .add(EffectPack.newBuilder()
-            .withName("GAMMA")
+            .withName(Pack.THREE.getName())
             .withColorGroup("lightgreen_500_600")
             .withEffectTemplate("crashmiss")
             .withEffectTemplate("rumbletease")
@@ -67,7 +85,7 @@ public class EffectPacks {
             .withEffectTemplate("spiral")
             .build())
         .add(EffectPack.newBuilder()
-            .withName("DELTA")
+            .withName(Pack.FOUR.getName())
             .withColorGroup("amber_500_600")
             .withEffectTemplate("crashin")
             .withEffectTemplate("bulger")
@@ -81,7 +99,7 @@ public class EffectPacks {
             .withEffectTemplate("swirlyeyes")
             .build())
         .add(EffectPack.newBuilder()
-            .withName("EPSILON")
+            .withName(Pack.FIVE.name())
             .withColorGroup("deeporange_500_600")
             .withEffectTemplate("crashblur")
             .withEffectTemplate("weirdo")
