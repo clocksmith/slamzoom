@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.util.Log;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.google.common.base.Function;
@@ -56,6 +57,7 @@ public class IabUtils {
             SzLog.e(TAG, "Trying to consume buying intent but billing service is null!");
             return null;
           }
+          SzLog.f(TAG, "getBuyIntent for productId: " + productId);
           Bundle buyIntentBundle = service.getBuyIntent(
               3, Constants.PACKAGE_NAME, productId, "inapp", LicenseKeyUtils.getLicenseKey());
           int responseCode = buyIntentBundle.getInt("RESPONSE_CODE");

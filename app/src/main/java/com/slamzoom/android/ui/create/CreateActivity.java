@@ -17,6 +17,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -155,6 +156,18 @@ public class CreateActivity extends AppCompatActivity {
       }
     }
   }
+
+  @Override
+  public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull  int[] grantResults) {
+    if (requestCode == Constants.REQUEST_SHARE_GIF_PERMISSIONS) {
+      if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        shareCurrentGif();
+      } else {
+        // TODO(clocksmith): show a message saying they must have these permissions to share.
+      }
+    }
+  }
+
 
   @Override
   public void onDestroy() {
@@ -434,7 +447,10 @@ public class CreateActivity extends AppCompatActivity {
     } else if (!effectModel.isLocked()) {
       shareCurrentGif();
     } else {
-      showBuyDialog(effectModel.getEffectTemplate().getName(), effectModel.getEffectTemplate().getPackName());
+      String effectName = effectModel.getEffectTemplate().getName();
+      String packName = effectModel.getEffectTemplate().getPackName();
+      SzLog.f(TAG, "Showing dialog for effectName: " + effectName + " and packName: " + packName);
+      showBuyDialog(effectName, packName  );
     }
   }
 
@@ -575,42 +591,42 @@ public class CreateActivity extends AppCompatActivity {
       ActivityCompat.requestPermissions
           (this,
               new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
-              0);
-    }
-
-    File direct = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getPath(),
-        Constants.PUBLIC_DIRECTORY);
-
-    if (!direct.exists()) {
-      if (!direct.mkdirs()) {
-        SzLog.e(TAG, "Cannot make directory: " + direct);
-      } else {
-        Log.d(TAG, direct + " successfully created." );
-      }
+              Constants.REQUEST_SHARE_GIF_PERMISSIONS);
     } else {
-      Log.d(TAG, direct + " already exists." );
-    }
+      File direct = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getPath(),
+          Constants.PUBLIC_DIRECTORY);
 
-    long now = System.currentTimeMillis();
-    String gifFilename = "slamzoom_" + mSelectedEffectName + "_" + now + ".gif";
-    File gifFile = new File(direct, gifFilename);
+      if (!direct.exists()) {
+        if (!direct.mkdirs()) {
+          SzLog.e(TAG, "Cannot make directory: " + direct);
+        } else {
+          Log.d(TAG, direct + " successfully created.");
+        }
+      } else {
+        Log.d(TAG, direct + " already exists.");
+      }
 
-    if (mSelectedGifBytes != null) {
-      try {
-        // TODO(clocksmith): make sure external apps can't destroy this (read only)
-        FileOutputStream gifOutputStream = new FileOutputStream(gifFile);
-        gifOutputStream.write(mSelectedGifBytes);
-        gifOutputStream.close();
+      long now = System.currentTimeMillis();
+      String gifFilename = "slamzoom_" + mSelectedEffectName + "_" + now + ".gif";
+      File gifFile = new File(direct, gifFilename);
 
-        SzAnalytics.newGifSavedEvent()
-            .withItemId(mSelectedEffectName)
-            .withEndScale(mSelectedHotspot.width() / mSelectedBitmap.getWidth())
-            .withEndTextLength(mSelectedEndText == null ? 0 : mSelectedEndText.length())
-            .log(this);
+      if (mSelectedGifBytes != null) {
+        try {
+          // TODO(clocksmith): make sure external apps can't destroy this (read only)
+          FileOutputStream gifOutputStream = new FileOutputStream(gifFile);
+          gifOutputStream.write(mSelectedGifBytes);
+          gifOutputStream.close();
 
-        return gifFile;
-      } catch (IOException e) {
-        SzLog.e(TAG, "cannot save gif", e);
+          SzAnalytics.newGifSavedEvent()
+              .withItemId(mSelectedEffectName)
+              .withEndScale(mSelectedHotspot.width() / mSelectedBitmap.getWidth())
+              .withEndTextLength(mSelectedEndText == null ? 0 : mSelectedEndText.length())
+              .log(this);
+
+          return gifFile;
+        } catch (IOException e) {
+          SzLog.e(TAG, "cannot save gif", e);
+        }
       }
     }
 
@@ -629,55 +645,55 @@ public class CreateActivity extends AppCompatActivity {
     newFragment.show(getSupportFragmentManager(), BuyToUnlockDialogFragment.class.getSimpleName());
   }
 
-  private class GifServiceConnection implements ServiceConnection {
-    @Override
-    public void onServiceConnected(ComponentName className, IBinder iBinder) {
-      mGifService = ((GifService.GifServiceBinder) iBinder).getService();
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName arg0) {
-      mGifService = null;
-    }
+private class GifServiceConnection implements ServiceConnection {
+  @Override
+  public void onServiceConnected(ComponentName className, IBinder iBinder) {
+    mGifService = ((GifService.GifServiceBinder) iBinder).getService();
   }
 
-  private class BillingServiceConnection implements ServiceConnection {
-    @Override
-    public void onServiceConnected(ComponentName name,
-        IBinder service) {
-      mBillingService = IInAppBillingService.Stub.asInterface(service);
-      updatePurchasedPackNamesAndEffectModels();
-    }
+  @Override
+  public void onServiceDisconnected(ComponentName arg0) {
+    mGifService = null;
+  }
+}
 
-    @Override
-    public void onServiceDisconnected(ComponentName name) {
-      mBillingService = null;
-    }
+private class BillingServiceConnection implements ServiceConnection {
+  @Override
+  public void onServiceConnected(ComponentName name,
+      IBinder service) {
+    mBillingService = IInAppBillingService.Stub.asInterface(service);
+    updatePurchasedPackNamesAndEffectModels();
   }
 
-  private class ShareGifTask extends AsyncTask<Void, Void, Boolean> {
-    private Intent mBaseIntent;
+  @Override
+  public void onServiceDisconnected(ComponentName name) {
+    mBillingService = null;
+  }
+}
 
-    @Override
-    protected Boolean doInBackground(Void... params) {
-      File gifFile = saveCurrentGifToDisk();
-      if (gifFile != null) {
-        mBaseIntent = new Intent(android.content.Intent.ACTION_SEND);
-        mBaseIntent.setType("image/gif");
-        Uri uri = Uri.fromFile(gifFile);
-        mBaseIntent.putExtra(Intent.EXTRA_STREAM, uri);
-      } else {
-        SzLog.e(TAG, "gif file is null");
-        return false;
-      }
-      return true;
+private class ShareGifTask extends AsyncTask<Void, Void, Boolean> {
+  private Intent mBaseIntent;
+
+  @Override
+  protected Boolean doInBackground(Void... params) {
+    File gifFile = saveCurrentGifToDisk();
+    if (gifFile != null) {
+      mBaseIntent = new Intent(android.content.Intent.ACTION_SEND);
+      mBaseIntent.setType("image/gif");
+      Uri uri = Uri.fromFile(gifFile);
+      mBaseIntent.putExtra(Intent.EXTRA_STREAM, uri);
+    } else {
+      SzLog.e(TAG, "gif file is null");
+      return false;
     }
+    return true;
+  }
 
-    @Override
-    protected void onPostExecute(Boolean result) {
-      if (result) {
-        startActivity(Intent.createChooser(mBaseIntent, "Share via"));
-      }
+  @Override
+  protected void onPostExecute(Boolean result) {
+    if (result) {
+      startActivity(Intent.createChooser(mBaseIntent, "Share via"));
     }
   }
+}
 }

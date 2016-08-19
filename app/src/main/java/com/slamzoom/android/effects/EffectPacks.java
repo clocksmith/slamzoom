@@ -99,7 +99,7 @@ public class EffectPacks {
             .withEffectTemplate("swirlyeyes")
             .build())
         .add(EffectPack.newBuilder()
-            .withName(Pack.FIVE.name())
+            .withName(Pack.FIVE.getName())
             .withColorGroup("deeporange_500_600")
             .withEffectTemplate("crashblur")
             .withEffectTemplate("weirdo")

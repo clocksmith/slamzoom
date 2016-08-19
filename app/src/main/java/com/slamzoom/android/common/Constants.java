@@ -16,6 +16,7 @@ public class Constants {
   public static final int REQUEST_PICK_IMAGE = 101;
   public static final int REQUEST_CROP_IMAGE = 201;
   public static final int REQUEST_BUY_PACK = 301;
+  public static final int REQUEST_SHARE_GIF_PERMISSIONS= 401;
 
   // Params TODO(clocksmith): refactor to params
   public static final String IMAGE_URI = "imageUri";
