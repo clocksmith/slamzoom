@@ -19,7 +19,7 @@ import java.util.Set;
 public class SzLog {
   // NOTE: Please keep in alphabetical order.
   private static Set<String> mAcceptedTags = ImmutableSet.of(
-//      CreateActivity.class.getSimpleName(),
+      CreateActivity.class.getSimpleName(),
 //      EffectThumbnailViewHolder.class.getSimpleName(),
 //      GifCreator.class.getSimpleName(),
 //      GifCreatorManager.class.getSimpleName(),

@@ -25,6 +25,11 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
     mClickable = clickable;
   }
 
+  public void update(List<EffectModel> models) {
+    mModels = models;
+    notifyDataSetChanged();
+  }
+
   @Override
   public EffectThumbnailViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
     return new EffectThumbnailViewHolder(

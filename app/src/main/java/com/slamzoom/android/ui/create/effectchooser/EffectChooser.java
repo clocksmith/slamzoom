@@ -51,11 +51,12 @@ public class EffectChooser extends LinearLayout {
   public void set(List<EffectModel> effectModels, boolean clickable) {
     Log.wtf(TAG, "set");
 
-    if (mAdapter == null) {
-      mAdapter = new EffectThumbnailRecyclerViewAdapter(effectModels, clickable);
-      mRecyclerView.setAdapter(mAdapter);
-    }
-    mAdapter.notifyDataSetChanged();
+    mAdapter = new EffectThumbnailRecyclerViewAdapter(effectModels, clickable);
+    mRecyclerView.setAdapter(mAdapter);
+  }
+
+  public void update(List<EffectModel> effectModels) {
+    mAdapter.update(effectModels);
   }
 
   @Subscribe

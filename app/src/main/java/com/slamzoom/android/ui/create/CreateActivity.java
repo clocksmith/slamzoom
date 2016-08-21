@@ -17,6 +17,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -121,17 +122,61 @@ public class CreateActivity extends AppCompatActivity {
     ButterKnife.bind(this);
     BusProvider.getInstance().register(this);
 
-    mEffectModels = EffectPacks.listEffectModelsByPack();
 
     bindServices();
+    initEffects();
     initActionBar();
     initGifArea();
+  }
 
-    Intent intent = getIntent();
-    if (Intent.ACTION_SEND.equals(intent.getAction())) {
-      handleIncomingUri((Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM));
-    } else if (mSelectedBitmap == null) {
+  @Override protected void onStart() {
+    super.onStart();
+    SzLog.f(TAG, "onStart()");
+  }
+
+  @Override protected void onResume() {
+    super.onResume();
+    SzLog.f(TAG, "onResume()");
+
+    if (mSelectedBitmap == null) {
       launchImageChooser();
+    }
+  }
+
+  @Override protected void onNewIntent(Intent intent) {
+    SzLog.f(TAG, "onNewIntent()");
+
+    if (Intent.ACTION_SEND.equals(intent.getAction())) {
+      resetEffectModelsAndProgresses();
+      handleIncomingUri((Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM));
+    }
+  }
+
+  @Override
+  public void onPause() {
+    super.onPause();
+    SzLog.f(TAG, "onPause()");
+  }
+
+  @Override
+  public void onStop() {
+    super.onStop();
+    SzLog.f(TAG, "onStop()");
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+    SzLog.f(TAG, "onDestroy()");
+
+    ButterKnife.unbind(this);
+    BusProvider.getInstance().unregister(this);
+
+    if (mGifService != null) {
+      unbindService(mGifServiceConnection);
+    }
+    if (mBillingService != null) {
+      unbindService(mBillingServiceConnection);
     }
   }
 
@@ -165,23 +210,6 @@ public class CreateActivity extends AppCompatActivity {
       } else {
         // TODO(clocksmith): show a message saying they must have these permissions to share.
       }
-    }
-  }
-
-
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-    SzLog.f(TAG, "onDestroy()");
-
-    ButterKnife.unbind(this);
-    BusProvider.getInstance().unregister(this);
-
-    if (mGifService != null) {
-      unbindService(mGifServiceConnection);
-    }
-    if (mBillingService != null) {
-      unbindService(mBillingServiceConnection);
     }
   }
 
@@ -340,6 +368,11 @@ public class CreateActivity extends AppCompatActivity {
     mGifAreaView = mZeroStateMessage;
   }
 
+  private void initEffects() {
+    mEffectModels = EffectPacks.listEffectModelsByPack();
+    mEffectChooser.set(mEffectModels, true);
+  }
+
   private EffectModel getEffectModelForSelectedEffect() {
     for (EffectModel effectModel : mEffectModels) {
       if (effectModel.getEffectTemplate().getName().equals(mSelectedEffectName)) {
@@ -387,7 +420,7 @@ public class CreateActivity extends AppCompatActivity {
     for (EffectModel model : mEffectModels) {
       model.setLocked(!mPurchasedPackNames.contains(model.getEffectTemplate().getPackName()));
     }
-    mEffectChooser.set(mEffectModels, true);
+    mEffectChooser.update(mEffectModels);
   }
 
   private void handleIncomingUri(Uri uri) {
@@ -481,7 +514,7 @@ public class CreateActivity extends AppCompatActivity {
               .build();
         }
       }));
-      mEffectChooser.set(mEffectModels, true);
+      mEffectChooser.update(mEffectModels);
     }
   }
 
@@ -501,6 +534,7 @@ public class CreateActivity extends AppCompatActivity {
       mGifProgresses.put(model.getEffectTemplate().getName(), 0d);
       model.setGifThumbnailBytes(null);
     }
+    mEffectChooser.update(mEffectModels);
   }
 
   private void updateProgressBar() {
@@ -645,55 +679,55 @@ public class CreateActivity extends AppCompatActivity {
     newFragment.show(getSupportFragmentManager(), BuyToUnlockDialogFragment.class.getSimpleName());
   }
 
-private class GifServiceConnection implements ServiceConnection {
-  @Override
-  public void onServiceConnected(ComponentName className, IBinder iBinder) {
-    mGifService = ((GifService.GifServiceBinder) iBinder).getService();
-  }
-
-  @Override
-  public void onServiceDisconnected(ComponentName arg0) {
-    mGifService = null;
-  }
-}
-
-private class BillingServiceConnection implements ServiceConnection {
-  @Override
-  public void onServiceConnected(ComponentName name,
-      IBinder service) {
-    mBillingService = IInAppBillingService.Stub.asInterface(service);
-    updatePurchasedPackNamesAndEffectModels();
-  }
-
-  @Override
-  public void onServiceDisconnected(ComponentName name) {
-    mBillingService = null;
-  }
-}
-
-private class ShareGifTask extends AsyncTask<Void, Void, Boolean> {
-  private Intent mBaseIntent;
-
-  @Override
-  protected Boolean doInBackground(Void... params) {
-    File gifFile = saveCurrentGifToDisk();
-    if (gifFile != null) {
-      mBaseIntent = new Intent(android.content.Intent.ACTION_SEND);
-      mBaseIntent.setType("image/gif");
-      Uri uri = Uri.fromFile(gifFile);
-      mBaseIntent.putExtra(Intent.EXTRA_STREAM, uri);
-    } else {
-      SzLog.e(TAG, "gif file is null");
-      return false;
+  private class GifServiceConnection implements ServiceConnection {
+    @Override
+    public void onServiceConnected(ComponentName className, IBinder iBinder) {
+      mGifService = ((GifService.GifServiceBinder) iBinder).getService();
     }
-    return true;
-  }
 
-  @Override
-  protected void onPostExecute(Boolean result) {
-    if (result) {
-      startActivity(Intent.createChooser(mBaseIntent, "Share via"));
+    @Override
+    public void onServiceDisconnected(ComponentName arg0) {
+      mGifService = null;
     }
   }
-}
+
+  private class BillingServiceConnection implements ServiceConnection {
+    @Override
+    public void onServiceConnected(ComponentName name,
+        IBinder service) {
+      mBillingService = IInAppBillingService.Stub.asInterface(service);
+      updatePurchasedPackNamesAndEffectModels();
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+      mBillingService = null;
+    }
+  }
+
+  private class ShareGifTask extends AsyncTask<Void, Void, Boolean> {
+    private Intent mBaseIntent;
+
+    @Override
+    protected Boolean doInBackground(Void... params) {
+      File gifFile = saveCurrentGifToDisk();
+      if (gifFile != null) {
+        mBaseIntent = new Intent(android.content.Intent.ACTION_SEND);
+        mBaseIntent.setType("image/gif");
+        Uri uri = Uri.fromFile(gifFile);
+        mBaseIntent.putExtra(Intent.EXTRA_STREAM, uri);
+      } else {
+        SzLog.e(TAG, "gif file is null");
+        return false;
+      }
+      return true;
+    }
+
+    @Override
+    protected void onPostExecute(Boolean result) {
+      if (result) {
+        startActivity(Intent.createChooser(mBaseIntent, "Share via"));
+      }
+    }
+  }
 }
