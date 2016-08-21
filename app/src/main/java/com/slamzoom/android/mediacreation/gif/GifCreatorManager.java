@@ -2,6 +2,7 @@ package com.slamzoom.android.mediacreation.gif;
 
 import android.content.Context;
 
+import com.google.common.base.Objects;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.utils.SzLog;
 import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
@@ -88,5 +89,22 @@ public class GifCreatorManager {
 
   public MultiPhaseStopwatch getTracker() {
     return mTracker;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(mGifConfig);
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final GifCreatorManager other = (GifCreatorManager) obj;
+    return Objects.equal(mGifConfig, other.mGifConfig);
   }
 }

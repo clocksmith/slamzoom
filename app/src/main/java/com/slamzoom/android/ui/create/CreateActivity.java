@@ -502,19 +502,25 @@ public class CreateActivity extends AppCompatActivity {
     if (mPurchasedPackNames == null || mNeedsUpdatePurchasePackNames) {
       updatePurchasedPackNamesAndEffectModelsAndThumbnailGifs();
     } else {
-      mGifService.requestThumbnailGifs(Lists.transform(EffectPacks.listEffectTemplatesByPack(), new Function<EffectTemplate, GifConfig>() {
-        @Override
-        public GifConfig apply(EffectTemplate effectTemplate) {
-          return GifConfig.newBuilder()
-              .withHotspot(mSelectedHotspotForThumbnail)
-              .withBitmap(mSelectedBitmapForThumbnail)
-              .withEffectTemplate(effectTemplate)
-              .withEndText(mSelectedEndText)
-              .withFps(Constants.THUMBNAIL_FPS)
-              .build();
-        }
-      }));
-      mEffectChooser.update(mEffectModels);
+      mGifService.requestThumbnailGifs(Lists.transform(EffectPacks.listEffectTemplatesByPack(),
+          new Function<EffectTemplate, GifConfig>() {
+            @Override
+            public GifConfig apply(EffectTemplate effectTemplate) {
+              return GifConfig.newBuilder()
+                  .withHotspot(mSelectedHotspotForThumbnail)
+                  .withBitmap(mSelectedBitmapForThumbnail)
+                  .withEffectTemplate(effectTemplate)
+                  .withEndText(mSelectedEndText)
+                  .withFps(Constants.THUMBNAIL_FPS)
+                  .build();
+            }
+          }),
+          new Runnable() {
+            @Override
+            public void run() {
+              mEffectChooser.update(mEffectModels);
+            }
+          });
     }
   }
 
