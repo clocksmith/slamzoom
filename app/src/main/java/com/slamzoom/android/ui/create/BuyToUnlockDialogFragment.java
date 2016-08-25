@@ -3,11 +3,9 @@ package com.slamzoom.android.ui.create;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ContextThemeWrapper;
 import android.view.ViewGroup;
@@ -20,7 +18,6 @@ import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.bus.BusProvider;
 import com.slamzoom.android.common.utils.SzLog;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
-import com.squareup.otto.Bus;
 
 import java.util.List;
 
@@ -69,7 +66,7 @@ public class BuyToUnlockDialogFragment extends DialogFragment {
         new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
     Dialog dialog = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.SlamzoomDialog))
-        .setIcon(R.drawable.ic_lock)
+        .setIcon(R.drawable.ic_gfx_lock)
         .setTitle(R.string.buy_dialog_title)
         .setView(contentView)
         .setPositiveButton(R.string.buy_ok,

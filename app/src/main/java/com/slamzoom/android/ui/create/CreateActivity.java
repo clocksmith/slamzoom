@@ -234,7 +234,7 @@ public class CreateActivity extends AppCompatActivity {
 //    }
 //    mLoopSwitch.setTextOn("loop");
 //    mLoopSwitch.setTextOff("pause");
-//    mLoopSwitch.setThumbResource(R.drawable.thumb);
+//    mLoopSwitch.setThumbResource(R.drawable.loop_thumb);
 //    mLoopSwitch.setSwitchMinWidth(200);
 //    mLoopSwitch.setThumbTextPadding(200);
 //    mLoopSwitch.refreshDrawableState();

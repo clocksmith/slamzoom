@@ -30,7 +30,7 @@ public class LoopSwitch extends SwitchCompat {
     }
     this.setTextOn("loop");
     this.setTextOff("pause");
-    this.setThumbResource(R.drawable.thumb);
+    this.setThumbResource(R.drawable.loop_thumb);
 
   }
 }
