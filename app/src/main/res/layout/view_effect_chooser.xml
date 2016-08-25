@@ -4,8 +4,21 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:background="@color/colorPrimary">
+  <!-- Padding at ends -->
+  <!--<android.support.v7.widget.RecyclerView-->
+      <!--android:id="@+id/recyclerView"-->
+      <!--android:layout_width="match_parent"-->
+      <!--android:layout_height="match_parent"-->
+      <!--android:paddingLeft="4dp"-->
+      <!--android:paddingRight="4dp"-->
+      <!--android:clipToPadding="false"-->
+      <!--android:scrollbarStyle="outsideOverlay"/>-->
+
+  <!-- No padding at ends -->
   <android.support.v7.widget.RecyclerView
       android:id="@+id/recyclerView"
       android:layout_width="match_parent"
-      android:layout_height="match_parent"/>
+      android:layout_height="match_parent"
+      android:paddingLeft="-4dp"
+      android:paddingRight="-4dp"/>
 </LinearLayout>

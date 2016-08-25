@@ -94,7 +94,7 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
   public void bind(final EffectModel model, boolean clickable) {
     SzLog.f(TAG, "bind: " + getAdapterPosition());
     mModel = model;
-    mColor = model.getEffectTemplate().getColor();
+    mColor = model.isLocked() ? Color.rgb(128, 128, 128) : model.getEffectTemplate().getColor();
     final String name = mModel.getEffectTemplate().getName();
     final String packName = mModel.getEffectTemplate().getPackName() + " PACK";
 

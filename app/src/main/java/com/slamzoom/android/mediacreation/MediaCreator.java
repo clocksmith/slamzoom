@@ -17,6 +17,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.executor.ExecutorProvider;
+import com.slamzoom.android.common.preferences.CreatorPreferences;
 import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.PostProcessorUtils;
 import com.slamzoom.android.common.utils.SzLog;
@@ -25,6 +26,7 @@ import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.interpolators.Interpolator;
 import com.slamzoom.android.interpolators.LinearInterpolator;
+import com.slamzoom.android.mediacreation.gif.GifFrame;
 
 import java.util.List;
 import java.util.Set;
@@ -269,6 +271,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     }
   }
 
+  @Deprecated
   private Bitmap transformSelectedBitmap(Matrix transformationMatrix) {
     Bitmap targetBitmap = Bitmap.createBitmap(
         mSelectedBitmap.getWidth(), mSelectedBitmap.getHeight(), Bitmap.Config.ARGB_8888);
@@ -344,7 +347,18 @@ public abstract class MediaCreator<E extends MediaEncoder> {
         if (mTotalNumFramesToAdd.decrementAndGet() == 0) {
 //          Log.wtf(TAG, "Finished collecting frames " + (System.currentTimeMillis() - mStart) + "ms");
           mMediaEncoder = createEncoder();
-          mMediaEncoder.addFrames(Iterables.concat(mAllFrames));
+
+          List<MediaFrame> concatedFrames = Lists.newArrayList(Iterables.concat(mAllFrames));
+
+          if (concatedFrames.size() > 1 &&
+              (DebugUtils.REVERSE_CYCLE_EFFECTS || CreatorPreferences.isCycle(mContext))) {
+            concatedFrames.get(0).delayMillis = concatedFrames.get(1).delayMillis;
+            concatedFrames.get(concatedFrames.size() - 1).delayMillis =
+                concatedFrames.get(concatedFrames.size() - 2).delayMillis;
+            concatedFrames.addAll(Lists.reverse(concatedFrames.subList(1, concatedFrames.size() - 1)));
+          }
+
+          mMediaEncoder.addFrames(concatedFrames);
           mMediaEncoder.encodeAsync(mCallback);
         }
       }

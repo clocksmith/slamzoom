@@ -28,4 +28,12 @@
     <item name="android:windowNoTitle">true</item>
   </style>
 
+  <style name="SwitchTextAppearance" parent="@android:style/TextAppearance.Small">
+    <item name="android:textColor">@color/black</item>
+  </style>
+
+  <style name="SwitchStyle">
+    <item name="android:textColor">@color/black</item>
+  </style>
+
 </resources>

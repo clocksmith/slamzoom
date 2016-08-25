@@ -117,7 +117,7 @@ public class EffectTemplates {
           .withFilterInterpolator(new GaussianBlurFilterInterpolator(new ThreeEaseInHardOutInterpolator()))
           .build())
       .add(EffectTemplate.newSingleStepBuilder()
-          .withName("bulger")
+          .withName("bulge")
           .withStartDurationEndSeconds(1, 2, 2)
           .withScaleInterpolator(new LinearInterpolator())
           .withFilterInterpolator(new BulgeInAtHotspotFilterInterpolator())
@@ -185,26 +185,20 @@ public class EffectTemplates {
           .withTranslateInterpolator(new SuperShakeInterpolatorProvider())
           .build())
       .add(EffectTemplate.newSingleStepBuilder()
+          .withName("flashreveal")
+          .withStartDurationEndSeconds(1, 4, 2)
+          .withScaleInterpolator(new TeaseInterpolator())
+          .withFilterInterpolator(new OverExposeFilterInterpolator(new ThreeEaseInHardOutInterpolator()))
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
           .withName("flush")
-          .withStartDurationEndSeconds(1, 3, 1)
+          .withStartDurationEndSeconds(0, 3, 1)
           .withScaleAndTranslateInterpolatorProvider(new FlushInterpolatorProvider())
           .build())
       .add(EffectTemplate.newSingleStepBuilder()
-          .withName("grayfreeze")
-          .withStartDurationEndSeconds(1, 2, 2)
-          .withScaleInterpolator(CubicSplineInterpolator.newBuilder()
-              .withPoint(0, 0)
-              .withPoint(0.15f, 1)
-              .withPoint(1, 1)
-              .build())
-          .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(LinearSplineInterpolator.newBuilder()
-              .withPoint(0, 0)
-              .withPoint(0.7f, 0)
-              .withPoint(0.9f, 1)
-              .withPoint(0.9999f, 1)
-              .withPoint(1, 0)
-              .build()))
-          .withFilterInterpolator(new UnsaturateFilterInterpolator())
+          .withName("flushslam")
+          .withStartDurationEndSeconds(1, 1, 1)
+          .withScaleAndTranslateInterpolatorProvider(new FlushInterpolatorProvider())
           .build())
       .add(EffectTemplate.newSingleStepBuilder()
           .withName("grayrumble")
@@ -333,7 +327,7 @@ public class EffectTemplates {
           .withScaleAndTranslateInterpolatorProvider(new CircleCenterInterpolatorProvider())
           .build())
       .add(EffectTemplate.newSingleStepBuilder()
-          .withName("sumo")
+          .withName("blockhead")
           .withStartDurationEndSeconds(1, 2, 2)
           .withScaleInterpolator(new LinearInterpolator())
           .withFilterInterpolatorGroup(new SumoBulgeFilterInterpolator())
@@ -388,6 +382,21 @@ public class EffectTemplates {
           .withFilterInterpolator(new UnswirlAtHotspotOnHotspotFilterInterpolator())
           .build())
       .add(EffectTemplate.newSingleStepBuilder()
+          .withName("throwback")
+          .withStartDurationEndSeconds(1, 2, 2)
+          .withScaleInterpolator(LinearSplineInterpolator.newBuilder()
+              .withPoint(0, 0)
+              .withPoint(0.2f, 1.3f)
+              .withPoint(0.4f, 1)
+              .withPoint(1, 1)
+              .build())
+          .withFilterInterpolator(new UnsaturateFilterInterpolator(LinearSplineInterpolator.newBuilder()
+              .withPoint(0, 0)
+              .withPoint(0.5f, 0)
+              .withPoint(1, 1)
+              .build()))
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
           .withName("twistyfroggy")
           .withStartDurationEndSeconds(0, 2, 0)
           .withScaleInterpolator(new InAndOutInterpolator())
@@ -398,12 +407,6 @@ public class EffectTemplates {
           .withStartDurationEndSeconds(1, 2, 2)
           .withScaleInterpolator(new LinearInterpolator())
           .withFilterInterpolatorGroup(new SumoBulge2FilterInterpolator())
-          .build())
-      .add(EffectTemplate.newSingleStepBuilder()
-          .withName("whitetease")
-          .withStartDurationEndSeconds(1, 4, 2)
-          .withScaleInterpolator(new TeaseInterpolator())
-          .withFilterInterpolator(new OverExposeFilterInterpolator(new ThreeEaseInHardOutInterpolator()))
           .build())
 
       .add(EffectTemplate.newSingleStepBuilder()
@@ -436,11 +439,16 @@ public class EffectTemplates {
   }
 
   public static EffectTemplate get(String name) {
-    if (USED_EFFECT_TEMPLATES_MAP.containsKey(name)) {
-      return USED_EFFECT_TEMPLATES_MAP.get(name);
-    } else {
-      SzLog.e(TAG, "Effect: \"" + name + "\" was never used.");
-      return null;
+//    if (USED_EFFECT_TEMPLATES_MAP.containsKey(name)) {
+//      return USED_EFFECT_TEMPLATES_MAP.get(name);
+//    } else {
+//      SzLog.e(TAG, "Effect: \"" + name + "\" was never used.");
+//      return null;
+//    }
+
+    if (!EFFECT_TEMPLATES_MAP_TO_USE.containsKey(name)) {
+      SzLog.e(TAG, "No effect with name: " + name);
     }
+    return EFFECT_TEMPLATES_MAP_TO_USE.get(name);
   }
 }

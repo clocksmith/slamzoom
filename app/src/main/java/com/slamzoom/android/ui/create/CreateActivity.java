@@ -17,13 +17,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -32,6 +32,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -48,7 +49,9 @@ import com.slamzoom.android.billing.GetPurchasedPacksCallback;
 import com.slamzoom.android.billing.IabUtils;
 import com.slamzoom.android.common.BackInterceptingEditText;
 import com.slamzoom.android.common.Constants;
+import com.slamzoom.android.common.LoopSwitch;
 import com.slamzoom.android.common.bus.BusProvider;
+import com.slamzoom.android.common.preferences.CreatorPreferences;
 import com.slamzoom.android.common.utils.AnimationUtils;
 import com.slamzoom.android.common.utils.BitmapUtils;
 import com.slamzoom.android.common.utils.DebugUtils;
@@ -88,7 +91,8 @@ public class CreateActivity extends AppCompatActivity {
   @Bind(R.id.progressBar) ProgressBar mProgressBar;
   @Bind(R.id.zeroStateMessage) TextView mZeroStateMessage;
   @Bind(R.id.effectChooser) EffectChooser mEffectChooser;
-  private AddTextView mAddTextView; // action bar custom view
+  private AddTextView mAddTextView; // action bar custom view.
+  private LoopSwitch mLoopSwitch; // action bar cycle toggle.
 
   private View mGifAreaView;
   private boolean mIsAddTextViewShowing = false;
@@ -121,7 +125,6 @@ public class CreateActivity extends AppCompatActivity {
     setContentView(R.layout.activity_create);
     ButterKnife.bind(this);
     BusProvider.getInstance().register(this);
-
 
     bindServices();
     initEffects();
@@ -190,7 +193,9 @@ public class CreateActivity extends AppCompatActivity {
       }
     } else if (requestCode == Constants.REQUEST_CROP_IMAGE) {
       if (resultCode == RESULT_OK) {
-        handleCropRectSelected((Rect) data.getParcelableExtra(Constants.CROP_RECT));
+        handleCropRectSelected(
+            (Rect) data.getParcelableExtra(Constants.CROP_RECT),
+            (Uri) data.getParcelableExtra(Constants.IMAGE_URI));
       } else if (mSelectedHotspot == null) {
         launchImageChooser();
       }
@@ -217,6 +222,42 @@ public class CreateActivity extends AppCompatActivity {
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.menu_create, menu);
+
+    MenuItem loopSwitchMenuItem = menu.findItem(R.id.action_loop);
+    mLoopSwitch = (LoopSwitch) MenuItemCompat.getActionView(loopSwitchMenuItem);
+
+//    mLoopSwitch.setShowText(true);
+//    if (Build.VERSION.SDK_INT < 23) {
+//      mLoopSwitch.setTextAppearance(this, R.style.SwitchTextAppearance);
+//    } else {
+//      mLoopSwitch.setTextAppearance(R.style.SwitchTextAppearance);
+//    }
+//    mLoopSwitch.setTextOn("loop");
+//    mLoopSwitch.setTextOff("pause");
+//    mLoopSwitch.setThumbResource(R.drawable.thumb);
+//    mLoopSwitch.setSwitchMinWidth(200);
+//    mLoopSwitch.setThumbTextPadding(200);
+//    mLoopSwitch.refreshDrawableState();
+//    mLoopSwitch.requestLayout();
+
+    mLoopSwitch.setChecked(CreatorPreferences.isCycle(this));
+
+    mLoopSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+      @Override
+      public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        Snackbar snackbar;
+        if (isChecked) {
+          CreatorPreferences.toggleCycleOn(CreateActivity.this);
+          snackbar = Snackbar.make(mCoordinatorLayout, "Changing effects to loop mode", Snackbar.LENGTH_LONG);
+        } else {
+          CreatorPreferences.toggleCycleOff(CreateActivity.this);
+          snackbar = Snackbar.make(mCoordinatorLayout, "Changing effects to pause mode", Snackbar.LENGTH_LONG);
+        }
+        snackbar.show();
+        resetAndUpdateAll();
+      }
+    });
+
     return super.onCreateOptionsMenu(menu);
   }
 
@@ -322,6 +363,7 @@ public class CreateActivity extends AppCompatActivity {
     });
   }
 
+  // TODO(clocksmith): The buy dialog should not call this, it should be passed in.
   public List<EffectModel> getEffectModelsForPack(final String packName) {
     return FluentIterable.from(mEffectModels).filter(new Predicate<EffectModel>() {
       @Override
@@ -357,10 +399,12 @@ public class CreateActivity extends AppCompatActivity {
     assert getSupportActionBar() != null;
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     getSupportActionBar().setHomeButtonEnabled(true);
-    getSupportActionBar().setTitle(getString(R.string.app_name));
+    getSupportActionBar().setDisplayShowTitleEnabled(false);
+//    getSupportActionBar().setTitle(getString(R.string.app_name));
     mAddTextView = new AddTextView(this);
     getSupportActionBar().setCustomView(mAddTextView,
         new Toolbar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
   }
 
   private void initGifArea() {
@@ -426,14 +470,7 @@ public class CreateActivity extends AppCompatActivity {
   private void handleIncomingUri(Uri uri) {
     try {
       mSelectedUri = uri;
-      mSelectedBitmap = BitmapUtils.readScaledBitmap(mSelectedUri, this.getContentResolver());
-      if (DebugUtils.SAVE_SRC_AS_BITMAP) {
-        DebugUtils.saveFrameAsBitmap(mSelectedBitmap, "src", 0);
-      }
-      mSelectedBitmapForThumbnail = BitmapUtils.readScaledBitmap(
-          mSelectedUri,
-          this.getContentResolver(),
-          Constants.MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX / Constants.GIF_THUMBNAIL_DIVIDER);
+      getSelectedBitmapsFromUri();
       mSelectedEndText = "";
       mAddTextView.getEditText().setText("");
       launchHotspotChooser();
@@ -442,7 +479,29 @@ public class CreateActivity extends AppCompatActivity {
     }
   }
 
-  private void handleCropRectSelected(Rect selectedHotspot) {
+  private void getSelectedBitmapsFromUri() throws FileNotFoundException {
+    mSelectedBitmap = BitmapUtils.readScaledBitmap(mSelectedUri, this.getContentResolver());
+    if (DebugUtils.SAVE_SRC_AS_BITMAP) {
+      DebugUtils.saveFrameAsBitmap(mSelectedBitmap, "src", 0);
+    }
+    mSelectedBitmapForThumbnail = BitmapUtils.readScaledBitmap(
+        mSelectedUri,
+        this.getContentResolver(),
+        Constants.MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX / Constants.GIF_THUMBNAIL_DIVIDER);
+  }
+
+  private void handleCropRectSelected(Rect selectedHotspot, Uri uri) {
+    // If our activity was destroyed while selection while selecting hotspot...
+    if (mSelectedBitmap == null) {
+      mSelectedUri = uri;
+      try {
+        getSelectedBitmapsFromUri();
+      } catch (FileNotFoundException e) {
+        Log.e(TAG, "Cannot read selected image", e);
+        launchImageChooser();
+      }
+    }
+
     mSelectedHotspot = selectedHotspot;
     float ratio = (float) mSelectedBitmap.getWidth() / mSelectedBitmapForThumbnail.getWidth();
     mSelectedHotspotForThumbnail = new Rect(

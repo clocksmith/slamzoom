@@ -38,13 +38,13 @@ public class HotspotChooserActivity extends AppCompatActivity {
     ButterKnife.bind(this);
 
 
-    Uri uri = getIntent().getParcelableExtra(Constants.IMAGE_URI);
+    final Uri uri = getIntent().getParcelableExtra(Constants.IMAGE_URI);
     try {
       Bitmap bitmap = BitmapUtils.readScaledBitmap(uri, this.getContentResolver());
       if (DebugUtils.USE_STATIC_RECTANGLE) {
         Rect debugCropRect = DebugUtils.getDebugRect(bitmap);
         Log.d(TAG, "using debug cropRect: " + debugCropRect.toString());
-        finishWithCropRect(debugCropRect);
+        finishWithCropRect(debugCropRect, uri);
       } else {
         mImageCropView.setAspectRatio(bitmap.getWidth(), bitmap.getHeight());
         mImageCropView.setImageBitmap(bitmap, new Matrix(), 1f, 100f);
@@ -59,14 +59,15 @@ public class HotspotChooserActivity extends AppCompatActivity {
       public void onClick(View v) {
         Rect cropRect = mImageCropView.getCropRect();
         Log.d(TAG, "selected cropRect: " + cropRect.toString());
-        finishWithCropRect(cropRect);
+        finishWithCropRect(cropRect, uri);
       }
     });
   }
 
-  private void finishWithCropRect(Rect cropRect) {
+  private void finishWithCropRect(Rect cropRect, Uri imageUri) {
     Intent returnIntent = new Intent();
     returnIntent.putExtra(Constants.CROP_RECT, cropRect);
+    returnIntent.putExtra(Constants.IMAGE_URI, imageUri);
     setResult(RESULT_OK, returnIntent);
     finish();
   }

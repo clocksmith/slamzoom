@@ -4,12 +4,14 @@
     android:orientation="vertical"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:paddingLeft="8dp"
-    android:paddingRight="8dp">
+    android:paddingTop="8dp"
+    android:paddingLeft="4dp"
+    android:paddingRight="4dp">
   <FrameLayout
       android:background="@android:color/transparent"
       android:layout_width="@dimen/gif_thumbnail_view_width"
-      android:layout_height="@dimen/gif_thumbnail_view_width">
+      android:layout_height="@dimen/gif_thumbnail_view_width"
+      android:paddingBottom="8dp">
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/gifImageView"
         android:layout_width="match_parent"
@@ -44,28 +46,29 @@
           android:textColor="@android:color/white"
           android:fontFamily="monospace"
           android:gravity="center"/>
-      <LinearLayout
+      <RelativeLayout
           android:orientation="horizontal"
           android:layout_width="match_parent"
-          android:layout_height="18dp"
-          android:gravity="center">
+          android:layout_height="18dp">
         <ImageView
             android:id="@+id/lockIcon"
             android:layout_width="14dp"
             android:layout_height="14dp"
             android:background="@drawable/ic_lock"
-            android:layout_gravity="center"
+            android:layout_toLeftOf="@+id/packNameTextView"
+            android:layout_centerVertical="true"
             android:layout_marginRight="2dp"/>
         <TextView
             android:id="@+id/packNameTextView"
             android:layout_width="wrap_content"
             android:layout_height="18dp"
             android:textColor="@color/buy_dialog_lock_icon"
-            android:textSize="10dp"
+            android:textSize="12dp"
             android:fontFamily="monospace"
             android:textStyle="bold"
-            android:layout_gravity="center"/>
-      </LinearLayout>
+            android:layout_centerInParent="true"
+            android:gravity="center"/>
+      </RelativeLayout>
     </LinearLayout>
   </FrameLayout>
 </LinearLayout>

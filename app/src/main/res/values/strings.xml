@@ -4,10 +4,10 @@
   <string name="create_slamzoom">CREATE</string>
   <string name="zero_state_message">select an effect</string>
 
+  <string name="action_cycle">cycle</string>
   <string name="action_add_text">add text</string>
   <string name="action_change_hotspot">change hotspot</string>
   <string name="action_change_image">change image</string>
-  <string name="add_to_library">add to library</string>
   <string name="action_share">share</string>
 
   <string name="action_ok">ok</string>

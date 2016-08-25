@@ -20,6 +20,9 @@ public class DebugUtils {
   // Superuser
   public static final boolean UNLOCK_ALL_PACKS = true;
 
+  // Effects
+  public static final boolean REVERSE_CYCLE_EFFECTS = false;
+
   // Performance
   public static final boolean USE_GIF_CACHE = true;
   public static final boolean GENERATE_THUMBNAIL_GIFS = true;

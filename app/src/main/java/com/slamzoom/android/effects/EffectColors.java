@@ -2,7 +2,9 @@ package com.slamzoom.android.effects;
 
 import android.animation.ArgbEvaluator;
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.ColorUtils;
 import android.util.Log;
 
 import com.google.common.base.Function;
@@ -37,7 +39,32 @@ public class EffectColors {
     mContext = context;
   }
 
+  private static ImmutableList<Integer> getRainbowColorGroup() {
+    return ImmutableList.of(
+        Color.rgb(255, 201, 94),
+        Color.rgb(191, 255, 94),
+        Color.rgb(0, 255, 204),
+        Color.rgb(56, 209, 255),
+        Color.rgb(223, 94, 255),
+        Color.rgb(255, 102, 207),
+        Color.rgb(255, 94, 94),
+        Color.rgb(255, 119, 0));
+  }
+
   public static ImmutableList<Integer> getColorGroup(final String colorGroup) {
+    // TODO(clocksmith): extract this and get rid of the other stuff if we decide on this scheme.
+    if (colorGroup.equals("rainbow")) {
+      return ImmutableList.copyOf(Lists.transform(getRainbowColorGroup(), new Function<Integer, Integer>() {
+        @Override
+        public Integer apply(Integer color) {
+          float[] hsv = new float[3];
+          Color.colorToHSV(color, hsv);
+          hsv[2] *= 0.75f; // value component
+          return Color.HSVToColor(hsv);
+        }
+      }));
+    }
+
     String[] frags = colorGroup.split("_");
     int start = Integer.parseInt(frags[1]);
     int end = Integer.parseInt(frags[2]);

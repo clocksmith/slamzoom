@@ -66,7 +66,7 @@ public class EffectPack {
     }
 
     public Builder withEffectTemplate(String effectName) {
-      mEffectTemplates.add(EffectTemplates.consume(effectName));
+      mEffectTemplates.add(EffectTemplates.get(effectName));
       return this;
     }
 

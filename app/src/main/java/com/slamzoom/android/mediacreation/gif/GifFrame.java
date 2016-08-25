@@ -13,15 +13,12 @@ import java.nio.ByteBuffer;
 public class GifFrame extends MediaFrame {
   public static final String STOPWATCH_CONVERTING_PIXELS_TO_BYTES = "pixel to byte converting";
 
-  public int delayMillis;
   byte[] pixelBytes;
-  int width;
-  int height;
   private MultiPhaseStopwatch mTracker;
 
   public GifFrame(Bitmap bitmap, int delayMillis, MultiPhaseStopwatch tracker) {
-    width = bitmap.getWidth();
-    height = bitmap.getHeight();
+    super(bitmap, delayMillis);
+
     mTracker = tracker;
 
     int[] pixelInts = new int[width * height];
@@ -30,8 +27,6 @@ public class GifFrame extends MediaFrame {
     mTracker.start(STOPWATCH_CONVERTING_PIXELS_TO_BYTES);
     this.pixelBytes = getPixelBytes(pixelInts);
     mTracker.stop(STOPWATCH_CONVERTING_PIXELS_TO_BYTES);
-
-    this.delayMillis = delayMillis;
   }
 
 //  private byte[] getPixelBytes(int[] pixelInts) {

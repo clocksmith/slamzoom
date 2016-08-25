@@ -4,7 +4,6 @@ import android.app.PendingIntent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.util.Log;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.google.common.base.Function;
@@ -18,7 +17,6 @@ import com.google.common.collect.Lists;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.SzLog;
-import com.slamzoom.android.effects.EffectPack;
 import com.slamzoom.android.effects.EffectPacks;
 
 import java.util.List;
@@ -29,14 +27,17 @@ import java.util.List;
 public class IabUtils {
   private static final String TAG = IabUtils.class.getSimpleName();
 
-  private static final ImmutableList<String> GIFTED_PACK_NAMES = ImmutableList.of(EffectPacks.Pack.ONE.getName());
+  private static final ImmutableList<String> GIFTED_PACK_NAMES = ImmutableList.of(EffectPacks.Pack.STARTER.name());
 
   // TODO(clocksmith): This would be perfect for remote config. Maybe Extract elsewhere to also hide packs not for sale.
+//  private static final BiMap<String, String> PURCHASE_IDS_TO_PACK_NAMES = ImmutableBiMap.of(
+//      "packs.v1.2", EffectPacks.PackOldStrategy.TWO.getName(),
+//      "packs.v1.3", EffectPacks.PackOldStrategy.THREE.getName(),
+//      "packs.v1.4", EffectPacks.PackOldStrategy.FOUR.getName(),
+//      "packs.v1.5", EffectPacks.PackOldStrategy.FIVE.getName());
+
   private static final BiMap<String, String> PURCHASE_IDS_TO_PACK_NAMES = ImmutableBiMap.of(
-      "packs.v1.2", EffectPacks.Pack.TWO.getName(),
-      "packs.v1.3", EffectPacks.Pack.THREE.getName(),
-      "packs.v1.4", EffectPacks.Pack.FOUR.getName(),
-      "packs.v1.5", EffectPacks.Pack.FIVE.getName());
+      "packs.v1.dank", EffectPacks.Pack.DANK.name());
 
   public static void getBuyIntentByPack(
       final String packName,

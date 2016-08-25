@@ -344,7 +344,7 @@ public class TheOldLabPackProvider {
         .withNumTilesInRow(5)
         .build());
     packModels.add(EffectTemplate.newBuilder()
-        .withName("bulger")
+        .withName("bulge")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
             .withEndPauseSeconds(2)

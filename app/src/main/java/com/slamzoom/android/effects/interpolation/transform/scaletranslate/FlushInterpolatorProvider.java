@@ -8,8 +8,8 @@ import com.slamzoom.android.interpolators.custom.EaseInSlamHardInterpolator;
  * Created by clocksmith on 3/16/16.
  */
 public class FlushInterpolatorProvider implements ScaleAndTranslateInterpolatorProvider {
-  private static final float RADIUS = 0.5f;
-  private static final float FREQUENCY = 16;
+  private static final float RADIUS = 0.3333f;
+  private static final float FREQUENCY = 8;
   private static final float EXPONENT_0 = 2f;
   private static final float EXPONENT_1 = 0.2f;
   private static final float EXPONENT_2 = 3;
@@ -24,6 +24,10 @@ public class FlushInterpolatorProvider implements ScaleAndTranslateInterpolatorP
     return new Interpolator() {
       @Override
       protected float getValue(float t) {
+        if (t == 0) {
+          return 0;
+        }
+
         double tt = 1 - Math.pow(t, EXPONENT_0);
         return (float) (RADIUS * Math.pow(tt, EXPONENT_1) *
             Math.cos(FREQUENCY * 2 * Math.PI * Math.pow(tt, EXPONENT_2)));
