@@ -223,9 +223,9 @@ public class CreateActivity extends AppCompatActivity {
     MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.menu_create, menu);
 
-    MenuItem loopSwitchMenuItem = menu.findItem(R.id.action_loop);
-    mLoopSwitch = (LoopSwitch) MenuItemCompat.getActionView(loopSwitchMenuItem);
-
+//    MenuItem loopSwitchMenuItem = menu.findItem(R.id.action_loop);
+//    mLoopSwitch = (LoopSwitch) MenuItemCompat.getActionView(loopSwitchMenuItem);
+//
 //    mLoopSwitch.setShowText(true);
 //    if (Build.VERSION.SDK_INT < 23) {
 //      mLoopSwitch.setTextAppearance(this, R.style.SwitchTextAppearance);
@@ -239,24 +239,24 @@ public class CreateActivity extends AppCompatActivity {
 //    mLoopSwitch.setThumbTextPadding(200);
 //    mLoopSwitch.refreshDrawableState();
 //    mLoopSwitch.requestLayout();
-
-    mLoopSwitch.setChecked(CreatorPreferences.isCycle(this));
-
-    mLoopSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-      @Override
-      public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        Snackbar snackbar;
-        if (isChecked) {
-          CreatorPreferences.toggleCycleOn(CreateActivity.this);
-          snackbar = Snackbar.make(mCoordinatorLayout, "Changing effects to loop mode", Snackbar.LENGTH_LONG);
-        } else {
-          CreatorPreferences.toggleCycleOff(CreateActivity.this);
-          snackbar = Snackbar.make(mCoordinatorLayout, "Changing effects to pause mode", Snackbar.LENGTH_LONG);
-        }
-        snackbar.show();
-        resetAndUpdateAll();
-      }
-    });
+//
+//    mLoopSwitch.setChecked(CreatorPreferences.isCycle(this));
+//
+//    mLoopSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//      @Override
+//      public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//        Snackbar snackbar;
+//        if (isChecked) {
+//          CreatorPreferences.toggleCycleOn(CreateActivity.this);
+//          snackbar = Snackbar.make(mCoordinatorLayout, "Changing effects to loop mode", Snackbar.LENGTH_LONG);
+//        } else {
+//          CreatorPreferences.toggleCycleOff(CreateActivity.this);
+//          snackbar = Snackbar.make(mCoordinatorLayout, "Changing effects to pause mode", Snackbar.LENGTH_LONG);
+//        }
+//        snackbar.show();
+//        resetAndUpdateAll();
+//      }
+//    });
 
     return super.onCreateOptionsMenu(menu);
   }
