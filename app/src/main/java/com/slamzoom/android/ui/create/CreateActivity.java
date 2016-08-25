@@ -130,6 +130,8 @@ public class CreateActivity extends AppCompatActivity {
     initEffects();
     initActionBar();
     initGifArea();
+
+    handleIncomingIntent(getIntent());
   }
 
   @Override protected void onStart() {
@@ -149,10 +151,8 @@ public class CreateActivity extends AppCompatActivity {
   @Override protected void onNewIntent(Intent intent) {
     SzLog.f(TAG, "onNewIntent()");
 
-    if (Intent.ACTION_SEND.equals(intent.getAction())) {
-      resetEffectModelsAndProgresses();
-      handleIncomingUri((Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM));
-    }
+    mGifService.clear();
+    handleIncomingIntent(intent);
   }
 
   @Override
@@ -465,6 +465,13 @@ public class CreateActivity extends AppCompatActivity {
       model.setLocked(!mPurchasedPackNames.contains(model.getEffectTemplate().getPackName()));
     }
     mEffectChooser.update(mEffectModels);
+  }
+
+  private void handleIncomingIntent(Intent intent) {
+    if (Intent.ACTION_SEND.equals(intent.getAction())) {
+      resetEffectModelsAndProgresses();
+      handleIncomingUri((Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM));
+    }
   }
 
   private void handleIncomingUri(Uri uri) {

@@ -97,11 +97,15 @@ public class GifService extends Service {
     return super.onUnbind(intent);
   }
 
-  public void requestThumbnailGifs(List<GifConfig> configs, Runnable setEffectChooserRunnable) {
+  public void clear() {
     stopCreatorsAndClearCaches();
-
     mThumbnailGifCreatorsBackQueue.clear();
     mThumbnailGifCreatorRunQueue.clear();
+  }
+
+  public void requestThumbnailGifs(List<GifConfig> configs, Runnable setEffectChooserRunnable) {
+    clear();
+
     if (DebugUtils.GENERATE_THUMBNAIL_GIFS) {
       for (int i = 0; i < configs.size(); i++) {
         mThumbnailGifCreatorsBackQueue.add(getManager(configs.get(i), mThumbnailGifCache, true, i));
