@@ -26,7 +26,6 @@ import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.interpolators.Interpolator;
 import com.slamzoom.android.interpolators.LinearInterpolator;
-import com.slamzoom.android.mediacreation.gif.GifFrame;
 
 import java.util.List;
 import java.util.Set;
@@ -351,7 +350,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
           List<MediaFrame> concatedFrames = Lists.newArrayList(Iterables.concat(mAllFrames));
 
           if (concatedFrames.size() > 1 &&
-              (DebugUtils.REVERSE_CYCLE_EFFECTS || CreatorPreferences.isCycle(mContext))) {
+              (DebugUtils.REVERSE_LOOP_EFFECTS || CreatorPreferences.isCycle(mContext))) {
             concatedFrames.get(0).delayMillis = concatedFrames.get(1).delayMillis;
             concatedFrames.get(concatedFrames.size() - 1).delayMillis =
                 concatedFrames.get(concatedFrames.size() - 2).delayMillis;
