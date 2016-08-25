@@ -21,6 +21,7 @@ import com.squareup.otto.Subscribe;
 
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.PriorityBlockingQueue;
 
 /**
  * Created by clocksmith on 4/14/16.
@@ -55,7 +56,7 @@ public class GifService extends Service {
   private Cache<String, byte[]> mMainGifCache;
   private Cache<String, byte[]> mThumbnailGifCache;
   private GifCreatorManager mGifCreatorManager;
-  private Queue<GifCreatorManager> mThumbnailGifCreatorsBackQueue;
+  private PriorityBlockingQueue<GifCreatorManager> mThumbnailGifCreatorsBackQueue;
   private Queue<GifCreatorManager> mThumbnailGifCreatorRunQueue;
 
   @Override
@@ -70,7 +71,7 @@ public class GifService extends Service {
         .maximumSize(DebugUtils.USE_GIF_CACHE ? THUMBNAIL_CACHE_SIZE : 0)
         .build();
 
-    mThumbnailGifCreatorsBackQueue = Queues.newConcurrentLinkedQueue();
+    mThumbnailGifCreatorsBackQueue = Queues.newPriorityBlockingQueue();
     mThumbnailGifCreatorRunQueue = Queues.newConcurrentLinkedQueue();
   }
 
@@ -102,12 +103,9 @@ public class GifService extends Service {
     mThumbnailGifCreatorsBackQueue.clear();
     mThumbnailGifCreatorRunQueue.clear();
     if (DebugUtils.GENERATE_THUMBNAIL_GIFS) {
-      mThumbnailGifCreatorsBackQueue.addAll(Lists.transform(configs, new Function<GifConfig, GifCreatorManager>() {
-        @Override
-        public GifCreatorManager apply(GifConfig input) {
-          return getManager(input, true, mThumbnailGifCache);
-        }
-      }));
+      for (int i = 0; i < configs.size(); i++) {
+        mThumbnailGifCreatorsBackQueue.add(getManager(configs.get(i), mThumbnailGifCache, true, i));
+      }
     }
 
     setEffectChooserRunnable.run();
@@ -121,9 +119,9 @@ public class GifService extends Service {
     } else {
       if (mGifCreatorManager != null && !mGifCreatorManager.getName().equals(name)) {
         mGifCreatorManager.stop();
-        mGifCreatorManager = getManager(config, false, mMainGifCache);
+        mGifCreatorManager = getManager(config, mMainGifCache, false, 0);
       } else if (mGifCreatorManager == null) {
-        mGifCreatorManager = getManager(config, false, mMainGifCache);
+        mGifCreatorManager = getManager(config, mMainGifCache, false, 0);
       } else {
         return;
       }
@@ -143,12 +141,14 @@ public class GifService extends Service {
     mThumbnailGifCache.invalidateAll();
   }
 
-  private GifCreatorManager getManager(GifConfig config, final boolean thumbnail, final Cache<String, byte[]> cache) {
+  private GifCreatorManager getManager(
+      GifConfig config, final Cache<String, byte[]> cache, final boolean thumbnail, int index) {
     final String name = config.effectTemplate.getName();
     return new GifCreatorManager(
         getApplicationContext(),
         config,
         thumbnail,
+        index,
         new GifCreator.CreateGifCallback() {
           @Override
           public void onCreateGif(byte[] gifBytes) {

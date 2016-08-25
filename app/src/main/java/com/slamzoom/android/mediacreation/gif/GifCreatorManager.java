@@ -10,14 +10,16 @@ import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
 /**
  * Created by clocksmith on 6/12/16.
  */
-public class GifCreatorManager {
+public class GifCreatorManager implements Comparable {
   private static final String TAG = GifCreatorManager.class.getSimpleName();
 
   private Context mContext;
   private GifConfig mGifConfig;
   private boolean mIsPreview;
-  private int mGifSize;
+  private int mIndex;
   private GifCreator.CreateGifCallback mCallback;
+
+  private int mGifSize;
   private MultiPhaseStopwatch mTracker;
 
   private GifCreator mGifCreator;
@@ -28,12 +30,15 @@ public class GifCreatorManager {
       Context context,
       GifConfig gifConfig,
       boolean preview,
+      int index,
       GifCreator.CreateGifCallback callback) {
     mContext = context;
     mGifConfig = gifConfig;
     mIsPreview = preview;
-    mGifSize = preview ? Constants.DEFAULT_GIF_PREVIEW_SIZE_PX : Constants.DEFAULT_GIF_SIZE_PX;
+    mIndex = index;
     mCallback = callback;
+
+    mGifSize = preview ? Constants.DEFAULT_GIF_PREVIEW_SIZE_PX : Constants.DEFAULT_GIF_SIZE_PX;
     mTracker = new MultiPhaseStopwatch();
   }
 
@@ -71,6 +76,10 @@ public class GifCreatorManager {
     return mGifConfig.effectTemplate.getName();
   }
 
+  public int getIndex() {
+    return mIndex;
+  }
+
   public int getGifSize() {
     return mGifSize;
   }
@@ -106,5 +115,13 @@ public class GifCreatorManager {
     }
     final GifCreatorManager other = (GifCreatorManager) obj;
     return Objects.equal(mGifConfig, other.mGifConfig);
+  }
+
+  /**
+   * We want lower index managers to have higher priority.
+   */
+  @Override
+  public int compareTo(Object o) {
+    return mIndex - ((GifCreatorManager) o).getIndex();
   }
 }
