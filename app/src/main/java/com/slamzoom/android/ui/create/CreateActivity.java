@@ -423,7 +423,7 @@ public class CreateActivity extends AppCompatActivity {
 
   private void initEffects() {
     mEffectModels = EffectPacks.listEffectModelsByPack();
-    mEffectChooser.set(mEffectModels, true);
+    mEffectChooser.init(mEffectModels, true);
   }
 
   private EffectModel getEffectModelForSelectedEffect() {
@@ -590,13 +590,7 @@ public class CreateActivity extends AppCompatActivity {
                   .withFps(Constants.THUMBNAIL_FPS)
                   .build();
             }
-          }),
-          new Runnable() {
-            @Override
-            public void run() {
-              mEffectChooser.update(mEffectModels);
-            }
-          });
+          }));
     }
   }
 
@@ -665,7 +659,7 @@ public class CreateActivity extends AppCompatActivity {
           mProgressBar.setVisibility(View.GONE);
           mGifImageView.setImageDrawable(new GifDrawable(mSelectedGifBytes));
         } catch (IOException e) {
-          SzLog.e(TAG, "Could not set gif", e);
+          SzLog.e(TAG, "Could not init gif", e);
         }
         AnimationUtils.getScaleUpSet(mGifImageView).start();
         mGifAreaView = mGifImageView;

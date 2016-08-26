@@ -103,7 +103,7 @@ public class NeuQuant {
   protected int[] radpower = new int[initrad];
   /* radpower for precomputation */
 
-  /* Initialise network in range (0,0,0) to (255,255,255) and set parameters
+  /* Initialise network in range (0,0,0) to (255,255,255) and init parameters
      ----------------------------------------------------------------------- */
   public NeuQuant(byte[] pixels, int len, int sample) {
 

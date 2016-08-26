@@ -10,6 +10,9 @@ import com.slamzoom.android.mediacreation.MediaCreatorCallback;
 import com.slamzoom.android.mediacreation.MediaEncoder;
 
 import org.jcodec.api.SequenceEncoder;
+import org.jcodec.api.SequenceEncoder8Bit;
+import org.jcodec.api.android.AndroidSequenceEncoder8Bit;
+import org.jcodec.containers.mxf.model.Sequence;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,12 +39,12 @@ public class VideoEncoder extends MediaEncoder<VideoFrame> {
       File videoFile = Files.makeFile(Files.FileType.VIDEO, "video");
 
       try {
-        SequenceEncoder encoder = new SequenceEncoder(videoFile);
+        AndroidSequenceEncoder8Bit encoder = AndroidSequenceEncoder8Bit.create24Fps(videoFile);
         for (VideoFrame frame : mFrames) {
           int baseDelayMillis = (int) (1000.0 / Constants.MAIN_FPS);
           int numFrames = frame.delayMillis / baseDelayMillis;
           for (int i = 0; i < numFrames; i++) {
-            encoder.encodeNativeFrame(frame.picture);
+            encoder.encodeImage(frame.bitmap);
           }
         }
         encoder.finish();

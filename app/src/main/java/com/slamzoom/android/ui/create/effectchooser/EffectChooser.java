@@ -3,6 +3,7 @@ package com.slamzoom.android.ui.create.effectchooser;
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,16 +17,11 @@ import com.squareup.otto.Subscribe;
 
 import java.util.List;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-
 /**
  * Created by clocksmith on 2/27/16.
  */
-public class EffectChooser extends LinearLayout {
+public class EffectChooser extends RecyclerView {
   private static final String TAG = EffectChooser.class.getSimpleName();
-
-  @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
 
   private EffectThumbnailRecyclerViewAdapter mAdapter;
 
@@ -39,18 +35,31 @@ public class EffectChooser extends LinearLayout {
 
   public EffectChooser(Context context, AttributeSet attrs, int defStyleAttr) {
     super(context, attrs, defStyleAttr);
-    LayoutInflater.from(context).inflate(R.layout.view_effect_chooser, this);
-    ButterKnife.bind(this);
-    BusProvider.getInstance().register(this);
-
-    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-    linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-    mRecyclerView.setLayoutManager(linearLayoutManager);
   }
 
-  public void set(List<EffectModel> effectModels, boolean clickable) {
+  public void init(List<EffectModel> effectModels, boolean clickable) {
+    BusProvider.getInstance().register(this);
+
     mAdapter = new EffectThumbnailRecyclerViewAdapter(effectModels, clickable);
-    mRecyclerView.setAdapter(mAdapter);
+    setAdapter(mAdapter);
+
+    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext()) {
+//      @Override
+//      public boolean supportsPredictiveItemAnimations() {
+//        return true;
+//      }
+    };
+    linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+    setLayoutManager(linearLayoutManager);
+    setHasFixedSize(true);
+//    setNestedScrollingEnabled(true);
+
+    ItemAnimator animator = getItemAnimator();
+    if (animator instanceof SimpleItemAnimator) {
+//      animator.setRemoveDuration(0);
+      // TODO(clocksmith): only animate incoming gif.
+//      ((SimpleItemAnimator) animator).setSupportsChangeAnimations(false);
+    }
   }
 
   public void update(List<EffectModel> effectModels) {
@@ -60,7 +69,8 @@ public class EffectChooser extends LinearLayout {
   @Subscribe
   public void on(GifService.GifReadyEvent event) {
     if (mAdapter != null && event.thumbnail) {
-      mAdapter.setGif(event.effectName, event.gifBytes);
+      mAdapter.setGif(getContext(), event.effectName, event.gifBytes);
     }
+
   }
 }

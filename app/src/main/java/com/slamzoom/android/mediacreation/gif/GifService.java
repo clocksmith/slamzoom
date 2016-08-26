@@ -101,7 +101,7 @@ public class GifService extends Service {
     mThumbnailGifCreatorRunQueue.clear();
   }
 
-  public void requestThumbnailGifs(List<GifConfig> configs, Runnable setEffectChooserRunnable) {
+  public void requestThumbnailGifs(List<GifConfig> configs) {
     clear();
 
     if (!DebugUtils.SKIP_GENERATE_THUMBNAIL_GIFS) {
@@ -110,7 +110,7 @@ public class GifService extends Service {
       }
     }
 
-    setEffectChooserRunnable.run();
+    continueThumbnailGifGeneration();
   }
 
   public void requestMainGif(final GifConfig config) {
@@ -156,7 +156,6 @@ public class GifService extends Service {
           public void onCreateGif(byte[] gifBytes) {
             if (gifBytes != null) {
               cache.put(name, gifBytes);
-              onGifReadyEvent(name, thumbnail);
               fireGifReadyEvent(name, thumbnail);
               if (thumbnail) {
                 for (GifCreatorManager manager : mThumbnailGifCreatorRunQueue) {
@@ -239,9 +238,8 @@ public class GifService extends Service {
     }
   }
 
-  private void onGifReadyEvent(String name, boolean thumbnail) {
+  private void logGifReadyEvent(String name, boolean thumbnail) {
     if (!thumbnail) {
-//      SzLog.f(TAG, "name: " + name + "\n" + mGifCreatorManager.getTracker().getReport());
       SzLog.f(TAG, "name: " + name + "\n" + mGifCreatorManager.getTracker().getTotalString());
     }
 
@@ -264,11 +262,13 @@ public class GifService extends Service {
           .withHasStopped(currentManager.hasStopped())
           .log(this);
     } else {
-      SzLog.e(TAG, "Current GifCreatorManager for onGifReadyEvent is null!");
+      SzLog.e(TAG, "Current GifCreatorManager for logGifReadyEvent is null!");
     }
   }
 
   private void fireGifReadyEvent(String name, boolean thumbnail) {
+    logGifReadyEvent(name, thumbnail);
+
     BusProvider.getInstance().post(
         new GifReadyEvent(
             name,

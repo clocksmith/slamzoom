@@ -15,8 +15,8 @@ public class Files {
   public static final String TAG = Files.class.getSimpleName();
 
   public enum FileType {
-    GIF("image/gif", "gif"),
-    VIDEO("video/mp4", "mp4");
+    GIF("image/*", "gif"),
+    VIDEO("video/*", "3gp");
 
     public String mime;
     public String ext;

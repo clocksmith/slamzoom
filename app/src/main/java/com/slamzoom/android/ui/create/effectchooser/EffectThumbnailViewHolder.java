@@ -94,7 +94,7 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
   public void bind(final EffectModel model, boolean clickable) {
     SzLog.f(TAG, "bind: " + getAdapterPosition());
     mModel = model;
-    mColor = model.isLocked() ? Color.rgb(128, 128, 128) : model.getEffectTemplate().getColor();
+    int newColor = model.isLocked() ? Color.rgb(128, 128, 128) : model.getEffectTemplate().getColor();
     final String name = mModel.getEffectTemplate().getName();
     final String packName = mModel.getEffectTemplate().getPackName() + " PACK";
 
@@ -103,10 +103,11 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
     mNameTextView.setText(name);
     mPackNameTextView.setText(packName);
 
-//    mPackNameTextView.setTextColor(mColor);
-    mTabView.setBackgroundColor(mColor);
-    mLockIcon.setColorFilter(mColor);
-    mProgressBar.getIndeterminateDrawable().setColorFilter(mColor, android.graphics.PorterDuff.Mode.MULTIPLY);
+    if (newColor != mColor) {
+      mColor = newColor;
+      mTabView.setBackgroundColor(mColor);
+      mProgressBar.getIndeterminateDrawable().setColorFilter(mColor, android.graphics.PorterDuff.Mode.MULTIPLY);
+    }
 
     // Either show the gif or request it.
     if (model.getGifThumbnailBytes() != null && model.getGifThumbnailBytes().length > 0) {

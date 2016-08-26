@@ -30,13 +30,13 @@ public class Constants {
   public static final int MAIN_FPS = 24;
   public static final int THUMBNAIL_FPS = 24;
   public static final int DEFAULT_GIF_SIZE_PX = 320;
-  public static final int GIF_THUMBNAIL_DIVIDER = 3;
+  public static final int GIF_THUMBNAIL_DIVIDER = 4;
   public static final int DEFAULT_GIF_PREVIEW_SIZE_PX = DEFAULT_GIF_SIZE_PX / GIF_THUMBNAIL_DIVIDER;
   public static final boolean DEFAULT_USE_LOCAL_COLOR_PALETTE = true;
 
   public static final int MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX = DEFAULT_GIF_SIZE_PX * 2; // arbitrary
 
-  public static final String WATERMARK_TEXT = "slamzoom.com";
+  public static final String WATERMARK_TEXT = "slamzoom";
   public static final int MAX_WATERMARK_TEXT_SIZE = 20;
   public static final int WATERMARK_TEXT_PADDING = 6;
 

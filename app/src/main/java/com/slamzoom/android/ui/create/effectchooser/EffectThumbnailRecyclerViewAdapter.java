@@ -1,5 +1,6 @@
 package com.slamzoom.android.ui.create.effectchooser;
 
+import android.content.Context;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import com.slamzoom.android.common.utils.SzLog;
 import com.slamzoom.android.effects.EffectColors;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by clocksmith on 2/27/16.
@@ -47,17 +49,20 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
     return mModels.size();
   }
 
-  public void setGif(String effectName, byte[] gifBytes) {
+  public void setGif(Context context, String effectName, byte[] gifBytes) {
     for (int position = 0; position < mModels.size(); position++) {
       if (mModels.get(position).getEffectTemplate().getName().equals(effectName)) {
         mModels.get(position).setGifThumbnailBytes(gifBytes);
         final int finalPos = position;
-        new Handler().post(new Runnable() {
+
+        // This prevents stutter in scrolling when items are updated.
+        new Handler(context.getMainLooper()).post(new Runnable() {
           @Override
           public void run() {
             notifyItemChanged(finalPos);
           }
         });
+
         break;
       }
     }

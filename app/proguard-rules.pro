@@ -16,6 +16,7 @@
 #   public *;
 #}
 
+-dontwarn org.jcodec.**
 -dontwarn butterknife.**
 -dontwarn com.google.common.**
 -dontwarn org.apache.commons.**

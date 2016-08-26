@@ -1,9 +1,6 @@
 package com.slamzoom.android.ui.create;
 
 import android.content.Context;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -12,10 +9,8 @@ import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.common.collect.Lists;
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.utils.SzLog;
-import com.slamzoom.android.effects.EffectColors;
 import com.slamzoom.android.effects.EffectPack;
 import com.slamzoom.android.effects.EffectPacks;
 import com.slamzoom.android.effects.EffectTemplate;
@@ -80,7 +75,7 @@ public class BuyToUnlockDialogView extends LinearLayout {
 //      }
 //      mOtherEffects.setText(sb);
 
-      mOtherEffects.set(effectModes, false);
+      mOtherEffects.init(effectModes, false);
     }
   }
 

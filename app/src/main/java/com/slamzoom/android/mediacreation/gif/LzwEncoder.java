@@ -159,7 +159,7 @@ public class LzwEncoder {
     hshift = 0;
     for (fcode = hsize; fcode < 65536; fcode *= 2)
       ++hshift;
-    hshift = 8 - hshift; // set hash code range bound
+    hshift = 8 - hshift; // init hash code range bound
 
     hsize_reg = hsize;
     cl_hash(hsize_reg); // clear hash table
