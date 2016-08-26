@@ -13,7 +13,6 @@ import org.jcodec.api.SequenceEncoder;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Created by clocksmith on 8/25/16.

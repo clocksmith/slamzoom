@@ -50,7 +50,9 @@ dependencies {
     compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
     compile 'org.apache.commons:commons-math3:3.0'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.14'
+
     compile files('libs/jcodec-0.1.9.jar')
+    compile files('libs/jcodec-javase-0.1.9.jar')
 }
 
 apply plugin: 'com.google.gms.google-services'

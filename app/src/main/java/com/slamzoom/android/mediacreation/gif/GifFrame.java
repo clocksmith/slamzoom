@@ -27,22 +27,6 @@ public class GifFrame extends MediaFrame {
     tracker.stop(STOPWATCH_CONVERTING_PIXELS_TO_BYTES);
   }
 
-//  private byte[] getPixelBytes(int[] pixelInts) {
-//    byte[] bytes = new byte[pixelInts.length * 3];
-//
-//    int byteIdx = 0;
-//    for(int i = 0; i < pixelInts.length; i++) {
-//      int thisPixel = pixelInts[i];
-//      byte[] theseBytes = ByteBuffer.allocate(4).putInt(thisPixel).array();
-//      // RGB --> BGR
-//      bytes[byteIdx] = theseBytes[3];
-//      bytes[byteIdx + 1] = theseBytes[2];
-//      bytes[byteIdx + 2] = theseBytes[1];
-//      byteIdx += 3;
-//    }
-//    return bytes;
-//  }
-
   private byte[] getPixelBytes(int[] pixelInts) {
     ByteBuffer buffer = ByteBuffer.allocate(3 * pixelInts.length);
     for (int i = 0; i < pixelInts.length; i++) {

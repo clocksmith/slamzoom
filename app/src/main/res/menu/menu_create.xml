@@ -25,7 +25,16 @@
       android:id="@+id/action_share"
       android:icon="@drawable/ic_menu_share"
       android:title="@string/action_share"
-      app:showAsAction="always"/>
+      app:showAsAction="always">
+    <menu>
+      <item
+          android:id="@+id/action_share_gif"
+          android:title="Share as GIF" />
+      <item
+          android:id="@+id/action_share_video"
+          android:title="Share as Video" />
+    </menu>
+  </item>
   <item
       android:id="@+id/action_ok"
       android:icon="@drawable/ic_menu_ok"

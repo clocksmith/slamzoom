@@ -118,6 +118,7 @@ public class CreateActivity extends AppCompatActivity {
   private ImmutableList<EffectModel> mEffectModels;
 
   private ProgressDialog mShareProgressDialog;
+  private Files.FileType mSelectedFileType;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -204,7 +205,7 @@ public class CreateActivity extends AppCompatActivity {
     } else if (requestCode == Constants.REQUEST_BUY_PACK) {
       if (resultCode == RESULT_OK) {
         updatePurchasedPackNamesAndEffectModels();
-        shareCurrentGif();
+        shareCurrentEffect();
       }
     }
   }
@@ -213,7 +214,7 @@ public class CreateActivity extends AppCompatActivity {
   public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull  int[] grantResults) {
     if (requestCode == Constants.REQUEST_SHARE_GIF_PERMISSIONS) {
       if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-        shareCurrentGif();
+        shareCurrentEffect();
       } else {
         // TODO(clocksmith): show a message saying they must have these permissions to share.
       }
@@ -281,8 +282,14 @@ public class CreateActivity extends AppCompatActivity {
       case R.id.action_ok:
         handleAddTextConfirmed();
         return true;
-      case R.id.action_share:
-        handleSharePressed();
+//      case R.id.action_share:
+//        handleSharePressed();
+//        return true;
+      case R.id.action_share_gif:
+        handleSharePressed(Files.FileType.GIF);
+        return true;
+      case R.id.action_share_video:
+        handleSharePressed(Files.FileType.VIDEO);
         return true;
       default:
         return super.onOptionsItemSelected(item);
@@ -535,7 +542,8 @@ public class CreateActivity extends AppCompatActivity {
     showAddTextView(false);
   }
 
-  private void handleSharePressed() {
+  private void handleSharePressed(Files.FileType fileType) {
+    mSelectedFileType = fileType;
     EffectModel effectModel = getEffectModelForSelectedEffect();
     if (effectModel == null) {
       // TODO(clocksmith): tell the user they must have an effect, or just disable share button.
@@ -546,7 +554,7 @@ public class CreateActivity extends AppCompatActivity {
           mCoordinatorLayout, "Please wait till gif preview is finished!", Snackbar.LENGTH_SHORT);
       snackbar.show();
     } else if (!effectModel.isLocked()) {
-      shareCurrentGif();
+      shareCurrentEffect();
     } else {
       String effectName = effectModel.getEffectTemplate().getName();
       String packName = effectModel.getEffectTemplate().getPackName();
@@ -727,11 +735,11 @@ public class CreateActivity extends AppCompatActivity {
     return null;
   }
 
-  private void shareCurrentGif() {
+  private void shareCurrentEffect() {
     if (mSelectedGifBytes != null) {
-      if (DebugUtils.SHARE_AS_VIDEO) {
+      if (mSelectedFileType == Files.FileType.VIDEO) {
         shareVideoAsync();
-      } else {
+      } else if (mSelectedFileType == Files.FileType.GIF){
         shareGifAsync();
       }
     }
@@ -780,12 +788,12 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   private void shareGifAsync() {
-    showShareProgressDialog("Sharing gif...");
+    showShareProgressDialog("Preparing gif...");
     new ShareGifTask().execute();
   }
 
   private void shareVideoAsync() {
-    showShareProgressDialog("Sharing video...");
+    showShareProgressDialog("Preparing video...");
     mShareProgressDialog.show();
     new VideoCreator(
         this,

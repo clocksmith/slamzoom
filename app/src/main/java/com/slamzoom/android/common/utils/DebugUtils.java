@@ -24,7 +24,7 @@ public class DebugUtils {
 
   // Effects
   public static final boolean REVERSE_LOOP_EFFECTS = false;
-  public static final boolean SHARE_AS_VIDEO = false;
+  public static final boolean SHARE_AS_VIDEO = true;
 
   // Performance
   public static final boolean SKIP_GIF_CACHE = false;
