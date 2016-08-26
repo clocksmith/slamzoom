@@ -18,6 +18,7 @@ import com.google.common.collect.Sets;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.executor.ExecutorProvider;
 import com.slamzoom.android.common.preferences.CreatorPreferences;
+import com.slamzoom.android.common.utils.BitmapUtils;
 import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.PostProcessorUtils;
 import com.slamzoom.android.common.utils.SzLog;
@@ -26,6 +27,7 @@ import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.interpolators.Interpolator;
 import com.slamzoom.android.interpolators.LinearInterpolator;
+import com.slamzoom.android.mediacreation.gif.GifConfig;
 
 import java.util.List;
 import java.util.Set;
@@ -57,9 +59,21 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   protected Context mContext;
   protected Bitmap mSelectedBitmap;
   protected EffectTemplate mEffectTemplate;
-  protected CreateMediaCallback mCallback;
+  protected MediaCreatorCallback mCallback;
   protected int mNumTilesInRow;
   protected MultiPhaseStopwatch mTracker;
+
+  public static EffectTemplate getAdjustedEffectTemplate(GifConfig gifConfig) {
+    // This is weird. Not yet sure how else to do this.
+    EffectTemplate effectTemplate = gifConfig.effectTemplate;
+    for (EffectStep step : effectTemplate.getEffectSteps()) {
+      step.setHotspot(gifConfig.hotspot);
+      if (gifConfig.endText != null) {
+        step.setEndText(gifConfig.endText);
+      }
+    }
+    return effectTemplate;
+  }
 
   public MediaCreator(
       Context context,
@@ -67,7 +81,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       EffectTemplate effectTemplate,
       int gifSize,
       int fps,
-      CreateMediaCallback callback,
+      MediaCreatorCallback callback,
       MultiPhaseStopwatch tracker) {
     mContext = context;
     mSelectedBitmap = selectedBitmap;
@@ -131,9 +145,13 @@ public abstract class MediaCreator<E extends MediaEncoder> {
 //    Bitmap scaledFrameBitmap = Bitmap.createScaledBitmap(frameBitmap, mGifWidth, mGifHeight, true);
 //    Bitmap scaledFrameBitmap = BitmapUtils.createScaledBitmap3(frameBitmap, mGifWidth, mGifHeight);
 
-    mTracker.start(STOPWATCH_TRANSFORMING);
+    if (mTracker != null) {
+      mTracker.start(STOPWATCH_TRANSFORMING);
+    }
     Bitmap scaledFrameBitmap = transformAndScaleSelectedBitmap(transformationMatrix);
-    mTracker.stop(STOPWATCH_TRANSFORMING);
+    if (mTracker != null) {
+      mTracker.stop(STOPWATCH_TRANSFORMING);
+    }
 
     if (DebugUtils.SAVE_SCALED_FRAMES_AS_BITMAPS && !mIsPreview) {
       DebugUtils.saveFrameAsBitmap(scaledFrameBitmap, "scaled", frameIndex);
@@ -143,15 +161,19 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       scaledFrameBitmap = PostProcessorUtils.applyTiling(mNumTilesInRow, scaledFrameBitmap);
     }
 
-    mTracker.start(STOPWATCH_FILTERING);
+    if (mTracker != null) {
+      mTracker.start(STOPWATCH_FILTERING);
+    }
     Bitmap filteredFrameBitmap;
     if (!filters.isEmpty()) {
       filteredFrameBitmap = PostProcessorUtils.applyFilters(scaledFrameBitmap, filters);
-      scaledFrameBitmap.recycle();
+      BitmapUtils.recycleIfSupposedTo(scaledFrameBitmap);
     } else {
       filteredFrameBitmap = scaledFrameBitmap;
     }
-    mTracker.stop(STOPWATCH_FILTERING);
+    if (mTracker != null) {
+      mTracker.stop(STOPWATCH_FILTERING);
+    }
 
     if (!Strings.isNullOrEmpty(textToRender)) {
       delayMillis += 1000;

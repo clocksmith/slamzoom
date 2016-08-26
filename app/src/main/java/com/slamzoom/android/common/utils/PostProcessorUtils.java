@@ -53,7 +53,7 @@ public class PostProcessorUtils {
     PixelBuffer buffer = new PixelBuffer(src.getWidth(), src.getHeight());
     for (GPUImageFilter filter : filters) {
       GPUImageRenderer renderer = new GPUImageRenderer(filter);
-      renderer.setImageBitmap(src, true);
+      renderer.setImageBitmap(src, false);
       buffer.setRenderer(renderer);
       src = buffer.getBitmap();
       renderer.deleteImage();
@@ -69,7 +69,7 @@ public class PostProcessorUtils {
     GPUImage gpuImage = new GPUImage(context);
     gpuImage.setFilter(group);
     Bitmap filtered = gpuImage.getBitmapWithFilterApplied(original);
-//    original.recycle();
+    BitmapUtils.recycleIfSupposedTo(original);
     return filtered;
   }
 

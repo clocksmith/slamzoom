@@ -8,7 +8,7 @@
   </item>
   <item>
     <bitmap xmlns:android="http://schemas.android.com/apk/res/android"
-            android:src="@drawable/faces3"
+            android:src="@drawable/faces_tile"
             android:tileMode="repeat"
             android:alpha="0.2"/>
   </item>

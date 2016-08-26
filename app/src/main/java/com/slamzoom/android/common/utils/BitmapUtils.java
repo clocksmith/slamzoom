@@ -21,6 +21,12 @@ public class BitmapUtils {
     return readScaledBitmap(uri, contentResolver, Constants.MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX);
   }
 
+  public static void recycleIfSupposedTo(Bitmap bitmap) {
+    if (!DebugUtils.SKIP_RECYCLE_BITMAP) {
+      bitmap.recycle();
+    }
+  }
+
   public static Bitmap readScaledBitmap(
       Uri uri, ContentResolver contentResolver, int maxDimen) throws FileNotFoundException {
     AssetFileDescriptor assetFileDescriptor = contentResolver.openAssetFileDescriptor(uri, "r");

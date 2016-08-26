@@ -4,6 +4,7 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +16,6 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
@@ -23,7 +23,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -32,7 +31,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -49,9 +47,9 @@ import com.slamzoom.android.billing.GetPurchasedPacksCallback;
 import com.slamzoom.android.billing.IabUtils;
 import com.slamzoom.android.common.BackInterceptingEditText;
 import com.slamzoom.android.common.Constants;
+import com.slamzoom.android.common.Files;
 import com.slamzoom.android.common.LoopSwitch;
 import com.slamzoom.android.common.bus.BusProvider;
-import com.slamzoom.android.common.preferences.CreatorPreferences;
 import com.slamzoom.android.common.utils.AnimationUtils;
 import com.slamzoom.android.common.utils.BitmapUtils;
 import com.slamzoom.android.common.utils.DebugUtils;
@@ -64,6 +62,8 @@ import com.slamzoom.android.effects.EffectTemplates;
 import com.slamzoom.android.mediacreation.gif.GifConfig;
 import com.slamzoom.android.mediacreation.gif.GifCreator;
 import com.slamzoom.android.mediacreation.gif.GifService;
+import com.slamzoom.android.mediacreation.video.VideoCreator;
+import com.slamzoom.android.mediacreation.video.VideoCreatorCallback;
 import com.slamzoom.android.ui.create.effectchooser.EffectChooser;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 import com.slamzoom.android.ui.create.effectchooser.EffectThumbnailViewHolder;
@@ -116,6 +116,8 @@ public class CreateActivity extends AppCompatActivity {
   private List<String> mPurchasedPackNames;
   private boolean mNeedsUpdatePurchasePackNames;
   private ImmutableList<EffectModel> mEffectModels;
+
+  private ProgressDialog mShareProgressDialog;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -691,6 +693,7 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   private File saveCurrentGifToDisk() {
+    // TODO(clocksmith): extract
     if (ContextCompat.checkSelfPermission(
         this,
         Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -699,22 +702,7 @@ public class CreateActivity extends AppCompatActivity {
               new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
               Constants.REQUEST_SHARE_GIF_PERMISSIONS);
     } else {
-      File direct = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getPath(),
-          Constants.PUBLIC_DIRECTORY);
-
-      if (!direct.exists()) {
-        if (!direct.mkdirs()) {
-          SzLog.e(TAG, "Cannot make directory: " + direct);
-        } else {
-          Log.d(TAG, direct + " successfully created.");
-        }
-      } else {
-        Log.d(TAG, direct + " already exists.");
-      }
-
-      long now = System.currentTimeMillis();
-      String gifFilename = "slamzoom_" + mSelectedEffectName + "_" + now + ".gif";
-      File gifFile = new File(direct, gifFilename);
+      File gifFile = Files.makeFile(Files.FileType.GIF, mSelectedEffectName);
 
       if (mSelectedGifBytes != null) {
         try {
@@ -741,7 +729,11 @@ public class CreateActivity extends AppCompatActivity {
 
   private void shareCurrentGif() {
     if (mSelectedGifBytes != null) {
-      new ShareGifTask().execute();
+      if (DebugUtils.SHARE_AS_VIDEO) {
+        shareVideoAsync();
+      } else {
+        shareGifAsync();
+      }
     }
     // TODO(clocksmith): Put a message here telling the user they need to make a gif first.
   }
@@ -777,6 +769,45 @@ public class CreateActivity extends AppCompatActivity {
     }
   }
 
+  private void showShareProgressDialog(String message) {
+    mShareProgressDialog = new ProgressDialog(this);
+    mShareProgressDialog.setMessage(message);
+    mShareProgressDialog.show();
+  }
+
+  private void dismissShareProgressDialog() {
+    mShareProgressDialog.dismiss();
+  }
+
+  private void shareGifAsync() {
+    showShareProgressDialog("Sharing gif...");
+    new ShareGifTask().execute();
+  }
+
+  private void shareVideoAsync() {
+    showShareProgressDialog("Sharing video...");
+    mShareProgressDialog.show();
+    new VideoCreator(
+        this,
+        mSelectedBitmap,
+        EffectTemplates.get(mSelectedEffectName),
+        Constants.DEFAULT_GIF_SIZE_PX,
+        Constants.MAIN_FPS,
+        new VideoCreatorCallback() {
+          @Override
+          public void onCreateVideo(File videoFile) {
+            if (videoFile != null) {
+              Intent baseIntent = new Intent(android.content.Intent.ACTION_SEND);
+              baseIntent.setType(Files.FileType.VIDEO.mime);
+              Uri uri = Uri.fromFile(videoFile);
+              baseIntent.putExtra(Intent.EXTRA_STREAM, uri);
+              startActivity(Intent.createChooser(baseIntent, "Share via"));
+              dismissShareProgressDialog();
+            }
+          }
+        }).createAsync();
+  }
+
   private class ShareGifTask extends AsyncTask<Void, Void, Boolean> {
     private Intent mBaseIntent;
 
@@ -785,7 +816,7 @@ public class CreateActivity extends AppCompatActivity {
       File gifFile = saveCurrentGifToDisk();
       if (gifFile != null) {
         mBaseIntent = new Intent(android.content.Intent.ACTION_SEND);
-        mBaseIntent.setType("image/gif");
+        mBaseIntent.setType(Files.FileType.GIF.mime);
         Uri uri = Uri.fromFile(gifFile);
         mBaseIntent.putExtra(Intent.EXTRA_STREAM, uri);
       } else {
@@ -799,6 +830,7 @@ public class CreateActivity extends AppCompatActivity {
     protected void onPostExecute(Boolean result) {
       if (result) {
         startActivity(Intent.createChooser(mBaseIntent, "Share via"));
+        dismissShareProgressDialog();
       }
     }
   }

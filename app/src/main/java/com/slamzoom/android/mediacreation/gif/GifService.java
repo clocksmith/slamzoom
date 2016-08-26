@@ -6,10 +6,8 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-import com.google.common.base.Function;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.slamzoom.android.common.bus.BusProvider;
 import com.slamzoom.android.common.utils.DebugUtils;
@@ -65,10 +63,10 @@ public class GifService extends Service {
     SzLog.f(TAG, "onCreate()");
 
     mMainGifCache = CacheBuilder.newBuilder()
-        .maximumSize(DebugUtils.USE_GIF_CACHE ? MAIN_CACHE_SIZE : 0)
+        .maximumSize(DebugUtils.SKIP_GIF_CACHE ? 0 : MAIN_CACHE_SIZE)
         .build();
     mThumbnailGifCache = CacheBuilder.newBuilder()
-        .maximumSize(DebugUtils.USE_GIF_CACHE ? THUMBNAIL_CACHE_SIZE : 0)
+        .maximumSize(DebugUtils.SKIP_GIF_CACHE ? 0 : THUMBNAIL_CACHE_SIZE)
         .build();
 
     mThumbnailGifCreatorsBackQueue = Queues.newPriorityBlockingQueue();
@@ -106,7 +104,7 @@ public class GifService extends Service {
   public void requestThumbnailGifs(List<GifConfig> configs, Runnable setEffectChooserRunnable) {
     clear();
 
-    if (DebugUtils.GENERATE_THUMBNAIL_GIFS) {
+    if (!DebugUtils.SKIP_GENERATE_THUMBNAIL_GIFS) {
       for (int i = 0; i < configs.size(); i++) {
         mThumbnailGifCreatorsBackQueue.add(getManager(configs.get(i), mThumbnailGifCache, true, i));
       }
@@ -153,7 +151,7 @@ public class GifService extends Service {
         config,
         thumbnail,
         index,
-        new GifCreator.CreateGifCallback() {
+        new GifCreatorCallback() {
           @Override
           public void onCreateGif(byte[] gifBytes) {
             if (gifBytes != null) {

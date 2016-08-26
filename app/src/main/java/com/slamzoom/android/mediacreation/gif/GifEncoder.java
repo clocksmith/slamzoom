@@ -3,23 +3,22 @@ package com.slamzoom.android.mediacreation.gif;
 import android.os.AsyncTask;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.executor.ExecutorProvider;
 import com.slamzoom.android.common.utils.SzLog;
+import com.slamzoom.android.mediacreation.MediaCreatorCallback;
 import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
 import com.slamzoom.android.mediacreation.MediaEncoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by clocksmith on 3/9/16.
  */
-public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCallback> {
+public class GifEncoder extends MediaEncoder<GifFrame> {
   private static final String TAG = GifEncoder.class.getSimpleName();
 
   public interface ProgressUpdateListener {
@@ -35,22 +34,15 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
   private static final int PAL_SIZE = 7; // color table size (bits-1)
   private static final int SAMPLE = 10;
 
-  private int mWidth;
-  private int mHeight;
-
   private ByteArrayOutputStream mOut;
-  private List<GifFrame> mFrames;
   private boolean mUserLocalColorTables;
   private NeuQuant mGloabalNq;
   private byte[] mGlobalColorTable;
 
-  private Set<AsyncTask> mTasks = Sets.newConcurrentHashSet();
   private List<Runnable> mFrameWriters;
   private AtomicInteger mTotalNumFrameWritersToAdd;
-  private GifCreator.CreateGifCallback mCallback;
 
   private ProgressUpdateListener mProgressUpdateListener;
-  private long mEncodingFramesStart;
 
   private MultiPhaseStopwatch mTracker;
 
@@ -73,13 +65,6 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
   }
 
   @Override
-  public void cancel() {
-    for (AsyncTask task : mTasks) {
-      task.cancel(true);
-    }
-  }
-
-  @Override
   public void addFrames(Iterable<GifFrame> frames) {
     for (GifFrame frame : frames) {
       addFrame(frame);
@@ -91,9 +76,9 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
     mFrames.add(frame);
   }
 
-  public void encodeAsync(GifCreator.CreateGifCallback callback) {
-    mCallback = callback;
-    mEncodingFramesStart = System.currentTimeMillis();
+  @Override
+  public void encodeAsync(MediaCreatorCallback callback) {
+    super.encodeAsync(callback);
 
     mFrameWriters = Lists.newArrayListWithCapacity(mFrames.size());
     for (int frameIndex = 0; frameIndex < mFrames.size(); frameIndex++) {
@@ -345,7 +330,6 @@ public class GifEncoder implements MediaEncoder<GifFrame, GifCreator.CreateGifCa
 
       if (mTotalNumFrameWritersToAdd.decrementAndGet() == 0) {
         mTracker.stop(STOPWATCH_ENCODING);
-//        Log.wtf(TAG, "Finished encoding frames in " + (System.currentTimeMillis() - mEncodingFramesStart) + "ms");
         WriteFramesTask writeFramesTask = new WriteFramesTask();
         mTasks.add(writeFramesTask);
         mTracker.start(STOPWATCH_WRITING);

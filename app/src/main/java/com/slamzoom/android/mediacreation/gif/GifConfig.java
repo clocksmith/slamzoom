@@ -11,11 +11,11 @@ import com.slamzoom.android.ui.create.effectchooser.EffectModel;
  * Created by clocksmith on 4/14/16.
  */
 public class GifConfig {
-  Rect hotspot;
-  Bitmap bitmap;
-  EffectTemplate effectTemplate;
-  String endText;
-  int fps;
+  public Rect hotspot;
+  public Bitmap bitmap;
+  public EffectTemplate effectTemplate;
+  public String endText;
+  public int fps;
 
   public static Builder newBuilder() {
     return new Builder();

@@ -2,6 +2,7 @@ package com.slamzoom.android.mediacreation.gif;
 
 import android.graphics.Bitmap;
 
+import com.slamzoom.android.common.utils.BitmapUtils;
 import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
 import com.slamzoom.android.mediacreation.MediaFrame;
 
@@ -13,20 +14,17 @@ import java.nio.ByteBuffer;
 public class GifFrame extends MediaFrame {
   public static final String STOPWATCH_CONVERTING_PIXELS_TO_BYTES = "pixel to byte converting";
 
-  byte[] pixelBytes;
-  private MultiPhaseStopwatch mTracker;
+  public byte[] pixelBytes;
 
   public GifFrame(Bitmap bitmap, int delayMillis, MultiPhaseStopwatch tracker) {
     super(bitmap, delayMillis);
 
-    mTracker = tracker;
-
     int[] pixelInts = new int[width * height];
-    bitmap.getPixels(pixelInts, 0, width, 0, 0, width, height);
-    bitmap.recycle();
-    mTracker.start(STOPWATCH_CONVERTING_PIXELS_TO_BYTES);
+    this.bitmap.getPixels(pixelInts, 0, width, 0, 0, width, height);
+    BitmapUtils.recycleIfSupposedTo(this.bitmap);
+    tracker.start(STOPWATCH_CONVERTING_PIXELS_TO_BYTES);
     this.pixelBytes = getPixelBytes(pixelInts);
-    mTracker.stop(STOPWATCH_CONVERTING_PIXELS_TO_BYTES);
+    tracker.stop(STOPWATCH_CONVERTING_PIXELS_TO_BYTES);
   }
 
 //  private byte[] getPixelBytes(int[] pixelInts) {
@@ -56,27 +54,4 @@ public class GifFrame extends MediaFrame {
     }
     return buffer.array();
   }
-
-//  private byte[] getPixelBytes(int[] pixelInts) {
-//    byte[] bytes = new byte[pixelInts.length * 3];
-//
-//    int byteIdx = 0;
-//    for(int i = 0; i < pixelInts.length; i++) {
-//      int thisPixel = pixelInts[i];
-//      byte[] theseBytes = intToByteArray(thisPixel);
-//      bytes[byteIdx] = theseBytes[3];
-//      bytes[byteIdx + 1] = theseBytes[2];
-//      bytes[byteIdx + 2] = theseBytes[1];
-//      byteIdx += 3;
-//    }
-//    return bytes;
-//  }
-//
-//  public static final byte[] intToByteArray(int value) {
-//    return new byte[] {
-//        (byte)(value >>> 24),
-//        (byte)(value >>> 16),
-//        (byte)(value >>> 8),
-//        (byte)value};
-//  }
 }

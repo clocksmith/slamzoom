@@ -17,7 +17,7 @@ public class GifCreatorManager implements Comparable {
   private GifConfig mGifConfig;
   private boolean mIsPreview;
   private int mIndex;
-  private GifCreator.CreateGifCallback mCallback;
+  private GifCreatorCallback mCallback;
 
   private int mGifSize;
   private MultiPhaseStopwatch mTracker;
@@ -31,7 +31,7 @@ public class GifCreatorManager implements Comparable {
       GifConfig gifConfig,
       boolean preview,
       int index,
-      GifCreator.CreateGifCallback callback) {
+      GifCreatorCallback callback) {
     mContext = context;
     mGifConfig = gifConfig;
     mIsPreview = preview;

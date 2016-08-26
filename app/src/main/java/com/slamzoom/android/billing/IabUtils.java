@@ -94,7 +94,7 @@ public class IabUtils {
       @Override
       public void onSuccess(List<Purchase> purchases) {
 
-        if (DebugUtils.UNLOCK_ALL_PACKS) {
+        if (!DebugUtils.LOCK_UNPAID_PACKS) {
           callback.onSuccess(
               ImmutableList.copyOf(Iterables.concat(GIFTED_PACK_NAMES, PURCHASE_IDS_TO_PACK_NAMES.values())));
         } else {

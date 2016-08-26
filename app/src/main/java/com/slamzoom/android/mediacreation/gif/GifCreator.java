@@ -4,9 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.slamzoom.android.common.bus.BusProvider;
-import com.slamzoom.android.effects.EffectStep;
-import com.slamzoom.android.effects.EffectTemplate;
-import com.slamzoom.android.mediacreation.CreateMediaCallback;
 import com.slamzoom.android.mediacreation.MediaCreator;
 import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
 
@@ -15,10 +12,6 @@ import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
  */
 public class GifCreator extends MediaCreator implements GifEncoder.ProgressUpdateListener {
   public static final String TAG = GifCreator.class.getSimpleName();
-
-  public interface CreateGifCallback extends CreateMediaCallback {
-    void onCreateGif(byte[] gifBytes);
-  }
 
   public static final String STOPWATCH_PIXELIZING = "pixelizing";
 
@@ -40,21 +33,9 @@ public class GifCreator extends MediaCreator implements GifEncoder.ProgressUpdat
       Context context,
       GifConfig gifConfig,
       int gifSize,
-      CreateGifCallback callback,
+      GifCreatorCallback callback,
       MultiPhaseStopwatch tracker) {
     super(context, gifConfig.bitmap, getAdjustedEffectTemplate(gifConfig), gifSize, gifConfig.fps, callback, tracker);
-  }
-
-  private static EffectTemplate getAdjustedEffectTemplate(GifConfig gifConfig) {
-    // This is weird. Not yet sure how else to do this.
-    EffectTemplate effectTemplate = gifConfig.effectTemplate;
-    for (EffectStep step : effectTemplate.getEffectSteps()) {
-      step.setHotspot(gifConfig.hotspot);
-      if (gifConfig.endText != null) {
-        step.setEndText(gifConfig.endText);
-      }
-    }
-    return effectTemplate;
   }
 
   @Override

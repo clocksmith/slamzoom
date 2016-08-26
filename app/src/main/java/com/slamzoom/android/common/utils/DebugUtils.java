@@ -15,17 +15,21 @@ import java.io.IOException;
 public class DebugUtils {
   private static final String TAG = DebugUtils.class.getSimpleName();
 
+  // START FLAGS
+
   // TODO(cloksmith): convert these to build flags.
 
   // Superuser
-  public static final boolean UNLOCK_ALL_PACKS = true;
+  public static final boolean LOCK_UNPAID_PACKS = false;
 
   // Effects
   public static final boolean REVERSE_LOOP_EFFECTS = false;
+  public static final boolean SHARE_AS_VIDEO = false;
 
   // Performance
-  public static final boolean USE_GIF_CACHE = true;
-  public static final boolean GENERATE_THUMBNAIL_GIFS = true;
+  public static final boolean SKIP_GIF_CACHE = false;
+  public static final boolean SKIP_GENERATE_THUMBNAIL_GIFS = false;
+  public static final boolean SKIP_RECYCLE_BITMAP = false;
 
   // Debug gif quality
   public static final boolean USE_DEBUG_EFFECTS = false;
@@ -40,6 +44,8 @@ public class DebugUtils {
   public static final float DEBUG_RECT_LEFT_FRACTION = 0.33f;
   public static final float DEBUG_RECT_TOP_FRACTION = 0.22f;
   public static final float DEBUG_RECT_SIZE_FRACTION = 0.3333f;
+
+  // END FLAGS
 
   public static Rect getDebugRect(Bitmap src) {
     return new Rect(

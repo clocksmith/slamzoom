@@ -15,7 +15,7 @@
       android:padding="16dp"
       android:background="@color/colorPrimary"
       android:scaleType="fitCenter"
-      android:src="@drawable/sz_rb"/>
+      android:src="@drawable/sz_logo"/>
 
   <pl.droidsonroids.gif.GifImageView
       android:layout_below="@+id/logo"
