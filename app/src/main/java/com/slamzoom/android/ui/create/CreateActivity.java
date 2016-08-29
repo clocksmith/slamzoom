@@ -1,6 +1,5 @@
 package com.slamzoom.android.ui.create;
 
-import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.app.PendingIntent;
@@ -20,9 +19,7 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -47,19 +44,20 @@ import com.slamzoom.android.billing.GetPurchasedPacksCallback;
 import com.slamzoom.android.billing.IabUtils;
 import com.slamzoom.android.common.BackInterceptingEditText;
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.common.Files;
-import com.slamzoom.android.common.LoopSwitch;
+import com.slamzoom.android.common.FileType;
+import com.slamzoom.android.common.utils.FileUtils;
 import com.slamzoom.android.common.bus.BusProvider;
 import com.slamzoom.android.common.utils.AnimationUtils;
 import com.slamzoom.android.common.utils.BitmapUtils;
 import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.KeyboardUtils;
-import com.slamzoom.android.common.utils.SzAnalytics;
-import com.slamzoom.android.common.utils.SzLog;
+import com.slamzoom.android.common.SzAnalytics;
+import com.slamzoom.android.common.SzLog;
+import com.slamzoom.android.common.utils.PermissionUtils;
 import com.slamzoom.android.effects.EffectPacks;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.EffectTemplates;
-import com.slamzoom.android.mediacreation.gif.GifConfig;
+import com.slamzoom.android.mediacreation.MediaConfig;
 import com.slamzoom.android.mediacreation.gif.GifCreator;
 import com.slamzoom.android.mediacreation.gif.GifService;
 import com.slamzoom.android.mediacreation.video.VideoCreator;
@@ -92,7 +90,6 @@ public class CreateActivity extends AppCompatActivity {
   @Bind(R.id.zeroStateMessage) TextView mZeroStateMessage;
   @Bind(R.id.effectChooser) EffectChooser mEffectChooser;
   private AddTextView mAddTextView; // action bar custom view.
-  private LoopSwitch mLoopSwitch; // action bar cycle toggle.
 
   private View mGifAreaView;
   private boolean mIsAddTextViewShowing = false;
@@ -118,7 +115,7 @@ public class CreateActivity extends AppCompatActivity {
   private ImmutableList<EffectModel> mEffectModels;
 
   private ProgressDialog mShareProgressDialog;
-  private Files.FileType mSelectedFileType;
+  private FileType mSelectedFileType;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -129,7 +126,7 @@ public class CreateActivity extends AppCompatActivity {
     ButterKnife.bind(this);
     BusProvider.getInstance().register(this);
 
-    bindServices();
+    initServices();
     initEffects();
     initActionBar();
     initGifArea();
@@ -225,42 +222,6 @@ public class CreateActivity extends AppCompatActivity {
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.menu_create, menu);
-
-//    MenuItem loopSwitchMenuItem = menu.findItem(R.id.action_loop);
-//    mLoopSwitch = (LoopSwitch) MenuItemCompat.getActionView(loopSwitchMenuItem);
-//
-//    mLoopSwitch.setShowText(true);
-//    if (Build.VERSION.SDK_INT < 23) {
-//      mLoopSwitch.setTextAppearance(this, R.style.SwitchTextAppearance);
-//    } else {
-//      mLoopSwitch.setTextAppearance(R.style.SwitchTextAppearance);
-//    }
-//    mLoopSwitch.setTextOn("loop");
-//    mLoopSwitch.setTextOff("pause");
-//    mLoopSwitch.setThumbResource(R.drawable.loop_thumb);
-//    mLoopSwitch.setSwitchMinWidth(200);
-//    mLoopSwitch.setThumbTextPadding(200);
-//    mLoopSwitch.refreshDrawableState();
-//    mLoopSwitch.requestLayout();
-//
-//    mLoopSwitch.setChecked(CreatorPreferences.isCycle(this));
-//
-//    mLoopSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//      @Override
-//      public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//        Snackbar snackbar;
-//        if (isChecked) {
-//          CreatorPreferences.toggleCycleOn(CreateActivity.this);
-//          snackbar = Snackbar.make(mCoordinatorLayout, "Changing effects to loop mode", Snackbar.LENGTH_LONG);
-//        } else {
-//          CreatorPreferences.toggleCycleOff(CreateActivity.this);
-//          snackbar = Snackbar.make(mCoordinatorLayout, "Changing effects to pause mode", Snackbar.LENGTH_LONG);
-//        }
-//        snackbar.show();
-//        resetAndUpdateAll();
-//      }
-//    });
-
     return super.onCreateOptionsMenu(menu);
   }
 
@@ -282,14 +243,11 @@ public class CreateActivity extends AppCompatActivity {
       case R.id.action_ok:
         handleAddTextConfirmed();
         return true;
-//      case R.id.action_share:
-//        handleSharePressed();
-//        return true;
       case R.id.action_share_gif:
-        handleSharePressed(Files.FileType.GIF);
+        handleSharePressed(FileType.GIF);
         return true;
       case R.id.action_share_video:
-        handleSharePressed(Files.FileType.VIDEO);
+        handleSharePressed(FileType.VIDEO);
         return true;
       default:
         return super.onOptionsItemSelected(item);
@@ -382,25 +340,9 @@ public class CreateActivity extends AppCompatActivity {
     }).toList();
   }
 
-  private void bindServices() {
+  private void initServices() {
     bindGifService();
     bindBillingService();
-  }
-
-  private void bindGifService() {
-    if (mGifServiceConnection == null) {
-      mGifServiceConnection = new GifServiceConnection();
-    }
-    bindService(new Intent(this, GifService.class), mGifServiceConnection, Context.BIND_AUTO_CREATE);
-  }
-
-  private void bindBillingService() {
-    if (mBillingServiceConnection == null) {
-      mBillingServiceConnection = new BillingServiceConnection();
-    }
-    Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
-    serviceIntent.setPackage("com.android.vending");
-    bindService(serviceIntent, mBillingServiceConnection, Context.BIND_AUTO_CREATE);
   }
 
   private void initActionBar() {
@@ -409,7 +351,7 @@ public class CreateActivity extends AppCompatActivity {
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     getSupportActionBar().setHomeButtonEnabled(true);
     getSupportActionBar().setDisplayShowTitleEnabled(false);
-//    getSupportActionBar().setTitle(getString(R.string.app_name));
+    getSupportActionBar().setTitle(getString(R.string.app_name));
     mAddTextView = new AddTextView(this);
     getSupportActionBar().setCustomView(mAddTextView,
         new Toolbar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -426,16 +368,133 @@ public class CreateActivity extends AppCompatActivity {
     mEffectChooser.init(mEffectModels, true);
   }
 
-  private EffectModel getEffectModelForSelectedEffect() {
-    for (EffectModel effectModel : mEffectModels) {
-      if (effectModel.getEffectTemplate().getName().equals(mSelectedEffectName)) {
-        return effectModel;
-      }
-    }
-    return null;
+  private void launchImageChooser() {
+    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+    intent.setType("image/*");
+    startActivityForResult(Intent.createChooser(intent, "Select Image"), Constants.REQUEST_PICK_IMAGE);
   }
 
-  private void updatePurchasedPackNamesAndEffectModelsAndThumbnailGifs() {
+  private void launchHotspotChooser() {
+    Intent intent = new Intent(CreateActivity.this, HotspotChooserActivity.class);
+    intent.putExtra(Constants.IMAGE_URI, mSelectedUri);
+    startActivityForResult(intent, Constants.REQUEST_CROP_IMAGE);
+  }
+
+  private void handleIncomingIntent(Intent intent) {
+    if (Intent.ACTION_SEND.equals(intent.getAction())) {
+      resetEffectModelsAndProgresses();
+      handleIncomingUri((Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM));
+    }
+  }
+
+  private void handleIncomingUri(Uri uri) {
+    try {
+      mSelectedUri = uri;
+      getSelectedBitmapsFromUri();
+      mSelectedEndText = "";
+      mAddTextView.getEditText().setText("");
+      launchHotspotChooser();
+    } catch (FileNotFoundException e) {
+      SzLog.e(TAG, "Cannot consume bitmap for path: " + uri.toString());
+    }
+  }
+
+  private void handleCropRectSelected(Rect selectedHotspot, Uri uri) {
+    // If our activity was destroyed while selection while selecting hotspot...
+    if (mSelectedBitmap == null) {
+      mSelectedUri = uri;
+      try {
+        getSelectedBitmapsFromUri();
+      } catch (FileNotFoundException e) {
+        Log.e(TAG, "Cannot read selected image", e);
+        launchImageChooser();
+      }
+    }
+
+    mSelectedHotspot = selectedHotspot;
+    float ratio = (float) mSelectedBitmap.getWidth() / mSelectedBitmapForThumbnail.getWidth();
+    mSelectedHotspotForThumbnail = new Rect(
+        (int) (mSelectedHotspot.left / ratio),
+        (int) (mSelectedHotspot.top / ratio),
+        (int) (mSelectedHotspot.right / ratio),
+        (int) (mSelectedHotspot.bottom / ratio));
+
+    resetAndUpdateAll();
+  }
+
+  private void handleAddTextPressed() {
+    mAddTextView.getEditText().requestFocus();
+    KeyboardUtils.showKeyboard(this);
+    showAddTextView(true);
+  }
+
+  private void handleAddTextConfirmed() {
+    mSelectedEndText = mAddTextView.getEditText().getText().toString();
+    resetAndUpdateAll();
+    KeyboardUtils.hideKeyboard(this);
+    showAddTextView(false);
+  }
+
+  private void handleSharePressed(FileType fileType) {
+    mSelectedFileType = fileType;
+    EffectModel effectModel = getEffectModelForSelectedEffect();
+    if (effectModel == null) {
+      // TODO(clocksmith): tell the user they must have an effect, or just disable share button.
+      Snackbar snackbar = Snackbar.make(mCoordinatorLayout, "Choose an effect first!", Snackbar.LENGTH_SHORT);
+      snackbar.show();
+    } else if (mGeneratingGif) {
+      Snackbar snackbar = Snackbar.make(
+          mCoordinatorLayout, "Please wait till gif preview is finished!", Snackbar.LENGTH_SHORT);
+      snackbar.show();
+    } else if (!effectModel.isLocked()) {
+      shareCurrentEffect();
+    } else {
+      String effectName = effectModel.getEffectTemplate().getName();
+      String packName = effectModel.getEffectTemplate().getPackName();
+      SzLog.f(TAG, "Showing dialog for effectName: " + effectName + " and packName: " + packName);
+      showBuyDialog(effectName, packName  );
+    }
+  }
+
+  private void updateMainGif() {
+    mGifProgresses.put(mSelectedEffectName, 0d);
+    mGifService.requestMainGif(getMainMediaConfig());
+  }
+
+  private void updateThumbnailGifs() {
+    if (mPurchasedPackNames == null || mNeedsUpdatePurchasePackNames) {
+      updatePurchasedPacksThenUpdateThumbnailGifs();
+    } else {
+      mGifService.requestThumbnailGifs(Lists.transform(EffectPacks.listEffectTemplatesByPack(),
+          new Function<EffectTemplate, MediaConfig>() {
+            @Override
+            public MediaConfig apply(EffectTemplate effectTemplate) {
+              return getThumbnailMediaConfig(effectTemplate);
+            }
+          }));
+    }
+  }
+
+  private void resetAndUpdateAll() {
+    resetEffectModelsAndProgresses();
+    updateThumbnailGifs();
+
+    mSelectedGifBytes = null;
+    mGifImageView.setImageBitmap(null);
+    if (mSelectedEffectName != null) {
+      updateMainGif();
+    }
+  }
+
+  private void resetEffectModelsAndProgresses() {
+    for (EffectModel model : mEffectModels) {
+      mGifProgresses.put(model.getEffectTemplate().getName(), 0d);
+      model.setGifThumbnailBytes(null);
+    }
+    mEffectChooser.update(mEffectModels);
+  }
+
+  private void updatePurchasedPacksThenUpdateThumbnailGifs() {
     updatePurchasedPackNamesAndEffectModels(new Runnable() {
       @Override
       public void run() {
@@ -476,160 +535,11 @@ public class CreateActivity extends AppCompatActivity {
     mEffectChooser.update(mEffectModels);
   }
 
-  private void handleIncomingIntent(Intent intent) {
-    if (Intent.ACTION_SEND.equals(intent.getAction())) {
-      resetEffectModelsAndProgresses();
-      handleIncomingUri((Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM));
-    }
-  }
-
-  private void handleIncomingUri(Uri uri) {
-    try {
-      mSelectedUri = uri;
-      getSelectedBitmapsFromUri();
-      mSelectedEndText = "";
-      mAddTextView.getEditText().setText("");
-      launchHotspotChooser();
-    } catch (FileNotFoundException e) {
-      SzLog.e(TAG, "Cannot consume bitmap for path: " + uri.toString());
-    }
-  }
-
-  private void getSelectedBitmapsFromUri() throws FileNotFoundException {
-    mSelectedBitmap = BitmapUtils.readScaledBitmap(mSelectedUri, this.getContentResolver());
-    if (DebugUtils.SAVE_SRC_AS_BITMAP) {
-      DebugUtils.saveFrameAsBitmap(mSelectedBitmap, "src", 0);
-    }
-    mSelectedBitmapForThumbnail = BitmapUtils.readScaledBitmap(
-        mSelectedUri,
-        this.getContentResolver(),
-        Constants.MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX / Constants.GIF_THUMBNAIL_DIVIDER);
-  }
-
-  private void handleCropRectSelected(Rect selectedHotspot, Uri uri) {
-    // If our activity was destroyed while selection while selecting hotspot...
-    if (mSelectedBitmap == null) {
-      mSelectedUri = uri;
-      try {
-        getSelectedBitmapsFromUri();
-      } catch (FileNotFoundException e) {
-        Log.e(TAG, "Cannot read selected image", e);
-        launchImageChooser();
-      }
-    }
-
-    mSelectedHotspot = selectedHotspot;
-    float ratio = (float) mSelectedBitmap.getWidth() / mSelectedBitmapForThumbnail.getWidth();
-    mSelectedHotspotForThumbnail = new Rect(
-        (int) (mSelectedHotspot.left / ratio),
-        (int) (mSelectedHotspot.top / ratio),
-        (int) (mSelectedHotspot.right / ratio),
-        (int) (mSelectedHotspot.bottom / ratio));
-
-    resetAndUpdateAll();
-  }
-
-  private void handleAddTextPressed() {
-    mAddTextView.getEditText().requestFocus();
-    KeyboardUtils.showKeyboard(this);
-    showAddTextView(true);
-  }
-
-  private void handleAddTextConfirmed() {
-    mSelectedEndText = mAddTextView.getEditText().getText().toString();
-    resetAndUpdateAll();
-    KeyboardUtils.hideKeyboard(this);
-    showAddTextView(false);
-  }
-
-  private void handleSharePressed(Files.FileType fileType) {
-    mSelectedFileType = fileType;
-    EffectModel effectModel = getEffectModelForSelectedEffect();
-    if (effectModel == null) {
-      // TODO(clocksmith): tell the user they must have an effect, or just disable share button.
-      Snackbar snackbar = Snackbar.make(mCoordinatorLayout, "Choose an effect first!", Snackbar.LENGTH_SHORT);
-      snackbar.show();
-    } else if (mGeneratingGif) {
-      Snackbar snackbar = Snackbar.make(
-          mCoordinatorLayout, "Please wait till gif preview is finished!", Snackbar.LENGTH_SHORT);
-      snackbar.show();
-    } else if (!effectModel.isLocked()) {
-      shareCurrentEffect();
-    } else {
-      String effectName = effectModel.getEffectTemplate().getName();
-      String packName = effectModel.getEffectTemplate().getPackName();
-      SzLog.f(TAG, "Showing dialog for effectName: " + effectName + " and packName: " + packName);
-      showBuyDialog(effectName, packName  );
-    }
-  }
-
-  private void updateMainGif() {
-    mGifProgresses.put(mSelectedEffectName, 0d);
-    mGifService.requestMainGif(GifConfig.newBuilder()
-        .withHotspot(mSelectedHotspot)
-        .withBitmap(mSelectedBitmap)
-        .withEffectTemplate(EffectTemplates.get(mSelectedEffectName))
-        .withEndText(mSelectedEndText)
-        .withFps(Constants.MAIN_FPS)
-        .build());
-  }
-
-  private void updateThumbnailGifs() {
-    if (mPurchasedPackNames == null || mNeedsUpdatePurchasePackNames) {
-      updatePurchasedPackNamesAndEffectModelsAndThumbnailGifs();
-    } else {
-      mGifService.requestThumbnailGifs(Lists.transform(EffectPacks.listEffectTemplatesByPack(),
-          new Function<EffectTemplate, GifConfig>() {
-            @Override
-            public GifConfig apply(EffectTemplate effectTemplate) {
-              return GifConfig.newBuilder()
-                  .withHotspot(mSelectedHotspotForThumbnail)
-                  .withBitmap(mSelectedBitmapForThumbnail)
-                  .withEffectTemplate(effectTemplate)
-                  .withEndText(mSelectedEndText)
-                  .withFps(Constants.THUMBNAIL_FPS)
-                  .build();
-            }
-          }));
-    }
-  }
-
-  private void resetAndUpdateAll() {
-    resetEffectModelsAndProgresses();
-    updateThumbnailGifs();
-
-    mSelectedGifBytes = null;
-    mGifImageView.setImageBitmap(null);
-    if (mSelectedEffectName != null) {
-      updateMainGif();
-    }
-  }
-
-  private void resetEffectModelsAndProgresses() {
-    for (EffectModel model : mEffectModels) {
-      mGifProgresses.put(model.getEffectTemplate().getName(), 0d);
-      model.setGifThumbnailBytes(null);
-    }
-    mEffectChooser.update(mEffectModels);
-  }
-
   private void updateProgressBar() {
     mProgressBar.setVisibility(View.VISIBLE);
     if (mSelectedEffectName != null) {
       mProgressBar.setProgress((int) Math.round(100 * mGifProgresses.get(mSelectedEffectName)));
     }
-  }
-
-  private void launchImageChooser() {
-    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-    intent.setType("image/*");
-    startActivityForResult(Intent.createChooser(intent, "Select Image"), Constants.REQUEST_PICK_IMAGE);
-  }
-
-  private void launchHotspotChooser() {
-    Intent intent = new Intent(CreateActivity.this, HotspotChooserActivity.class);
-    intent.putExtra(Constants.IMAGE_URI, mSelectedUri);
-    startActivityForResult(intent, Constants.REQUEST_CROP_IMAGE);
   }
 
   private void showAddTextView(boolean show) {
@@ -694,55 +604,143 @@ public class CreateActivity extends AppCompatActivity {
     mGifAreaView = mProgressBar;
   }
 
-  private File saveCurrentGifToDisk() {
-    // TODO(clocksmith): extract
-    if (ContextCompat.checkSelfPermission(
-        this,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-      ActivityCompat.requestPermissions
-          (this,
-              new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
-              Constants.REQUEST_SHARE_GIF_PERMISSIONS);
-    } else {
-      File gifFile = Files.makeFile(Files.FileType.GIF, mSelectedEffectName);
+  private void showBuyDialog(String effectName, String packName) {
+    DialogFragment newFragment = BuyToUnlockDialogFragment.newInstance(effectName, packName);
+    newFragment.show(getSupportFragmentManager(), BuyToUnlockDialogFragment.class.getSimpleName());
+  }
 
-      if (mSelectedGifBytes != null) {
-        try {
-          // TODO(clocksmith): make sure external apps can't destroy this (read only)
-          FileOutputStream gifOutputStream = new FileOutputStream(gifFile);
-          gifOutputStream.write(mSelectedGifBytes);
-          gifOutputStream.close();
+  private void showShareProgressDialog(String message) {
+    mShareProgressDialog = new ProgressDialog(this);
+    mShareProgressDialog.setMessage(message);
+    mShareProgressDialog.show();
+  }
 
-          SzAnalytics.newGifSavedEvent()
-              .withItemId(mSelectedEffectName)
-              .withEndScale(mSelectedHotspot.width() / mSelectedBitmap.getWidth())
-              .withEndTextLength(mSelectedEndText == null ? 0 : mSelectedEndText.length())
-              .log(this);
-
-          return gifFile;
-        } catch (IOException e) {
-          SzLog.e(TAG, "cannot save gif", e);
-        }
-      }
-    }
-
-    return null;
+  private void dismissShareProgressDialog() {
+    mShareProgressDialog.dismiss();
   }
 
   private void shareCurrentEffect() {
     if (mSelectedGifBytes != null) {
-      if (mSelectedFileType == Files.FileType.VIDEO) {
+      if (mSelectedFileType == FileType.VIDEO) {
         shareVideoAsync();
-      } else if (mSelectedFileType == Files.FileType.GIF){
+      } else if (mSelectedFileType == FileType.GIF){
         shareGifAsync();
       }
     }
     // TODO(clocksmith): Put a message here telling the user they need to make a gif first.
   }
 
-  private void showBuyDialog(String effectName, String packName) {
-    DialogFragment newFragment = BuyToUnlockDialogFragment.newInstance(effectName, packName);
-    newFragment.show(getSupportFragmentManager(), BuyToUnlockDialogFragment.class.getSimpleName());
+  private void shareGifAsync() {
+    if (PermissionUtils.checkReadwriteExternalStorage(this)) {
+      PermissionUtils.requestReadWriteExternalStorage(this);
+    } else {
+      showShareProgressDialog("Preparing gif...");
+      new ShareGifTask().execute();
+    }
+  }
+
+  private void shareVideoAsync() {
+    if (PermissionUtils.checkReadwriteExternalStorage(this)) {
+      PermissionUtils.requestReadWriteExternalStorage(this);
+    } else {
+      showShareProgressDialog("Preparing video...");
+      mShareProgressDialog.show();
+      new VideoCreator(this, getMainMediaConfig()).createAsync(new VideoCreatorCallback() {
+        @Override
+        public void onCreateVideo(File videoFile) {
+          if (videoFile != null) {
+            Intent baseIntent = new Intent(android.content.Intent.ACTION_SEND);
+            baseIntent.setType(FileType.VIDEO.mime);
+            Uri uri = Uri.fromFile(videoFile);
+            baseIntent.putExtra(Intent.EXTRA_STREAM, uri);
+            startActivity(Intent.createChooser(baseIntent, "Share via"));
+          }
+          // TODO(clocksmith): handle null
+          dismissShareProgressDialog();
+        }});
+    }
+  }
+
+  private File saveCurrentGifToDisk() {
+    File gifFile = FileUtils.createTimestampedFileWithId(FileType.GIF, mSelectedEffectName);
+    if (mSelectedGifBytes != null) {
+      try {
+        // TODO(clocksmith): make sure external apps can't destroy this (read only)
+        FileOutputStream gifOutputStream = new FileOutputStream(gifFile);
+        gifOutputStream.write(mSelectedGifBytes);
+        gifOutputStream.close();
+
+        SzAnalytics.newGifSavedEvent()
+            .withItemId(mSelectedEffectName)
+            .withEndScale(mSelectedHotspot.width() / mSelectedBitmap.getWidth())
+            .withEndTextLength(mSelectedEndText == null ? 0 : mSelectedEndText.length())
+            .log(this);
+
+        return gifFile;
+      } catch (IOException e) {
+        SzLog.e(TAG, "cannot save gif", e);
+      }
+    }
+
+    return null;
+  }
+
+  private void getSelectedBitmapsFromUri() throws FileNotFoundException {
+    mSelectedBitmap = BitmapUtils.readScaledBitmap(mSelectedUri, this.getContentResolver());
+    if (DebugUtils.SAVE_SRC_AS_PNG) {
+      BitmapUtils.saveBitmapToDiskAsPng(mSelectedBitmap, "src_0");
+    }
+    mSelectedBitmapForThumbnail = BitmapUtils.readScaledBitmap(
+        mSelectedUri,
+        this.getContentResolver(),
+        Constants.MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX / Constants.MEDIA_THUMBNAIL_DIVIDER);
+  }
+
+  private EffectModel getEffectModelForSelectedEffect() {
+    for (EffectModel effectModel : mEffectModels) {
+      if (effectModel.getEffectTemplate().getName().equals(mSelectedEffectName)) {
+        return effectModel;
+      }
+    }
+    return null;
+  }
+
+  private MediaConfig getMainMediaConfig() {
+    return MediaConfig.newBuilder()
+        .withHotspot(mSelectedHotspot)
+        .withBitmap(mSelectedBitmap)
+        .withEffectTemplate(EffectTemplates.get(mSelectedEffectName))
+        .withEndText(mSelectedEndText)
+        .withSize(Constants.MAIN_SIZE_PX)
+        .withFps(Constants.MAIN_FPS)
+        .build();
+  }
+
+  private MediaConfig getThumbnailMediaConfig(EffectTemplate effectTemplate) {
+    return MediaConfig.newBuilder()
+        .withHotspot(mSelectedHotspotForThumbnail)
+        .withBitmap(mSelectedBitmapForThumbnail)
+        .withEffectTemplate(effectTemplate)
+        .withEndText(mSelectedEndText)
+        .withSize(Constants.THUMBNAIL_SIZE_PX)
+        .withFps(Constants.THUMBNAIL_FPS)
+        .build();
+  }
+
+  private void bindGifService() {
+    if (mGifServiceConnection == null) {
+      mGifServiceConnection = new GifServiceConnection();
+    }
+    bindService(new Intent(this, GifService.class), mGifServiceConnection, Context.BIND_AUTO_CREATE);
+  }
+
+  private void bindBillingService() {
+    if (mBillingServiceConnection == null) {
+      mBillingServiceConnection = new BillingServiceConnection();
+    }
+    Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
+    serviceIntent.setPackage("com.android.vending");
+    bindService(serviceIntent, mBillingServiceConnection, Context.BIND_AUTO_CREATE);
   }
 
   private class GifServiceConnection implements ServiceConnection {
@@ -771,45 +769,6 @@ public class CreateActivity extends AppCompatActivity {
     }
   }
 
-  private void showShareProgressDialog(String message) {
-    mShareProgressDialog = new ProgressDialog(this);
-    mShareProgressDialog.setMessage(message);
-    mShareProgressDialog.show();
-  }
-
-  private void dismissShareProgressDialog() {
-    mShareProgressDialog.dismiss();
-  }
-
-  private void shareGifAsync() {
-    showShareProgressDialog("Preparing gif...");
-    new ShareGifTask().execute();
-  }
-
-  private void shareVideoAsync() {
-    showShareProgressDialog("Preparing video...");
-    mShareProgressDialog.show();
-    new VideoCreator(
-        this,
-        mSelectedBitmap,
-        EffectTemplates.get(mSelectedEffectName),
-        Constants.DEFAULT_GIF_SIZE_PX,
-        Constants.MAIN_FPS,
-        new VideoCreatorCallback() {
-          @Override
-          public void onCreateVideo(File videoFile) {
-            if (videoFile != null) {
-              Intent baseIntent = new Intent(android.content.Intent.ACTION_SEND);
-              baseIntent.setType(Files.FileType.VIDEO.mime);
-              Uri uri = Uri.fromFile(videoFile);
-              baseIntent.putExtra(Intent.EXTRA_STREAM, uri);
-              startActivity(Intent.createChooser(baseIntent, "Share via"));
-              dismissShareProgressDialog();
-            }
-          }
-        }).createAsync();
-  }
-
   private class ShareGifTask extends AsyncTask<Void, Void, Boolean> {
     private Intent mBaseIntent;
 
@@ -818,7 +777,7 @@ public class CreateActivity extends AppCompatActivity {
       File gifFile = saveCurrentGifToDisk();
       if (gifFile != null) {
         mBaseIntent = new Intent(android.content.Intent.ACTION_SEND);
-        mBaseIntent.setType(Files.FileType.GIF.mime);
+        mBaseIntent.setType(FileType.GIF.mime);
         Uri uri = Uri.fromFile(gifFile);
         mBaseIntent.putExtra(Intent.EXTRA_STREAM, uri);
       } else {

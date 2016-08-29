@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.slamzoom.android.common.bus.BusProvider;
+import com.slamzoom.android.mediacreation.MediaConfig;
 import com.slamzoom.android.mediacreation.MediaCreator;
 import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
 
@@ -31,15 +32,13 @@ public class GifCreator extends MediaCreator implements GifEncoder.ProgressUpdat
 
   public GifCreator(
       Context context,
-      GifConfig gifConfig,
-      int gifSize,
-      GifCreatorCallback callback,
+      MediaConfig mediaConfig,
       MultiPhaseStopwatch tracker) {
-    super(context, gifConfig.bitmap, getAdjustedEffectTemplate(gifConfig), gifSize, gifConfig.fps, callback, tracker);
+    super(context, mediaConfig, tracker);
   }
 
   @Override
-  public GifFrame createFrame(Bitmap bitmap, int delayMillis) {
+  public GifFrame createFrame(Bitmap bitmap, int delayMillis, int frameIndex) {
     mTracker.start(STOPWATCH_PIXELIZING);
     GifFrame frame =  new GifFrame(bitmap, delayMillis, mTracker);
     mTracker.stop(STOPWATCH_PIXELIZING);

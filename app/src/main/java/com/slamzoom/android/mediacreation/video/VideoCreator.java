@@ -3,10 +3,11 @@ package com.slamzoom.android.mediacreation.video;
 import android.content.Context;
 import android.graphics.Bitmap;
 
-import com.slamzoom.android.effects.EffectTemplate;
+import com.slamzoom.android.mediacreation.MediaConfig;
 import com.slamzoom.android.mediacreation.MediaCreator;
 import com.slamzoom.android.mediacreation.MediaEncoder;
 import com.slamzoom.android.mediacreation.MediaFrame;
+import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
 
 /**
  * Created by clocksmith on 3/25/16.
@@ -14,17 +15,13 @@ import com.slamzoom.android.mediacreation.MediaFrame;
 public class VideoCreator extends MediaCreator {
   public VideoCreator(
       Context context,
-      Bitmap bitmap,
-      EffectTemplate effectTemplate,
-      int size,
-      int fps,
-      VideoCreatorCallback callback) {
-    super(context, bitmap, effectTemplate, size, fps, callback, null);
+      MediaConfig config) {
+    super(context, config, new MultiPhaseStopwatch());
   }
 
   @Override
-  public MediaFrame createFrame(Bitmap bitmap, int delayMillis) {
-    return new VideoFrame(bitmap, delayMillis);
+  public MediaFrame createFrame(Bitmap bitmap, int delayMillis, int frameIndex) {
+    return new VideoFrame(bitmap, delayMillis, frameIndex);
   }
 
   @Override

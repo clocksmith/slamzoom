@@ -16,7 +16,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.utils.DebugUtils;
-import com.slamzoom.android.common.utils.SzLog;
+import com.slamzoom.android.common.SzLog;
 import com.slamzoom.android.effects.EffectPacks;
 
 import java.util.List;

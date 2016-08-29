@@ -29,12 +29,12 @@ public class Constants {
   public static final float DEFAULT_END_PAUSE_SECONDS = 0;
   public static final int MAIN_FPS = 24;
   public static final int THUMBNAIL_FPS = 24;
-  public static final int DEFAULT_GIF_SIZE_PX = 320;
-  public static final int GIF_THUMBNAIL_DIVIDER = 4;
-  public static final int DEFAULT_GIF_PREVIEW_SIZE_PX = DEFAULT_GIF_SIZE_PX / GIF_THUMBNAIL_DIVIDER;
+  public static final int MAIN_SIZE_PX = 320;
+  public static final int MEDIA_THUMBNAIL_DIVIDER = 4;
+  public static final int THUMBNAIL_SIZE_PX = MAIN_SIZE_PX / MEDIA_THUMBNAIL_DIVIDER;
   public static final boolean DEFAULT_USE_LOCAL_COLOR_PALETTE = true;
 
-  public static final int MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX = DEFAULT_GIF_SIZE_PX * 2; // arbitrary
+  public static final int MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX = MAIN_SIZE_PX * 2; // arbitrary
 
   public static final String WATERMARK_TEXT = "slamzoom";
   public static final int MAX_WATERMARK_TEXT_SIZE = 20;
@@ -42,5 +42,5 @@ public class Constants {
 
   public static final PointF NORMAL_CENTER_POINT = new PointF(0.5f, 0.5f);
 
-  public static final String PUBLIC_DIRECTORY = "/SlamZoom";
+  public static final String PUBLIC_DIRECTORY = "/Slamzoom";
 }

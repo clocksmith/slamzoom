@@ -21,13 +21,13 @@ import com.slamzoom.android.common.preferences.CreatorPreferences;
 import com.slamzoom.android.common.utils.BitmapUtils;
 import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.PostProcessorUtils;
-import com.slamzoom.android.common.utils.SzLog;
+import com.slamzoom.android.common.SzLog;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.interpolators.Interpolator;
 import com.slamzoom.android.interpolators.LinearInterpolator;
-import com.slamzoom.android.mediacreation.gif.GifConfig;
+import com.slamzoom.android.mediacreation.video.VideoCreator;
 
 import java.util.List;
 import java.util.Set;
@@ -47,13 +47,14 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   protected long mStart;
   protected List<List<MediaFrame>> mAllFrames;
   protected AtomicInteger mTotalNumFramesToAdd;
-  protected int mGifWidth;
-  protected int mGifHeight;
+  protected int mWidth;
+  protected int mHeight;
   protected int mTotalNumFrames;
   protected Set<CreateFrameTask> mCreateFrameTasks = Sets.newConcurrentHashSet();
   protected E mMediaEncoder;
   protected boolean mIsCancelled;
   protected boolean mIsPreview;
+  protected int mSize;
   protected int mFps;
 
   protected Context mContext;
@@ -63,45 +64,40 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   protected int mNumTilesInRow;
   protected MultiPhaseStopwatch mTracker;
 
-  public static EffectTemplate getAdjustedEffectTemplate(GifConfig gifConfig) {
-    // This is weird. Not yet sure how else to do this.
-    EffectTemplate effectTemplate = gifConfig.effectTemplate;
-    for (EffectStep step : effectTemplate.getEffectSteps()) {
-      step.setHotspot(gifConfig.hotspot);
-      if (gifConfig.endText != null) {
-        step.setEndText(gifConfig.endText);
-      }
-    }
-    return effectTemplate;
-  }
+  protected boolean mIsVideo;
 
-  public MediaCreator(
-      Context context,
-      Bitmap selectedBitmap,
-      EffectTemplate effectTemplate,
-      int gifSize,
-      int fps,
-      MediaCreatorCallback callback,
-      MultiPhaseStopwatch tracker) {
+  public MediaCreator(Context context, MediaConfig config, MultiPhaseStopwatch tracker) {
+    mIsVideo = this instanceof VideoCreator;
+
     mContext = context;
-    mSelectedBitmap = selectedBitmap;
-    mEffectTemplate = effectTemplate;
-    mCallback = callback;
-    mNumTilesInRow = mEffectTemplate.getNumTilesInRow();
-    mTracker = tracker;
+    mSelectedBitmap = config.bitmap;
+    mEffectTemplate = getAdjustedEffectTemplate(config);
 
-    mIsPreview = gifSize == Constants.DEFAULT_GIF_PREVIEW_SIZE_PX;
+    // TODO(clocksmith) can delete this.
+    mNumTilesInRow = mEffectTemplate.getNumTilesInRow();
+
+    int size = config.size;
+    mIsPreview = size == Constants.THUMBNAIL_SIZE_PX;
     float aspectRatio = (float) mSelectedBitmap.getWidth() / mSelectedBitmap.getHeight();
-    mGifWidth = aspectRatio > 1 ? gifSize : Math.round(gifSize * aspectRatio);
-    mGifHeight = aspectRatio > 1 ? Math.round(gifSize / aspectRatio) : gifSize;
-    mFps = fps;
+    if (aspectRatio > 1) {
+      mWidth = size;
+      mHeight = Math.round(size / aspectRatio) / 2 * 2;
+    } else {
+      mWidth = Math.round(size * aspectRatio) / 2 * 2;
+      mHeight = size;
+    }
+
+    mSize = config.size;
+    mFps = config.fps;
+    mTracker = tracker;
   }
 
-  public abstract MediaFrame  createFrame(Bitmap bitmap, int delayMillis);
+  public abstract MediaFrame createFrame(Bitmap bitmap, int delayMillis, int frameIndex);
 
   public abstract E createEncoder();
 
-  public void createAsync() {
+  public void createAsync(MediaCreatorCallback callback) {
+    mCallback = callback;
     mStart = System.currentTimeMillis();
     List<EffectStep> steps = mEffectTemplate.getEffectSteps();
     mTotalNumFramesToAdd = new AtomicInteger(0);
@@ -136,34 +132,19 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       int delayMillis,
       String textToRender,
       int frameIndex) {
-//    Bitmap frameBitmap = transformSelectedBitmap(transformationMatrix);
-//
-//    if (DebugUtils.DEBUG_SAVE_TRANSFORMED_FRAMES_AS_BITMAPS && !mIsPreview) {
-//      DebugUtils.saveFrameAsBitmap(frameBitmap, "transformed", frameIndex);
-//    }
-
-//    Bitmap scaledFrameBitmap = Bitmap.createScaledBitmap(frameBitmap, mGifWidth, mGifHeight, true);
-//    Bitmap scaledFrameBitmap = BitmapUtils.createScaledBitmap3(frameBitmap, mGifWidth, mGifHeight);
-
-    if (mTracker != null) {
-      mTracker.start(STOPWATCH_TRANSFORMING);
-    }
+    mTracker.start(STOPWATCH_TRANSFORMING);
     Bitmap scaledFrameBitmap = transformAndScaleSelectedBitmap(transformationMatrix);
-    if (mTracker != null) {
-      mTracker.stop(STOPWATCH_TRANSFORMING);
-    }
+    mTracker.stop(STOPWATCH_TRANSFORMING);
 
-    if (DebugUtils.SAVE_SCALED_FRAMES_AS_BITMAPS && !mIsPreview) {
-      DebugUtils.saveFrameAsBitmap(scaledFrameBitmap, "scaled", frameIndex);
+    if (DebugUtils.SAVE_SCALED_FRAMES_AS_PNGS && !mIsPreview) {
+      BitmapUtils.saveBitmapToDiskAsPng(scaledFrameBitmap, "scaled_" + frameIndex);
     }
 
     if (mNumTilesInRow > 1) {
       scaledFrameBitmap = PostProcessorUtils.applyTiling(mNumTilesInRow, scaledFrameBitmap);
     }
 
-    if (mTracker != null) {
-      mTracker.start(STOPWATCH_FILTERING);
-    }
+    mTracker.start(STOPWATCH_FILTERING);
     Bitmap filteredFrameBitmap;
     if (!filters.isEmpty()) {
       filteredFrameBitmap = PostProcessorUtils.applyFilters(scaledFrameBitmap, filters);
@@ -171,9 +152,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     } else {
       filteredFrameBitmap = scaledFrameBitmap;
     }
-    if (mTracker != null) {
-      mTracker.stop(STOPWATCH_FILTERING);
-    }
+    mTracker.stop(STOPWATCH_FILTERING);
 
     if (!Strings.isNullOrEmpty(textToRender)) {
       delayMillis += 1000;
@@ -184,11 +163,11 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       PostProcessorUtils.renderWatermark(mContext, filteredFrameBitmap);
     }
 
-    if (DebugUtils.SAVE_FILTERED_FRAMES_AS_BITMAPS && !mIsPreview) {
-      DebugUtils.saveFrameAsBitmap(filteredFrameBitmap, "filtered", frameIndex);
+    if (DebugUtils.SAVE_FILTERED_FRAMES_AS_PNGS && !mIsPreview) {
+      BitmapUtils.saveBitmapToDiskAsPng(filteredFrameBitmap, "filtered_" + frameIndex);
     }
 
-    return createFrame(filteredFrameBitmap, delayMillis);
+    return createFrame(filteredFrameBitmap, delayMillis, frameIndex);
   }
 
   protected void collectFrames() {
@@ -304,16 +283,31 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   }
 
   private Bitmap transformAndScaleSelectedBitmap(Matrix transformationMatrix) {
-    Bitmap targetBitmap = Bitmap.createBitmap(mGifWidth, mGifHeight, Bitmap.Config.ARGB_8888);
+    boolean forceSquareOutput = mIsVideo && !DebugUtils.ALLOW_NON_SQUARE_OUTPUT_VIDEO;
+
+    Bitmap targetBitmap;
+    if (forceSquareOutput) {
+      targetBitmap = Bitmap.createBitmap(mSize, mSize, Bitmap.Config.ARGB_8888);
+    } else {
+      targetBitmap = Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888);
+    }
+
     Canvas canvas = new Canvas(targetBitmap);
-    // Paint.FILTER_BITMAP_FLAG | Paint.ANTI_ALIAS_FLAG
     Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
     transformationMatrix.postScale(
-        (float) mGifWidth / mSelectedBitmap.getWidth(),
-        (float) mGifHeight / mSelectedBitmap.getHeight(),
+        (float) mWidth / mSelectedBitmap.getWidth(),
+        (float) mHeight / mSelectedBitmap.getHeight(),
         0,
         0);
+
+    if (forceSquareOutput) {
+      transformationMatrix.postTranslate(
+          mWidth < mSize ? (mSize - mWidth) / 2 : 0,
+          mHeight < mSize ? (mSize - mHeight) / 2 : 0
+      );
+    }
     canvas.drawBitmap(mSelectedBitmap, transformationMatrix, paint);
+
     return targetBitmap;
   }
 
@@ -384,5 +378,17 @@ public abstract class MediaCreator<E extends MediaEncoder> {
         }
       }
     }
+  }
+
+  private static EffectTemplate getAdjustedEffectTemplate(MediaConfig mediaConfig) {
+    // TODO(clocksmith): This is weird. Not yet sure how else to do this.
+    EffectTemplate effectTemplate = mediaConfig.effectTemplate;
+    for (EffectStep step : effectTemplate.getEffectSteps()) {
+      step.setHotspot(mediaConfig.hotspot);
+      if (mediaConfig.endText != null) {
+        step.setEndText(mediaConfig.endText);
+      }
+    }
+    return effectTemplate;
   }
 }

@@ -1,6 +1,7 @@
 package com.slamzoom.android.common.utils;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,15 +9,24 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Environment;
+import android.util.Log;
 
 import com.slamzoom.android.common.Constants;
+import com.slamzoom.android.common.FileType;
+import com.slamzoom.android.common.SzLog;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * Created by clocksmith on 3/7/16.
  */
 public class BitmapUtils {
+  private static final String TAG = BitmapUtils.class.getSimpleName();
+
   public static Bitmap readScaledBitmap(Uri uri , ContentResolver contentResolver) throws FileNotFoundException  {
     return readScaledBitmap(uri, contentResolver, Constants.MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX);
   }
@@ -86,5 +96,72 @@ public class BitmapUtils {
     }
 
     return inSampleSize;
+  }
+
+  public static File saveBitmapToDiskAsPng(Bitmap finalBitmap, String id) {
+    File file = FileUtils.createFileWithId(FileType.PNG, id);
+    FileOutputStream out = null;
+
+    try {
+      out = new FileOutputStream(file);
+      finalBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+    } catch (Exception e) {
+      SzLog.e(TAG, "Cannot compress bitmap to png", e);
+    } finally {
+      try {
+        if (out != null) {
+          out.close();
+        }
+      } catch (IOException e) {
+        SzLog.e(TAG, "Cannot save bitmap", e);
+      }
+    }
+
+    return file;
+  }
+
+  public static File saveBitmapToDiskAsJpeg(Bitmap finalBitmap, String id) {
+    File file = FileUtils.createFileWithId(FileType.JPEG, id);
+    FileOutputStream out = null;
+
+    try {
+      out = new FileOutputStream(file);
+      finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+    } catch (Exception e) {
+      SzLog.e(TAG, "Cannot compress bitmap to jpeg", e);
+    } finally {
+      try {
+        if (out != null) {
+          out.close();
+        }
+      } catch (IOException e) {
+        SzLog.e(TAG, "Cannot save bitmap", e);
+      }
+    }
+
+    return file;
+  }
+
+  // TODO(clocksmith): merge with other methods in this file
+  public static File saveBitmapToDiskPrivatelyAsJpeg(Bitmap finalBitmap, String id) {
+    File file = FileUtils.createPrivateFileWithFilename(id + "." + FileType.JPEG.ext);
+    FileOutputStream out = null;
+
+    try {
+      out = new FileOutputStream(file);
+      finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+    } catch (Exception e) {
+      SzLog.e(TAG, "Cannot compress bitmap to jpeg", e);
+    } finally {
+      try {
+        if (out != null) {
+          out.close();
+        }
+      } catch (IOException e) {
+        SzLog.e(TAG, "Cannot save bitmap", e);
+      }
+    }
+
+    return file;
   }
 }

@@ -11,9 +11,10 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Queues;
 import com.slamzoom.android.common.bus.BusProvider;
 import com.slamzoom.android.common.utils.DebugUtils;
-import com.slamzoom.android.common.utils.SzAnalytics;
-import com.slamzoom.android.common.utils.SzLog;
+import com.slamzoom.android.common.SzAnalytics;
+import com.slamzoom.android.common.SzLog;
 import com.slamzoom.android.effects.EffectPacks;
+import com.slamzoom.android.mediacreation.MediaConfig;
 import com.slamzoom.android.ui.create.effectchooser.EffectThumbnailViewHolder;
 import com.squareup.otto.Subscribe;
 
@@ -101,7 +102,7 @@ public class GifService extends Service {
     mThumbnailGifCreatorRunQueue.clear();
   }
 
-  public void requestThumbnailGifs(List<GifConfig> configs) {
+  public void requestThumbnailGifs(List<MediaConfig> configs) {
     clear();
 
     if (!DebugUtils.SKIP_GENERATE_THUMBNAIL_GIFS) {
@@ -113,7 +114,7 @@ public class GifService extends Service {
     continueThumbnailGifGeneration();
   }
 
-  public void requestMainGif(final GifConfig config) {
+  public void requestMainGif(final MediaConfig config) {
     SzLog.f(TAG, "endText: " + config.endText);
     final String name = config.effectTemplate.getName();
     if (mMainGifCache.asMap().containsKey(name)) {
@@ -144,7 +145,7 @@ public class GifService extends Service {
   }
 
   private GifCreatorManager getManager(
-      GifConfig config, final Cache<String, byte[]> cache, final boolean thumbnail, int index) {
+      MediaConfig config, final Cache<String, byte[]> cache, final boolean thumbnail, int index) {
     final String name = config.effectTemplate.getName();
     return new GifCreatorManager(
         getApplicationContext(),

@@ -4,7 +4,8 @@ import android.content.Context;
 
 import com.google.common.base.Objects;
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.common.utils.SzLog;
+import com.slamzoom.android.common.SzLog;
+import com.slamzoom.android.mediacreation.MediaConfig;
 import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
 
 /**
@@ -14,7 +15,7 @@ public class GifCreatorManager implements Comparable {
   private static final String TAG = GifCreatorManager.class.getSimpleName();
 
   private Context mContext;
-  private GifConfig mGifConfig;
+  private MediaConfig mMediaConfig;
   private boolean mIsPreview;
   private int mIndex;
   private GifCreatorCallback mCallback;
@@ -28,29 +29,29 @@ public class GifCreatorManager implements Comparable {
 
   public GifCreatorManager(
       Context context,
-      GifConfig gifConfig,
+      MediaConfig mediaConfig,
       boolean preview,
       int index,
       GifCreatorCallback callback) {
     mContext = context;
-    mGifConfig = gifConfig;
+    mMediaConfig = mediaConfig;
     mIsPreview = preview;
     mIndex = index;
     mCallback = callback;
 
-    mGifSize = preview ? Constants.DEFAULT_GIF_PREVIEW_SIZE_PX : Constants.DEFAULT_GIF_SIZE_PX;
+    mGifSize = preview ? Constants.THUMBNAIL_SIZE_PX : Constants.MAIN_SIZE_PX;
     mTracker = new MultiPhaseStopwatch();
   }
 
   public void start() {
-    SzLog.f(TAG, "start() " + (mIsPreview ? "preview_" : "") + mGifConfig.effectTemplate.getName());
+    SzLog.f(TAG, "start() " + (mIsPreview ? "preview_" : "") + mMediaConfig.effectTemplate.getName());
     mIsRunning = true;
-    mGifCreator = new GifCreator(mContext, mGifConfig, mGifSize, mCallback, mTracker);
-    mGifCreator.createAsync();
+    mGifCreator = new GifCreator(mContext, mMediaConfig, mTracker);
+    mGifCreator.createAsync(mCallback);
   }
 
   public void stop() {
-    SzLog.f(TAG, "stop() " + (mIsPreview ? "preview_" : "") + mGifConfig.effectTemplate.getName());
+    SzLog.f(TAG, "stop() " + (mIsPreview ? "preview_" : "") + mMediaConfig.effectTemplate.getName());
     mHasStopped = true;
     mIsRunning = false;
     mTracker.stopAll();
@@ -73,7 +74,7 @@ public class GifCreatorManager implements Comparable {
   }
 
   public String getName() {
-    return mGifConfig.effectTemplate.getName();
+    return mMediaConfig.effectTemplate.getName();
   }
 
   public int getIndex() {
@@ -85,15 +86,15 @@ public class GifCreatorManager implements Comparable {
   }
 
   public int getFps() {
-    return mGifConfig.fps;
+    return mMediaConfig.fps;
   }
 
   public float getEndScale() {
-    return (float) mGifConfig.hotspot.width() / mGifConfig.bitmap.getWidth();
+    return (float) mMediaConfig.hotspot.width() / mMediaConfig.bitmap.getWidth();
   }
 
   public String getEndText() {
-    return mGifConfig.endText;
+    return mMediaConfig.endText;
   }
 
   public MultiPhaseStopwatch getTracker() {
@@ -102,7 +103,7 @@ public class GifCreatorManager implements Comparable {
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(mGifConfig);
+    return Objects.hashCode(mMediaConfig);
   }
 
   @Override
@@ -114,7 +115,7 @@ public class GifCreatorManager implements Comparable {
       return false;
     }
     final GifCreatorManager other = (GifCreatorManager) obj;
-    return Objects.equal(mGifConfig, other.mGifConfig);
+    return Objects.equal(mMediaConfig, other.mMediaConfig);
   }
 
   /**

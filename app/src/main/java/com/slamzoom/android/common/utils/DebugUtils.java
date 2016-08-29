@@ -20,21 +20,22 @@ public class DebugUtils {
   // TODO(cloksmith): convert these to build flags.
 
   // Superuser
-  public static final boolean UNLOCK_UNPAID_PACKS = true;
+  public static final boolean UNLOCK_UNPAID_PACKS = false;
 
   // Effects
   public static final boolean REVERSE_LOOP_EFFECTS = false;
+  public static final boolean ALLOW_NON_SQUARE_OUTPUT_VIDEO = false;
 
   // Performance
   public static final boolean SKIP_GIF_CACHE = false;
   public static final boolean SKIP_GENERATE_THUMBNAIL_GIFS = false;
   public static final boolean SKIP_RECYCLE_BITMAP = false;
 
-  // Debug gif quality
+  // Quality
   public static final boolean USE_DEBUG_EFFECTS = false;
-  public static final boolean SAVE_SRC_AS_BITMAP = false;
-  public static final boolean SAVE_SCALED_FRAMES_AS_BITMAPS = false;
-  public static final boolean SAVE_FILTERED_FRAMES_AS_BITMAPS = false;
+  public static final boolean SAVE_SRC_AS_PNG = false;
+  public static final boolean SAVE_SCALED_FRAMES_AS_PNGS = false;
+  public static final boolean SAVE_FILTERED_FRAMES_AS_PNGS = false;
 
   // Convenience
   public static final boolean SKIP_START_SCREEN = false;
@@ -54,33 +55,4 @@ public class DebugUtils {
         (int) (src.getHeight() * (DEBUG_RECT_TOP_FRACTION + DEBUG_RECT_SIZE_FRACTION) + 0.5f));
   }
 
-  public static void saveFrameAsBitmap(Bitmap finalBitmap, String type, int frameIndex) {
-      File direct = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "/SlamZoom");
-      File file = new File(direct, "debug_" + frameIndex + "_" + type + ".png");
-      if (!file.getParentFile().isDirectory()) {
-        Log.d(TAG, "No directory exists: " + file.getParentFile());
-        if (!file.getParentFile().mkdirs()) {
-          SzLog.e(TAG, "Cannot make directory: " + file.getParentFile());
-        }
-      } else {
-        Log.d(TAG, direct + " already exists.");
-      }
-      if (frameIndex >= 0) {
-        FileOutputStream out = null;
-        try {
-          out = new FileOutputStream(file);
-          finalBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-        } catch (Exception e) {
-          e.printStackTrace();
-        } finally {
-          try {
-            if (out != null) {
-              out.close();
-            }
-          } catch (IOException e) {
-            SzLog.e(TAG, "Cannot save bitmap");
-          }
-        }
-      }
-  }
 }

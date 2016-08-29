@@ -7,11 +7,9 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.slamzoom.android.R;
-import com.slamzoom.android.common.utils.SzLog;
-import com.slamzoom.android.effects.EffectColors;
+import com.slamzoom.android.common.SzLog;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by clocksmith on 2/27/16.

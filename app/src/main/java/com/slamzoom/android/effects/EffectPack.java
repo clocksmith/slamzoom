@@ -1,11 +1,7 @@
 package com.slamzoom.android.effects;
 
-import android.util.Log;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.slamzoom.android.common.utils.SzLog;
-import com.slamzoom.android.ui.create.effectchooser.EffectChooser;
 
 import java.util.List;
 

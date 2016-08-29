@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.executor.ExecutorProvider;
-import com.slamzoom.android.common.utils.SzLog;
+import com.slamzoom.android.common.SzLog;
 import com.slamzoom.android.mediacreation.MediaCreatorCallback;
 import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
 import com.slamzoom.android.mediacreation.MediaEncoder;

@@ -15,7 +15,7 @@ import com.slamzoom.android.R;
 import com.slamzoom.android.common.FontLoader;
 import com.slamzoom.android.common.utils.AnimationUtils;
 import com.slamzoom.android.common.utils.DebugUtils;
-import com.slamzoom.android.common.utils.SzLog;
+import com.slamzoom.android.common.SzLog;
 import com.slamzoom.android.ui.create.CreateActivity;
 
 import java.io.IOException;

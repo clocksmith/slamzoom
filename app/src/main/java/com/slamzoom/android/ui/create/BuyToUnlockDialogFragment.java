@@ -16,7 +16,7 @@ import com.google.common.collect.Lists;
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.bus.BusProvider;
-import com.slamzoom.android.common.utils.SzLog;
+import com.slamzoom.android.common.SzLog;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 
 import java.util.List;

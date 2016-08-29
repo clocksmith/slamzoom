@@ -1,21 +1,26 @@
 package com.slamzoom.android.mediacreation.video;
 
-import android.os.AsyncTask;
+import android.util.Log;
 
+import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
+import com.github.hiteshsondhi88.libffmpeg.FFmpegExecuteResponseHandler;
+import com.github.hiteshsondhi88.libffmpeg.FFmpegLoadBinaryResponseHandler;
+import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException;
+import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegNotSupportedException;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.slamzoom.android.SzApp;
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.common.Files;
-import com.slamzoom.android.common.utils.SzLog;
+import com.slamzoom.android.common.FileType;
+import com.slamzoom.android.common.SzLog;
+import com.slamzoom.android.common.utils.FileUtils;
 import com.slamzoom.android.mediacreation.MediaCreatorCallback;
 import com.slamzoom.android.mediacreation.MediaEncoder;
 
-import org.jcodec.api.SequenceEncoder;
-import org.jcodec.api.SequenceEncoder8Bit;
-import org.jcodec.api.android.AndroidSequenceEncoder8Bit;
-import org.jcodec.containers.mxf.model.Sequence;
-
 import java.io.File;
-import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.List;
 
 /**
  * Created by clocksmith on 8/25/16.
@@ -28,32 +33,107 @@ public class VideoEncoder extends MediaEncoder<VideoFrame> {
   @Override
   public void encodeAsync(MediaCreatorCallback callback) {
     super.encodeAsync(callback);
-    EncodeVideoTask encodeVideoTask = new EncodeVideoTask();
-    mTasks.add(encodeVideoTask);
-    encodeVideoTask.execute();
+
+    FFmpeg ffmpeg = FFmpeg.getInstance(SzApp.context);
+    try {
+      ffmpeg.loadBinary(new FFmpegLoadBinaryResponseHandler() {
+        @Override
+        public void onFailure() {
+          Log.wtf(TAG, "loadBinary onFailure()");
+        }
+
+        @Override
+        public void onSuccess() {
+          Log.wtf(TAG, "loadBinary onSuccess()");
+          execute();
+        }
+
+        @Override
+        public void onStart() {
+          Log.wtf(TAG, "loadBinary onStart()");
+        }
+
+        @Override
+        public void onFinish() {
+          Log.wtf(TAG, "loadBinary onFinish()");
+        }
+      });
+    } catch (FFmpegNotSupportedException e) {
+      SzLog.e(TAG, "Coud not load ffmpeg binary", e);
+      mCallback.onCreateVideo(null);
+    }
   }
 
-  private class EncodeVideoTask extends AsyncTask<Void, Void, Void> {
-    @Override
-    protected Void doInBackground(Void... params) {
-      File videoFile = Files.makeFile(Files.FileType.VIDEO, "video");
+  private void execute() {
+    // TODO(clocksmith): clean up old files.
 
-      try {
-        AndroidSequenceEncoder8Bit encoder = AndroidSequenceEncoder8Bit.create24Fps(videoFile);
-        for (VideoFrame frame : mFrames) {
-          int baseDelayMillis = (int) (1000.0 / Constants.MAIN_FPS);
-          int numFrames = frame.delayMillis / baseDelayMillis;
-          for (int i = 0; i < numFrames; i++) {
-            encoder.encodeImage(frame.bitmap);
-          }
+    final File videoOutFile = FileUtils.createTimestampedFileWithId(FileType.VIDEO, "video");
+    final File concatFile = FileUtils.createPrivateFileWithFilename("concat.txt");
+
+    try {
+      PrintWriter pw = new PrintWriter(concatFile);
+      for (VideoFrame frame : mFrames) {
+        // TODO(clocksmith): used passed in FPS
+        int frameDuration = (int) (1000.0 / Constants.MAIN_FPS);
+        int numFrames = frame.delayMillis / frameDuration;
+        for (int i = 0; i < numFrames; i++) {
+          pw.println("file '" + frame.path.getAbsolutePath() + "'");
         }
-        encoder.finish();
-      } catch (IOException e) {
-        SzLog.e(TAG,  "Cannot encode video.", e);
       }
+      pw.close();
+    } catch (FileNotFoundException e) {
+      SzLog.e(TAG, "Could not open print writer.", e);
+      mCallback.onCreateVideo(null);
+    }
 
-      mCallback.onCreateVideo(videoFile);
-      return null;
+    List<String> cmds = Lists.newArrayList();
+    cmds.add("-f");
+    cmds.add("concat");
+    cmds.add("-safe");
+    cmds.add("0");
+    cmds.add("-y");
+    cmds.add("-i");
+    cmds.add(concatFile.getAbsolutePath());
+    cmds.add(videoOutFile.getAbsolutePath());
+
+    Log.wtf(TAG, Joiner.on(" ").join(cmds));
+
+    FFmpeg ffmpeg = FFmpeg.getInstance(SzApp.context);
+    try {
+      ffmpeg.execute(
+          cmds.toArray(new String[cmds.size()]),
+          new FFmpegExecuteResponseHandler() {
+            @Override
+            public void onSuccess(String message) {
+              Log.wtf(TAG, "execute onSuccess()");
+              mCallback.onCreateVideo(videoOutFile);
+            }
+
+            @Override
+            public void onProgress(String message) {
+              Log.wtf(TAG, "execute onProgress() " + message);
+            }
+
+            @Override
+            public void onFailure(String message) {
+              Log.wtf(TAG, "execute onFailure()");
+              // TODO(clocksmith): put error handlers in callback
+              mCallback.onCreateVideo(null);
+            }
+
+            @Override
+            public void onStart() {
+              Log.wtf(TAG, "execute onStart()");
+            }
+
+            @Override
+            public void onFinish() {
+              Log.wtf(TAG, "execute onFinish()");
+            }
+          });
+    } catch (FFmpegCommandAlreadyRunningException e) {
+      SzLog.e(TAG, "Coud not execute ffmpeg cmd", e);
+      mCallback.onCreateVideo(null);
     }
   }
 }

@@ -5,7 +5,6 @@ import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -16,8 +15,8 @@ import com.slamzoom.android.R;
 import com.slamzoom.android.common.FontLoader;
 import com.slamzoom.android.common.bus.BusProvider;
 import com.slamzoom.android.common.utils.AnimationUtils;
-import com.slamzoom.android.common.utils.SzAnalytics;
-import com.slamzoom.android.common.utils.SzLog;
+import com.slamzoom.android.common.SzAnalytics;
+import com.slamzoom.android.common.SzLog;
 import com.squareup.otto.Subscribe;
 
 import java.io.IOException;

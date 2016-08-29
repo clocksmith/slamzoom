@@ -3,7 +3,7 @@ package com.slamzoom.android.effects;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import com.slamzoom.android.common.utils.SzLog;
+import com.slamzoom.android.common.SzLog;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeDoubleLeftRightFilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeEyesFilterInterpolatorGroup;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeEyesSwirlMouthFilterInterpoaltor;
@@ -35,6 +35,7 @@ import com.slamzoom.android.effects.interpolation.transform.scaletranslate.Crash
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashRumbleInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashTaranInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.FlushInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.scaletranslate.MulticrashInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.RumbleTeaseInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.ShakeSwitchInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.translate.MegaShakeInterpolatorProvider;
@@ -54,7 +55,6 @@ import com.slamzoom.android.interpolators.custom.SlamSoftInterpolator;
 import com.slamzoom.android.interpolators.custom.SlamSoftOutInterpolator;
 import com.slamzoom.android.interpolators.custom.TeaseInterpolator;
 import com.slamzoom.android.interpolators.custom.ThreeEaseInHardOutInterpolator;
-import com.slamzoom.android.interpolators.spline.CubicSplineInterpolator;
 import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
 
 import java.util.Map;
@@ -243,6 +243,11 @@ public class EffectTemplates {
           .withStartDurationEndSeconds(1, 2, 2)
           .withScaleInterpolator(new LinearInterpolator())
           .withFilterInterpolatorGroup(new SwirlEyesTwistyMouthFilterInterpolator())
+          .build())
+      .add(EffectTemplate.newSingleStepBuilder()
+          .withName("multicrash")
+          .withStartDurationEndSeconds(1, 3, 1)
+          .withScaleAndTranslateInterpolatorProvider(new MulticrashInterpolatorProvider())
           .build())
       .add(EffectTemplate.newSingleStepBuilder()
           .withName("overcrash")
