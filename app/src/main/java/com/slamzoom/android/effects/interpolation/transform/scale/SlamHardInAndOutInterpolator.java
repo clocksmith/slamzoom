@@ -1,4 +1,4 @@
-package com.slamzoom.android.interpolators.custom;
+package com.slamzoom.android.effects.interpolation.transform.scale;
 
 import com.slamzoom.android.interpolators.Interpolator;
 
@@ -7,7 +7,7 @@ import com.slamzoom.android.interpolators.Interpolator;
  */
 public class SlamHardInAndOutInterpolator extends Interpolator {
   @Override
-  protected float getValue(float t) {
+  public float getValue(float t) {
     if (t < 0.5) {
       return (float) Math.pow(0.5 * (t + 1.5), 20);
     } else {

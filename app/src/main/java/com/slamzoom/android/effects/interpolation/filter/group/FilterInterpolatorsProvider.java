@@ -7,6 +7,6 @@ import java.util.List;
 /**
  * Created by clocksmith on 4/22/16.
  */
-public interface FilterInterpolatorGroup {
+public interface FilterInterpolatorsProvider {
   List<FilterInterpolator> getFilterInterpolators();
 }

@@ -7,13 +7,14 @@ import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.common.Constants;
+import com.slamzoom.android.effects.interpolation.transformfilter.TransformAndFilterInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
-import com.slamzoom.android.effects.interpolation.filter.group.FilterInterpolatorGroup;
-import com.slamzoom.android.effects.interpolation.transform.ScaleAndTranslateInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.filter.group.FilterInterpolatorsProvider;
+import com.slamzoom.android.effects.interpolation.transform.TransformInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.TranslateInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.translate.NoTranslateInterpolatorProvider;
 import com.slamzoom.android.interpolators.Interpolator;
-import com.slamzoom.android.interpolators.custom.NoScaleInterpolator;
+import com.slamzoom.android.effects.interpolation.transform.scale.NoScaleInterpolator;
 
 import java.util.List;
 
@@ -134,8 +135,8 @@ public class EffectStep {
           .withYInterpolator(interpolatorProvider.getYInterpolator());
     }
 
-    public Builder withScaleAndTranslateInterpolatorProvider(
-        ScaleAndTranslateInterpolatorProvider interpolatorProvider) {
+    public Builder withTransformInterpolatorProvider(
+        TransformInterpolatorProvider interpolatorProvider) {
       return this
           .withScaleInterpolator(interpolatorProvider.getScaleInterpolator())
           .withXInterpolator(interpolatorProvider.getXInterpolator())
@@ -147,9 +148,17 @@ public class EffectStep {
       return this;
     }
 
-    public Builder withFilterInterpolatorGroup(FilterInterpolatorGroup filterInterpolatorGroup) {
-      mFilterInterpolators.addAll(filterInterpolatorGroup.getFilterInterpolators());
+    public Builder withFilterInterpolatorGroup(FilterInterpolatorsProvider filterInterpolatorsProvider) {
+      mFilterInterpolators.addAll(filterInterpolatorsProvider.getFilterInterpolators());
       return this;
+    }
+
+    public Builder withTransformAndFilterInterpolatorProvider(
+        TransformAndFilterInterpolatorProvider interpoaltionProvider) {
+      mFilterInterpolators.addAll(interpoaltionProvider.getFilterInterpolators());
+      return this
+          .withScaleInterpolator(interpoaltionProvider.getScaleInterpolator())
+          .withTranslateInterpolator(interpoaltionProvider.getTranslateInterpolationProvider());
     }
 
     public Builder withDurationSeconds(float durationSeconds) {

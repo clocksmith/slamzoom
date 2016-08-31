@@ -20,7 +20,7 @@ public class DebugUtils {
   // TODO(cloksmith): convert these to build flags.
 
   // Superuser
-  public static final boolean UNLOCK_UNPAID_PACKS = false;
+  public static final boolean UNLOCK_UNPAID_PACKS = true;
 
   // Effects
   public static final boolean REVERSE_LOOP_EFFECTS = false;

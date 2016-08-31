@@ -143,6 +143,9 @@ public class CreateActivity extends AppCompatActivity {
     super.onResume();
     SzLog.f(TAG, "onResume()");
 
+    if (mSelectedEffectName == null) {
+      mSelectedEffectName = EffectPacks.listEffectTemplatesByPack().get(0).getName();
+    }
     if (mSelectedBitmap == null) {
       launchImageChooser();
     }

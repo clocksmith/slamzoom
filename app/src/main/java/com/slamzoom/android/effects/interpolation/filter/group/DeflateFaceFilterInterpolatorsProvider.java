@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by clocksmith on 6/7/16.
  */
-public class DeflateFaceFilterInterpolatorGroup implements FilterInterpolatorGroup {
+public class DeflateFaceFilterInterpolatorsProvider implements FilterInterpolatorsProvider {
   @Override
   public List<FilterInterpolator> getFilterInterpolators() {
     return ImmutableList.<FilterInterpolator>of(

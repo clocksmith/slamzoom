@@ -42,7 +42,7 @@ public abstract class Interpolator implements Cloneable {
    * @param t original input to the interpolator. See {@link #getInterpolation(float)}.
    * @return value to multiple to the range of the interpolator.
    */
-  protected abstract float getValue(float t);
+  public abstract float getValue(float t);
 
   @Override
   public Interpolator clone() throws CloneNotSupportedException {

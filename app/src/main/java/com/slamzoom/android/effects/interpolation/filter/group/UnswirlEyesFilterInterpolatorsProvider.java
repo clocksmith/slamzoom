@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by clocksmith on 6/2/16.
  */
-public class UnswirlEyesFilterInterpolatorGroup implements FilterInterpolatorGroup {
+public class UnswirlEyesFilterInterpolatorsProvider implements FilterInterpolatorsProvider {
   private static final float BASE_EYE_RADIUS = 0.2f;
 
   @Override

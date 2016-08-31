@@ -1,6 +1,6 @@
 package com.slamzoom.android.effects.interpolation.transform.scaletranslate;
 
-import com.slamzoom.android.effects.interpolation.transform.ScaleAndTranslateInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.TransformInterpolatorProvider;
 import com.slamzoom.android.interpolators.Interpolator;
 import com.slamzoom.android.interpolators.spline.CubicSplineInterpolator;
 import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
@@ -9,7 +9,7 @@ import com.slamzoom.android.interpolators.spline.PointsBuilder;
 /**
  * Created by clocksmith on 3/16/16.
  */
-public class CrashBounceBottomInterpolatorProvider implements ScaleAndTranslateInterpolatorProvider {
+public class CrashBounceBottomInterpolatorProvider implements TransformInterpolatorProvider {
   @Override
   public Interpolator getScaleInterpolator() {
     return new LinearSplineInterpolator(PointsBuilder.create()

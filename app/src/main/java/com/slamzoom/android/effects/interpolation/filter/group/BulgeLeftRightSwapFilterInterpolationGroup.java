@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by clocksmith on 6/7/16.
  */
-public class BulgeLeftRightSwapFilterInterpolationGroup implements FilterInterpolatorGroup {
+public class BulgeLeftRightSwapFilterInterpolationGroup implements FilterInterpolatorsProvider {
   @Override
   public List<FilterInterpolator> getFilterInterpolators() {
     return ImmutableList.<FilterInterpolator>of(

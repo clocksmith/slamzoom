@@ -1,4 +1,4 @@
-package com.slamzoom.android.interpolators.custom;
+package com.slamzoom.android.effects.interpolation.transform.scale;
 
 import com.slamzoom.android.interpolators.BinomialInterpolator;
 

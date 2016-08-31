@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Created by clocksmith on 6/4/16.
  */
-public class BulgeEyesSwirlMouthFilterInterpoaltor implements FilterInterpolatorGroup {
+public class BulgeEyesSwirlMouthFilterInterpoaltor implements FilterInterpolatorsProvider {
   private static final float BASE_MOUTH_RADIUS = 0.2f;
   private static final float BASE_MOUTH_ROTATION = 0.3f;
 
@@ -43,7 +43,7 @@ public class BulgeEyesSwirlMouthFilterInterpoaltor implements FilterInterpolator
   private static class MouthFilterInterpolator extends BaseSwirlFilterInterpolator {
     private Interpolator mMouthRotationIterpolator = new Interpolator() {
       @Override
-      protected float getValue(float t) {
+      public float getValue(float t) {
         return (float) (Math.cos(6 * Math.PI * t));
       }
     };

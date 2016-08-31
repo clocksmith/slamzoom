@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Created by clocksmith on 6/7/16.
  */
-public class SumoBulge2FilterInterpolator implements FilterInterpolatorGroup {
+public class SumoBulge2FilterInterpolator implements FilterInterpolatorsProvider {
   private static final float BASE_RADIUS = 0.49f;
 
   @Override

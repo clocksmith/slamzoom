@@ -29,10 +29,10 @@
     <menu>
       <item
           android:id="@+id/action_share_gif"
-          android:title="Share as GIF" />
+          android:title="Share as GIF (about 2MB)" />
       <item
           android:id="@+id/action_share_video"
-          android:title="Share as Video" />
+          android:title="Share as Video (about 100KB)" />
     </menu>
   </item>
   <item

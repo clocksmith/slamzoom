@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by clocksmith on 6/7/16.
  */
-public class SumoBulgeFilterInterpolator implements FilterInterpolatorGroup {
+public class SumoBulgeFilterInterpolator implements FilterInterpolatorsProvider {
   private static final float BASE_RADIUS = 0.49f;
 
   @Override

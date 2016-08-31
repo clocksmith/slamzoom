@@ -1,17 +1,17 @@
 package com.slamzoom.android.effects;
 
 import com.google.common.collect.Lists;
-import com.slamzoom.android.effects.interpolation.filter.group.BulgeDoubleLeftRightFilterInterpolatorGroup;
-import com.slamzoom.android.effects.interpolation.filter.group.BulgeEyesFilterInterpolatorGroup;
+import com.slamzoom.android.effects.interpolation.filter.group.BulgeDoubleLeftRightFilterInterpolatorsProvider;
+import com.slamzoom.android.effects.interpolation.filter.group.BulgeEyesFilterInterpolatorsProvider;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeEyesSwirlMouthFilterInterpoaltor;
-import com.slamzoom.android.effects.interpolation.filter.group.BulgeFaceFilterInterpolatorGroup;
+import com.slamzoom.android.effects.interpolation.filter.group.BulgeFaceFilterInterpolatorsProvider;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeLeftRightSwapFilterInterpolationGroup;
-import com.slamzoom.android.effects.interpolation.filter.group.DeflateFaceFilterInterpolatorGroup;
-import com.slamzoom.android.effects.interpolation.filter.group.InflateFaceFilterInterpolatorGroup;
+import com.slamzoom.android.effects.interpolation.filter.group.DeflateFaceFilterInterpolatorsProvider;
+import com.slamzoom.android.effects.interpolation.filter.group.InflateFaceFilterInterpolatorsProvider;
 import com.slamzoom.android.effects.interpolation.filter.group.SumoBulge2FilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.group.SumoBulgeFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.group.SwirlEyesTwistyMouthFilterInterpolator;
-import com.slamzoom.android.effects.interpolation.filter.group.UnswirlEyesFilterInterpolatorGroup;
+import com.slamzoom.android.effects.interpolation.filter.group.UnswirlEyesFilterInterpolatorsProvider;
 import com.slamzoom.android.effects.interpolation.filter.single.BulgeInAtHotspotFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.GaussianBlurFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.GaussianUnblurFilterInterpolator;
@@ -40,16 +40,16 @@ import com.slamzoom.android.effects.interpolation.transform.translate.SuperShake
 import com.slamzoom.android.interpolators.Interpolator;
 import com.slamzoom.android.interpolators.LinearInterpolator;
 import com.slamzoom.android.interpolators.ReverseLinearInterpolator;
-import com.slamzoom.android.interpolators.custom.HalfInAndOutInterpolator;
-import com.slamzoom.android.interpolators.custom.InAndOutInterpolator;
-import com.slamzoom.android.interpolators.custom.OutAndInInterpolator;
-import com.slamzoom.android.interpolators.custom.OvershootInterpolator;
-import com.slamzoom.android.interpolators.custom.SlamHardInAndOutInterpolator;
-import com.slamzoom.android.interpolators.custom.SlamHardInterpolator;
-import com.slamzoom.android.interpolators.custom.SlamHardNoPauseInterpolator;
-import com.slamzoom.android.interpolators.custom.SlamSoftInterpolator;
-import com.slamzoom.android.interpolators.custom.SlamSoftOutInterpolator;
-import com.slamzoom.android.interpolators.custom.SlamSoftOutNoPauseInterpolator;
+import com.slamzoom.android.effects.interpolation.transform.scale.HalfInAndOutInterpolator;
+import com.slamzoom.android.effects.interpolation.transform.scale.InAndOutInterpolator;
+import com.slamzoom.android.effects.interpolation.transform.scale.OutAndInInterpolator;
+import com.slamzoom.android.effects.interpolation.transform.scale.OvershootInterpolator;
+import com.slamzoom.android.effects.interpolation.transform.scale.SlamHardInAndOutInterpolator;
+import com.slamzoom.android.effects.interpolation.transform.scale.SlamHardInterpolator;
+import com.slamzoom.android.effects.interpolation.transform.scale.SlamHardNoPauseInterpolator;
+import com.slamzoom.android.effects.interpolation.transform.scale.SlamSoftInterpolator;
+import com.slamzoom.android.effects.interpolation.transform.scale.SlamSoftOutInterpolator;
+import com.slamzoom.android.effects.interpolation.transform.scale.SlamSoftOutNoPauseInterpolator;
 import com.slamzoom.android.interpolators.spline.CubicSplineInterpolator;
 import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
 import com.slamzoom.android.interpolators.spline.PointsBuilder;
@@ -68,14 +68,14 @@ public class TheOldLabPackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withStartPauseSeconds(0.5f)
             .withDurationSeconds(1f)
-            .withScaleAndTranslateInterpolatorProvider(new CrashBounceDiagonalInterpolatorProvider())
+            .withTransformInterpolatorProvider(new CrashBounceDiagonalInterpolatorProvider())
             .build())
         .build());
 
     packModels.add(EffectTemplate.newBuilder()
         .withName("flush")
         .addEffectStep(EffectStep.newBuilder()
-            .withScaleAndTranslateInterpolatorProvider(new FlushInterpolatorProvider())
+            .withTransformInterpolatorProvider(new FlushInterpolatorProvider())
             .withDurationSeconds(3f)
             .withEndPauseSeconds(1f)
             .build())
@@ -83,7 +83,7 @@ public class TheOldLabPackProvider {
     packModels.add(EffectTemplate.newBuilder()
         .withName("spiral")
         .addEffectStep(EffectStep.newBuilder()
-            .withScaleAndTranslateInterpolatorProvider(new CircleCenterInterpolatorProvider())
+            .withTransformInterpolatorProvider(new CircleCenterInterpolatorProvider())
             .withDurationSeconds(3f)
             .withEndPauseSeconds(1f)
             .build())
@@ -139,7 +139,7 @@ public class TheOldLabPackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolatorGroup(new UnswirlEyesFilterInterpolatorGroup())
+            .withFilterInterpolatorGroup(new UnswirlEyesFilterInterpolatorsProvider())
             .withEndPauseSeconds(1)
             .build())
         .build());
@@ -148,7 +148,7 @@ public class TheOldLabPackProvider {
         .withName("swirlyeyes")
         .addEffectStep(EffectStep.newBuilder()
             .withScaleInterpolator(new InAndOutInterpolator())
-            .withFilterInterpolatorGroup(new UnswirlEyesFilterInterpolatorGroup())
+            .withFilterInterpolatorGroup(new UnswirlEyesFilterInterpolatorsProvider())
             .build())
         .build());
 
@@ -252,7 +252,7 @@ public class TheOldLabPackProvider {
             .withStartPauseSeconds(0.75f)
             .withDurationSeconds(0.75f)
             .withEndPauseSeconds(2f)
-            .withScaleAndTranslateInterpolatorProvider(new CrashMissInterpolatorProvider())
+            .withTransformInterpolatorProvider(new CrashMissInterpolatorProvider())
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
@@ -261,7 +261,7 @@ public class TheOldLabPackProvider {
             .withStartPauseSeconds(0.5f)
             .withDurationSeconds(1f)
             .withEndPauseSeconds(2f)
-            .withScaleAndTranslateInterpolatorProvider(new CrashBounceBottomInterpolatorProvider())
+            .withTransformInterpolatorProvider(new CrashBounceBottomInterpolatorProvider())
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
@@ -279,7 +279,7 @@ public class TheOldLabPackProvider {
             .withStartPauseSeconds(0.75f)
             .withDurationSeconds(0.75f)
             .withEndPauseSeconds(2f)
-            .withScaleAndTranslateInterpolatorProvider(new CrashTaranInterpolatorProvider())
+            .withTransformInterpolatorProvider(new CrashTaranInterpolatorProvider())
             .withFilterInterpolator(new GaussianBlurFilterInterpolator(
                 new LinearSplineInterpolator(PointsBuilder.create()
                     .withPoint(0, 0)
@@ -300,7 +300,7 @@ public class TheOldLabPackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withStartPauseSeconds(0.5f)
             .withDurationSeconds(1.5f)
-            .withScaleAndTranslateInterpolatorProvider(new CrashRumbleInterpolatorProvider())
+            .withTransformInterpolatorProvider(new CrashRumbleInterpolatorProvider())
             .build())
         .build());
 
@@ -369,7 +369,7 @@ public class TheOldLabPackProvider {
             .withDurationSeconds(2)
             .withEndPauseSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolatorGroup(new BulgeFaceFilterInterpolatorGroup())
+            .withFilterInterpolatorGroup(new BulgeFaceFilterInterpolatorsProvider())
             .build())
         .build());
 
@@ -378,7 +378,7 @@ public class TheOldLabPackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolatorGroup(new InflateFaceFilterInterpolatorGroup())
+            .withFilterInterpolatorGroup(new InflateFaceFilterInterpolatorsProvider())
             .withEndPauseSeconds(2)
             .build())
         .build());
@@ -399,7 +399,7 @@ public class TheOldLabPackProvider {
             .withDurationSeconds(2)
             .withEndPauseSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolatorGroup(new BulgeDoubleLeftRightFilterInterpolatorGroup())
+            .withFilterInterpolatorGroup(new BulgeDoubleLeftRightFilterInterpolatorsProvider())
             .build())
         .build());
 
@@ -409,7 +409,7 @@ public class TheOldLabPackProvider {
             .withDurationSeconds(2)
             .withEndPauseSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolatorGroup(new BulgeEyesFilterInterpolatorGroup())
+            .withFilterInterpolatorGroup(new BulgeEyesFilterInterpolatorsProvider())
             .build())
         .build());
 
@@ -418,7 +418,7 @@ public class TheOldLabPackProvider {
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(2)
             .withScaleInterpolator(new LinearInterpolator())
-            .withFilterInterpolatorGroup(new DeflateFaceFilterInterpolatorGroup())
+            .withFilterInterpolatorGroup(new DeflateFaceFilterInterpolatorsProvider())
             .withEndPauseSeconds(2)
             .build())
         .build());
@@ -541,7 +541,7 @@ public class TheOldLabPackProvider {
         .withName("rumblestiltskin")
         .addEffectStep(EffectStep.newBuilder()
             .withDurationSeconds(3)
-            .withScaleAndTranslateInterpolatorProvider(new ShakeSwitchInterpolatorProvider())
+            .withTransformInterpolatorProvider(new ShakeSwitchInterpolatorProvider())
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
@@ -682,7 +682,7 @@ public class TheOldLabPackProvider {
             .withDurationSeconds(4f)
             .withScaleInterpolator(new Interpolator() {
               @Override
-              protected float getValue(float t) {
+              public float getValue(float t) {
                 if (t < 0.1667) {
                   return 0;
                 } else if (t < 0.5) {
@@ -697,7 +697,7 @@ public class TheOldLabPackProvider {
             .withFilterInterpolator(new UnderExposeFilterInterpolator(
                 new Interpolator() {
                   @Override
-                  protected float getValue(float t) {
+                  public float getValue(float t) {
                     return (float) Math.pow(Math.sin(3 * Math.PI * t), 10);
                   }
                 }))
@@ -712,7 +712,7 @@ public class TheOldLabPackProvider {
             .withDurationSeconds(4)
             .withScaleInterpolator(new Interpolator() {
               @Override
-              protected float getValue(float t) {
+              public float getValue(float t) {
                 if (t < 0.1667) {
                   return 0;
                 } else if (t < 0.5) {
@@ -727,7 +727,7 @@ public class TheOldLabPackProvider {
             .withFilterInterpolator(new OverExposeFilterInterpolator(
                 new Interpolator() {
                   @Override
-                  protected float getValue(float t) {
+                  public float getValue(float t) {
                     return (float) Math.pow(Math.sin(3 * Math.PI * t), 10);
                   }
                 }))
@@ -742,7 +742,7 @@ public class TheOldLabPackProvider {
             .withDurationSeconds(4)
             .withScaleInterpolator(new Interpolator() {
               @Override
-              protected float getValue(float t) {
+              public float getValue(float t) {
                 if (t < 0.1667) {
                   return 0;
                 } else if (t < 0.5) {
@@ -757,7 +757,7 @@ public class TheOldLabPackProvider {
             .withFilterInterpolator(new GaussianBlurFilterInterpolator(
                 new Interpolator() {
                   @Override
-                  protected float getValue(float t) {
+                  public float getValue(float t) {
                     return (float) Math.pow(Math.sin(3 * Math.PI * t), 10);
                   }
                 }))
@@ -771,7 +771,7 @@ public class TheOldLabPackProvider {
             .withDurationSeconds(6)
             .withScaleInterpolator(new Interpolator() {
               @Override
-              protected float getValue(float t) {
+              public float getValue(float t) {
                 if (t < 0.25) {
                   return 0;
                 } else if (t < 0.5) {
@@ -792,7 +792,7 @@ public class TheOldLabPackProvider {
               public Interpolator getXInterpolator() {
                 return new Interpolator() {
                   @Override
-                  protected float getValue(float t) {
+                  public float getValue(float t) {
                     if (t < 0.25) {
                       return first.getXInterpolator().getInterpolation(t);
                     } else if (t < 0.5) {
@@ -810,7 +810,7 @@ public class TheOldLabPackProvider {
               public Interpolator getYInterpolator() {
                 return new Interpolator() {
                   @Override
-                  protected float getValue(float t) {
+                  public float getValue(float t) {
                     if (t < 0.25) {
                       return first.getYInterpolator().getInterpolation(t);
                     } else if (t < 0.5) {
@@ -834,7 +834,7 @@ public class TheOldLabPackProvider {
             .withDurationSeconds(4)
             .withScaleInterpolator(new Interpolator() {
               @Override
-              protected float getValue(float t) {
+              public float getValue(float t) {
                 if (t < 0.1667) {
                   return 0;
                 } else if (t < 0.5) {
@@ -849,7 +849,7 @@ public class TheOldLabPackProvider {
             .withFilterInterpolator(new UnsaturateFilterInterpolator(
                 new Interpolator() {
                   @Override
-                  protected float getValue(float t) {
+                  public float getValue(float t) {
                     return (float) Math.pow(Math.sin(3.5 * Math.PI * (t + 2f / 7)), 2);
                   }
                 }))

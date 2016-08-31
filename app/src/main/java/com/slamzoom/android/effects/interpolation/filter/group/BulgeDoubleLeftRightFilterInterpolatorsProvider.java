@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by clocksmith on 4/22/16.
  */
-public class BulgeDoubleLeftRightFilterInterpolatorGroup implements FilterInterpolatorGroup {
+public class BulgeDoubleLeftRightFilterInterpolatorsProvider implements FilterInterpolatorsProvider {
   @Override
   public List<FilterInterpolator> getFilterInterpolators() {
     return ImmutableList.<FilterInterpolator>of(

@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.firebase.crash.FirebaseCrash;
+import com.slamzoom.android.mediacreation.MediaCreator;
 import com.slamzoom.android.mediacreation.gif.GifCreator;
 import com.slamzoom.android.mediacreation.gif.GifService;
 import com.slamzoom.android.mediacreation.video.VideoFrame;
@@ -25,7 +26,8 @@ public class SzLog {
 //      GifCreator.class.getSimpleName(),
 //      GifCreatorManager.class.getSimpleName(),
 //      GifService.class.getSimpleName(),
-      VideoFrame.class.getSimpleName(),
+      MediaCreator.class.getSimpleName(),
+//      VideoFrame.class.getSimpleName(),
 
       "" // This is so we can always have a trailing comma.
   );

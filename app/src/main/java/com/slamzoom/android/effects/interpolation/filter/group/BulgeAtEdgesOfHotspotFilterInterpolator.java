@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by clocksmith on 6/7/16.
  */
-public class BulgeAtEdgesOfHotspotFilterInterpolator implements FilterInterpolatorGroup {
+public class BulgeAtEdgesOfHotspotFilterInterpolator implements FilterInterpolatorsProvider {
   private static final float BASE_RADIUS = 0.99f;
 
   @Override

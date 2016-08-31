@@ -1,21 +1,20 @@
 package com.slamzoom.android.effects.interpolation.transform.scaletranslate;
 
-import com.slamzoom.android.effects.interpolation.transform.ScaleAndTranslateInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.TransformInterpolatorProvider;
 import com.slamzoom.android.interpolators.ConstantInterpolator;
 import com.slamzoom.android.interpolators.Interpolator;
-import com.slamzoom.android.interpolators.custom.OvershootInterpolator;
 import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
 import com.slamzoom.android.interpolators.spline.PointsBuilder;
 
 /**
  * Created by clocksmith on 8/28/16.
  */
-public class MulticrashInterpolatorProvider implements ScaleAndTranslateInterpolatorProvider {
+public class MulticrashInterpolatorProvider implements TransformInterpolatorProvider {
   private float firstBreak = 0.17f;
   private float secondBreak = 0.34f;
   private float thirdBreak = 0.51f;
 
-  private ScaleAndTranslateInterpolatorProvider firstCrash = new ScaleAndTranslateInterpolatorProvider() {
+  private TransformInterpolatorProvider firstCrash = new TransformInterpolatorProvider() {
     @Override
     public Interpolator getScaleInterpolator() {
       return new LinearSplineInterpolator(PointsBuilder.create()
@@ -46,7 +45,7 @@ public class MulticrashInterpolatorProvider implements ScaleAndTranslateInterpol
     }
   };
 
-  private ScaleAndTranslateInterpolatorProvider secondCrash = new ScaleAndTranslateInterpolatorProvider() {
+  private TransformInterpolatorProvider secondCrash = new TransformInterpolatorProvider() {
     @Override
     public Interpolator getScaleInterpolator() {
       return new LinearSplineInterpolator(PointsBuilder.create()
@@ -77,7 +76,7 @@ public class MulticrashInterpolatorProvider implements ScaleAndTranslateInterpol
     }
   };
 
-  private ScaleAndTranslateInterpolatorProvider thirdCrash = new ScaleAndTranslateInterpolatorProvider() {
+  private TransformInterpolatorProvider thirdCrash = new TransformInterpolatorProvider() {
     @Override
     public Interpolator getScaleInterpolator() {
       return new LinearSplineInterpolator(PointsBuilder.create()
@@ -108,7 +107,7 @@ public class MulticrashInterpolatorProvider implements ScaleAndTranslateInterpol
     }
   };
 
-  private ScaleAndTranslateInterpolatorProvider fourthCrash = new ScaleAndTranslateInterpolatorProvider() {
+  private TransformInterpolatorProvider fourthCrash = new TransformInterpolatorProvider() {
     @Override
     public Interpolator getScaleInterpolator() {
       return LinearSplineInterpolator.newBuilder()
@@ -133,7 +132,7 @@ public class MulticrashInterpolatorProvider implements ScaleAndTranslateInterpol
   public Interpolator getScaleInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getValue(float t) {
+      public float getValue(float t) {
         return getSubInterpolator(t).getScaleInterpolator().getInterpolation(getAdjustedT(t));
       }
     };
@@ -143,7 +142,7 @@ public class MulticrashInterpolatorProvider implements ScaleAndTranslateInterpol
   public Interpolator getXInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getValue(float t) {
+      public float getValue(float t) {
         return getSubInterpolator(t).getXInterpolator().getInterpolation(getAdjustedT(t));
       }
     };
@@ -153,13 +152,13 @@ public class MulticrashInterpolatorProvider implements ScaleAndTranslateInterpol
   public Interpolator getYInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getValue(float t) {
+      public float getValue(float t) {
         return getSubInterpolator(t).getYInterpolator().getInterpolation(getAdjustedT(t));
       }
     };
   }
 
-  private ScaleAndTranslateInterpolatorProvider getSubInterpolator(float t) {
+  private TransformInterpolatorProvider getSubInterpolator(float t) {
     if (t < firstBreak) {
       return firstCrash;
     } else if (t < secondBreak) {

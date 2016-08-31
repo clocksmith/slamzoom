@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by clocksmith on 5/16/16.
  */
-public class InflateFaceFilterInterpolatorGroup implements FilterInterpolatorGroup {
+public class InflateFaceFilterInterpolatorsProvider implements FilterInterpolatorsProvider {
   private static final float BASE_RADIUS = 0.49f;
 
   @Override

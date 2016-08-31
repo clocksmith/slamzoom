@@ -15,7 +15,7 @@ public class ConstantInterpolator extends Interpolator {
   }
 
   @Override
-  protected float getValue(float t) {
+  public float getValue(float t) {
     return mConstant;
   }
 }

@@ -1,6 +1,6 @@
 package com.slamzoom.android.effects.interpolation.transform.scaletranslate;
 
-import com.slamzoom.android.effects.interpolation.transform.ScaleAndTranslateInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.TransformInterpolatorProvider;
 import com.slamzoom.android.interpolators.Interpolator;
 import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
 import com.slamzoom.android.interpolators.spline.PointsBuilder;
@@ -8,7 +8,7 @@ import com.slamzoom.android.interpolators.spline.PointsBuilder;
 /**
  * Created by clocksmith on 6/6/16.
  */
-public class CrashTaranInterpolatorProvider implements ScaleAndTranslateInterpolatorProvider {
+public class CrashTaranInterpolatorProvider implements TransformInterpolatorProvider {
   @Override
   public Interpolator getScaleInterpolator() {
     return new LinearSplineInterpolator(PointsBuilder.create()

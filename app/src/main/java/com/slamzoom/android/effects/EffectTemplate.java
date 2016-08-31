@@ -2,9 +2,10 @@ package com.slamzoom.android.effects;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
+import com.slamzoom.android.effects.interpolation.transformfilter.TransformAndFilterInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
-import com.slamzoom.android.effects.interpolation.filter.group.FilterInterpolatorGroup;
-import com.slamzoom.android.effects.interpolation.transform.ScaleAndTranslateInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.filter.group.FilterInterpolatorsProvider;
+import com.slamzoom.android.effects.interpolation.transform.TransformInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.TranslateInterpolatorProvider;
 import com.slamzoom.android.interpolators.Interpolator;
 
@@ -100,9 +101,9 @@ public class EffectTemplate {
       return this;
     }
 
-    public SingleEffectStepBuilder withScaleAndTranslateInterpolatorProvider(
-        ScaleAndTranslateInterpolatorProvider interpolatorProvider) {
-      mEffectStepBuilder.withScaleAndTranslateInterpolatorProvider(interpolatorProvider);
+    public SingleEffectStepBuilder withTransformInterpolatorProvider(
+        TransformInterpolatorProvider interpolatorProvider) {
+      mEffectStepBuilder.withTransformInterpolatorProvider(interpolatorProvider);
       return this;
     }
 
@@ -111,8 +112,14 @@ public class EffectTemplate {
       return this;
     }
 
-    public SingleEffectStepBuilder withFilterInterpolatorGroup(FilterInterpolatorGroup filterInterpolatorGroup) {
-      mEffectStepBuilder.withFilterInterpolatorGroup(filterInterpolatorGroup);
+    public SingleEffectStepBuilder withFilterInterpolatorGroup(FilterInterpolatorsProvider filterInterpolatorsProvider) {
+      mEffectStepBuilder.withFilterInterpolatorGroup(filterInterpolatorsProvider);
+      return this;
+    }
+
+    public SingleEffectStepBuilder withTransformAndFilterInterpolatorProvider(
+        TransformAndFilterInterpolatorProvider interpolatorProvider) {
+      mEffectStepBuilder.withTransformAndFilterInterpolatorProvider(interpolatorProvider);
       return this;
     }
 

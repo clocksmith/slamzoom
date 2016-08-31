@@ -18,7 +18,7 @@ public class StepInterpolator extends Interpolator {
   }
 
   @Override
-  protected float getValue(float t) {
+  public float getValue(float t) {
     if (mSteps.isEmpty()) {
       return 0;
     } else {

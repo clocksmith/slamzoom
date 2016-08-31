@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class EffectPacks {
   private static ImmutableList<EffectPack> EFFECT_PACKS_NEW_STRATEGY;
-//  private static ImmutableList<EffectPack> EFFECT_PACKS_OLD_STRATEGY;
+  //  private static ImmutableList<EffectPack> EFFECT_PACKS_OLD_STRATEGY;
   private static ImmutableList<EffectTemplate> EFFECT_TEMPLATES_FROM_PACKS_NEW_STRATEGY;
 //  private static ImmutableList<EffectTemplate> EFFECT_TEMPLATES_FROM_PACKS_OLD_STRATEGY;
 
@@ -73,6 +73,12 @@ public class EffectPacks {
             .withEffectTemplate("bulgeswap")
             .withEffectTemplate("smush")
             .build())
+//        .add(EffectPack.newBuilder()
+//            .withName("test")
+//            .withColorGroup("rainbow")
+//            .withEffectTemplate("popin")
+//            .withEffectTemplate("popout")
+//            .build())
         .build();
 
 //    EFFECT_PACKS_OLD_STRATEGY = ImmutableList.<EffectPack>builder()

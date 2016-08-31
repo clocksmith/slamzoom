@@ -24,7 +24,7 @@ public class ConstantShakeInterpolatorProvider implements TranslateInterpolatorP
   public Interpolator getXInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getValue(float t) {
+      public float getValue(float t) {
         return (float) (mIntensity * Math.sin(mFrequency * Math.PI * t) +
             mIntensity * Math.cos(mShiftedFrequency * Math.PI * t));
       }
@@ -35,7 +35,7 @@ public class ConstantShakeInterpolatorProvider implements TranslateInterpolatorP
   public Interpolator getYInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getValue(float t) {
+      public float getValue(float t) {
         return (float) (mIntensity * Math.sin(mShiftedFrequency * Math.PI * t) +
             mIntensity * Math.cos(mFrequency * Math.PI * t));
       }

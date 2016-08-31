@@ -9,14 +9,15 @@ import com.slamzoom.android.effects.interpolation.filter.single.BulgeInAtHotspot
 import java.util.List;
 
 /**
- * Created by clocksmith on 6/4/16.
+ * Created by clocksmith on 5/16/16.
  */
-public class BulgeEyesFilterInterpolatorGroup implements FilterInterpolatorGroup {
+public class BulgeFaceFilterInterpolatorsProvider implements FilterInterpolatorsProvider {
   @Override
   public List<FilterInterpolator> getFilterInterpolators() {
     return ImmutableList.<FilterInterpolator>of(
         new LeftEyeFilterInterpolator(),
-        new RightEyeFilterInterpolator()
+        new RightEyeFilterInterpolator(),
+        new MouthFilterInterpolator()
     );
   }
 
@@ -31,6 +32,13 @@ public class BulgeEyesFilterInterpolatorGroup implements FilterInterpolatorGroup
     @Override
     public PointF getCenter() {
       return mCenterCalculator.getHotspotPoint(0.75f, 0.25f);
+    }
+  }
+
+  private static class MouthFilterInterpolator extends BulgeInAtHotspotFilterInterpolator {
+    @Override
+    public PointF getCenter() {
+      return mCenterCalculator.getHotspotPoint(0.5f, 0.75f);
     }
   }
 }

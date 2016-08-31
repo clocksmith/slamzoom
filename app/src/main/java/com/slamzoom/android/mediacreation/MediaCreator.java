@@ -87,7 +87,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       mHeight = size;
     }
 
-    mSize = config.size;
+    mSize = size;
     mFps = config.fps;
     mTracker = tracker;
   }
@@ -146,7 +146,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
 
     mTracker.start(STOPWATCH_FILTERING);
     Bitmap filteredFrameBitmap;
-    if (!filters.isEmpty()) {
+    if (filters != null && !filters.isEmpty()) {
       filteredFrameBitmap = PostProcessorUtils.applyFilters(scaledFrameBitmap, filters);
       BitmapUtils.recycleIfSupposedTo(scaledFrameBitmap);
     } else {
@@ -207,6 +207,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       for (int frameIndex = 0; frameIndex < numFramesForChunk; frameIndex++) {
         final float t = ((float) frameIndex / (numFramesForChunk - 1));
         final float scale = scaleInterpolator.getInterpolation(t);
+        SzLog.f(TAG, "scale: " + scale);
         final float intermediateWidth = startRect.width() / scale;
         final float intermediateHeight = startRect.height() / scale;
         final float dx = xInterpolator.getInterpolation(t) * intermediateWidth;

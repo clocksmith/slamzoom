@@ -56,7 +56,7 @@ public class LinearSplineInterpolator extends Interpolator {
   }
 
   @Override
-  protected float getValue(float t) {
+  public float getValue(float t) {
     return (float) mPolynomialSplineFunction.value(t);
   }
 }

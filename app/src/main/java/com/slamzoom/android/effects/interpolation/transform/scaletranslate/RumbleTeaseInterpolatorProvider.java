@@ -1,16 +1,15 @@
 package com.slamzoom.android.effects.interpolation.transform.scaletranslate;
 
-import com.slamzoom.android.effects.interpolation.transform.ScaleAndTranslateInterpolatorProvider;
-import com.slamzoom.android.effects.interpolation.transform.ScaleInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.TransformInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.TranslateInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.translate.BaseShakeInterpolatorProvider;
 import com.slamzoom.android.interpolators.Interpolator;
-import com.slamzoom.android.interpolators.custom.TeaseInterpolator;
+import com.slamzoom.android.effects.interpolation.transform.scale.TeaseInterpolator;
 
 /**
  * Created by clocksmith on 7/4/16.
  */
-public class RumbleTeaseInterpolatorProvider implements ScaleAndTranslateInterpolatorProvider {
+public class RumbleTeaseInterpolatorProvider implements TransformInterpolatorProvider {
   private Interpolator mScaleInterpolator;
 
   private BaseShakeInterpolatorProvider mFirstShaker;
@@ -35,7 +34,7 @@ public class RumbleTeaseInterpolatorProvider implements ScaleAndTranslateInterpo
   public Interpolator getXInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getValue(float t) {
+      public float getValue(float t) {
         return getShakeInterpolator(t).getXInterpolator().getInterpolation(t);
       }
     };
@@ -45,7 +44,7 @@ public class RumbleTeaseInterpolatorProvider implements ScaleAndTranslateInterpo
   public Interpolator getYInterpolator() {
     return new Interpolator() {
       @Override
-      protected float getValue(float t) {
+      public float getValue(float t) {
         return getShakeInterpolator(t).getYInterpolator().getInterpolation(t);
       }
     };

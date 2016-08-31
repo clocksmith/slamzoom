@@ -1,13 +1,14 @@
 package com.slamzoom.android.interpolators;
 
+import com.slamzoom.android.effects.interpolation.transform.scale.EaseInSlamHardInterpolator;
+
 /**
  * Created by clocksmith on 2/24/16.
  *
  * Interpolator in the form c1 * t^e1 + c2 * t^e2 where c1 + c2 = 1.
  * This is useful for effects that need to have different beginning and end behavior.
  *
- * {@link com.slamzoom.android.interpolators.custom.EaseInSlamHardInterpolator}
- * {@link com.slamzoom.android.interpolators.custom.EaseInSlamSoftInterpolator}
+ * {@link EaseInSlamHardInterpolator}
  */
 public class BinomialInterpolator extends Interpolator {
   private float c1;
@@ -27,7 +28,7 @@ public class BinomialInterpolator extends Interpolator {
   }
 
   @Override
-  protected float getValue(float t) {
+  public float getValue(float t) {
     return (float) (c1 * Math.pow(t, e1) + c2 * Math.pow(t, e2));
   }
 }
