@@ -17,15 +17,15 @@
       android:scaleType="fitCenter"
       android:src="@drawable/sz_logo"/>
 
-  <pl.droidsonroids.gif.GifImageView
+  <VideoView
+      android:id="@+id/videoView"
       android:layout_below="@+id/logo"
-      android:id="@+id/gifImageView1"
       app:layout_widthPercent="100%"
       app:layout_aspectRatio="100%"
       android:scaleType="fitCenter"/>
 
   <Button
-      android:layout_below="@+id/gifImageView1"
+      android:layout_below="@+id/videoView"
       android:id="@+id/createSlamzoomButton"
       android:text="@string/create_slamzoom"
       android:layout_width="match_parent"

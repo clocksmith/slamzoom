@@ -17,6 +17,7 @@ import com.google.common.collect.Lists;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.SzLog;
+import com.slamzoom.android.effects.EffectPack;
 import com.slamzoom.android.effects.EffectPacks;
 
 import java.util.List;
@@ -27,7 +28,11 @@ import java.util.List;
 public class IabUtils {
   private static final String TAG = IabUtils.class.getSimpleName();
 
-  private static final ImmutableList<String> GIFTED_PACK_NAMES = ImmutableList.of(EffectPacks.Pack.STARTER.name());
+  private static final ImmutableList<String> GIFTED_PACK_NAMES =
+      ImmutableList.of(EffectPacks.Pack.STARTER.name());
+
+  private static final ImmutableList<String> DEBUG_PACK_NAMES =
+      ImmutableList.of(EffectPacks.Pack.DEBUG.name());
 
   // TODO(clocksmith): This would be perfect for remote config. Maybe Extract elsewhere to also hide packs not for sale.
 //  private static final BiMap<String, String> PURCHASE_IDS_TO_PACK_NAMES = ImmutableBiMap.of(
@@ -93,13 +98,12 @@ public class IabUtils {
     getPurchases(service, new GetPurchasesCallback() {
       @Override
       public void onSuccess(List<Purchase> purchases) {
+        List<String> packs = Lists.newArrayList(GIFTED_PACK_NAMES);
 
         if (DebugUtils.UNLOCK_UNPAID_PACKS) {
-          callback.onSuccess(
-              ImmutableList.copyOf(Iterables.concat(GIFTED_PACK_NAMES, PURCHASE_IDS_TO_PACK_NAMES.values())));
+          packs.addAll(PURCHASE_IDS_TO_PACK_NAMES.values());
         } else {
-          // TODO(clocksmith): make this add purchased packs.
-          callback.onSuccess(Lists.newArrayList(Iterables.concat(GIFTED_PACK_NAMES, FluentIterable.from(purchases)
+          packs.addAll(FluentIterable.from(purchases)
               .transform(new Function<Purchase, String>() {
                 @Override
                 public String apply(Purchase input) {
@@ -108,8 +112,14 @@ public class IabUtils {
                 }
               })
               .filter(Predicates.notNull())
-              .toList())));
+              .toList());
         }
+
+        if (DebugUtils.USE_DEBUG_EFFECTS) {
+          packs.addAll(DEBUG_PACK_NAMES);
+        }
+
+        callback.onSuccess(packs);
       }
 
       @Override

@@ -17,11 +17,14 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.bus.BusProvider;
 import com.slamzoom.android.common.SzLog;
+import com.slamzoom.android.effects.EffectPacks;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 
 import java.util.List;
@@ -57,16 +60,17 @@ public class BuyToUnlockDialogFragment extends DialogFragment {
     final String effectName = getArguments().getString(Constants.EFFECT_NAME);
     final String packName = getArguments().getString(Constants.PACK_NAME);
 
-    List<EffectModel> effectModels = Lists.newArrayList();
-    Activity activity = getActivity();
-    if (activity instanceof CreateActivity) {
-      effectModels = ((CreateActivity) activity).getEffectModelsForPack(packName);
-      for (EffectModel effectModel : effectModels) {
+    List<EffectModel> effectModels = FluentIterable.from(EffectPacks.listEffectModelsByPack())
+        .filter(new Predicate<EffectModel>() {
+          @Override
+          public boolean apply(EffectModel input) {
+            return input.getEffectTemplate().getPackName().equals(packName);
+          }
+        }).toList();
+    for (EffectModel effectModel : effectModels) {
         effectModel.setLocked(false);
-      }
-    } else {
-      SzLog.e(TAG, "Parent activity is not an instance of CreateActivity");
     }
+
 
     BuyToUnlockDialogView contentView = new BuyToUnlockDialogView(getContext(), effectName, packName, effectModels);
     contentView.setLayoutParams(
@@ -93,10 +97,11 @@ public class BuyToUnlockDialogFragment extends DialogFragment {
             }
         )
         .create();
+
+    contentView.smoothScrollToEffect();
     WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
-    lp.dimAmount = 0.3f;
+    lp.dimAmount = 0.25f;
     dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-//    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.black_22)));
 
     return dialog;
   }

@@ -16,33 +16,13 @@ import java.util.List;
  */
 public class EffectPacks {
   private static ImmutableList<EffectPack> EFFECT_PACKS_NEW_STRATEGY;
-  //  private static ImmutableList<EffectPack> EFFECT_PACKS_OLD_STRATEGY;
   private static ImmutableList<EffectTemplate> EFFECT_TEMPLATES_FROM_PACKS_NEW_STRATEGY;
-//  private static ImmutableList<EffectTemplate> EFFECT_TEMPLATES_FROM_PACKS_OLD_STRATEGY;
 
   private static ImmutableList<EffectPack> DEBUG_EFFECT_PACKS;
   private static ImmutableList<EffectTemplate> DEBUG_EFFECT_TEMPLATES_FROM_PACKS;
 
   public enum Pack {
-    STARTER, DISTORT;
-  }
-
-  public enum PackOldStrategy {
-    ONE("SKY"), // lightblue
-    TWO("ICE"), // teal
-    THREE("LEAF"), // light  green
-    FOUR("AMBER"), // amber
-    FIVE("FIRE"); // deep orange
-
-    private String mName;
-
-    PackOldStrategy(String name) {
-      mName = name;
-    }
-
-    public String getName() {
-      return mName;
-    }
+    STARTER, DISTORT, DEBUG
   }
 
   public static void init(Context context) {
@@ -60,8 +40,6 @@ public class EffectPacks {
             .withEffectTemplate("flashreveal")
             .withEffectTemplate("rumbleslam")
             .withEffectTemplate("flushslam")
-            .withEffectTemplate("popin")
-            .withEffectTemplate("popout")
             .build())
         .add(EffectPack.newBuilder()
             .withName(Pack.DISTORT.name())
@@ -77,84 +55,18 @@ public class EffectPacks {
             .build())
         .build();
 
-//    EFFECT_PACKS_OLD_STRATEGY = ImmutableList.<EffectPack>builder()
-//        .add(EffectPack.newBuilder()
-//            .withName(PackOldStrategy.ONE.getName())
-//            .withColorGroup("lightblue_500_600")
-//            .withEffectTemplate("slamin")
-//            .withEffectTemplate("overcrash")
-//            .withEffectTemplate("sumo")
-//            .withEffectTemplate("crashrumble")
-//            .withEffectTemplate("crashdiag")
-//            .withEffectTemplate("smush")
-//            .withEffectTemplate("earthquake")
-//            .withEffectTemplate("doublebulge")
-//            .withEffectTemplate("swirlspot")
-//            .withEffectTemplate("mctwisty")
-//            .build())
-//        .add(EffectPack.newBuilder()
-//            .withName(PackOldStrategy.TWO.getName())
-//            .withColorGroup("teal_500_600")
-//            .withEffectTemplate("rumblestiltskin")
-//            .withEffectTemplate("inflate")
-//            .withEffectTemplate("blurcrash")
-//            .withEffectTemplate("blursmith")
-//            .withEffectTemplate("magoo")
-//            .withEffectTemplate("djswirls")
-//            .withEffectTemplate("slamout")
-//            .withEffectTemplate("flush")
-//            .withEffectTemplate("swirleyes")
-//            .withEffectTemplate("graytake")
-//            .build())
-//        .add(EffectPack.newBuilder()
-//            .withName(PackOldStrategy.THREE.getName())
-//            .withColorGroup("lightgreen_500_600")
-//            .withEffectTemplate("crashmiss")
-//            .withEffectTemplate("rumbletease")
-//            .withEffectTemplate("shrinkydink")
-//            .withEffectTemplate("blurshake")
-//            .withEffectTemplate("grayfreeze")
-//            .withEffectTemplate("slamio")
-//            .withEffectTemplate("blurslam")
-//            .withEffectTemplate("rumble")
-//            .withEffectTemplate("swirlio")
-//            .withEffectTemplate("spiral")
-//            .build())
-//        .add(EffectPack.newBuilder()
-//            .withName(PackOldStrategy.FOUR.getName())
-//            .withColorGroup("amber_500_600")
-//            .withEffectTemplate("crashin")
-//            .withEffectTemplate("bulge")
-//            .withEffectTemplate("blurtease")
-//            .withEffectTemplate("whitetease")
-//            .withEffectTemplate("shakezilla")
-//            .withEffectTemplate("bulgeswap")
-//            .withEffectTemplate("grayslam")
-//            .withEffectTemplate("swirlout")
-//            .withEffectTemplate("twistyfroggy")
-//            .withEffectTemplate("swirlyeyes")
-//            .build())
-//        .add(EffectPack.newBuilder()
-//            .withName(PackOldStrategy.FIVE.getName())
-//            .withColorGroup("deeporange_500_600")
-//            .withEffectTemplate("crashblur")
-//            .withEffectTemplate("weirdo")
-//            .withEffectTemplate("blurmagic")
-//            .withEffectTemplate("blacktease")
-//            .withEffectTemplate("deflate")
-//            .withEffectTemplate("rumbleslam")
-//            .withEffectTemplate("grayrumble")
-//            .withEffectTemplate("swirlin")
-//            .withEffectTemplate("swirlslam")
-//            .withEffectTemplate("swirlyspot")
-//            .build())
-//        .build();
-
     DEBUG_EFFECT_PACKS = ImmutableList.<EffectPack>builder()
         .add(EffectPack.newBuilder()
-            .withName("debug")
-            .withColorGroup("bluegrey_500_600")
-            .withEffectTemplate("debug1")
+            .withName(Pack.DEBUG.name())
+            .withColorGroup("rainbow")
+//            .withEffectTemplate("debug1")
+//            .withEffectTemplate("popin")
+//            .withEffectTemplate("popout")
+            .withEffectTemplate("crashblur-show")
+            .withEffectTemplate("deflate-show")
+            .withEffectTemplate("inflate-show")
+            .withEffectTemplate("rumblestiltskin-show")
+            .withEffectTemplate("slamin-show")
             .build())
         .build();
 
@@ -166,15 +78,6 @@ public class EffectPacks {
                 return input.getEffectTemplates();
               }
             })));
-
-//    EFFECT_TEMPLATES_FROM_PACKS_OLD_STRATEGY   =
-//        ImmutableList.copyOf(Iterables.concat(Lists.transform(EFFECT_PACKS_OLD_STRATEGY,
-//            new Function<EffectPack, List<EffectTemplate>>() {
-//              @Override
-//              public List<EffeOctTemplate> apply(EffectPack input) {
-//                return input.getEffectTemplates();
-//              }
-//            })));
 
     DEBUG_EFFECT_TEMPLATES_FROM_PACKS =
         ImmutableList.copyOf(Iterables.concat(Lists.transform(DEBUG_EFFECT_PACKS,

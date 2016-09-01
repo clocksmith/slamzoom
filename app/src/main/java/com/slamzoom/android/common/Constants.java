@@ -10,7 +10,6 @@ public class Constants {
   // Flags
   public static final boolean USE_IMAGE_WATERMARK = false;
   public static final boolean USE_TEXT_WATERMARK = true;
-  public static final boolean USE_WATERMARK = USE_IMAGE_WATERMARK || USE_TEXT_WATERMARK;
 
   // Request codes
   public static final int REQUEST_PICK_IMAGE = 101;

@@ -17,6 +17,7 @@
       android:theme="@style/SlamzoomTheme"
       android:name=".SzApp">
     <activity android:name=".ui.start.StartActivity"
+              android:theme="@style/Theme.AppCompat.NoActionBar"
               android:screenOrientation="portrait">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />

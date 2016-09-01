@@ -159,7 +159,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       PostProcessorUtils.renderText(filteredFrameBitmap, textToRender);
     }
 
-    if (Constants.USE_WATERMARK && !mIsPreview) {
+    if (!DebugUtils.SKIP_WATERMARK && !mIsPreview) {
       PostProcessorUtils.renderWatermark(mContext, filteredFrameBitmap);
     }
 

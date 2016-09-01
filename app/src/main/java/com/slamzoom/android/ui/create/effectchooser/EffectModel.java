@@ -14,6 +14,7 @@ public class EffectModel {
   private EffectTemplate mEffectTemplate;
   private byte[] mGifThumbnailBytes;
   private boolean mLocked;
+  private boolean mSelected;
 
   public EffectModel(@NonNull EffectTemplate effectTemplate) {
     mEffectTemplate = effectTemplate;
@@ -37,6 +38,14 @@ public class EffectModel {
 
   public void setLocked(boolean locked) {
     mLocked = locked;
+  }
+
+  public boolean isSelected() {
+    return mSelected;
+  }
+
+  public void setSelected(boolean selected) {
+    mSelected = selected;
   }
 
   @Override

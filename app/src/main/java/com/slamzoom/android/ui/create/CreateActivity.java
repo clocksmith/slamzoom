@@ -84,7 +84,7 @@ public class CreateActivity extends AppCompatActivity {
   private static final String TAG = CreateActivity.class.getSimpleName();
 
   @Bind(R.id.coordinatatorLayout) CoordinatorLayout mCoordinatorLayout;
-  @Bind(R.id.actionBar) Toolbar mActionBar;
+  @Bind(R.id.toolbar) Toolbar mToolbar;
   @Bind(R.id.gifImageView) GifImageView mGifImageView;
   @Bind(R.id.progressBar) ProgressBar mProgressBar;
   @Bind(R.id.zeroStateMessage) TextView mZeroStateMessage;
@@ -128,7 +128,7 @@ public class CreateActivity extends AppCompatActivity {
 
     initServices();
     initEffects();
-    initActionBar();
+    initToolbar();
     initGifArea();
 
     handleIncomingIntent(getIntent());
@@ -144,8 +144,10 @@ public class CreateActivity extends AppCompatActivity {
     SzLog.f(TAG, "onResume()");
 
     if (mSelectedEffectName == null) {
-      mSelectedEffectName = EffectPacks.listEffectTemplatesByPack().get(0).getName();
+      setSelectedEffect(EffectPacks.listEffectTemplatesByPack().get(0).getName());
     }
+//    mEffectChooser.setEffectAsSelected(mSelectedEffectName);
+
     if (mSelectedBitmap == null) {
       launchImageChooser();
     }
@@ -279,7 +281,8 @@ public class CreateActivity extends AppCompatActivity {
 
   @Subscribe
   public void on(EffectThumbnailViewHolder.ItemClickEvent event) throws IOException {
-    mSelectedEffectName = event.effectName;
+    setSelectedEffect(event.effectName);
+    mEffectChooser.update(mEffectModels);
     updateProgressBar();
     updateMainGif();
   }
@@ -333,23 +336,13 @@ public class CreateActivity extends AppCompatActivity {
     });
   }
 
-  // TODO(clocksmith): The buy dialog should not call this, it should be passed in.
-  public List<EffectModel> getEffectModelsForPack(final String packName) {
-    return FluentIterable.from(mEffectModels).filter(new Predicate<EffectModel>() {
-      @Override
-      public boolean apply(EffectModel input) {
-        return packName.equals(input.getEffectTemplate().getPackName());
-      }
-    }).toList();
-  }
-
   private void initServices() {
     bindGifService();
     bindBillingService();
   }
 
-  private void initActionBar() {
-    setSupportActionBar(mActionBar);
+  private void initToolbar() {
+    setSupportActionBar(mToolbar);
     assert getSupportActionBar() != null;
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     getSupportActionBar().setHomeButtonEnabled(true);
@@ -480,8 +473,8 @@ public class CreateActivity extends AppCompatActivity {
 
   private void resetAndUpdateAll() {
     resetEffectModelsAndProgresses();
-    updateThumbnailGifs();
 
+    updateThumbnailGifs();
     mSelectedGifBytes = null;
     mGifImageView.setImageBitmap(null);
     if (mSelectedEffectName != null) {
@@ -744,6 +737,13 @@ public class CreateActivity extends AppCompatActivity {
     Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
     serviceIntent.setPackage("com.android.vending");
     bindService(serviceIntent, mBillingServiceConnection, Context.BIND_AUTO_CREATE);
+  }
+
+  private void setSelectedEffect(String effectName) {
+    mSelectedEffectName = effectName;
+    for (EffectModel model : mEffectModels) {
+      model.setSelected(model.getEffectTemplate().getName().equals(effectName));
+    }
   }
 
   private class GifServiceConnection implements ServiceConnection {

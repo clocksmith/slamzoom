@@ -5,6 +5,8 @@ import android.graphics.Rect;
 import android.os.Environment;
 import android.util.Log;
 
+import com.slamzoom.android.common.Constants;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,6 +27,7 @@ public class DebugUtils {
   // Effects
   public static final boolean REVERSE_LOOP_EFFECTS = false;
   public static final boolean ALLOW_NON_SQUARE_OUTPUT_VIDEO = false;
+  public static final boolean SKIP_WATERMARK = false;
 
   // Performance
   public static final boolean SKIP_GIF_CACHE = false;

@@ -25,6 +25,10 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
     mInDialog = inDialog;
   }
 
+  public List<EffectModel> getModels() {
+    return mModels;
+  }
+
   public void update(List<EffectModel> models) {
     mModels = models;
     notifyDataSetChanged();
@@ -39,7 +43,7 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
   @Override
   public void onBindViewHolder(EffectThumbnailViewHolder holder, int position) {
     SzLog.f(TAG, "binding position: " + position);
-    holder.unbindCurrentAndBindNew(mModels.get(position), mInDialog);
+    holder.rebind(mModels.get(position), mInDialog);
   }
 
   @Override

@@ -4,7 +4,7 @@
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     <item name="colorAccent">@color/colorAccent</item>
 
-    <item name="actionBarStyle">@style/SlamzoomActionBar</item>
+    <!--<item name="actionBarStyle">@style/SlamzoomActionBar</item>-->
   </style>
 
   <style name="SlamzoomActionBar" parent="Widget.AppCompat.ActionBar">
@@ -22,7 +22,7 @@
     <item name="android:textSize">24dp</item>
   </style>
 
-  <style name="SlamzoomDialog" parent="@android:style/Theme.Holo.Light.Dialog">
+  <style name="SlamzoomDialog" parent="Theme.AppCompat.Dialog">
     <item name="android:background">@color/buy_dialog_background</item>
     <item name="android:textColor">@color/buy_dialog_text</item>
     <item name="android:windowNoTitle">true</item>

@@ -36,9 +36,12 @@ public class BuyToUnlockDialogView extends LinearLayout {
   @Bind(R.id.message) TextView mMessage;
   @Bind(R.id.otherEffects) EffectChooser mOtherEffects;
 
+  private String mEffectName;
+
   public BuyToUnlockDialogView(Context context, String effectName, String packName, List<EffectModel> effectModes) {
     this(context, null);
 
+    mEffectName = effectName;
     EffectPack pack = EffectPacks.getPack(packName);
     EffectTemplate effect = EffectTemplates.get(effectName);
 
@@ -80,5 +83,9 @@ public class BuyToUnlockDialogView extends LinearLayout {
     super(context, attrs, defStyleAttr);
     LayoutInflater.from(context).inflate(R.layout.view_buy_to_unlock_dialog, this);
     ButterKnife.bind(this);
+  }
+
+  public void smoothScrollToEffect() {
+    mOtherEffects.smoothScrollTo(mEffectName);
   }
 }

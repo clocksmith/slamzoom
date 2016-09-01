@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.graphics.Color;
+import android.support.annotation.ColorInt;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -64,7 +65,8 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
   @Bind(R.id.tabView) View mTabView;
 
   private EffectModel mModel;
-  private int mColor;
+  @ColorInt private int mTabColorInt;
+  @ColorInt private Color mEffectTextColorInt;
 
   private int mCollpasedTabHeight;
   private int mExpandedTabHeight;
@@ -79,41 +81,45 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
         itemView.getContext().getResources().getDimensionPixelSize(R.dimen.effect_chooser_tab_height_collapsed);
     mExpandedTabHeight =
         itemView.getContext().getResources().getDimensionPixelSize(R.dimen.effect_chooser_tab_height_expanded);
-
+    mTabExpanded = false;
 
     mNameTextView.setTypeface(FontLoader.getInstance().getDefaultFont());
     mPackNameTextView.setTypeface(FontLoader.getInstance().getTitleFont());
   }
 
-  public void unbindCurrentAndBindNew(final EffectModel model, boolean inDialog) {
+  public void rebind(final EffectModel model, boolean inDialog) {
     unbind();
     bind(model, inDialog);
-    mTabExpanded = false;
   }
 
   public void bind(final EffectModel model, boolean inDialog) {
     SzLog.f(TAG, "bind: " + getAdapterPosition());
     mModel = model;
-    int newColor = model.isLocked() ? Color.rgb(128, 128, 128) : model.getEffectTemplate().getColor();
+
+    final @ColorInt int newTabColorInt = model.isLocked() ?
+        Color.rgb(128, 128, 128) : model.getEffectTemplate().getColor();
+    final @ColorInt int mEffectTextColorInt =  ContextCompat.getColor(itemView.getContext(), inDialog ?
+        R.color.buy_dialog_effect_text : R.color.effect_text);
     final String name = mModel.getEffectTemplate().getName();
     final String packName = mModel.getEffectTemplate().getPackName() + " PACK";
 
-    mLockIcon.setVisibility(model.isLocked() ? View.VISIBLE : View.GONE);
-    mLockIcon.setColorFilter(ContextCompat.getColor(
-        itemView.getContext(), inDialog ? R.color.colorPrimary : R.color.buy_dialog_lock_icon),
-        android.graphics.PorterDuff.Mode.MULTIPLY);
-
     mNameTextView.setText(name);
-    mNameTextView.setTextColor(ContextCompat.getColor(
-        itemView.getContext(), inDialog ? R.color.colorPrimary : R.color.buy_dialog_lock_icon));
+    mNameTextView.setTextColor(mEffectTextColorInt);
+
+    mPackNameTextView.setVisibility(inDialog ? View.GONE : View.VISIBLE);
     mPackNameTextView.setText(packName);
+    mPackNameTextView.setTextColor(mEffectTextColorInt);
 
+    mLockIcon.setVisibility(model.isLocked() && !inDialog ? View.VISIBLE : View.GONE);
+    mLockIcon.setColorFilter(mEffectTextColorInt, android.graphics.PorterDuff.Mode.MULTIPLY);
 
-    if (newColor != mColor) {
-      mColor = newColor;
-      mTabView.setBackgroundColor(mColor);
-      mProgressBar.getIndeterminateDrawable().setColorFilter(mColor, android.graphics.PorterDuff.Mode.MULTIPLY);
+    if (newTabColorInt != mTabColorInt) {
+      mTabColorInt = newTabColorInt;
+      mTabView.setBackgroundColor(mTabColorInt);
+      mProgressBar.getIndeterminateDrawable().setColorFilter(mTabColorInt, android.graphics.PorterDuff.Mode.MULTIPLY);
     }
+
+    setSelected(model.isSelected());
 
     // Either show the gif or request it.
     if (model.getGifThumbnailBytes() != null && model.getGifThumbnailBytes().length > 0) {
@@ -121,7 +127,7 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
         mProgressBar.setVisibility(View.GONE);
         mGifImageView.setImageDrawable(new GifDrawable(mModel.getGifThumbnailBytes()));
       } catch (IOException e) {
-        e.printStackTrace();
+        SzLog.e(TAG, "Could not show gif", e);
       }
     } else {
       BusProvider.getInstance().post(new RequestThumbnailGifEvent(name));
@@ -139,7 +145,6 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
               .log(itemView.getContext());
 
           BusProvider.getInstance().post(new ItemClickEvent(name, getAdapterPosition()));
-          expandTab();
         }
       });
     }
@@ -159,9 +164,10 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
     mProgressBar.setVisibility(View.VISIBLE);
   }
 
-  @Subscribe
-  public void on(EffectThumbnailViewHolder.ItemClickEvent event) throws IOException {
-    if (getAdapterPosition() != event.position) {
+  private void setSelected(boolean selected) {
+    if (selected) {
+      expandTab();
+    } else {
       collapseTab(true);
     }
   }
@@ -188,7 +194,7 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
   private void collapseTab(boolean animate) {
     if (mTabExpanded) {
       mTabExpanded = false;
-      mProgressBar.getIndeterminateDrawable().setColorFilter(mColor, android.graphics.PorterDuff.Mode.MULTIPLY);
+      mProgressBar.getIndeterminateDrawable().setColorFilter(mTabColorInt, android.graphics.PorterDuff.Mode.MULTIPLY);
       if (animate) {
         ValueAnimator anim = ValueAnimator.ofInt(mExpandedTabHeight, mCollpasedTabHeight);
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -208,25 +214,6 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
         mTabView.setLayoutParams(layoutParams);
       }
     }
-  }
-
-  private void showGif(){
-    AnimatorSet scaleDown = AnimationUtils.getScaleDownSet(mProgressBar, 1000);
-    scaleDown.addListener(new AnimationUtils.OnAnimationEndOnlyListener() {
-      @Override
-      public void onAnimationEnd(Animator animation) {
-        mProgressBar.setVisibility(View.GONE);
-        try {
-          mGifImageView.setImageDrawable(new GifDrawable(mModel.getGifThumbnailBytes()));
-        } catch (IOException e) {
-          mGifImageView.setImageDrawable(null);
-          mProgressBar.setVisibility(View.VISIBLE);
-          SzLog.e(TAG, "Could not create GifDrawable for: " + mModel.getEffectTemplate().getName());
-        }
-        AnimationUtils.getScaleUpSet(mGifImageView, 1000).start();
-      }
-    });
-    scaleDown.start();
   }
 }
 
