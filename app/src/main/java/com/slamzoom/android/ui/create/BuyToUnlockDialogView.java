@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
@@ -35,8 +36,6 @@ public class BuyToUnlockDialogView extends LinearLayout {
   @Bind(R.id.message) TextView mMessage;
   @Bind(R.id.otherEffects) EffectChooser mOtherEffects;
 
-  private EffectThumbnailRecyclerViewAdapter mAdapter;
-
   public BuyToUnlockDialogView(Context context, String effectName, String packName, List<EffectModel> effectModes) {
     this(context, null);
 
@@ -50,32 +49,26 @@ public class BuyToUnlockDialogView extends LinearLayout {
     } else {
       String message = String.format(getResources().getString(R.string.buy_dialog_text), packName, effectName);
       Spannable messageSpannable = new SpannableString(message);
+
       int packStart = message.indexOf(packName);
       int packEnd = packStart + packName.length();
       messageSpannable.setSpan(
-          new ForegroundColorSpan(pack.getColor()),
+          new StyleSpan(android.graphics.Typeface.BOLD),
           packStart,
           packEnd,
           Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
       int effectStart = message.indexOf(effectName);
       int effectEnd = effectStart + effectName.length();
       messageSpannable.setSpan(
-          new ForegroundColorSpan(effect.getColor()),
+          new StyleSpan(android.graphics.Typeface.BOLD),
           effectStart,
           effectEnd,
           Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
       mMessage.setText(messageSpannable);
 
-//      StringBuilder sb = new StringBuilder();
-//      for (EffectTemplate otherEffect : pack.getEffectTemplates()) {
-//        if (!otherEffect.getName().equals(effectName)) {
-//          sb.append(otherEffect.getName().toUpperCase());
-//          sb.append("\n");
-//        }
-//      }
-//      mOtherEffects.setText(sb);
-
-      mOtherEffects.init(effectModes, false);
+      mOtherEffects.init(effectModes, true);
     }
   }
 

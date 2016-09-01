@@ -234,18 +234,18 @@ public class CreateActivity extends AppCompatActivity {
       case android.R.id.home:
         onBackPressed();
         return true;
-      case R.id.action_add_text:
-        handleAddTextPressed();
-        return true;
+//      case R.id.action_add_text:
+//        handleAddTextPressed();
+//        return true;
       case R.id.action_change_hotspot:
         launchHotspotChooser();
         return true;
       case R.id.action_change_image:
         launchImageChooser();
         return true;
-      case R.id.action_ok:
-        handleAddTextConfirmed();
-        return true;
+//      case R.id.action_ok:
+//        handleAddTextConfirmed();
+//        return true;
       case R.id.action_share_gif:
         handleSharePressed(FileType.GIF);
         return true;
@@ -259,11 +259,11 @@ public class CreateActivity extends AppCompatActivity {
 
   @Override
   public boolean onPrepareOptionsMenu(Menu menu) {
-    menu.findItem(R.id.action_add_text).setVisible(!mIsAddTextViewShowing);
+//    menu.findItem(R.id.action_add_text).setVisible(!mIsAddTextViewShowing);
     menu.findItem(R.id.action_change_hotspot).setVisible(!mIsAddTextViewShowing);
     menu.findItem(R.id.action_change_image).setVisible(!mIsAddTextViewShowing);
     menu.findItem(R.id.action_share).setVisible(!mIsAddTextViewShowing);
-    menu.findItem(R.id.action_ok).setVisible(mIsAddTextViewShowing);
+//    menu.findItem(R.id.action_ok).setVisible(mIsAddTextViewShowing);
     return super.onPrepareOptionsMenu(menu);
   }
 
@@ -368,7 +368,7 @@ public class CreateActivity extends AppCompatActivity {
 
   private void initEffects() {
     mEffectModels = EffectPacks.listEffectModelsByPack();
-    mEffectChooser.init(mEffectModels, true);
+    mEffectChooser.init(mEffectModels, false);
   }
 
   private void launchImageChooser() {

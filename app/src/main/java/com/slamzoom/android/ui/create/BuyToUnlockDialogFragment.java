@@ -3,9 +3,14 @@ package com.slamzoom.android.ui.create;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ContextThemeWrapper;
 import android.view.ViewGroup;
@@ -56,17 +61,21 @@ public class BuyToUnlockDialogFragment extends DialogFragment {
     Activity activity = getActivity();
     if (activity instanceof CreateActivity) {
       effectModels = ((CreateActivity) activity).getEffectModelsForPack(packName);
+      for (EffectModel effectModel : effectModels) {
+        effectModel.setLocked(false);
+      }
     } else {
       SzLog.e(TAG, "Parent activity is not an instance of CreateActivity");
     }
 
-    BuyToUnlockDialogView contentView = new BuyToUnlockDialogView(
-        this.getContext(), effectName, packName, effectModels);
+    BuyToUnlockDialogView contentView = new BuyToUnlockDialogView(getContext(), effectName, packName, effectModels);
     contentView.setLayoutParams(
         new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
+    Drawable icon = ContextCompat.getDrawable(getActivity(), R.drawable.ic_gfx_lock);
+    icon.setColorFilter(ContextCompat.getColor(getActivity(), R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
     Dialog dialog = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.SlamzoomDialog))
-        .setIcon(R.drawable.ic_gfx_lock)
+        .setIcon(icon)
         .setTitle(R.string.buy_dialog_title)
         .setView(contentView)
         .setPositiveButton(R.string.buy_ok,

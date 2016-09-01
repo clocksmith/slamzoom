@@ -4,6 +4,8 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.slamzoom.android.common.SzLog;
+import com.slamzoom.android.effects.interpolation.transform.scaletranslate.PopInInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.scaletranslate.PopOutInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transformfilter.SlaminNoPauseInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeDoubleLeftRightFilterInterpolatorsProvider;
 import com.slamzoom.android.effects.interpolation.filter.group.BulgeEyesFilterInterpolatorsProvider;
@@ -49,8 +51,6 @@ import com.slamzoom.android.effects.interpolation.transform.scale.InAndOutInterp
 import com.slamzoom.android.effects.interpolation.transform.scale.NoneToAllAtHalfInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.scale.OutAndInInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.scale.OvershootInterpolator;
-import com.slamzoom.android.effects.interpolation.transform.scale.PopInInterpolator;
-import com.slamzoom.android.effects.interpolation.transform.scale.PopOutInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.scale.SlamHardInAndOutInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.scale.SlamHardInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.scale.SlamOutNoPauseInterpolator;
@@ -132,7 +132,9 @@ public class EffectTemplates {
           .build())
       .add(EffectTemplate.newSingleStepBuilder()
           .withName("crashblur")
-          .withStartDurationEndSeconds(1, 0.75f, 2)
+          // TODO(clocksmith): CHANGE BACK TO THIS!
+//          .withStartDurationEndSeconds(1, 0.75f, 2)
+          .withStartDurationEndSeconds(0.25f, 0.75f, 1)
           .withTransformInterpolatorProvider(new CrashTaranInterpolatorProvider())
           .withFilterInterpolator(new GaussianBlurFilterInterpolator(LinearSplineInterpolator.newBuilder()
               .withPoint(0, 0)
@@ -164,7 +166,9 @@ public class EffectTemplates {
           .build())
       .add(EffectTemplate.newSingleStepBuilder()
           .withName("deflate")
-          .withStartDurationEndSeconds(1, 2, 2)
+          // TODO(clocksmith): CHANGE BACK TO THIS!
+//          .withStartDurationEndSeconds(1, 2, 2)
+          .withStartDurationEndSeconds(0, 2, 0)
           .withScaleInterpolator(new LinearInterpolator())
           .withFilterInterpolatorGroup(new DeflateFaceFilterInterpolatorsProvider())
           .build())
@@ -230,7 +234,9 @@ public class EffectTemplates {
           .build())
       .add(EffectTemplate.newSingleStepBuilder()
           .withName("inflate")
-          .withStartDurationEndSeconds(1, 2, 2)
+          // TODO(clocksmith): CHANGE BACK TO THIS!
+//          .withStartDurationEndSeconds(1, 2, 2)
+          .withStartDurationEndSeconds(0, 2, 0)
           .withScaleInterpolator(new LinearInterpolator())
           .withFilterInterpolatorGroup(new InflateFaceFilterInterpolatorsProvider())
           .build())
@@ -257,16 +263,6 @@ public class EffectTemplates {
           .withScaleInterpolator(new OvershootInterpolator())
           .build())
       .add(EffectTemplate.newSingleStepBuilder()
-          .withName("popin")
-          .withStartDurationEndSeconds(0, 0.175f, 0)
-          .withScaleInterpolator(new PopInInterpolator())
-          .build())
-      .add(EffectTemplate.newSingleStepBuilder()
-          .withName("popout")
-          .withStartDurationEndSeconds(0, 0.175f, 0)
-          .withScaleInterpolator(new PopOutInterpolator())
-          .build())
-      .add(EffectTemplate.newSingleStepBuilder()
           .withName("rumble")
           .withStartDurationEndSeconds(0, 2, 0)
           .withScaleInterpolator(new HalfInAndOutInterpolator())
@@ -286,7 +282,9 @@ public class EffectTemplates {
           .build())
       .add(EffectTemplate.newSingleStepBuilder()
           .withName("rumblestiltskin")
-          .withStartDurationEndSeconds(0, 3, 0)
+          // TODO(clocksmith): CHANGE BACK TO THIS!
+//          .withStartDurationEndSeconds(0, 3, 0)
+          .withStartDurationEndSeconds(0, 2, 0)
           .withTransformInterpolatorProvider(new ShakeSwitchInterpolatorProvider())
           .build())
       .add(EffectTemplate.newSingleStepBuilder()
@@ -301,20 +299,11 @@ public class EffectTemplates {
           .withScaleInterpolator(new LinearInterpolator())
           .withFilterInterpolator(new ShrinkInAtHotspotFilterInterpolator())
           .build())
-//      .add(EffectTemplate.newSingleStepBuilder()
-//          .withName("slamin")
-//          .withStartDurationEndSeconds(1.4f, 0.6f, 2)
-//          .withScaleInterpolator(new SlamHardNoPauseInterpolator())
-//          .withFilterInterpolator(new ZoomBlurAtHotspotFilterInterpolator(LinearSplineInterpolator.newBuilder()
-//              .withPoint(0, 0)
-//              .withPoint(0.9f, 1)
-//              .withPoint(0.9999f, 1)
-//              .withPoint(1, 0)
-//              .build()))
-//          .build())
       .add(EffectTemplate.newSingleStepBuilder()
           .withName("slamin")
-          .withStartDurationEndSeconds(1.4f, 0.6f, 2)
+          // TODO(clocksmith): CHANGE BACK TO THIS!
+//          .withStartDurationEndSeconds(1.4f, 0.6f, 2)
+          .withStartDurationEndSeconds(0.4f, 0.6f, 1)
           .withTransformAndFilterInterpolatorProvider(new SlaminNoPauseInterpolatorProvider())
           .build())
       .add(EffectTemplate.newSingleStepBuilder()
@@ -436,6 +425,17 @@ public class EffectTemplates {
           .withStartDurationEndSeconds(2, 0.2f, 2)
           .withScaleInterpolator(new LinearInterpolator())
           .build())
+
+//      .add(EffectTemplate.newSingleStepBuilder()
+//          .withName("popin")
+//          .withStartDurationEndSeconds(0, 0.175f, 0)
+//          .withTransformInterpolatorProvider(new PopInInterpolatorProvider())
+//          .build())
+//      .add(EffectTemplate.newSingleStepBuilder()
+//          .withName("popout")
+//          .withStartDurationEndSeconds(0, 0.175f, 0)
+//          .withTransformInterpolatorProvider(new PopOutInterpolatorProvider())
+//          .build())
       .build();
 
   private static Map<String, EffectTemplate> EFFECT_TEMPLATES_MAP_TO_USE =

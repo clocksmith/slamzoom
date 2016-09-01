@@ -37,7 +37,7 @@ public class IabUtils {
 //      "packs.v1.5", EffectPacks.PackOldStrategy.FIVE.getName());
 
   private static final BiMap<String, String> PURCHASE_IDS_TO_PACK_NAMES = ImmutableBiMap.of(
-      "packs.v1.dank", EffectPacks.Pack.DANK.name());
+      "packs.distort", EffectPacks.Pack.DISTORT.name());
 
   public static void getBuyIntentByPack(
       final String packName,

@@ -37,10 +37,10 @@ public class EffectChooser extends RecyclerView {
     super(context, attrs, defStyleAttr);
   }
 
-  public void init(List<EffectModel> effectModels, boolean clickable) {
+  public void init(List<EffectModel> effectModels, boolean inDialog) {
     BusProvider.getInstance().register(this);
 
-    mAdapter = new EffectThumbnailRecyclerViewAdapter(effectModels, clickable);
+    mAdapter = new EffectThumbnailRecyclerViewAdapter(effectModels, inDialog);
     setAdapter(mAdapter);
 
     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext()) {

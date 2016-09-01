@@ -54,7 +54,7 @@
             android:id="@+id/lockIcon"
             android:layout_width="14dp"
             android:layout_height="14dp"
-            android:background="@drawable/ic_gfx_lock"
+            android:src="@drawable/ic_gfx_lock"
             android:layout_toLeftOf="@+id/packNameTextView"
             android:layout_centerVertical="true"
             android:layout_marginRight="2dp"/>

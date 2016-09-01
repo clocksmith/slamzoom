@@ -71,7 +71,8 @@ public class EffectPack {
       int count = 0;
       for (EffectTemplate effectTemplate : mEffectTemplates) {
         effectTemplate.setPackName(mName);
-        effectTemplate.setColor(EffectColors.getColorGroup(mColorGroup).get(count));
+        effectTemplate.setColor(EffectColors.getColorGroup(mColorGroup).get(
+            count % EffectColors.getColorGroup(mColorGroup).size()));
         count++;
       }
 

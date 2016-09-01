@@ -18,11 +18,11 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
   private static final String TAG = EffectThumbnailRecyclerViewAdapter.class.getSimpleName();
 
   private List<EffectModel> mModels;
-  private boolean mClickable;
+  private boolean mInDialog;
 
-  public EffectThumbnailRecyclerViewAdapter(List<EffectModel> models, boolean clickable) {
+  public EffectThumbnailRecyclerViewAdapter(List<EffectModel> models, boolean inDialog) {
     mModels = models;
-    mClickable = clickable;
+    mInDialog = inDialog;
   }
 
   public void update(List<EffectModel> models) {
@@ -39,7 +39,7 @@ public class EffectThumbnailRecyclerViewAdapter extends RecyclerView.Adapter<Eff
   @Override
   public void onBindViewHolder(EffectThumbnailViewHolder holder, int position) {
     SzLog.f(TAG, "binding position: " + position);
-    holder.unbindCurrentAndBindNew(mModels.get(position), mClickable);
+    holder.unbindCurrentAndBindNew(mModels.get(position), mInDialog);
   }
 
   @Override

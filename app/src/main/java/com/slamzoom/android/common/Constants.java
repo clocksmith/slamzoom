@@ -27,8 +27,8 @@ public class Constants {
   public static final float DEFAULT_DURATION_SECONDS = 2;
   public static final float DEFAULT_START_PAUSE_SECONDS = 0;
   public static final float DEFAULT_END_PAUSE_SECONDS = 0;
-  public static final int MAIN_FPS = 24;
-  public static final int THUMBNAIL_FPS = 24;
+  public static final int MAIN_FPS = 25;
+  public static final int THUMBNAIL_FPS = 25;
   public static final int MAIN_SIZE_PX = 320;
   public static final int MEDIA_THUMBNAIL_DIVIDER = 4;
   public static final int THUMBNAIL_SIZE_PX = MAIN_SIZE_PX / MEDIA_THUMBNAIL_DIVIDER;

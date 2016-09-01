@@ -24,7 +24,7 @@ public class EffectPacks {
   private static ImmutableList<EffectTemplate> DEBUG_EFFECT_TEMPLATES_FROM_PACKS;
 
   public enum Pack {
-    STARTER, DANK;
+    STARTER, DISTORT;
   }
 
   public enum PackOldStrategy {
@@ -60,9 +60,11 @@ public class EffectPacks {
             .withEffectTemplate("flashreveal")
             .withEffectTemplate("rumbleslam")
             .withEffectTemplate("flushslam")
+            .withEffectTemplate("popin")
+            .withEffectTemplate("popout")
             .build())
         .add(EffectPack.newBuilder()
-            .withName(Pack.DANK.name())
+            .withName(Pack.DISTORT.name())
             .withColorGroup("rainbow")
             .withEffectTemplate("bulge")
             .withEffectTemplate("blockhead")
@@ -73,12 +75,6 @@ public class EffectPacks {
             .withEffectTemplate("bulgeswap")
             .withEffectTemplate("smush")
             .build())
-//        .add(EffectPack.newBuilder()
-//            .withName("test")
-//            .withColorGroup("rainbow")
-//            .withEffectTemplate("popin")
-//            .withEffectTemplate("popout")
-//            .build())
         .build();
 
 //    EFFECT_PACKS_OLD_STRATEGY = ImmutableList.<EffectPack>builder()
@@ -175,7 +171,7 @@ public class EffectPacks {
 //        ImmutableList.copyOf(Iterables.concat(Lists.transform(EFFECT_PACKS_OLD_STRATEGY,
 //            new Function<EffectPack, List<EffectTemplate>>() {
 //              @Override
-//              public List<EffectTemplate> apply(EffectPack input) {
+//              public List<EffeOctTemplate> apply(EffectPack input) {
 //                return input.getEffectTemplates();
 //              }
 //            })));

@@ -22,7 +22,7 @@
     <item name="android:textSize">24dp</item>
   </style>
 
-  <style name="SlamzoomDialog" parent="@android:style/Theme.Dialog">
+  <style name="SlamzoomDialog" parent="@android:style/Theme.Holo.Light.Dialog">
     <item name="android:background">@color/buy_dialog_background</item>
     <item name="android:textColor">@color/buy_dialog_text</item>
     <item name="android:windowNoTitle">true</item>

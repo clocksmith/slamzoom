@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,13 +85,13 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
     mPackNameTextView.setTypeface(FontLoader.getInstance().getTitleFont());
   }
 
-  public void unbindCurrentAndBindNew(final EffectModel model, boolean clickable) {
+  public void unbindCurrentAndBindNew(final EffectModel model, boolean inDialog) {
     unbind();
-    bind(model, clickable);
+    bind(model, inDialog);
     mTabExpanded = false;
   }
 
-  public void bind(final EffectModel model, boolean clickable) {
+  public void bind(final EffectModel model, boolean inDialog) {
     SzLog.f(TAG, "bind: " + getAdapterPosition());
     mModel = model;
     int newColor = model.isLocked() ? Color.rgb(128, 128, 128) : model.getEffectTemplate().getColor();
@@ -98,9 +99,15 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
     final String packName = mModel.getEffectTemplate().getPackName() + " PACK";
 
     mLockIcon.setVisibility(model.isLocked() ? View.VISIBLE : View.GONE);
+    mLockIcon.setColorFilter(ContextCompat.getColor(
+        itemView.getContext(), inDialog ? R.color.colorPrimary : R.color.buy_dialog_lock_icon),
+        android.graphics.PorterDuff.Mode.MULTIPLY);
 
     mNameTextView.setText(name);
+    mNameTextView.setTextColor(ContextCompat.getColor(
+        itemView.getContext(), inDialog ? R.color.colorPrimary : R.color.buy_dialog_lock_icon));
     mPackNameTextView.setText(packName);
+
 
     if (newColor != mColor) {
       mColor = newColor;
@@ -120,7 +127,9 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
       BusProvider.getInstance().post(new RequestThumbnailGifEvent(name));
     }
 
-    if (clickable) {
+    if (inDialog) {
+      itemView.setOnClickListener(null);
+    } else {
       itemView.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -133,8 +142,6 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
           expandTab();
         }
       });
-    } else {
-      itemView.setOnClickListener(null);
     }
   }
 

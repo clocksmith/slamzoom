@@ -94,6 +94,8 @@ public class VideoEncoder extends MediaEncoder<VideoFrame> {
     cmds.add("-y");
     cmds.add("-i");
     cmds.add(concatFile.getAbsolutePath());
+    cmds.add("-r");
+    cmds.add(String.valueOf(Constants.MAIN_FPS));
     cmds.add(videoOutFile.getAbsolutePath());
 
     Log.wtf(TAG, Joiner.on(" ").join(cmds));
