@@ -12,6 +12,22 @@
       android:title="@string/action_change_hotspot"
       app:showAsAction="always"/>
   <item
+      android:id="@+id/action_save"
+      android:icon="@drawable/ic_menu_save"
+      android:title="@string/action_save"
+      app:showAsAction="always">
+    <menu>
+      <item
+          android:id="@+id/action_save_video"
+          android:icon="@drawable/ic_menu_save"
+          android:title="Save Video ~100KB" />
+      <item
+          android:id="@+id/action_save_gif"
+          android:icon="@drawable/ic_menu_save"
+          android:title="Save GIF ~2MB" />
+    </menu>
+  </item>
+  <item
       android:id="@+id/action_share"
       android:icon="@drawable/ic_menu_share"
       android:title="@string/action_share"
@@ -20,19 +36,11 @@
       <item
           android:id="@+id/action_share_video"
           android:icon="@drawable/ic_menu_share"
-          android:title="Export Video ~100KB" />
+          android:title="Share Video ~100KB" />
       <item
           android:id="@+id/action_share_gif"
           android:icon="@drawable/ic_menu_share"
-          android:title="Export GIF ~2MB" />
-      <!--<item-->
-          <!--android:id="@+id/action_share_video"-->
-          <!--android:icon="@drawable/ic_menu_share"-->
-          <!--android:title="Save Video" />-->
-      <!--<item-->
-          <!--android:id="@+id/action_share_gif"-->
-          <!--android:icon="@drawable/ic_menu_share"-->
-          <!--android:title="Save GIF" />-->
+          android:title="Share GIF ~2MB" />
     </menu>
   </item>
   <!--<item-->

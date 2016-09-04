@@ -8,7 +8,6 @@ import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender;
@@ -25,17 +24,13 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -43,6 +38,7 @@ import com.android.vending.billing.IInAppBillingService;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Queues;
 import com.slamzoom.android.R;
 import com.slamzoom.android.billing.GetBuyIntentCallback;
 import com.slamzoom.android.billing.GetPurchasedPacksCallback;
@@ -79,6 +75,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -87,6 +84,10 @@ import pl.droidsonroids.gif.GifImageView;
 
 public class CreateActivity extends AppCompatActivity {
   private static final String TAG = CreateActivity.class.getSimpleName();
+
+  private enum ExportType {
+    SAVE, SHARE
+  }
 
   // View.
   @Bind(R.id.coordinatatorLayout) CoordinatorLayout mCoordinatorLayout;
@@ -115,19 +116,22 @@ public class CreateActivity extends AppCompatActivity {
   private Map<String, Double> mGifProgresses;
   private boolean mGeneratingGif = false;
   private boolean mIsAddTextViewShowing = false;
+  private boolean mIsHotspotChooserOpen = false;
 
   // Services
   private GifService mGifService;
   private GifServiceConnection mGifServiceConnection;
   private IInAppBillingService mBillingService;
   private BillingServiceConnection mBillingServiceConnection;
+  private Queue<Runnable> mDeferredGifServiceRunnables;
 
   // Receivers
   private GifSharedReceiver mGifSharedReceiver;
   private VideoSharedReceiver mVideoSharedReceiver;
 
-  // TODO(clocksmith): get rid of need for this.
+  // TODO(clocksmith): get rid of need for these.
   private FileType mSelectedFileType;
+  private ExportType mSelectedExportType;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -138,36 +142,32 @@ public class CreateActivity extends AppCompatActivity {
     ButterKnife.bind(this);
     BusProvider.getInstance().register(this);
 
-    initServices();
-    initReceivers();
-    initEffects();
+    if (savedInstanceState != null) {
+      unpackBundle(savedInstanceState);
+    }
+
     initToolbar();
     initGifArea();
-
-    handleIncomingSavedInstanceState(savedInstanceState);
-  }
-
-  @Override protected void onStart() {
-    super.onStart();
-    SzLog.f(TAG, "onStart()");
+    initEffects();
+    initReceivers();
+    initServices();
   }
 
   @Override protected void onResume() {
     super.onResume();
     SzLog.f(TAG, "onResume()");
 
-    if (mSelectedEffectName == null) {
-      setSelectedEffect(Effects.listEffectTemplatesByPack().get(0).getName());
-    }
-
     if (mSelectedBitmap == null) {
-      launchImageChooser();
+      if (mSelectedUri == null) {
+        launchImageChooser();
+      } else if (!mIsHotspotChooserOpen){
+        launchHotspotChooser();
+      }
     }
   }
 
   @Override protected void onNewIntent(Intent intent) {
     SzLog.f(TAG, "onNewIntent()");
-
     handleIncomingIntent(intent);
   }
 
@@ -175,18 +175,6 @@ public class CreateActivity extends AppCompatActivity {
   public void onSaveInstanceState(Bundle savedInstanceState) {
     super.onSaveInstanceState(savedInstanceState);
     packBundle(savedInstanceState);
-  }
-
-  @Override
-  public void onPause() {
-    super.onPause();
-    SzLog.f(TAG, "onPause()");
-  }
-
-  @Override
-  public void onStop() {
-    super.onStop();
-    SzLog.f(TAG, "onStop()");
   }
 
   @Override
@@ -210,25 +198,32 @@ public class CreateActivity extends AppCompatActivity {
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    SzLog.f(TAG, "requestCode: " + requestCode + "; resultCode: " + requestCode);
+
     if (requestCode == Constants.REQUEST_PICK_IMAGE) {
       if (resultCode == RESULT_OK) {
-        handleIncomingUri(data.getData());
+        mSelectedUri = data.getData();
+        launchHotspotChooser();
       } else if (mSelectedBitmap == null) {
         finish();
       }
     } else if (requestCode == Constants.REQUEST_CROP_IMAGE) {
+      mIsHotspotChooserOpen = false;
       if (resultCode == RESULT_OK) {
-        handleCropRectSelected(
-            (Rect) data.getParcelableExtra(Constants.CROP_RECT),
-            (Uri) data.getParcelableExtra(Constants.IMAGE_URI));
+        mSelectedHotspot = data.getParcelableExtra(Constants.CROP_RECT);
+        handleCropRectSelected();
       } else if (mSelectedHotspot == null) {
-        launchImageChooser();
+        SzLog.e(TAG, "HotspotChooser returned RESULT_OK but the selected hotspot is null");
+        launchHotspotChooser();
       }
     } else if (requestCode == Constants.REQUEST_BUY_PACK) {
       if (resultCode == RESULT_OK) {
         updatePurchasedPackNamesAndEffectModels();
-        shareCurrentEffect();
+        // continue exporting the current effect since the buy had to come from an export.
+        exportCurrentEffect();
       }
+    } else {
+      SzLog.e(TAG, "Unsupported request code: " + requestCode);
     }
   }
 
@@ -236,7 +231,7 @@ public class CreateActivity extends AppCompatActivity {
   public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull  int[] grantResults) {
     if (requestCode == Constants.REQUEST_SHARE_GIF_PERMISSIONS) {
       if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-        shareCurrentEffect();
+        exportCurrentEffect();
       } else {
         final DialogFragment newFragment = PermissionsWarningDialogFragment.newInstance();
         newFragment.show(getSupportFragmentManager(), PermissionsWarningDialogFragment.class.getSimpleName());
@@ -269,6 +264,12 @@ public class CreateActivity extends AppCompatActivity {
 //      case R.id.action_ok:
 //        handleAddTextConfirmed();
 //        return true;
+      case R.id.action_save_gif:
+        handleSavePressed(FileType.GIF);
+        return true;
+      case R.id.action_save_video:
+        handleSavePressed(FileType.VIDEO);
+        return true;
       case R.id.action_share_gif:
         handleSharePressed(FileType.GIF);
         return true;
@@ -358,6 +359,7 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   private void initServices() {
+    mDeferredGifServiceRunnables = Queues.newConcurrentLinkedQueue();
     bindGifService();
     bindBillingService();
   }
@@ -392,6 +394,9 @@ public class CreateActivity extends AppCompatActivity {
 
   private void initEffects() {
     mEffectChooser.initForCreateActivity();
+    if (mSelectedEffectName == null) {
+      setSelectedEffect(Effects.listEffectTemplatesByPack().get(0).getName());
+    }
   }
 
   private void launchImageChooser() {
@@ -404,55 +409,26 @@ public class CreateActivity extends AppCompatActivity {
     Intent intent = new Intent(CreateActivity.this, HotspotChooserActivity.class);
     intent.putExtra(Constants.IMAGE_URI, mSelectedUri);
     startActivityForResult(intent, Constants.REQUEST_CROP_IMAGE);
+    mIsHotspotChooserOpen = true;
   }
 
   private void handleIncomingIntent(Intent intent) {
     if (Intent.ACTION_SEND.equals(intent.getAction())) {
-      mGifService.clear();
+      mSelectedUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
       resetGifThumbnailsAndProgresses();
-      handleIncomingUri((Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM));
-    }
-  }
-
-  private void handleIncomingUri(Uri uri) {
-    try {
-      mSelectedUri = uri;
-      getSelectedBitmapsFromUri();
-      mSelectedEndText = "";
-      mAddTextView.getEditText().setText("");
       launchHotspotChooser();
+    }
+  }
+
+  private void handleCropRectSelected() {
+    try {
+      getSelectedBitmapsFromUri();
     } catch (FileNotFoundException e) {
-      SzLog.e(TAG, "Cannot consume bitmap for path: " + uri.toString());
-    }
-  }
-
-  private void handleIncomingSavedInstanceState(Bundle savedInstanceState) {
-    if (savedInstanceState != null) {
-      unpackBundle(savedInstanceState);
-      handleCropRectSelected(mSelectedHotspot, mSelectedUri);
-    }
-  }
-
-  private void handleCropRectSelected(Rect selectedHotspot, Uri uri) {
-    // If our activity was destroyed while selection while selecting hotspot...
-    if (mSelectedBitmap == null) {
-      mSelectedUri = uri;
-      try {
-        getSelectedBitmapsFromUri();
-      } catch (FileNotFoundException e) {
-        Log.e(TAG, "Cannot read selected image", e);
-        launchImageChooser();
-      }
+      SzLog.e(TAG, "Cannot consume bitmap for path: " + mSelectedUri.toString());
+      launchImageChooser();
     }
 
-    mSelectedHotspot = selectedHotspot;
-    float ratio = (float) mSelectedBitmap.getWidth() / mSelectedBitmapForThumbnail.getWidth();
-    mSelectedHotspotForThumbnail = new Rect(
-        (int) (mSelectedHotspot.left / ratio),
-        (int) (mSelectedHotspot.top / ratio),
-        (int) (mSelectedHotspot.right / ratio),
-        (int) (mSelectedHotspot.bottom / ratio));
-
+    setSelectedHotspotForThumbnail();
     resetAndUpdateAll();
   }
 
@@ -469,19 +445,27 @@ public class CreateActivity extends AppCompatActivity {
 //    showAddTextView(false);
 //  }
 
-  private void handleSharePressed(FileType fileType) {
+  private void handleSavePressed(FileType fileType) {
+    mSelectedExportType = ExportType.SAVE;
     mSelectedFileType = fileType;
+    handleExportPressed();
+  }
+
+  private void handleSharePressed(FileType fileType) {
+    mSelectedExportType = ExportType.SHARE;
+    mSelectedFileType = fileType;
+    handleExportPressed();
+  }
+
+  private void handleExportPressed() {
     EffectModel effectModel = mEffectChooser.getEffectModel(mSelectedEffectName);
     if (effectModel == null) {
       // TODO(clocksmith): tell the user they must have an effect, or just disable share button.
-      Snackbar snackbar = Snackbar.make(mCoordinatorLayout, "Choose an effect first!", Snackbar.LENGTH_SHORT);
-      snackbar.show();
+      Snackbar.make(mCoordinatorLayout, "Choose an effect first!", Snackbar.LENGTH_SHORT).show();
     } else if (mGeneratingGif) {
-      Snackbar snackbar = Snackbar.make(
-          mCoordinatorLayout, "Please wait till gif preview is finished!", Snackbar.LENGTH_SHORT);
-      snackbar.show();
+      Snackbar.make(mCoordinatorLayout, "Please wait till gif preview is finished!", Snackbar.LENGTH_SHORT).show();
     } else if (!effectModel.isLocked()) {
-      shareCurrentEffect();
+      exportCurrentEffect();
     } else {
       String effectName = effectModel.getEffectTemplate().getName();
       String packName = effectModel.getEffectTemplate().getPackName();
@@ -492,24 +476,59 @@ public class CreateActivity extends AppCompatActivity {
 
   private void updateMainGif() {
     mGifProgresses.put(mSelectedEffectName, 0d);
-    mGifService.requestMainGif(getMainMediaConfig());
+
+    final MediaConfig mediaConfig = getMainMediaConfig();
+    if (mGifService != null) {
+      mGifService.requestMainGif(mediaConfig);
+    } else {
+      mDeferredGifServiceRunnables.add(new Runnable() {
+        @Override
+        public void run() {
+          mGifService.requestMainGif(mediaConfig);
+        }
+      });
+    }
   }
 
   private void updateThumbnailGifs() {
     if (mPurchasedPackNames == null || mNeedsUpdatePurchasePackNames) {
       updatePurchasedPacksThenUpdateThumbnailGifs();
     } else {
-      mGifService.requestThumbnailGifs(Lists.transform(Effects.listEffectTemplatesByPack(),
+      final List<MediaConfig> mediaConfigs = Lists.transform(Effects.listEffectTemplatesByPack(),
           new Function<EffectTemplate, MediaConfig>() {
             @Override
             public MediaConfig apply(EffectTemplate effectTemplate) {
               return getThumbnailMediaConfig(effectTemplate);
             }
-          }));
+          });
+      if (mGifService != null) {
+        mGifService.requestThumbnailGifs(mediaConfigs);
+      } else {
+        mDeferredGifServiceRunnables.add(new Runnable() {
+          @Override
+          public void run() {
+            mGifService.requestThumbnailGifs(mediaConfigs);
+          }
+        });
+      }
+    }
+  }
+
+  private void clearGifService() {
+    if (mGifService != null) {
+      mGifService.clear();
+    } else {
+      mDeferredGifServiceRunnables.add(new Runnable() {
+        @Override
+        public void run() {
+          mGifService.clear();
+        }
+      });
     }
   }
 
   private void resetAndUpdateAll() {
+    clearGifService();
     resetGifThumbnailsAndProgresses();
 
     updateThumbnailGifs();
@@ -521,8 +540,8 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   private void resetGifThumbnailsAndProgresses() {
-    resetGifProgresses();
     mEffectChooser.clearAllGifBytes();
+    resetGifProgresses();
   }
 
   private void resetGifProgresses() {
@@ -531,6 +550,11 @@ public class CreateActivity extends AppCompatActivity {
       mGifProgresses.put(template.getName(), 0d);
     }
   }
+
+//  private void resetEndText() {
+//    mSelectedEndText = "";
+//    mAddTextView.getEditText().setText("");
+//  }
 
   private void updatePurchasedPacksThenUpdateThumbnailGifs() {
     updatePurchasedPackNamesAndEffectModels(new Runnable() {
@@ -650,27 +674,27 @@ public class CreateActivity extends AppCompatActivity {
     mShareProgressDialog.dismiss();
   }
 
-  private void shareCurrentEffect() {
+  private void exportCurrentEffect() {
     if (mSelectedGifBytes != null) {
       if (mSelectedFileType == FileType.VIDEO) {
-        shareVideoAsync();
+        exportVideoAsync();
       } else if (mSelectedFileType == FileType.GIF){
-        shareGifAsync();
+        exportGifAsync();
       }
     }
     // TODO(clocksmith): Put a message here telling the user they need to make a gif first.
   }
 
-  private void shareGifAsync() {
+  private void exportGifAsync() {
     if (PermissionUtils.checkReadwriteExternalStorage(this)) {
       PermissionUtils.requestReadWriteExternalStorage(this);
     } else {
       showShareProgressDialog("Preparing gif...");
-      new ShareGifTask().execute();
+      new ExportGifTask().execute();
     }
   }
 
-  private void shareVideoAsync() {
+  private void exportVideoAsync() {
     if (PermissionUtils.checkReadwriteExternalStorage(this)) {
       PermissionUtils.requestReadWriteExternalStorage(this);
     } else {
@@ -686,19 +710,23 @@ public class CreateActivity extends AppCompatActivity {
                 .withEndTextLength(mSelectedEndText == null ? 0 : mSelectedEndText.length())
                 .log(CreateActivity.this);
 
-            Intent baseIntent = new Intent(Intent.ACTION_SEND);
-            baseIntent.setType(FileType.VIDEO.mime);
-            Uri uri = Uri.fromFile(videoFile);
-            baseIntent.putExtra(Intent.EXTRA_STREAM, uri);
+            if (mSelectedExportType == ExportType.SHARE) {
+              Intent baseIntent = new Intent(Intent.ACTION_SEND);
+              baseIntent.setType(FileType.VIDEO.mime);
+              Uri uri = Uri.fromFile(videoFile);
+              baseIntent.putExtra(Intent.EXTRA_STREAM, uri);
 
-            if (Build.VERSION.SDK_INT >= 22) {
-              Intent receiver = new Intent(CreateActivity.this, GifSharedReceiver.class);
-              PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                  CreateActivity.this, Constants.REQUEST_SHARE_VIDEO, receiver, PendingIntent.FLAG_UPDATE_CURRENT);
-              Intent chooserIntent = Intent.createChooser(baseIntent, "Share via", pendingIntent.getIntentSender());
-              startActivity(chooserIntent);
-            } else {
-              startActivity(Intent.createChooser(baseIntent, "Share via"));
+              if (Build.VERSION.SDK_INT >= 22) {
+                Intent receiver = new Intent(CreateActivity.this, GifSharedReceiver.class);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                    CreateActivity.this, Constants.REQUEST_SHARE_VIDEO, receiver, PendingIntent.FLAG_UPDATE_CURRENT);
+                Intent chooserIntent = Intent.createChooser(baseIntent, "Share via", pendingIntent.getIntentSender());
+                startActivity(chooserIntent);
+              } else {
+                startActivity(Intent.createChooser(baseIntent, "Share via"));
+              }
+            } else if (mSelectedExportType == ExportType.SAVE) {
+              Snackbar.make(mCoordinatorLayout, "Video Saved!", Snackbar.LENGTH_SHORT).show();
             }
           }
           // TODO(clocksmith): handle null
@@ -785,6 +813,15 @@ public class CreateActivity extends AppCompatActivity {
     mEffectChooser.setSelectedEffect(mSelectedEffectName);
   }
 
+  private void setSelectedHotspotForThumbnail() {
+    float ratio = (float) mSelectedBitmap.getWidth() / mSelectedBitmapForThumbnail.getWidth();
+    mSelectedHotspotForThumbnail = new Rect(
+        (int) (mSelectedHotspot.left / ratio),
+        (int) (mSelectedHotspot.top / ratio),
+        (int) (mSelectedHotspot.right / ratio),
+        (int) (mSelectedHotspot.bottom / ratio));
+  }
+
   private void unpackBundle(Bundle bundle) {
     mSelectedUri = bundle.getParcelable(Constants.SELECTED_URI);
     mSelectedHotspot = bundle.getParcelable(Constants.SELECTED_HOTSPOT);
@@ -807,6 +844,9 @@ public class CreateActivity extends AppCompatActivity {
     @Override
     public void onServiceConnected(ComponentName className, IBinder iBinder) {
       mGifService = ((GifService.GifServiceBinder) iBinder).getService();
+      while (!mDeferredGifServiceRunnables.isEmpty()) {
+        mDeferredGifServiceRunnables.remove().run();
+      }
     }
 
     @Override
@@ -829,38 +869,47 @@ public class CreateActivity extends AppCompatActivity {
     }
   }
 
-  private class ShareGifTask extends AsyncTask<Void, Void, Boolean> {
+  private class ExportGifTask extends AsyncTask<Void, Void, Boolean> {
     private Intent mBaseIntent;
 
     @Override
     protected Boolean doInBackground(Void... params) {
       File gifFile = saveCurrentGifToDisk();
+
       if (gifFile != null) {
-        mBaseIntent = new Intent(Intent.ACTION_SEND);
-        mBaseIntent.setType(FileType.GIF.mime);
-        Uri uri = Uri.fromFile(gifFile);
-        mBaseIntent.putExtra(Intent.EXTRA_STREAM, uri);
+        if (mSelectedExportType == ExportType.SHARE) {
+          mBaseIntent = new Intent(Intent.ACTION_SEND);
+          mBaseIntent.setType(FileType.GIF.mime);
+          Uri uri = Uri.fromFile(gifFile);
+          mBaseIntent.putExtra(Intent.EXTRA_STREAM, uri);
+        }
+        return true;
       } else {
         SzLog.e(TAG, "gif file is null");
         return false;
       }
-      return true;
     }
 
     @Override
     protected void onPostExecute(Boolean result) {
       if (result) {
-        if (Build.VERSION.SDK_INT >= 22) {
-          Intent receiver = new Intent(CreateActivity.this, GifSharedReceiver.class);
-          PendingIntent pendingIntent = PendingIntent.getBroadcast(
-              CreateActivity.this, Constants.REQUEST_SHARE_GIF, receiver, PendingIntent.FLAG_UPDATE_CURRENT);
-          Intent chooserIntent = Intent.createChooser(mBaseIntent, "Share via", pendingIntent.getIntentSender());
-          startActivity(chooserIntent);
+        if (mSelectedExportType == ExportType.SHARE) {
+          if (Build.VERSION.SDK_INT >= 22) {
+            Intent receiver = new Intent(CreateActivity.this, GifSharedReceiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                CreateActivity.this, Constants.REQUEST_SHARE_GIF, receiver, PendingIntent.FLAG_UPDATE_CURRENT);
+            Intent chooserIntent = Intent.createChooser(mBaseIntent, "Share via", pendingIntent.getIntentSender());
+            startActivity(chooserIntent);
+          } else {
+            startActivity(Intent.createChooser(mBaseIntent, "Share via"));
+          }
         } else {
-          startActivity(Intent.createChooser(mBaseIntent, "Share via"));
+          Snackbar.make(mCoordinatorLayout, "GIF Saved!", Snackbar.LENGTH_SHORT).show();
         }
-        dismissShareProgressDialog();
+      } else {
+        Snackbar.make(mCoordinatorLayout, "Unable to save GIF!", Snackbar.LENGTH_SHORT).show();
       }
+      dismissShareProgressDialog();
     }
   }
 
