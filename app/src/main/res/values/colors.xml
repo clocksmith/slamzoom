@@ -18,9 +18,9 @@
 
   <color name="effect_text">@color/white</color>
 
-  <color name="buy_dialog_lock_icon">@color/not_quite_black</color>
-  <color name="buy_dialog_background">@color/white</color>
-  <color name="buy_dialog_text">@color/dark_gray</color>
+  <color name="dialog_lock_icon">@color/not_quite_black</color>
+  <color name="dialog_background">@color/white</color>
+  <color name="dialog_text">@color/dark_gray</color>
   <color name="buy_dialog_effect_text">@color/not_quite_black</color>
 
   <color name="md_red50">#ffffebee</color>

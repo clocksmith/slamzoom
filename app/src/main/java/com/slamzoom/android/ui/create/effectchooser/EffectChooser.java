@@ -123,15 +123,8 @@ public class EffectChooser extends RecyclerView {
       setGifBytes(event.effectName, event.gifBytes);
     }
   }
-
-  /**
-   * Created by clocksmith on 2/27/16.
-   */
+  
   public class EffectThumbnailRecyclerViewAdapter extends Adapter<EffectThumbnailViewHolder> {
-    public List<EffectModel> getModels() {
-      return mModels;
-    }
-
     @Override
     public EffectThumbnailViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
       return new EffectThumbnailViewHolder(

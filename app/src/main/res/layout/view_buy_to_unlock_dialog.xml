@@ -8,7 +8,7 @@
       android:id="@+id/message"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:textColor="@color/buy_dialog_text"
+      android:textColor="@color/dialog_text"
       android:padding="@dimen/buy_dialog_content_padding"/>
   <com.slamzoom.android.ui.create.effectchooser.EffectChooser
       android:id="@+id/otherEffects"

@@ -14,15 +14,9 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.FluentIterable;
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.bus.BusProvider;
-import com.slamzoom.android.effects.Effects;
-import com.slamzoom.android.ui.create.effectchooser.EffectModel;
-
-import java.util.List;
 
 /**
  * Created by clocksmith on 7/16/16.
@@ -66,7 +60,7 @@ public class BuyToUnlockDialogFragment extends DialogFragment {
     mContentView.setLayoutParams(new LinearLayout.LayoutParams(
         ViewGroup.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelOffset(R.dimen.buy_dialog_effect_height)));
 
-    Drawable icon = ContextCompat.getDrawable(getActivity(), R.drawable.ic_gfx_buy_lock);
+    Drawable icon = ContextCompat.getDrawable(getActivity(), R.drawable.ic_gfx_buy_dialog_lock);
     icon.setColorFilter(ContextCompat.getColor(getActivity(), R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
     Dialog dialog = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.SlamzoomDialog))
         .setIcon(icon)
@@ -90,15 +84,5 @@ public class BuyToUnlockDialogFragment extends DialogFragment {
 
     dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
     return dialog;
-  }
-
-  @Override
-  public void onStart() {
-    super.onStart();
-  }
-
-  @Override
-  public void onDestroyView() {
-    super.onDestroyView();
   }
 }

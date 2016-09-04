@@ -31,8 +31,9 @@
   </style>
 
   <style name="SlamzoomDialog" parent="Theme.AppCompat.Dialog">
-    <item name="android:background">@color/buy_dialog_background</item>
-    <item name="android:textColor">@color/buy_dialog_text</item>
+    <item name="android:background">@color/dialog_background</item>
+    <item name="android:textColor">@color/dialog_text</item>
+    <item name="android:textColorPrimary">@color/dialog_text</item>
     <item name="android:windowNoTitle">true</item>
   </style>
 

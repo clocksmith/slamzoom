@@ -8,6 +8,7 @@ import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender;
@@ -24,7 +25,9 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -32,6 +35,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -100,7 +104,6 @@ public class CreateActivity extends AppCompatActivity {
   private Rect mSelectedHotspot;
   private String mSelectedEffectName;
   private String mSelectedEndText;
-  private FileType mSelectedFileType;
   private List<String> mPurchasedPackNames;
   private boolean mNeedsUpdatePurchasePackNames;
 
@@ -122,6 +125,9 @@ public class CreateActivity extends AppCompatActivity {
   // Receivers
   private GifSharedReceiver mGifSharedReceiver;
   private VideoSharedReceiver mVideoSharedReceiver;
+
+  // TODO(clocksmith): get rid of need for this.
+  private FileType mSelectedFileType;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -156,8 +162,6 @@ public class CreateActivity extends AppCompatActivity {
 
     if (mSelectedBitmap == null) {
       launchImageChooser();
-    } else if (mSelectedGifBytes == null) {
-
     }
   }
 
@@ -234,7 +238,8 @@ public class CreateActivity extends AppCompatActivity {
       if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
         shareCurrentEffect();
       } else {
-        // TODO(clocksmith): show a message saying they must have these permissions to share.
+        final DialogFragment newFragment = PermissionsWarningDialogFragment.newInstance();
+        newFragment.show(getSupportFragmentManager(), PermissionsWarningDialogFragment.class.getSimpleName());
       }
     }
   }
@@ -785,6 +790,8 @@ public class CreateActivity extends AppCompatActivity {
     mSelectedHotspot = bundle.getParcelable(Constants.SELECTED_HOTSPOT);
     mSelectedEffectName = bundle.getString(Constants.SELECTED_EFFECT_NAME);
     mSelectedEndText = bundle.getString(Constants.SELECTED_END_TEXT);
+    mPurchasedPackNames = bundle.getStringArrayList(Constants.PURCHASED_PACK_NAMES);
+    mNeedsUpdatePurchasePackNames = bundle.getBoolean(Constants.NEEDS_UPDATE_PURCHASED_PACK_NAMES);
   }
 
   private void packBundle(Bundle bundle) {
@@ -792,6 +799,8 @@ public class CreateActivity extends AppCompatActivity {
     bundle.putParcelable(Constants.SELECTED_HOTSPOT, mSelectedHotspot);
     bundle.putString(Constants.SELECTED_EFFECT_NAME, mSelectedEffectName);
     bundle.putString(Constants.SELECTED_END_TEXT, mSelectedEndText);
+    bundle.putStringArrayList(Constants.PURCHASED_PACK_NAMES, Lists.newArrayList(mPurchasedPackNames));
+    bundle.putBoolean(Constants.NEEDS_UPDATE_PURCHASED_PACK_NAMES, mNeedsUpdatePurchasePackNames);
   }
 
   private class GifServiceConnection implements ServiceConnection {

@@ -29,8 +29,8 @@ public class Constants {
   public static final String SELECTED_URI = "selectedUri";
   public static final String SELECTED_EFFECT_NAME = "selectedEffectName";
   public static final String SELECTED_END_TEXT = "selectedEndText";
-
-
+  public static final String PURCHASED_PACK_NAMES = "purchasedPackNames";
+  public static final String NEEDS_UPDATE_PURCHASED_PACK_NAMES = "needsUpdatePurchasedPackNames";
 
   public static final float DEFAULT_DURATION_SECONDS = 2;
   public static final float DEFAULT_START_PAUSE_SECONDS = 0;
