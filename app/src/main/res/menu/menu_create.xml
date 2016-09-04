@@ -18,23 +18,33 @@
       app:showAsAction="always">
     <menu>
       <item
-          android:id="@+id/action_share_gif"
-          android:title="Share as GIF (about 2MB)" />
-      <item
           android:id="@+id/action_share_video"
-          android:title="Share as Video (about 100KB)" />
+          android:icon="@drawable/ic_menu_share"
+          android:title="Export Video ~100KB" />
+      <item
+          android:id="@+id/action_share_gif"
+          android:icon="@drawable/ic_menu_share"
+          android:title="Export GIF ~2MB" />
+      <!--<item-->
+          <!--android:id="@+id/action_share_video"-->
+          <!--android:icon="@drawable/ic_menu_share"-->
+          <!--android:title="Save Video" />-->
+      <!--<item-->
+          <!--android:id="@+id/action_share_gif"-->
+          <!--android:icon="@drawable/ic_menu_share"-->
+          <!--android:title="Save GIF" />-->
     </menu>
   </item>
-  <!--<item-->
-      <!--android:id="@+id/action_add_text"-->
-      <!--android:icon="@drawable/ic_menu_add_text"-->
-      <!--android:title="@string/action_add_text"-->
-      <!--app:showAsAction="always"/>-->
   <!--<item-->
       <!--android:id="@+id/action_loop"-->
       <!--app:actionViewClass="com.slamzoom.android.common.LoopSwitch"-->
       <!--app:showAsAction="always"-->
       <!--android:title="@string/action_cycle"/>-->
+  <!--<item-->
+      <!--android:id="@+id/action_add_text"-->
+      <!--android:icon="@drawable/ic_menu_add_text"-->
+      <!--android:title="@string/action_add_text"-->
+      <!--app:showAsAction="always"/>-->
   <!--<item-->
       <!--android:id="@+id/action_ok"-->
       <!--android:icon="@drawable/ic_menu_ok"-->

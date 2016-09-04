@@ -33,7 +33,7 @@ public class NeuQuant {
   protected static final int prime4 = 503;
 
   protected static final int minpicturebytes = (3 * prime4);
-  /* minimum size for input image */
+  /* minimum SIZE for input image */
 
   /* Program Skeleton
      ----------------
@@ -103,7 +103,7 @@ public class NeuQuant {
   protected int[] radpower = new int[initrad];
   /* radpower for precomputation */
 
-  /* Initialise network in range (0,0,0) to (255,255,255) and init parameters
+  /* Initialise network in range (0,0,0) to (255,255,255) and initForCreateActivity parameters
      ----------------------------------------------------------------------- */
   public NeuQuant(byte[] pixels, int len, int sample) {
 

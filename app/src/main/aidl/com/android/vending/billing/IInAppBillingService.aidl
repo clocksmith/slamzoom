@@ -114,9 +114,9 @@ interface IInAppBillingService {
      * @param packageName package name of the calling app
      * @param type the type of the in-app items being requested
      *        ("inapp" for one-time purchases and "subs" for subscription).
-     * @param continuationToken to be init as null for the first call, if the number of owned
+     * @param continuationToken to be initForCreateActivity as null for the first call, if the number of owned
      *        skus are too many, a continuationToken is returned in the response bundle.
-     *        This method can be called again with the continuation token to get the next init of
+     *        This method can be called again with the continuation token to get the next initForCreateActivity of
      *        owned skus.
      * @return Bundle containing the following key-value pairs
      *         "RESPONSE_CODE" with int value, RESULT_OK(0) if success, other response codes on
@@ -126,7 +126,7 @@ interface IInAppBillingService {
      *         "INAPP_DATA_SIGNATURE_LIST"- StringArrayList containing the signatures
      *                                      of the purchase information
      *         "INAPP_CONTINUATION_TOKEN" - String containing a continuation token for the
-     *                                      next init of in-app purchases. Only init if the
+     *                                      next initForCreateActivity of in-app purchases. Only initForCreateActivity if the
      *                                      user has more owned skus than the current list.
      */
     Bundle getPurchases(int apiVersion, String packageName, String type, String continuationToken);

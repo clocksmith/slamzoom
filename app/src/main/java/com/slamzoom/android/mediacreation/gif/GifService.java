@@ -13,7 +13,7 @@ import com.slamzoom.android.common.bus.BusProvider;
 import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.SzAnalytics;
 import com.slamzoom.android.common.SzLog;
-import com.slamzoom.android.effects.EffectPacks;
+import com.slamzoom.android.effects.Effects;
 import com.slamzoom.android.mediacreation.MediaConfig;
 import com.slamzoom.android.ui.create.effectchooser.EffectThumbnailViewHolder;
 import com.squareup.otto.Subscribe;
@@ -28,7 +28,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 public class GifService extends Service {
   private static final String TAG = GifService.class.getSimpleName();
 
-  private static final int THUMBNAIL_CACHE_SIZE = EffectPacks.listEffectTemplatesByPack().size();
+  private static final int THUMBNAIL_CACHE_SIZE = Effects.listEffectTemplatesByPack().size();
   private static final int MAIN_CACHE_SIZE = THUMBNAIL_CACHE_SIZE;
 
   public class GifReadyEvent {

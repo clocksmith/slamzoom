@@ -1,7 +1,5 @@
 package com.slamzoom.android.ui.create.effectchooser;
 
-import android.animation.Animator;
-import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.support.annotation.ColorInt;
@@ -19,7 +17,6 @@ import com.slamzoom.android.common.bus.BusProvider;
 import com.slamzoom.android.common.utils.AnimationUtils;
 import com.slamzoom.android.common.SzAnalytics;
 import com.slamzoom.android.common.SzLog;
-import com.squareup.otto.Subscribe;
 
 import java.io.IOException;
 
@@ -66,7 +63,6 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
 
   private EffectModel mModel;
   @ColorInt private int mTabColorInt;
-  @ColorInt private Color mEffectTextColorInt;
 
   private int mCollpasedTabHeight;
   private int mExpandedTabHeight;
@@ -98,20 +94,21 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
 
     final @ColorInt int newTabColorInt = model.isLocked() ?
         Color.rgb(128, 128, 128) : model.getEffectTemplate().getColor();
-    final @ColorInt int mEffectTextColorInt =  ContextCompat.getColor(itemView.getContext(), inDialog ?
+    final @ColorInt int effectTextColorInt =  ContextCompat.getColor(itemView.getContext(), inDialog ?
         R.color.buy_dialog_effect_text : R.color.effect_text);
     final String name = mModel.getEffectTemplate().getName();
     final String packName = mModel.getEffectTemplate().getPackName() + " PACK";
 
     mNameTextView.setText(name);
-    mNameTextView.setTextColor(mEffectTextColorInt);
+    //noinspection ResourceAsColor
+    mNameTextView.setTextColor(model.isSelected() ?
+        ContextCompat.getColor(itemView.getContext(), R.color.effect_text) : effectTextColorInt);
 
-    mPackNameTextView.setVisibility(inDialog ? View.GONE : View.VISIBLE);
+//    mPackNameTextView.setVisibility(inDialog ? View.GONE : View.VISIBLE);
     mPackNameTextView.setText(packName);
-    mPackNameTextView.setTextColor(mEffectTextColorInt);
+    mPackNameTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.effect_text));
 
     mLockIcon.setVisibility(model.isLocked() && !inDialog ? View.VISIBLE : View.GONE);
-    mLockIcon.setColorFilter(mEffectTextColorInt, android.graphics.PorterDuff.Mode.MULTIPLY);
 
     if (newTabColorInt != mTabColorInt) {
       mTabColorInt = newTabColorInt;

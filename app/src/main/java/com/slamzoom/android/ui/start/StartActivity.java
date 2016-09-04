@@ -2,6 +2,7 @@ package com.slamzoom.android.ui.start;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Movie;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -43,7 +44,8 @@ public class StartActivity extends AppCompatActivity {
       }
     });
 
-    mVideoView.setVideoURI(Uri.parse("android.resource://"+  getPackageName() + "/raw/out_politics_no_watermark"));
+    mVideoView.setVideoPath("android.resource://" + getPackageName() + "/" + R.raw.out_politics_no_watermark);
+//    mVideoView.setVideoURI(Uri.parse("android.resource://"+  getPackageName() + "/raw/out_politics_no_watermark"));
     mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
       @Override
       public void onPrepared(MediaPlayer mp) {

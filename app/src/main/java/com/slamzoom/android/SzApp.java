@@ -4,7 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.slamzoom.android.common.FontLoader;
-import com.slamzoom.android.effects.EffectPacks;
+import com.slamzoom.android.effects.Effects;
 
 /**
  * Created by clocksmith on 6/17/16.
@@ -15,7 +15,7 @@ public class SzApp extends Application {
   public void onCreate() {
     super.onCreate();
     // Init the packs.
-    EffectPacks.init(this.getApplicationContext());
+    Effects.init(this.getApplicationContext());
 
     // Init the fonts.
     FontLoader.getInstance().init(getAssets());

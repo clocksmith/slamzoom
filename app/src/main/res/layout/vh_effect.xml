@@ -9,8 +9,8 @@
     android:paddingRight="4dp">
   <FrameLayout
       android:background="@android:color/transparent"
-      android:layout_width="@dimen/gif_thumbnail_view_width"
-      android:layout_height="@dimen/gif_thumbnail_view_width"
+      android:layout_width="@dimen/thumbnail_view_width"
+      android:layout_height="@dimen/thumbnail_view_width"
       android:paddingBottom="8dp">
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/gifImageView"
@@ -42,7 +42,7 @@
           android:id="@+id/nameTextView"
           android:layout_width="match_parent"
           android:layout_height="18dp"
-          android:textSize="12dp"
+          android:textSize="@dimen/effect_name_text_size"
           android:textColor="@color/effect_text"
           android:fontFamily="monospace"
           android:gravity="center"/>
@@ -54,7 +54,7 @@
             android:id="@+id/lockIcon"
             android:layout_width="14dp"
             android:layout_height="14dp"
-            android:src="@drawable/ic_gfx_lock"
+            android:src="@drawable/ic_gfx_effect_lock"
             android:tint="@color/effect_text"
             android:layout_toLeftOf="@+id/packNameTextView"
             android:layout_centerVertical="true"
@@ -64,7 +64,7 @@
             android:layout_width="wrap_content"
             android:layout_height="18dp"
             android:textColor="@color/effect_text"
-            android:textSize="12dp"
+            android:textSize="@dimen/pack_name_text_size"
             android:fontFamily="monospace"
             android:textStyle="bold"
             android:layout_centerInParent="true"

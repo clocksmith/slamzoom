@@ -3,16 +3,18 @@
   <color name="white">#ffffff</color>
   <color name="off_white">#f0f0f0</color>
   <color name="light_gray">#b0b0b0</color>
-  <color name="dark_gray">#383838</color>
+  <color name="dark_gray">#505050</color>
+  <color name="darkest_gray">#303030</color>
   <color name="not_quite_black">#202020</color>
   <color name="black">#000000</color>
 
-  <color name="colorPrimary">@color/dark_gray</color>
+  <color name="colorPrimary">@color/darkest_gray</color>
   <color name="colorPrimaryDark">@color/not_quite_black</color>
   <color name="colorAccent">@color/white</color>
+  <color name="colorAccentDark">@color/off_white</color>
 
-  <color name="menu_ripple_color">@color/light_gray</color>
-  <color name="menu_icon_color">@color/off_white</color>
+  <color name="menu_icon_color">@color/colorAccent</color>
+  <color name="menu_ripple_color">@color/colorAccentDark</color>
 
   <color name="effect_text">@color/white</color>
 

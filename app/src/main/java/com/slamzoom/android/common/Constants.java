@@ -16,12 +16,21 @@ public class Constants {
   public static final int REQUEST_CROP_IMAGE = 201;
   public static final int REQUEST_BUY_PACK = 301;
   public static final int REQUEST_SHARE_GIF_PERMISSIONS= 401;
+  public static final int REQUEST_SHARE_GIF = 501;
+  public static final int REQUEST_SHARE_VIDEO = 601;
 
   // Params TODO(clocksmith): refactor to params
   public static final String IMAGE_URI = "imageUri";
   public static final String CROP_RECT = "cropRect";
   public static final String EFFECT_NAME = "effectName";
   public static final String PACK_NAME = "packName";
+
+  public static final String SELECTED_HOTSPOT = "selectedHotspot";
+  public static final String SELECTED_URI = "selectedUri";
+  public static final String SELECTED_EFFECT_NAME = "selectedEffectName";
+  public static final String SELECTED_END_TEXT = "selectedEndText";
+
+
 
   public static final float DEFAULT_DURATION_SECONDS = 2;
   public static final float DEFAULT_START_PAUSE_SECONDS = 0;

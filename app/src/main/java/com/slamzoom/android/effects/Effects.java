@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by clocksmith on 7/17/16.
  */
-public class EffectPacks {
+public class Effects {
   private static ImmutableList<EffectPack> EFFECT_PACKS_NEW_STRATEGY;
   private static ImmutableList<EffectTemplate> EFFECT_TEMPLATES_FROM_PACKS_NEW_STRATEGY;
 
@@ -103,8 +103,8 @@ public class EffectPacks {
         DEBUG_EFFECT_TEMPLATES_FROM_PACKS : EFFECT_TEMPLATES_FROM_PACKS_NEW_STRATEGY;
   }
 
-  public static ImmutableList<EffectModel> listEffectModelsByPack() {
-    return ImmutableList.copyOf(Lists.transform(EffectPacks.listEffectTemplatesByPack(),
+  public static ImmutableList<EffectModel> createEffectModels() {
+    return ImmutableList.copyOf(Lists.transform(Effects.listEffectTemplatesByPack(),
         new Function<EffectTemplate, EffectModel>() {
           @Override
           public EffectModel apply(EffectTemplate input) {

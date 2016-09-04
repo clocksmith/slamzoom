@@ -31,7 +31,7 @@ public class GifEncoder extends MediaEncoder<GifFrame> {
   public static final String STOPWATCH_WRITING= "writing";
 
   private static final int COLOR_DEPTH = 8; // number of bit planes
-  private static final int PAL_SIZE = 7; // color table size (bits-1)
+  private static final int PAL_SIZE = 7; // color table SIZE (bits-1)
   private static final int SAMPLE = 10;
 
   private ByteArrayOutputStream mOut;
@@ -179,15 +179,15 @@ public class GifEncoder extends MediaEncoder<GifFrame> {
    * Writes Logical Screen Descriptor
    */
   private void writeLSD() throws IOException {
-    // logical screen size
+    // logical screen SIZE
     writeShort(mWidth);
     writeShort(mHeight);
     // packed fields
     // 1   : global color table flag = 1 (gct used)
     // 2-4 : color resolution = 7
     // 5   : gct sort flag = 0
-    // 6-8 : gct size
-    mOut.write((0x80 | 0x70 | PAL_SIZE)); // 6-8 : gct size
+    // 6-8 : gct SIZE
+    mOut.write((0x80 | 0x70 | PAL_SIZE)); // 6-8 : gct SIZE
 
     mOut.write(0); // background color index
     mOut.write(0); // pixel aspect ratio - assume 1:1
@@ -211,9 +211,9 @@ public class GifEncoder extends MediaEncoder<GifFrame> {
   protected void writeNetscapeExt() throws IOException {
     mOut.write(0x21); // extension introducer
     mOut.write(0xff); // app extension label
-    mOut.write(11); // block size
+    mOut.write(11); // block SIZE
     writeString("NETSCAPE" + "2.0"); // app id + auth code
-    mOut.write(3); // sub-block size
+    mOut.write(3); // sub-block SIZE
     mOut.write(1); // loop sub-block id
     writeShort(0); // loop count (extra iterations, 0=repeat forever)
     mOut.write(0); // block terminator
@@ -225,7 +225,7 @@ public class GifEncoder extends MediaEncoder<GifFrame> {
   protected void writeGraphicCtrlExt(int delay) throws IOException {
     mOut.write(0x21); // extension introducer
     mOut.write(0xf9); // GCE label
-    mOut.write(4); // data block size
+    mOut.write(4); // data block SIZE
 
     // packed fields
     // 1:3 reserved
@@ -246,7 +246,7 @@ public class GifEncoder extends MediaEncoder<GifFrame> {
     mOut.write(0x2c); // image separator
     writeShort(0); // image position x,y = 0,0
     writeShort(0);
-    writeShort(mWidth); // image size
+    writeShort(mWidth); // image SIZE
     writeShort(mHeight);
     // packed fields
     if (firstFrame) {
@@ -258,8 +258,8 @@ public class GifEncoder extends MediaEncoder<GifFrame> {
       // 2 interlace - 0=no
       // 3 sorted - 0=no
       // 4-5 reserved
-      // 6-8 size of color table
-      mOut.write(0x80 | PAL_SIZE); // 6-8 size of color table
+      // 6-8 SIZE of color table
+      mOut.write(0x80 | PAL_SIZE); // 6-8 SIZE of color table
     }
   }
 

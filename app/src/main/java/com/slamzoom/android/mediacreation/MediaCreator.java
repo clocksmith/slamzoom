@@ -207,7 +207,6 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       for (int frameIndex = 0; frameIndex < numFramesForChunk; frameIndex++) {
         final float t = ((float) frameIndex / (numFramesForChunk - 1));
         final float scale = scaleInterpolator.getInterpolation(t);
-        SzLog.f(TAG, "scale: " + scale);
         final float intermediateWidth = startRect.width() / scale;
         final float intermediateHeight = startRect.height() / scale;
         final float dx = xInterpolator.getInterpolation(t) * intermediateWidth;

@@ -27,6 +27,7 @@ public class SzLog {
 //      GifCreatorManager.class.getSimpleName(),
 //      GifService.class.getSimpleName(),
 //      MediaCreator.class.getSimpleName(),
+      SzAnalytics.class.getSimpleName(),
 //      VideoFrame.class.getSimpleName(),
 
       "" // This is so we can always have a trailing comma.

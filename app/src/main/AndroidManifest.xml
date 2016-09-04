@@ -16,13 +16,20 @@
       android:supportsRtl="true"
       android:theme="@style/SlamzoomTheme"
       android:name=".SzApp">
-    <activity android:name=".ui.start.StartActivity"
-              android:theme="@style/Theme.AppCompat.NoActionBar"
+    <!-- Activities -->
+
+    <activity android:name=".ui.start.SplashActivity"
+              android:theme="@style/SplashTheme"
               android:screenOrientation="portrait">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
+    </activity>
+    
+    <activity android:name=".ui.start.StartActivity"
+              android:theme="@style/Theme.AppCompat.NoActionBar"
+              android:screenOrientation="portrait">
     </activity>
 
     <activity
@@ -41,6 +48,22 @@
         android:name=".ui.create.hotspotchooser.HotspotChooserActivity"
         android:screenOrientation="portrait"/>
 
+    <!-- Services -->
+
     <service android:name=".mediacreation.gif.GifService" />
+
+    <!-- Receivers -->
+
+    <receiver android:name=".ui.create.CreateActivity$GifSharedReceiver">
+      <intent-filter>
+        <action android:name="android.intent.action.SEND"/>
+      </intent-filter>
+    </receiver>
+
+    <receiver android:name=".ui.create.CreateActivity$VideoSharedReceiver">
+      <intent-filter>
+        <action android:name="android.intent.action.SEND"/>
+      </intent-filter>
+    </receiver>
   </application>
 </manifest>

@@ -63,7 +63,7 @@ public class LzwEncoder {
   // ratio decreases, but after the table fills. The variable-length output
   // codes are re-sized at this point, and a special CLEAR code is generated
   // for the decompressor. Late addition: construct the table according to
-  // file size for noticeable speed improvement on small files. Please direct
+  // file SIZE for noticeable speed improvement on small files. Please direct
   // questions about this implementation to ames!jaw.
 
   int g_init_bits;
@@ -159,7 +159,7 @@ public class LzwEncoder {
     hshift = 0;
     for (fcode = hsize; fcode < 65536; fcode *= 2)
       ++hshift;
-    hshift = 8 - hshift; // init hash code range bound
+    hshift = 8 - hshift; // initForCreateActivity hash code range bound
 
     hsize_reg = hsize;
     cl_hash(hsize_reg); // clear hash table
@@ -203,7 +203,7 @@ public class LzwEncoder {
 
   // ----------------------------------------------------------------------------
   void encode(OutputStream os) throws IOException {
-    os.write(initCodeSize); // write "initial code size" byte
+    os.write(initCodeSize); // write "initial code SIZE" byte
     remaining = imgW * imgH; // reset navigation variables
     curPixel = 0;
     compress(initCodeSize + 1, os); // compress and write the pixel data
@@ -253,7 +253,7 @@ public class LzwEncoder {
       cur_bits -= 8;
     }
 
-    // If the next entry is going to be too big for the code size,
+    // If the next entry is going to be too big for the code SIZE,
     // then increase it, if possible.
     if (free_ent > maxcode || clear_flg) {
       if (clear_flg) {

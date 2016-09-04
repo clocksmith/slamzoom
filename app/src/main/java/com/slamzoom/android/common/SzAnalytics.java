@@ -3,12 +3,18 @@ package com.slamzoom.android.common;
 import android.content.Context;
 import android.os.Bundle;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.google.firebase.analytics.FirebaseAnalytics;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by clocksmith on 6/22/16.
  */
 public class SzAnalytics {
+  private static final String TAG = SzAnalytics.class.getSimpleName();
 
   public static class CustomEvent {
     public static final String GIF_TRANSFORM_MS = "gif_transform_ms";
@@ -18,14 +24,19 @@ public class SzAnalytics {
     public static final String GIF_WRITE_MS = "gif_write_ms";
 
     public static final String GIF_GENERATED = "gif_generated";
+
     public static final String GIF_SAVED = "gif_saved";
+    public static final String VIDEO_SAVED = "video_saved";
     public static final String GIF_SHARED = "gif_shared";
+    public static final String VIDEO_SHARED = "video_saved";
   }
 
   public static class CustomParam {
     public static final String PACKAGE_NAME = "package_name";
-    public static final String GIF_SIZE = "gif_size";
+
+    public static final String SIZE = "size";
     public static final String FPS = "fps";
+
     public static final String END_SCALE = "end_scale";
     public static final String END_TEXT_LENGTH = "text_length";
     public static final String DURATION_MS= "duration_ms";
@@ -50,8 +61,16 @@ public class SzAnalytics {
     return new Event(CustomEvent.GIF_SAVED);
   }
 
+  public static Event newVideoSavedEvent() {
+    return new Event(CustomEvent.VIDEO_SAVED);
+  }
+
   public static Event newGifSharedEvent() {
     return new Event(CustomEvent.GIF_SHARED);
+  }
+
+  public static Event newVideoSharedEvent() {
+    return new Event(CustomEvent.VIDEO_SHARED);
   }
 
   public static class Event {
@@ -91,7 +110,7 @@ public class SzAnalytics {
     }
 
     public Event withGifSize(int gifSize) {
-      mBundle.putLong(CustomParam.GIF_SIZE, gifSize);
+      mBundle.putLong(CustomParam.SIZE, gifSize);
       return this;
     }
 
@@ -125,7 +144,16 @@ public class SzAnalytics {
 
     public void log(Context context) {
       FirebaseAnalytics.getInstance(context).logEvent(mEvent, mBundle);
+
+      List<String> bundleStrings = Lists.newArrayList();
+      for (String key : mBundle.keySet()) {
+        String value = String.valueOf(mBundle.get(key));
+        if (value == null) {
+          value = "";
+        }
+        bundleStrings.add(key + ": " + value);
+      }
+      SzLog.f(TAG, "EVENT: " + mEvent + ":\n" + Joiner.on("\n").join(bundleStrings));
     }
   }
-
 }
