@@ -89,6 +89,10 @@ public class CreateActivity extends AppCompatActivity {
     SAVE, SHARE
   }
 
+  private enum HotspotChooserState {
+    OPEN, JUST_CLOSED, CLOSED
+  }
+
   // View.
   @Bind(R.id.coordinatatorLayout) CoordinatorLayout mCoordinatorLayout;
   @Bind(R.id.toolbar) Toolbar mToolbar;
@@ -98,6 +102,7 @@ public class CreateActivity extends AppCompatActivity {
   @Bind(R.id.effectChooser) EffectChooser mEffectChooser;
   private AddTextView mAddTextView; // action bar custom view.
   private View mGifAreaView;
+  private BuyToUnlockDialogFragment mBuyDialogFragment;
   private ProgressDialog mShareProgressDialog;
 
   // Model
@@ -116,7 +121,7 @@ public class CreateActivity extends AppCompatActivity {
   private Map<String, Double> mGifProgresses;
   private boolean mGeneratingGif = false;
   private boolean mIsAddTextViewShowing = false;
-  private boolean mIsHotspotChooserOpen = false;
+  private HotspotChooserState mHotspotChooserState = HotspotChooserState.CLOSED;
 
   // Services
   private GifService mGifService;
@@ -151,49 +156,10 @@ public class CreateActivity extends AppCompatActivity {
     initEffects();
     initReceivers();
     initServices();
-  }
 
-  @Override protected void onResume() {
-    super.onResume();
-    SzLog.f(TAG, "onResume()");
-
-    if (mSelectedBitmap == null) {
-      if (mSelectedUri == null) {
-        launchImageChooser();
-      } else if (!mIsHotspotChooserOpen){
-        launchHotspotChooser();
-      }
+    if (getIntent() != null) {
+      handleIncomingIntent(getIntent());
     }
-  }
-
-  @Override protected void onNewIntent(Intent intent) {
-    SzLog.f(TAG, "onNewIntent()");
-    handleIncomingIntent(intent);
-  }
-
-  @Override
-  public void onSaveInstanceState(Bundle savedInstanceState) {
-    super.onSaveInstanceState(savedInstanceState);
-    packBundle(savedInstanceState);
-  }
-
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-    SzLog.f(TAG, "onDestroy()");
-
-    ButterKnife.unbind(this);
-    BusProvider.getInstance().unregister(this);
-
-    if (mGifService != null) {
-      unbindService(mGifServiceConnection);
-    }
-    if (mBillingService != null) {
-      unbindService(mBillingServiceConnection);
-    }
-
-    unregisterReceiver(mGifSharedReceiver);
-    unregisterReceiver(mVideoSharedReceiver);
   }
 
   @Override
@@ -208,13 +174,10 @@ public class CreateActivity extends AppCompatActivity {
         finish();
       }
     } else if (requestCode == Constants.REQUEST_CROP_IMAGE) {
-      mIsHotspotChooserOpen = false;
+      mHotspotChooserState = HotspotChooserState.JUST_CLOSED;
       if (resultCode == RESULT_OK) {
         mSelectedHotspot = data.getParcelableExtra(Constants.CROP_RECT);
         handleCropRectSelected();
-      } else if (mSelectedHotspot == null) {
-        SzLog.e(TAG, "HotspotChooser returned RESULT_OK but the selected hotspot is null");
-        launchHotspotChooser();
       }
     } else if (requestCode == Constants.REQUEST_BUY_PACK) {
       if (resultCode == RESULT_OK) {
@@ -225,6 +188,23 @@ public class CreateActivity extends AppCompatActivity {
     } else {
       SzLog.e(TAG, "Unsupported request code: " + requestCode);
     }
+  }
+
+  @Override protected void onResume() {
+    super.onResume();
+    SzLog.f(TAG, "onResume(): mHotspotChooserState: " + mHotspotChooserState);
+
+    if (mSelectedUri == null) {
+      launchImageChooser();
+      mHotspotChooserState = HotspotChooserState.CLOSED;
+    } else if (mSelectedHotspot == null) {
+      if (mHotspotChooserState == HotspotChooserState.JUST_CLOSED) {
+        launchImageChooser();
+      } else if (mHotspotChooserState == HotspotChooserState.CLOSED) {
+        launchHotspotChooser();
+      }
+    }
+    mHotspotChooserState = HotspotChooserState.CLOSED;
   }
 
   @Override
@@ -301,6 +281,31 @@ public class CreateActivity extends AppCompatActivity {
     }
   }
 
+  @Override
+  public void onSaveInstanceState(Bundle savedInstanceState) {
+    super.onSaveInstanceState(savedInstanceState);
+    packBundle(savedInstanceState);
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+    SzLog.f(TAG, "onDestroy()");
+
+    ButterKnife.unbind(this);
+    BusProvider.getInstance().unregister(this);
+
+    if (mGifService != null) {
+      unbindService(mGifServiceConnection);
+    }
+    if (mBillingService != null) {
+      unbindService(mBillingServiceConnection);
+    }
+
+    unregisterReceiver(mGifSharedReceiver);
+    unregisterReceiver(mVideoSharedReceiver);
+  }
+
   @Subscribe
   public void on(EffectThumbnailViewHolder.ItemClickEvent event) throws IOException {
     // TODO(clocksmith): this could be decouples.
@@ -312,7 +317,7 @@ public class CreateActivity extends AppCompatActivity {
   @Subscribe
   public void on(GifService.GifReadyEvent event) throws IOException {
     if (!event.thumbnail) {
-      SzLog.f(TAG, event.effectName);
+      SzLog.f(TAG, "main gif ready: " + event.effectName);
       if (mSelectedEffectName.equals(event.effectName)) {
         mZeroStateMessage.setVisibility(View.GONE);
         mSelectedGifBytes = event.gifBytes;
@@ -340,7 +345,7 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   @Subscribe
-  public void on(final BuyToUnlockDialogFragment.OnBuyClickedEvent event) {
+  public void on(final BuyToUnlockDialogView.OnBuyClickedEvent event) {
     IabUtils.getBuyIntentByPack(event.packName, mBillingService, new GetBuyIntentCallback() {
       @Override
       public void onSuccess(PendingIntent buyIntent) {
@@ -356,6 +361,11 @@ public class CreateActivity extends AppCompatActivity {
         SzLog.e(TAG, "Could not get buy intent for pack: " + event.packName);
       }
     });
+  }
+
+  @Subscribe
+  public void on(final BuyToUnlockDialogView.OnCancelClickedEvent event) {
+    mBuyDialogFragment.dismiss();
   }
 
   private void initServices() {
@@ -393,6 +403,7 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   private void initEffects() {
+    mPurchasedPackNames = Lists.newArrayList();
     mEffectChooser.initForCreateActivity();
     if (mSelectedEffectName == null) {
       setSelectedEffect(Effects.listEffectTemplatesByPack().get(0).getName());
@@ -409,7 +420,7 @@ public class CreateActivity extends AppCompatActivity {
     Intent intent = new Intent(CreateActivity.this, HotspotChooserActivity.class);
     intent.putExtra(Constants.IMAGE_URI, mSelectedUri);
     startActivityForResult(intent, Constants.REQUEST_CROP_IMAGE);
-    mIsHotspotChooserOpen = true;
+    mHotspotChooserState = HotspotChooserState.OPEN;
   }
 
   private void handleIncomingIntent(Intent intent) {
@@ -660,8 +671,8 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   private void showBuyDialog(String effectName, String packName) {
-    final DialogFragment newFragment = BuyToUnlockDialogFragment.newInstance(effectName, packName);
-    newFragment.show(getSupportFragmentManager(), BuyToUnlockDialogFragment.class.getSimpleName());
+    mBuyDialogFragment = BuyToUnlockDialogFragment.newInstance(effectName, packName);
+    mBuyDialogFragment.show(getSupportFragmentManager(), BuyToUnlockDialogFragment.class.getSimpleName());
   }
 
   private void showShareProgressDialog(String message) {

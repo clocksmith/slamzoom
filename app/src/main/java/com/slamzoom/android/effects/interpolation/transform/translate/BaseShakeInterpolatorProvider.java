@@ -14,8 +14,8 @@ public class BaseShakeInterpolatorProvider implements TranslateInterpolatorProvi
   private int mShiftedFrequency;
 
   // intesnity and frequency should be 1-100
-  public BaseShakeInterpolatorProvider(int intensity, int frequency) {
-    mIntensity = (float) intensity / 100;
+  public BaseShakeInterpolatorProvider(float intensity, int frequency) {
+    mIntensity = intensity / 100;
     mFrequency = frequency;
     mShiftedFrequency = Math.round(mFrequency * PHASE_SHIFT_MULTIPLIER);
   }
@@ -23,6 +23,10 @@ public class BaseShakeInterpolatorProvider implements TranslateInterpolatorProvi
   @Override
   public Interpolator getXInterpolator() {
     return new Interpolator() {
+      public float getInterpolation(float t) {
+        return getValue(t);
+      }
+
       @Override
       public float getValue(float t) {
         return (float) (
@@ -35,6 +39,10 @@ public class BaseShakeInterpolatorProvider implements TranslateInterpolatorProvi
   @Override
   public Interpolator getYInterpolator() {
     return new Interpolator() {
+      public float getInterpolation(float t) {
+        return getValue(t);
+      }
+      
       @Override
       public float getValue(float t) {
         return (float) (

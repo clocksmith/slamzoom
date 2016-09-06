@@ -24,14 +24,14 @@ import com.slamzoom.android.common.bus.BusProvider;
 public class BuyToUnlockDialogFragment extends DialogFragment {
   private static final String TAG = BuyToUnlockDialogFragment.class.getSimpleName();
 
-  public class OnBuyClickedEvent {
-    public String packName;
-    public OnBuyClickedEvent(String packName) {
-      this.packName = packName;
-    }
-  }
-
-  public class OnCancelClickedEvent {}
+//  public class OnBuyClickedEvent {
+//    public String packName;
+//    public OnBuyClickedEvent(String packName) {
+//      this.packName = packName;
+//    }
+//  }
+//
+//  public class OnCancelClickedEvent {}
 
   private String mEffectName;
   private String mPackName;
@@ -57,8 +57,8 @@ public class BuyToUnlockDialogFragment extends DialogFragment {
 
     mContentView = new BuyToUnlockDialogView(getContext(), effectName, packName);
     mContentView.setMinimumHeight(getResources().getDimensionPixelOffset(R.dimen.buy_dialog_effect_height));
-    mContentView.setLayoutParams(new LinearLayout.LayoutParams(
-        ViewGroup.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelOffset(R.dimen.buy_dialog_effect_height)));
+//    mContentView.setLayoutParams(new LinearLayout.LayoutParams(
+//        ViewGroup.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelOffset(R.dimen.buy_dialog_effect_height)));
 
     Drawable icon = ContextCompat.getDrawable(getActivity(), R.drawable.ic_gfx_buy_dialog_lock);
     icon.setColorFilter(ContextCompat.getColor(getActivity(), R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
@@ -66,20 +66,6 @@ public class BuyToUnlockDialogFragment extends DialogFragment {
         .setIcon(icon)
         .setTitle(R.string.buy_dialog_title)
         .setView(mContentView)
-        .setPositiveButton(R.string.buy_ok,
-            new DialogInterface.OnClickListener() {
-              public void onClick(DialogInterface dialog, int whichButton) {
-                BusProvider.getInstance().post(new OnBuyClickedEvent(packName));
-              }
-            }
-        )
-        .setNegativeButton(R.string.buy_cancel,
-            new DialogInterface.OnClickListener() {
-              public void onClick(DialogInterface dialog, int whichButton) {
-                BusProvider.getInstance().post(new OnCancelClickedEvent());
-              }
-            }
-        )
         .create();
 
     dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);

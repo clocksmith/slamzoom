@@ -6,12 +6,12 @@ import com.slamzoom.android.interpolators.Interpolator;
 /**
  * Created by clocksmith on 3/21/16.
  */
-public class UnsaturateFilterInterpolator extends BaseSaturationFilterInterpolator {
-  public UnsaturateFilterInterpolator() {
+public class DesaturateFilterInterpolator extends BaseSaturationFilterInterpolator {
+  public DesaturateFilterInterpolator() {
     this(null);
   }
 
-  public UnsaturateFilterInterpolator(Interpolator interpolator) {
+  public DesaturateFilterInterpolator(Interpolator interpolator) {
     super(interpolator);
   }
 

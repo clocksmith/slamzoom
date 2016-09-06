@@ -31,7 +31,7 @@ public class DebugUtils {
 
   // Performance
   public static final boolean SKIP_GIF_CACHE = false;
-  public static final boolean SKIP_GENERATE_THUMBNAIL_GIFS = false;
+  public static final boolean SKIP_GENERATE_THUMBNAIL_GIFS = true;
   public static final boolean SKIP_RECYCLE_BITMAP = false;
 
   // Quality

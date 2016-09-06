@@ -8,6 +8,6 @@ import com.slamzoom.android.interpolators.Interpolator;
 public class ThreeEaseInHardOutInterpolator extends Interpolator {
   @Override
   public float getValue(float t) {
-    return (float) Math.pow(Math.sin(3 * Math.PI * t), 10);
+    return (float) Math.pow(Math.sin(3 * Math.PI * t), 50);
   }
 }

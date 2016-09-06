@@ -1,5 +1,7 @@
 package com.slamzoom.android.ui.create;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.Typeface;
@@ -13,6 +15,9 @@ import android.text.style.StyleSpan;
 import android.text.style.TypefaceSpan;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewTreeObserver;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -21,6 +26,10 @@ import com.google.common.collect.FluentIterable;
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.FontLoader;
 import com.slamzoom.android.common.SzLog;
+import com.slamzoom.android.common.bus.BusProvider;
+import com.slamzoom.android.common.utils.AnimationUtils;
+import com.slamzoom.android.common.utils.UiUtils;
+import com.slamzoom.android.effects.EffectColors;
 import com.slamzoom.android.effects.EffectPack;
 import com.slamzoom.android.effects.Effects;
 import com.slamzoom.android.effects.EffectTemplate;
@@ -39,22 +48,27 @@ import butterknife.ButterKnife;
 public class BuyToUnlockDialogView extends LinearLayout {
   public static final String TAG = BuyToUnlockDialogView.class.getSimpleName();
 
-  private static final int GRID_SPAN_COUNT = 3;
+  public class OnBuyClickedEvent {
+    public String packName;
+    public OnBuyClickedEvent(String packName) {
+      this.packName = packName;
+    }
+  }
+
+  public class OnCancelClickedEvent {}
 
   @Bind(R.id.message) TextView mMessage;
   @Bind(R.id.otherEffects) EffectChooser mOtherEffects;
-
-  private String mEffectName;
+  @Bind(R.id.cancelButton) Button mCancelButton;
+  @Bind(R.id.okButton) Button mOkButton;
 
   public BuyToUnlockDialogView(Context context, final String effectName, final String packName) {
     this(context, null);
 
-    mEffectName = effectName;
     EffectPack pack = Effects.getPack(packName);
     EffectTemplate effect = EffectTemplates.get(effectName);
 
     mMessage.setTypeface(FontLoader.getInstance().getDefaultFont());
-//    mMessage.setTextSize(getResources().getDimension(R.dimen.effect_name_text_size));
 
     if (pack == null) {
       SzLog.e(TAG, "effectPack: " + packName + " is null!");
@@ -94,6 +108,31 @@ public class BuyToUnlockDialogView extends LinearLayout {
           Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
       mMessage.setText(messageSpannable);
+
+      mOkButton.setOnClickListener(new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          BusProvider.getInstance().post(new OnBuyClickedEvent(packName));
+        }
+      });
+
+      mCancelButton.setOnClickListener(new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          BusProvider.getInstance().post(new OnCancelClickedEvent());
+        }
+      });
+
+//      mOkButton.setBackgroundColor(effect.getColor());
+//      UiUtils.onGlobalLayout(mOkButton, new ViewTreeObserver.OnGlobalLayoutListener() {
+//        @Override
+//        public void onGlobalLayout() {
+//          mOkButton.setPivotX(mOkButton.getWidth() / 2);
+//          mOkButton.setPivotY(mOkButton.getHeight() / 2);
+//          AnimationUtils.getUniformScaleSet(mOkButton, 1.2f, 1000).start();
+//          rotateColorsOkButton(0);
+//        }
+//      });
     }
 
     List<EffectModel> effectModelsForPack = FluentIterable.from(Effects.createEffectModels())
@@ -124,6 +163,25 @@ public class BuyToUnlockDialogView extends LinearLayout {
     ButterKnife.bind(this);
   }
 
+  private void pulseOkButton() {
+    mOkButton.setPivotX(mOkButton.getWidth() / 2);
+    mOkButton.setPivotY(mOkButton.getHeight() / 2);
+    AnimationUtils.getPulseForeverSet(mOkButton, 1.2f, 500).start();
+  }
+
+  private void rotateColorsOkButton(final int index) {
+    final List<Integer> colors = EffectColors.getColorGroup("darkerRainbow");
+    AnimatorSet set = AnimationUtils.getChangeButtonBackgroundColorSet(mOkButton, colors.get(index), 500);
+    set.addListener(new AnimationUtils.OnAnimationEndOnlyListener() {
+      @Override
+      public void onAnimationEnd(Animator animation) {
+        rotateColorsOkButton((index + 1) % colors.size());
+      }
+    });
+    set.start();
+  }
+
+  // TODO(clocksmith): extract
   private static void applyCustomTypeFace(Paint paint, Typeface tf) {
     int oldStyle;
     Typeface old = paint.getTypeface();

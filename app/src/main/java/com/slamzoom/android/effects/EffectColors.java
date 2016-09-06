@@ -53,7 +53,7 @@ public class EffectColors {
 
   public static ImmutableList<Integer> getColorGroup(final String colorGroup) {
     // TODO(clocksmith): extract this and get rid of the other stuff if we decide on this scheme.
-    if (colorGroup.equals("rainbow")) {
+    if (colorGroup.equals("darkerRainbow")) {
       return ImmutableList.copyOf(Lists.transform(getRainbowColorGroup(), new Function<Integer, Integer>() {
         @Override
         public Integer apply(Integer color) {
@@ -63,21 +63,23 @@ public class EffectColors {
           return Color.HSVToColor(hsv);
         }
       }));
-    }
-
-    String[] frags = colorGroup.split("_");
-    int start = Integer.parseInt(frags[1]);
-    int end = Integer.parseInt(frags[2]);
-    int range = end - start;
-    double inc = ((double) range) / NUM_COLORS_IN_GROUP;
-    if (!mColorGroups.containsKey(colorGroup)) {
-      List<Integer> colors = Lists.newArrayList();
-      for (int i = 0; i < NUM_COLORS_IN_GROUP; i++) {
-        colors.add(getColor(frags[0], (int) Math.round(start + inc * i)));
+    } else if (colorGroup.equals("rainbow")) {
+      return getRainbowColorGroup();
+    } else {
+      String[] frags = colorGroup.split("_");
+      int start = Integer.parseInt(frags[1]);
+      int end = Integer.parseInt(frags[2]);
+      int range = end - start;
+      double inc = ((double) range) / NUM_COLORS_IN_GROUP;
+      if (!mColorGroups.containsKey(colorGroup)) {
+        List<Integer> colors = Lists.newArrayList();
+        for (int i = 0; i < NUM_COLORS_IN_GROUP; i++) {
+          colors.add(getColor(frags[0], (int) Math.round(start + inc * i)));
+        }
+        mColorGroups.put(colorGroup, ImmutableList.copyOf(colors));
       }
-      mColorGroups.put(colorGroup, ImmutableList.copyOf(colors));
+      return mColorGroups.get(colorGroup);
     }
-    return mColorGroups.get(colorGroup);
   }
 
   private static int getColor(String color, int value) {

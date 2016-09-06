@@ -1,6 +1,25 @@
 <resources>
   <string name="app_name">SlamZoom</string>
 
+  <!-- Effect Names -->
+  <string name="slamin">slamin</string>
+  <string name="slamout">slamout</string>
+  <string name="crashblur">crashblur</string>
+  <string name="rumblestiltskin">rumblestiltskin</string>
+  <string name="throwback">throwback</string>
+  <string name="flashreveal">flashreveal</string>
+  <string name="rumbleslam">rumbleslam</string>
+  <string name="flushslam">flushslam</string>
+
+  <string name="bulge">bulge</string>
+  <string name="blockhead">blockhead</string>
+  <string name="inflate">inflate</string>
+  <string name="deflate">deflate</string>
+  <string name="swirlspot">swirlspot</string>
+  <string name="doublebulge">doublebulge</string>
+  <string name="bulgeswap">bulgeswap</string>
+  <string name="smush">smush</string>
+
   <string name="create_slamzoom">CREATE</string>
   <string name="zero_state_message">select an effect</string>
 

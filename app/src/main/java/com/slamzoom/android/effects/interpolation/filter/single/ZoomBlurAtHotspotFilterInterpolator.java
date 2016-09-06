@@ -9,10 +9,6 @@ import com.slamzoom.android.interpolators.Interpolator;
  * Created by clocksmith on 3/21/16.
  */
 public class ZoomBlurAtHotspotFilterInterpolator extends BaseZoomBlurFilterInterpolator {
-  public ZoomBlurAtHotspotFilterInterpolator() {
-    this(null);
-  }
-
   public ZoomBlurAtHotspotFilterInterpolator(Interpolator interpolator) {
     super(interpolator);
   }

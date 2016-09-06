@@ -2,7 +2,7 @@ package com.slamzoom.android.effects;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
-import com.slamzoom.android.effects.interpolation.transformfilter.TransformAndFilterInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.EffectInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.group.FilterInterpolatorsProvider;
 import com.slamzoom.android.effects.interpolation.transform.TransformInterpolatorProvider;
@@ -117,9 +117,9 @@ public class EffectTemplate {
       return this;
     }
 
-    public SingleEffectStepBuilder withTransformAndFilterInterpolatorProvider(
-        TransformAndFilterInterpolatorProvider interpolatorProvider) {
-      mEffectStepBuilder.withTransformAndFilterInterpolatorProvider(interpolatorProvider);
+    public SingleEffectStepBuilder withEffectInterpolatorProvider(
+        EffectInterpolatorProvider interpolatorProvider) {
+      mEffectStepBuilder.withEffectInterpolatorProvider(interpolatorProvider);
       return this;
     }
 

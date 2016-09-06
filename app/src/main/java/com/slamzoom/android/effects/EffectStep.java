@@ -7,14 +7,14 @@ import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.effects.interpolation.transformfilter.TransformAndFilterInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.EffectInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.group.FilterInterpolatorsProvider;
 import com.slamzoom.android.effects.interpolation.transform.TransformInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.TranslateInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.translate.NoTranslateInterpolatorProvider;
 import com.slamzoom.android.interpolators.Interpolator;
-import com.slamzoom.android.effects.interpolation.transform.scale.NoScaleInterpolator;
+import com.slamzoom.android.interpolators.ZeroInterpolator;
 
 import java.util.List;
 
@@ -153,12 +153,13 @@ public class EffectStep {
       return this;
     }
 
-    public Builder withTransformAndFilterInterpolatorProvider(
-        TransformAndFilterInterpolatorProvider interpoaltionProvider) {
-      mFilterInterpolators.addAll(interpoaltionProvider.getFilterInterpolators());
+    public Builder withEffectInterpolatorProvider(
+        EffectInterpolatorProvider interpolatorProvider) {
+      mFilterInterpolators.addAll(interpolatorProvider.getFilterInterpolators());
       return this
-          .withScaleInterpolator(interpoaltionProvider.getScaleInterpolator())
-          .withTranslateInterpolator(interpoaltionProvider.getTranslateInterpolationProvider());
+          .withScaleInterpolator(interpolatorProvider.getScaleInterpolator())
+          .withXInterpolator(interpolatorProvider.getXInterpolator())
+          .withYInterpolator(interpolatorProvider.getYInterpolator());
     }
 
     public Builder withDurationSeconds(float durationSeconds) {
@@ -179,7 +180,7 @@ public class EffectStep {
     public EffectStep build() {
       // Make sure we don't have any null transformation interpolators.
       if (mScaleInterpolator == null) {
-        this.withScaleInterpolator(new NoScaleInterpolator());
+        this.withScaleInterpolator(new ZeroInterpolator());
       }
       if (mXInterpolator == null || mYInterpolator == null) {
         NoTranslateInterpolatorProvider noTranslateInterpolatorProvider = new NoTranslateInterpolatorProvider();

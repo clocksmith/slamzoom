@@ -185,17 +185,18 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       previousStep = step;
       final Rect endRect = step.getHotspot();
 
-      Interpolator scaleInterpolator = step.getScaleInterpolator();
-      Interpolator xInterpolator = step.getXInterpolator();
-      Interpolator yInterpolator = step.getYInterpolator();
-
       // TODO(clocksmith): This works but we need to double check for edge cases and off by 1s.
       final float px = endRect.left + endRect.left * endRect.width() / (startRect.width() - endRect.width() + 1);
       final float py = endRect.top + endRect.top * endRect.height() / (startRect.height() - endRect.height() + 1);
 
       final float startScale = 1;
       final float endScale = (float) startRect.height() / endRect.height();
+      Interpolator scaleInterpolator = step.getScaleInterpolator();
+      Interpolator xInterpolator = step.getXInterpolator();
+      Interpolator yInterpolator = step.getYInterpolator();
       scaleInterpolator.setRange(startScale, endScale);
+//      xInterpolator.setRange(startScale, endScale);
+//      yInterpolator.setRange(startScale, endScale);
 
       final LinearInterpolator leftInterpolator = new LinearInterpolator(endRect.left, startRect.left);
       final LinearInterpolator topInterpolator = new LinearInterpolator(endRect.top, startRect.top);
@@ -207,10 +208,13 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       for (int frameIndex = 0; frameIndex < numFramesForChunk; frameIndex++) {
         final float t = ((float) frameIndex / (numFramesForChunk - 1));
         final float scale = scaleInterpolator.getInterpolation(t);
-        final float intermediateWidth = startRect.width() / scale;
-        final float intermediateHeight = startRect.height() / scale;
-        final float dx = xInterpolator.getInterpolation(t) * intermediateWidth;
-        final float dy = yInterpolator.getInterpolation(t) * intermediateHeight;
+        // TODO(clocksmith): we need access to scale in interpolator since sometimes we want to divide.
+//        final float intermediateWidth = startRect.width() / scale;
+//        final float intermediateHeight = startRect.height() / scale;
+//        final float dx = xInterpolator.getInterpolation(t) * intermediateWidth;
+//        final float dy = yInterpolator.getInterpolation(t) * intermediateHeight;
+        final float dx = xInterpolator.getInterpolation(t) * startRect.width();
+        final float dy = yInterpolator.getInterpolation(t) * startRect.height();
 
         final RectF normalizedHotspot = new RectF(0, 0, 1, 1);
         try {
