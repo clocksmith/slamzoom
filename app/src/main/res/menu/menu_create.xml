@@ -12,6 +12,11 @@
       android:title="@string/action_change_hotspot"
       app:showAsAction="always"/>
   <item
+      android:id="@+id/action_add_text"
+      android:icon="@drawable/ic_menu_add_text"
+      android:title="@string/action_add_text"
+      app:showAsAction="always"/>
+  <item
       android:id="@+id/action_save"
       android:icon="@drawable/ic_menu_save"
       android:title="@string/action_save"
@@ -48,14 +53,9 @@
       <!--app:actionViewClass="com.slamzoom.android.common.LoopSwitch"-->
       <!--app:showAsAction="always"-->
       <!--android:title="@string/action_cycle"/>-->
-  <!--<item-->
-      <!--android:id="@+id/action_add_text"-->
-      <!--android:icon="@drawable/ic_menu_add_text"-->
-      <!--android:title="@string/action_add_text"-->
-      <!--app:showAsAction="always"/>-->
-  <!--<item-->
-      <!--android:id="@+id/action_ok"-->
-      <!--android:icon="@drawable/ic_menu_ok"-->
-      <!--android:title="@string/action_ok"-->
-      <!--app:showAsAction="ifRoom"/>-->
+  <item
+      android:id="@+id/action_ok"
+      android:icon="@drawable/ic_menu_ok"
+      android:title="@string/action_ok"
+      app:showAsAction="ifRoom"/>
 </menu>

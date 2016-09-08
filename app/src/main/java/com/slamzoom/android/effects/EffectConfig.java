@@ -1,4 +1,4 @@
-package com.slamzoom.android.effects.interpolation;
+package com.slamzoom.android.effects;
 
 import com.google.common.collect.ImmutableList;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
@@ -13,8 +13,24 @@ import java.util.List;
 /**
  * Created by clocksmith on 8/30/16.
  */
-public abstract class EffectInterpolatorProvider implements
+public abstract class EffectConfig implements
     ScaleInterpolatorProvider, TranslateInterpolatorProvider, FilterInterpolatorsProvider {
+  public String getName() {
+    return "NAME ME!";
+  }
+
+  public float getStartPauseSeconds() {
+    return 1;
+  }
+
+  public float getDurationSeconds() {
+    return 2;
+  }
+
+  public float getEndPauseSeconds() {
+    return 2;
+  }
+
   @Override
   public Interpolator getScaleInterpolator() {
     return new ZeroInterpolator();
@@ -32,6 +48,14 @@ public abstract class EffectInterpolatorProvider implements
 
   @Override
   public List<FilterInterpolator> getFilterInterpolators() {
-    return ImmutableList.of();
+    if (getFilterInterpolator() != null) {
+      return ImmutableList.of(getFilterInterpolator());
+    } else {
+      return ImmutableList.of();
+    }
+  }
+
+  public FilterInterpolator getFilterInterpolator() {
+    return null;
   }
 }

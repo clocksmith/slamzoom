@@ -1,6 +1,6 @@
-package com.slamzoom.android.effects.interpolation;
+package com.slamzoom.android.effects.packs.slam;
 
-import com.google.common.collect.ImmutableList;
+import com.slamzoom.android.effects.EffectConfig;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.DesaturateFilterInterpolator;
 import com.slamzoom.android.interpolators.Interpolator;
@@ -9,7 +9,12 @@ import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
 /**
  * Created by clocksmith on 9/5/16.
  */
-public class ThrowbackInterpolatorProvider extends EffectInterpolatorProvider {
+public class ThrowbackEffectConfig extends EffectConfig {
+  @Override
+  public String getName() {
+    return "throwback";
+  }
+
   @Override
   public Interpolator getScaleInterpolator() {
     return LinearSplineInterpolator.newBuilder()
@@ -21,12 +26,11 @@ public class ThrowbackInterpolatorProvider extends EffectInterpolatorProvider {
   }
 
   @Override
-  public ImmutableList<FilterInterpolator> getFilterInterpolators() {
-    return ImmutableList.<FilterInterpolator>of(
-        new DesaturateFilterInterpolator(LinearSplineInterpolator.newBuilder()
-            .withPoint(0, 0)
-            .withPoint(0.5f, 0)
-            .withPoint(1, 1)
-            .build()));
+  public FilterInterpolator getFilterInterpolator() {
+    return new DesaturateFilterInterpolator(LinearSplineInterpolator.newBuilder()
+        .withPoint(0, 0)
+        .withPoint(0.5f, 0)
+        .withPoint(1, 1)
+        .build());
   }
 }

@@ -1,17 +1,28 @@
-package com.slamzoom.android.effects.interpolation;
+package com.slamzoom.android.effects.packs.slam;
 
+import com.slamzoom.android.effects.EffectConfig;
 import com.slamzoom.android.interpolators.Interpolator;
 import com.slamzoom.android.effects.interpolation.transform.scale.EaseInSlamHardInterpolator;
 
 /**
  * Created by clocksmith on 3/16/16.
  */
-public class FlushslamInterpolatorProvider extends EffectInterpolatorProvider {
-  private static final float RADIUS = 0.25f;
+public class FlushslamEffectConfig extends EffectConfig {
+  private static final float RADIUS = 0.15f;
   private static final float FREQUENCY = 4;
   private static final float EXPONENT_0 = 2f;
   private static final float EXPONENT_1 = 0.2f;
   private static final float EXPONENT_2 = 3;
+
+  @Override
+  public String getName() {
+    return "flushslam";
+  }
+
+  @Override
+  public float getEndPauseSeconds() {
+    return 1;
+  }
 
   @Override
   public Interpolator getScaleInterpolator() {

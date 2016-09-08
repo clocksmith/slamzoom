@@ -12,7 +12,7 @@ public class TeaseInterpolator extends StepInterpolator {
     super(PointsBuilder.create()
         .withPoint(0.1667f, 0)
         .withPoint(0.5f, 0.2f)
-        .withPoint(0.8333f, 0.45f)
+        .withPoint(0.8333f, 0.5f)
         .withPoint(1, 1)
         .build());
   }

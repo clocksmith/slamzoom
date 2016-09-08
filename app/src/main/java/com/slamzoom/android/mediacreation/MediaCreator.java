@@ -20,6 +20,7 @@ import com.slamzoom.android.common.executor.ExecutorProvider;
 import com.slamzoom.android.common.preferences.CreatorPreferences;
 import com.slamzoom.android.common.utils.BitmapUtils;
 import com.slamzoom.android.common.utils.DebugUtils;
+import com.slamzoom.android.common.utils.MathUtils;
 import com.slamzoom.android.common.utils.PostProcessorUtils;
 import com.slamzoom.android.common.SzLog;
 import com.slamzoom.android.effects.EffectStep;
@@ -81,9 +82,9 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     float aspectRatio = (float) mSelectedBitmap.getWidth() / mSelectedBitmap.getHeight();
     if (aspectRatio > 1) {
       mWidth = size;
-      mHeight = Math.round(size / aspectRatio) / 2 * 2;
+      mHeight = MathUtils.roundToEvenNumber(size / aspectRatio);
     } else {
-      mWidth = Math.round(size * aspectRatio) / 2 * 2;
+      mWidth = MathUtils.roundToEvenNumber(size * aspectRatio);
       mHeight = size;
     }
 
@@ -195,8 +196,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       Interpolator xInterpolator = step.getXInterpolator();
       Interpolator yInterpolator = step.getYInterpolator();
       scaleInterpolator.setRange(startScale, endScale);
-//      xInterpolator.setRange(startScale, endScale);
-//      yInterpolator.setRange(startScale, endScale);
+
 
       final LinearInterpolator leftInterpolator = new LinearInterpolator(endRect.left, startRect.left);
       final LinearInterpolator topInterpolator = new LinearInterpolator(endRect.top, startRect.top);

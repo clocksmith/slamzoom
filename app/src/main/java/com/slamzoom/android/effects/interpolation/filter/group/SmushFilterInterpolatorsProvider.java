@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by clocksmith on 5/16/16.
  */
-public class BulgeFaceFilterInterpolatorsProvider implements FilterInterpolatorsProvider {
+public class SmushFilterInterpolatorsProvider implements FilterInterpolatorsProvider {
   @Override
   public List<FilterInterpolator> getFilterInterpolators() {
     return ImmutableList.<FilterInterpolator>of(

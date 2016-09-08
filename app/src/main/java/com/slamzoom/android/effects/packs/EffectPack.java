@@ -1,7 +1,10 @@
-package com.slamzoom.android.effects;
+package com.slamzoom.android.effects.packs;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.slamzoom.android.effects.EffectColors;
+import com.slamzoom.android.effects.EffectConfig;
+import com.slamzoom.android.effects.EffectTemplate;
 
 import java.util.List;
 
@@ -10,7 +13,7 @@ import java.util.List;
  */
 public class EffectPack {
   private String mName;
-  private String mColorGroup;
+  private String mColorGroup = "darkerRainbow";
   private int mColor;
   private ImmutableList<EffectTemplate> mEffectTemplates;
 
@@ -43,7 +46,7 @@ public class EffectPack {
 
   public static class Builder {
     private String mName;
-    private String mColorGroup;
+    private String mColorGroup = "darkerRainbow";
     private int mColor;
     private List<EffectTemplate> mEffectTemplates;
 
@@ -61,8 +64,13 @@ public class EffectPack {
       return this;
     }
 
-    public Builder withEffectTemplate(String effectName) {
-      mEffectTemplates.add(EffectTemplates.get(effectName));
+    public Builder withEffectTemplate(EffectTemplate effectTemplate) {
+      mEffectTemplates.add(effectTemplate);
+      return this;
+    }
+
+    public Builder withEffectConfig(EffectConfig effectConfig) {
+      mEffectTemplates.add(EffectTemplate.create(effectConfig));
       return this;
     }
 

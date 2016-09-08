@@ -7,9 +7,7 @@ import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.effects.interpolation.EffectInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
-import com.slamzoom.android.effects.interpolation.filter.group.FilterInterpolatorsProvider;
 import com.slamzoom.android.effects.interpolation.transform.TransformInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.TranslateInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.translate.NoTranslateInterpolatorProvider;
@@ -148,18 +146,20 @@ public class EffectStep {
       return this;
     }
 
-    public Builder withFilterInterpolatorGroup(FilterInterpolatorsProvider filterInterpolatorsProvider) {
-      mFilterInterpolators.addAll(filterInterpolatorsProvider.getFilterInterpolators());
+    public Builder withFilterInterpolators(List<FilterInterpolator> filterInterpolators) {
+      mFilterInterpolators.addAll(filterInterpolators);
       return this;
     }
 
-    public Builder withEffectInterpolatorProvider(
-        EffectInterpolatorProvider interpolatorProvider) {
-      mFilterInterpolators.addAll(interpolatorProvider.getFilterInterpolators());
+    public Builder withEffectConfig(EffectConfig interpolatorProvider) {
       return this
+//          .withStartPauseSeconds(interpolatorProvider.getStartPauseSeconds())
+//          .withDurationSeconds(interpolatorProvider.getDurationSeconds())
+//          .withEndPauseSeconds(interpolatorProvider.getEndPauseSeconds())
           .withScaleInterpolator(interpolatorProvider.getScaleInterpolator())
           .withXInterpolator(interpolatorProvider.getXInterpolator())
-          .withYInterpolator(interpolatorProvider.getYInterpolator());
+          .withYInterpolator(interpolatorProvider.getYInterpolator())
+          .withFilterInterpolators(interpolatorProvider.getFilterInterpolators());
     }
 
     public Builder withDurationSeconds(float durationSeconds) {

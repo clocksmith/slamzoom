@@ -23,6 +23,15 @@
   <color name="dialog_text">@color/dark_gray</color>
   <color name="buy_dialog_effect_text">@color/not_quite_black</color>
 
+  <color name="sz1">#FFC95E</color>
+  <color name="sz2">#BFFF5E</color>
+  <color name="sz3">#00FFCC</color>
+  <color name="sz4">#38D1FF</color>
+  <color name="sz5">#DF5EFF</color>
+  <color name="sz6">#FF66CF</color>
+  <color name="sz7">#FF5E5E</color>
+  <color name="sz8">#FF7700</color>
+
   <color name="md_red50">#ffffebee</color>
   <color name="md_red100">#ffffcdd2</color>
   <color name="md_red200">#ffef9a9a</color>

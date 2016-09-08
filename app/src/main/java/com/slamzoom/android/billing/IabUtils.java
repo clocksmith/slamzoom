@@ -27,7 +27,7 @@ public class IabUtils {
   private static final String TAG = IabUtils.class.getSimpleName();
 
   private static final ImmutableList<String> GIFTED_PACK_NAMES =
-      ImmutableList.of(Effects.Pack.STARTER.name());
+      ImmutableList.of(Effects.Pack.SLAM.name());
 
   private static final ImmutableList<String> DEBUG_PACK_NAMES =
       ImmutableList.of(Effects.Pack.DEBUG.name());

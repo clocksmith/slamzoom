@@ -21,7 +21,9 @@ public class Constants {
 
   // Params TODO(clocksmith): refactor to params
   public static final String IMAGE_URI = "imageUri";
-  public static final String CROP_RECT = "cropRect";
+  public static final String HOTSPOT = "hotspot";
+  public static final String HOTSPOT_SCALE = "hotspotScale";
+  public static final String END_TEXT_LENGTH = "endTextLength";
   public static final String EFFECT_NAME = "effectName";
   public static final String PACK_NAME = "packName";
 
@@ -37,9 +39,9 @@ public class Constants {
   public static final float DEFAULT_END_PAUSE_SECONDS = 0;
   public static final int MAIN_FPS = 25;
   public static final int THUMBNAIL_FPS = 25;
-  public static final int MAIN_SIZE_PX = 320;
-  public static final int MEDIA_THUMBNAIL_DIVIDER = 4;
-  public static final int THUMBNAIL_SIZE_PX = MAIN_SIZE_PX / MEDIA_THUMBNAIL_DIVIDER;
+  public static final int MAIN_SIZE_PX = 320; // must be even
+  public static final int THUMBNAIL_SIZE_PX = 120; // must be even
+  public static final float MEDIA_THUMBNAIL_DIVIDER = (float) MAIN_SIZE_PX / THUMBNAIL_SIZE_PX;
   public static final boolean DEFAULT_USE_LOCAL_COLOR_PALETTE = true;
 
   public static final int MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX = MAIN_SIZE_PX * 2; // arbitrary

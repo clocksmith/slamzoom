@@ -19,12 +19,6 @@ public class ExposureCalculator extends BaseCalculator {
     return mBaseExposure;
   }
 
-
-  public float getBaseMinExposure() {
-    return mBaseMinExposure;
-  }
-
-
   public float getUnderExposureFromInterpolation() {
     return mBaseMinExposure * getInterpolationValue();
   }

@@ -15,6 +15,7 @@ import com.slamzoom.android.R;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.utils.BitmapUtils;
 import com.slamzoom.android.common.utils.DebugUtils;
+import com.slamzoom.android.ui.create.CreateActivity;
 
 import java.io.FileNotFoundException;
 
@@ -37,8 +38,8 @@ public class HotspotChooserActivity extends AppCompatActivity {
     setContentView(R.layout.activity_cropper);
     ButterKnife.bind(this);
 
+    final Uri uri = getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
 
-    final Uri uri = getIntent().getParcelableExtra(Constants.IMAGE_URI);
     try {
       Bitmap bitmap = BitmapUtils.readScaledBitmap(uri, this.getContentResolver());
       if (DebugUtils.USE_STATIC_RECTANGLE) {
@@ -57,24 +58,35 @@ public class HotspotChooserActivity extends AppCompatActivity {
     mDoneButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        Rect cropRect = mImageCropView.getCropRect();
-        Log.d(TAG, "selected cropRect: " + cropRect.toString());
-        finishWithCropRect(cropRect, uri);
+        finishWithCropRect(mImageCropView.getCropRect(), uri);
       }
     });
   }
 
-  private void finishWithCropRect(Rect cropRect, Uri imageUri) {
-    Intent returnIntent = new Intent();
-    returnIntent.putExtra(Constants.CROP_RECT, cropRect);
-    returnIntent.putExtra(Constants.IMAGE_URI, imageUri);
-    setResult(RESULT_OK, returnIntent);
-    finish();
+  private void finishWithCropRect(Rect hotspot, Uri imageUri) {
+    if (getCallingActivity() != null &&
+        getCallingActivity().getClassName().equals(CreateActivity.class.getCanonicalName())) {
+      Intent returnIntent = new Intent();
+      returnIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+      returnIntent.putExtra(Constants.HOTSPOT, hotspot);
+      setResult(RESULT_OK, returnIntent);
+      finish();
+    } else {
+      Intent intent = new Intent(HotspotChooserActivity.this, CreateActivity.class);
+      intent.putExtra(Intent.EXTRA_STREAM, imageUri);
+      intent.putExtra(Constants.HOTSPOT, hotspot);
+      startActivity(intent);
+    }
   }
 
   @Override
   public void onBackPressed() {
+    super.onBackPressed();
+//    if (getCallingActivity() != null &&
+//        getCallingActivity().getClassName().equals(CreateActivity.class.getCanonicalName())) {
+//      Intent returnIntent = new Intent();
+//      setResult(RESULT_OK, returnIntent);
+//    }
     finish();
   }
-
 }

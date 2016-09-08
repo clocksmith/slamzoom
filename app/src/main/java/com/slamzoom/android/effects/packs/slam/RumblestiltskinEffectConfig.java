@@ -1,7 +1,6 @@
-package com.slamzoom.android.effects.interpolation;
+package com.slamzoom.android.effects.packs.slam;
 
-import com.slamzoom.android.effects.interpolation.EffectInterpolatorProvider;
-import com.slamzoom.android.effects.interpolation.transform.TransformInterpolatorProvider;
+import com.slamzoom.android.effects.EffectConfig;
 import com.slamzoom.android.effects.interpolation.transform.TranslateInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.translate.BaseShakeInterpolatorProvider;
 import com.slamzoom.android.interpolators.Interpolator;
@@ -10,17 +9,29 @@ import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
 /**
  * Created by clocksmith on 6/6/16.
  */
-public class RumblestiltskinInterpolatorProvider extends EffectInterpolatorProvider {
+public class RumblestiltskinEffectConfig extends EffectConfig {
   private static final float PERCENT_START = 0.5f;
-
   private static final Interpolator START_INTENSITY_INTERPOLATOR = LinearSplineInterpolator.newBuilder()
       .withPoint(0, 0)
       .withPoint(PERCENT_START, 3)
       .build();
-
-  private static final TranslateInterpolatorProvider START_SHAKE_IP =
-      getStartShakeInterpolationProvider(START_INTENSITY_INTERPOLATOR, 12);
+  private static final TranslateInterpolatorProvider START_SHAKE_IP = getStartShakeIP(START_INTENSITY_INTERPOLATOR, 12);
   private static final TranslateInterpolatorProvider END_SHAKE_IP = new BaseShakeInterpolatorProvider(0.5f, 24);
+
+  @Override
+  public String getName() {
+    return "rumblestiltskin";
+  }
+
+  @Override
+  public float getDurationSeconds() {
+    return 3;
+  }
+
+  @Override
+  public float getEndPauseSeconds() {
+    return 0;
+  }
 
   @Override
   public Interpolator getScaleInterpolator() {
@@ -60,7 +71,7 @@ public class RumblestiltskinInterpolatorProvider extends EffectInterpolatorProvi
     };
   }
 
-  private static TranslateInterpolatorProvider getStartShakeInterpolationProvider(
+  private static TranslateInterpolatorProvider getStartShakeIP(
       final Interpolator intensityInterpolator, final int frequency) {
     return new TranslateInterpolatorProvider() {
       @Override

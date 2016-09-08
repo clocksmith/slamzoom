@@ -1,5 +1,6 @@
 package com.slamzoom.android.mediacreation.video;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
@@ -29,6 +30,8 @@ import java.util.List;
  */
 public class VideoEncoder extends MediaEncoder<VideoFrame> {
   private static final String TAG = VideoEncoder.class.getSimpleName();
+
+  private FFmpeg mFFmpeg;
 
   @Override
   public void encodeAsync(MediaCreatorCallback callback) {
@@ -62,6 +65,12 @@ public class VideoEncoder extends MediaEncoder<VideoFrame> {
       SzLog.e(TAG, "Coud not load ffmpeg binary", e);
       mCallback.onCreateVideo(null);
     }
+  }
+
+  @Override
+  public void cancel() {
+    super.cancel();
+    mFFmpeg.killRunningProcesses();
   }
 
   private void execute() {
@@ -100,9 +109,9 @@ public class VideoEncoder extends MediaEncoder<VideoFrame> {
 
     Log.wtf(TAG, Joiner.on(" ").join(cmds));
 
-    FFmpeg ffmpeg = FFmpeg.getInstance(SzApp.context);
+    mFFmpeg = FFmpeg.getInstance(SzApp.context);
     try {
-      ffmpeg.execute(
+      mFFmpeg.execute(
           cmds.toArray(new String[cmds.size()]),
           new FFmpegExecuteResponseHandler() {
             @Override

@@ -136,8 +136,7 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
       itemView.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-          SzAnalytics.newSelectContentEvent()
-              .withContentType("effect")
+          SzAnalytics.newSelectEffectEvent()
               .withItemId(name)
               .log(itemView.getContext());
 

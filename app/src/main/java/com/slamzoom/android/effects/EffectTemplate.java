@@ -2,7 +2,6 @@ package com.slamzoom.android.effects;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
-import com.slamzoom.android.effects.interpolation.EffectInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.group.FilterInterpolatorsProvider;
 import com.slamzoom.android.effects.interpolation.transform.TransformInterpolatorProvider;
@@ -20,6 +19,10 @@ public class EffectTemplate {
   private int mColor;
   private List<EffectStep> mEffectSteps;
   private int mNumTilesInRow;
+
+  public static EffectTemplate create(EffectConfig effectConfig) {
+    return newSingleStepBuilder().withEffectConfig(effectConfig).build();
+  }
 
   public static SingleEffectStepBuilder newSingleStepBuilder() {
     return new SingleEffectStepBuilder();
@@ -112,14 +115,17 @@ public class EffectTemplate {
       return this;
     }
 
-    public SingleEffectStepBuilder withFilterInterpolatorGroup(FilterInterpolatorsProvider filterInterpolatorsProvider) {
-      mEffectStepBuilder.withFilterInterpolatorGroup(filterInterpolatorsProvider);
+    public SingleEffectStepBuilder withFilterInterpolators(FilterInterpolatorsProvider filterInterpolators) {
+      mEffectStepBuilder.withFilterInterpolators(filterInterpolators.getFilterInterpolators());
       return this;
     }
 
-    public SingleEffectStepBuilder withEffectInterpolatorProvider(
-        EffectInterpolatorProvider interpolatorProvider) {
-      mEffectStepBuilder.withEffectInterpolatorProvider(interpolatorProvider);
+    public SingleEffectStepBuilder withEffectConfig(
+        EffectConfig effectConfig) {
+      withName(effectConfig.getName());
+      withStartDurationEndSeconds(
+          effectConfig.getStartPauseSeconds(), effectConfig.getDurationSeconds(), effectConfig.getEndPauseSeconds());
+      mEffectStepBuilder.withEffectConfig(effectConfig);
       return this;
     }
 

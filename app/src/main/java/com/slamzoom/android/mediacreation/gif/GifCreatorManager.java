@@ -16,7 +16,7 @@ public class GifCreatorManager implements Comparable {
 
   private Context mContext;
   private MediaConfig mMediaConfig;
-  private boolean mIsPreview;
+  private boolean mIsThumbnail;
   private int mIndex;
   private GifCreatorCallback mCallback;
 
@@ -30,28 +30,28 @@ public class GifCreatorManager implements Comparable {
   public GifCreatorManager(
       Context context,
       MediaConfig mediaConfig,
-      boolean preview,
+      boolean thumbnail,
       int index,
       GifCreatorCallback callback) {
     mContext = context;
     mMediaConfig = mediaConfig;
-    mIsPreview = preview;
+    mIsThumbnail = thumbnail;
     mIndex = index;
     mCallback = callback;
 
-    mGifSize = preview ? Constants.THUMBNAIL_SIZE_PX : Constants.MAIN_SIZE_PX;
+    mGifSize = thumbnail ? Constants.THUMBNAIL_SIZE_PX : Constants.MAIN_SIZE_PX;
     mTracker = new MultiPhaseStopwatch();
   }
 
   public void start() {
-    SzLog.f(TAG, "start() " + (mIsPreview ? "preview_" : "") + mMediaConfig.effectTemplate.getName());
+    SzLog.f(TAG, "start() " + (mIsThumbnail ? "thumbnail_" : "") + mMediaConfig.effectTemplate.getName());
     mIsRunning = true;
     mGifCreator = new GifCreator(mContext, mMediaConfig, mTracker);
     mGifCreator.createAsync(mCallback);
   }
 
   public void stop() {
-    SzLog.f(TAG, "stop() " + (mIsPreview ? "preview_" : "") + mMediaConfig.effectTemplate.getName());
+    SzLog.f(TAG, "stop() " + (mIsThumbnail ? "thumbnail_" : "") + mMediaConfig.effectTemplate.getName());
     mHasStopped = true;
     mIsRunning = false;
     mTracker.stopAll();
@@ -69,24 +69,12 @@ public class GifCreatorManager implements Comparable {
     return mIsRunning;
   }
 
-  public boolean hasStopped() {
-    return mHasStopped;
-  }
-
-  public String getName() {
-    return mMediaConfig.effectTemplate.getName();
+  public String getId() {
+    return mIsThumbnail ? mMediaConfig.effectTemplate.getName() : GifService.getKeyFromConfig(mMediaConfig);
   }
 
   public int getIndex() {
     return mIndex;
-  }
-
-  public int getGifSize() {
-    return mGifSize;
-  }
-
-  public int getFps() {
-    return mMediaConfig.fps;
   }
 
   public float getEndScale() {

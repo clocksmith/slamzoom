@@ -26,6 +26,7 @@ public class SzLog {
 //      GifCreator.class.getSimpleName(),
 //      GifCreatorManager.class.getSimpleName(),
 //      GifService.class.getSimpleName(),
+      LifecycleLoggingActivity.class.getSimpleName(),
 //      MediaCreator.class.getSimpleName(),
 //      SzAnalytics.class.getSimpleName(),
 //      VideoFrame.class.getSimpleName(),
@@ -46,7 +47,7 @@ public class SzLog {
   }
 
   public static void e(String tag, String message, Exception e) {
-    Log.e(tag, message, e);
+    Log.e("F/" + tag, message, e);
     FirebaseCrash.log(message);
     if (e != null) {
       FirebaseCrash.report(e);

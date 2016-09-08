@@ -16,7 +16,6 @@ import android.text.style.TypefaceSpan;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -28,12 +27,10 @@ import com.slamzoom.android.common.FontLoader;
 import com.slamzoom.android.common.SzLog;
 import com.slamzoom.android.common.bus.BusProvider;
 import com.slamzoom.android.common.utils.AnimationUtils;
-import com.slamzoom.android.common.utils.UiUtils;
 import com.slamzoom.android.effects.EffectColors;
-import com.slamzoom.android.effects.EffectPack;
+import com.slamzoom.android.effects.packs.EffectPack;
 import com.slamzoom.android.effects.Effects;
 import com.slamzoom.android.effects.EffectTemplate;
-import com.slamzoom.android.effects.EffectTemplates;
 import com.slamzoom.android.ui.create.effectchooser.EffectChooser;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 
@@ -66,7 +63,7 @@ public class BuyToUnlockDialogView extends LinearLayout {
     this(context, null);
 
     EffectPack pack = Effects.getPack(packName);
-    EffectTemplate effect = EffectTemplates.get(effectName);
+    EffectTemplate effect = Effects.getEffectTemplate(effectName);
 
     mMessage.setTypeface(FontLoader.getInstance().getDefaultFont());
 

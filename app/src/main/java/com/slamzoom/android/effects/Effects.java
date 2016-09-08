@@ -7,6 +7,31 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.common.utils.DebugUtils;
+import com.slamzoom.android.effects.interpolation.filter.group.DeflateFaceFilterInterpolatorsProvider;
+import com.slamzoom.android.effects.interpolation.filter.group.InflateFaceFilterInterpolatorsProvider;
+import com.slamzoom.android.effects.interpolation.filter.single.GaussianBlurFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashTaranInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.scaletranslate.PopInInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.scaletranslate.PopOutInterpolatorProvider;
+import com.slamzoom.android.effects.packs.EffectPack;
+import com.slamzoom.android.effects.packs.distort.BlockheadEffectConfig;
+import com.slamzoom.android.effects.packs.distort.BulgeEffectConfig;
+import com.slamzoom.android.effects.packs.distort.BulgeSwapEffectConfig;
+import com.slamzoom.android.effects.packs.distort.DeflateEffectConfig;
+import com.slamzoom.android.effects.packs.distort.DoublebulgeEffectConfig;
+import com.slamzoom.android.effects.packs.distort.InflateEffectConfig;
+import com.slamzoom.android.effects.packs.distort.SmushEfffectConfig;
+import com.slamzoom.android.effects.packs.distort.SwirlspotEffectConfig;
+import com.slamzoom.android.effects.packs.slam.CrashblurEffectConfig;
+import com.slamzoom.android.effects.packs.slam.FlushslamEffectConfig;
+import com.slamzoom.android.effects.packs.slam.PeekabooEffectConfig;
+import com.slamzoom.android.effects.packs.slam.RumbleslamEffectConfig;
+import com.slamzoom.android.effects.packs.slam.RumblestiltskinEffectConfig;
+import com.slamzoom.android.effects.packs.slam.SlaminEffectConfig;
+import com.slamzoom.android.effects.packs.slam.SlamoutEffectConfig;
+import com.slamzoom.android.effects.packs.slam.ThrowbackEffectConfig;
+import com.slamzoom.android.interpolators.LinearInterpolator;
+import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 
 import java.util.List;
@@ -22,7 +47,7 @@ public class Effects {
   private static ImmutableList<EffectTemplate> DEBUG_EFFECT_TEMPLATES_FROM_PACKS;
 
   public enum Pack {
-    STARTER, DISTORT, DEBUG
+    SLAM, DISTORT, DEBUG
   }
 
   public static void init(Context context) {
@@ -30,47 +55,86 @@ public class Effects {
 
     EFFECT_PACKS_NEW_STRATEGY = ImmutableList.<EffectPack>builder()
         .add(EffectPack.newBuilder()
-            .withName(Pack.STARTER.name())
-            .withColorGroup("darkerRainbow")
-            .withEffectTemplate("slamin")
-            .withEffectTemplate("slamout")
-            .withEffectTemplate("crashblur")
-            .withEffectTemplate("rumblestiltskin")
-            .withEffectTemplate("throwback")
-            .withEffectTemplate("peekaboo")
-            .withEffectTemplate("rumbleslam") // replace with chaoscrash
-            .withEffectTemplate("flushslam")
+            .withName(Pack.SLAM.name())
+            .withEffectConfig(new SlaminEffectConfig())
+            .withEffectConfig(new SlamoutEffectConfig())
+            .withEffectConfig(new CrashblurEffectConfig())
+            .withEffectConfig(new RumblestiltskinEffectConfig())
+            .withEffectConfig(new ThrowbackEffectConfig())
+            .withEffectConfig(new PeekabooEffectConfig())
+            .withEffectConfig(new RumbleslamEffectConfig())
+            .withEffectConfig(new FlushslamEffectConfig())
             .build())
         .add(EffectPack.newBuilder()
             .withName(Pack.DISTORT.name())
-            .withColorGroup("darkerRainbow")
-            .withEffectTemplate("bulge")
-            .withEffectTemplate("blockhead")
-            .withEffectTemplate("inflate")
-            .withEffectTemplate("deflate")
-            .withEffectTemplate("swirlspot")
-            .withEffectTemplate("doublebulge")
-            .withEffectTemplate("bulgeswap")
-            .withEffectTemplate("smush")
+            .withEffectConfig(new BulgeEffectConfig())
+            .withEffectConfig(new BlockheadEffectConfig())
+            .withEffectConfig(new InflateEffectConfig())
+            .withEffectConfig(new DeflateEffectConfig())
+            .withEffectConfig(new SwirlspotEffectConfig())
+            .withEffectConfig(new DoublebulgeEffectConfig())
+            .withEffectConfig(new BulgeSwapEffectConfig())
+            .withEffectConfig(new SmushEfffectConfig())
             .build())
         .build();
 
     DEBUG_EFFECT_PACKS = ImmutableList.<EffectPack>builder()
         .add(EffectPack.newBuilder()
             .withName(Pack.DEBUG.name())
-            .withColorGroup("darkerRainbow")
-//            .withEffectTemplate("debug1")
-//            .withEffectTemplate("popin")
-//            .withEffectTemplate("popout")
-            .withEffectTemplate("crashblur-show")
-            .withEffectTemplate("deflate-show")
-            .withEffectTemplate("inflate-show")
-            .withEffectTemplate("rumblestiltskin-show")
-            .withEffectTemplate("slamin-show")
+            .withEffectTemplate(EffectTemplate.newSingleStepBuilder()
+                .withName("debug1")
+                .withStartDurationEndSeconds(2, 0.2f, 2)
+                .withScaleInterpolator(new LinearInterpolator())
+                .build())
+            .withEffectTemplate(EffectTemplate.newSingleStepBuilder()
+                .withName("popin")
+                .withStartDurationEndSeconds(0, 0.175f, 0)
+                .withTransformInterpolatorProvider(new PopInInterpolatorProvider())
+                .build())
+            .withEffectTemplate(EffectTemplate.newSingleStepBuilder()
+                .withName("popout")
+                .withStartDurationEndSeconds(0, 0.175f, 0)
+                .withTransformInterpolatorProvider(new PopOutInterpolatorProvider())
+                .build())
+            .withEffectTemplate(EffectTemplate.newSingleStepBuilder()
+                .withName("crashblur-show")
+                .withStartDurationEndSeconds(0.25f, 0.75f, 1)
+                .withTransformInterpolatorProvider(new CrashTaranInterpolatorProvider())
+                .withFilterInterpolator(new GaussianBlurFilterInterpolator(LinearSplineInterpolator.newBuilder()
+                    .withPoint(0, 0)
+                    .withPoint(0.3f, 1)
+                    .withPoint(0.6f, 1)
+                    .withPoint(0.9f, 0)
+                    .withPoint(1, 0)
+                    .build()))
+                .build())
+            .withEffectTemplate(EffectTemplate.newSingleStepBuilder()
+                .withName("deflate-show")
+                .withStartDurationEndSeconds(0, 2, 0)
+                .withScaleInterpolator(new LinearInterpolator())
+                .withFilterInterpolators(new DeflateFaceFilterInterpolatorsProvider())
+                .build())
+            .withEffectTemplate(EffectTemplate.newSingleStepBuilder()
+                .withName("inflate-show")
+                .withStartDurationEndSeconds(0, 2, 0)
+                .withScaleInterpolator(new LinearInterpolator())
+                .withFilterInterpolators(new InflateFaceFilterInterpolatorsProvider())
+                .build())
+            .withEffectTemplate(EffectTemplate.newSingleStepBuilder()
+                .withName("rumblestiltskin-show")
+                .withStartDurationEndSeconds(0, 3, 0)
+                .withEffectConfig(new RumblestiltskinEffectConfig())
+                .build())
+            .withEffectTemplate(EffectTemplate.newSingleStepBuilder()
+                .withName("slamin-show")
+                .withStartDurationEndSeconds(0.4f, 0.6f, 1)
+                .withEffectConfig(new SlaminEffectConfig())
+                .build())
             .build())
         .build();
 
-    EFFECT_TEMPLATES_FROM_PACKS_NEW_STRATEGY   =
+
+    EFFECT_TEMPLATES_FROM_PACKS_NEW_STRATEGY =
         ImmutableList.copyOf(Iterables.concat(Lists.transform(EFFECT_PACKS_NEW_STRATEGY,
             new Function<EffectPack, List<EffectTemplate>>() {
               @Override
@@ -98,13 +162,24 @@ public class Effects {
     return null;
   }
 
-  public static ImmutableList<EffectTemplate> listEffectTemplatesByPack() {
+  public static ImmutableList<EffectTemplate> listEffectTemplates() {
     return DebugUtils.USE_DEBUG_EFFECTS ?
         DEBUG_EFFECT_TEMPLATES_FROM_PACKS : EFFECT_TEMPLATES_FROM_PACKS_NEW_STRATEGY;
   }
 
+  // TODO(clocksmith): use more efficeint method.
+  public static EffectTemplate getEffectTemplate(String effectName) {
+    for (EffectTemplate effectTemplate : listEffectTemplates()) {
+      if (effectName.equals(effectTemplate.getName())) {
+        return effectTemplate;
+      }
+    }
+    return null;
+  }
+
+
   public static ImmutableList<EffectModel> createEffectModels() {
-    return ImmutableList.copyOf(Lists.transform(Effects.listEffectTemplatesByPack(),
+    return ImmutableList.copyOf(Lists.transform(Effects.listEffectTemplates(),
         new Function<EffectTemplate, EffectModel>() {
           @Override
           public EffectModel apply(EffectTemplate input) {

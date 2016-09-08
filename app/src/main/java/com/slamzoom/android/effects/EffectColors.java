@@ -39,6 +39,7 @@ public class EffectColors {
     mContext = context;
   }
 
+  // TODO(clocksmith); put these in colors.xml
   private static ImmutableList<Integer> getRainbowColorGroup() {
     return ImmutableList.of(
         Color.rgb(255, 201, 94),
