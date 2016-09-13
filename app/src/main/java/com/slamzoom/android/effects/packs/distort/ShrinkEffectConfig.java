@@ -11,10 +11,10 @@ import java.util.List;
 /**
  * Created by clocksmith on 9/6/16.
  */
-public class DeflateEffectConfig extends EffectConfig {
+public class ShrinkEffectConfig extends EffectConfig {
   @Override
   public String getName() {
-    return "deflate";
+    return "shrink";
   }
 
   @Override

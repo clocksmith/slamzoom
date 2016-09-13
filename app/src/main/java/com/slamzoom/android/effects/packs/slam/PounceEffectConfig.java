@@ -9,12 +9,12 @@ import com.slamzoom.android.interpolators.Interpolator;
 /**
  * Created by clocksmith on 9/5/16.
  */
-public class RumbleslamEffectConfig extends EffectConfig {
+public class PounceEffectConfig extends EffectConfig {
   private static final TranslateInterpolatorProvider SHAKE_IP = new ShakeInterpolatorProvider();
 
   @Override
   public String getName() {
-    return "rumbleslam";
+    return "pounce";
   }
 
   @Override

@@ -28,11 +28,12 @@ public class SzAnalytics {
   public static class CustomParam {
     public static final String DURATION_MS= "duration_ms";
     public static final String HOTSPOT_SCALE = "hotspot_scale";
-    public static final String END_TEXT_LENGTH = "text_length";
+    public static final String END_TEXT_LENGTH = "end_text_length";
     public static final String PACKAGE_NAME = "package_name";
   }
 
   public static class ContentType {
+    public static final String IMAGE = "image";
     public static final String EFFECT = "effect";
     public static final String CHANGE_IMAGE = "change_image";
     public static final String CHANGE_HOTSPOT = "change_hotspot";
@@ -44,6 +45,11 @@ public class SzAnalytics {
   private static Event newSelectContentEvent() {
     return new Event(FirebaseAnalytics.Event.SELECT_CONTENT);
   }
+
+  public static Event newSelectImageEvent() {
+    return newSelectContentEvent().withContentType(ContentType.IMAGE);
+  }
+
 
   public static Event newSelectEffectEvent() {
     return newSelectContentEvent().withContentType(ContentType.EFFECT);
@@ -115,6 +121,10 @@ public class SzAnalytics {
     // Custom
 
     public Event withPackageName(String packageName) {
+      // Firebase apparently fails silently here if we don't do this. Bad.
+      if (packageName.length() > 36) {
+        packageName = packageName.substring(0, 36);
+      }
       mBundle.putString(CustomParam.PACKAGE_NAME, packageName);
       return this;
     }

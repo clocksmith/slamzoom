@@ -123,7 +123,7 @@ public class GifService extends Service {
     final String name = config.effectTemplate.getName();
 
     if (mMainGifCache.asMap().containsKey(key)) {
-      fireGifReadyEvent(key, false);
+      fireGifReadyEvent(key, false, false);
     } else {
       if (mGifCreatorManager != null && !mGifCreatorManager.getId().equals(key)) {
         mGifCreatorManager.stop();
@@ -163,7 +163,7 @@ public class GifService extends Service {
           public void onCreateGif(byte[] gifBytes) {
             if (gifBytes != null) {
               cache.put(thumbnail ? name : key, gifBytes);
-              fireGifReadyEvent(key, thumbnail);
+              fireGifReadyEvent(key, thumbnail, true);
               if (thumbnail) {
                 for (GifCreatorManager manager : mThumbnailGifCreatorRunQueue) {
                   if (manager.getId().equals(name)) {
@@ -215,7 +215,7 @@ public class GifService extends Service {
   public synchronized void on(EffectThumbnailViewHolder.RequestThumbnailGifEvent event) {
     final String name = event.effectName;
     if (mThumbnailGifCache.asMap().containsKey(name)) {
-      fireGifReadyEvent(name, true);
+      fireGifReadyEvent(name, true, false);
     } else {
       for (GifCreatorManager thumbnailManager : mThumbnailGifCreatorsBackQueue) {
         if (thumbnailManager.getId().equals(name)) {
@@ -256,7 +256,7 @@ public class GifService extends Service {
     }
   }
 
-  private void logGifReadyEvent(String name, boolean thumbnail) {
+  private void logGifGeneratedEvent(String name, boolean thumbnail) {
     if (!thumbnail) {
       SzLog.f(TAG, "name: " + name + "\n" + mGifCreatorManager.getTracker().getTotalString());
     }
@@ -278,13 +278,16 @@ public class GifService extends Service {
           .withDurationMs(currentManager.getTracker().getTotal())
           .log(this);
     } else {
-      SzLog.e(TAG, "Current GifCreatorManager for logGifReadyEvent is null!");
+      SzLog.e(TAG, "Current GifCreatorManager for logGifGeneratedEvent is null!");
     }
   }
 
-  private void fireGifReadyEvent(String key, boolean thumbnail) {
+  private void fireGifReadyEvent(String key, boolean thumbnail, boolean generated) {
     final String name = getNameFromKey(key);
-    logGifReadyEvent(name, thumbnail);
+
+    if (generated) {
+      logGifGeneratedEvent(name, thumbnail);
+    }
 
     BusProvider.getInstance().post(
         new GifReadyEvent(

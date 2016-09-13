@@ -10,10 +10,10 @@ import com.slamzoom.android.interpolators.spline.PointsBuilder;
 /**
  * Created by clocksmith on 9/5/16.
  */
-public class CrashblurEffectConfig extends EffectConfig {
+public class CrashEffectConfig extends EffectConfig {
   @Override
   public String getName() {
-    return "crashblur";
+    return "crash";
   }
 
   @Override

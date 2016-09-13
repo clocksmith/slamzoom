@@ -1,7 +1,6 @@
 package com.slamzoom.android.ui.create;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -10,19 +9,16 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ContextThemeWrapper;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
 
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.common.bus.BusProvider;
 
 /**
  * Created by clocksmith on 7/16/16.
  */
-public class BuyToUnlockDialogFragment extends DialogFragment {
-  private static final String TAG = BuyToUnlockDialogFragment.class.getSimpleName();
+public class UnlockPackDialogFragment extends DialogFragment {
+  private static final String TAG = UnlockPackDialogFragment.class.getSimpleName();
 
 //  public class OnBuyClickedEvent {
 //    public String packName;
@@ -37,8 +33,8 @@ public class BuyToUnlockDialogFragment extends DialogFragment {
   private String mPackName;
   private BuyToUnlockDialogView mContentView;
 
-  public static BuyToUnlockDialogFragment newInstance(String effectName, String packName) {
-    BuyToUnlockDialogFragment f = new BuyToUnlockDialogFragment();
+  public static UnlockPackDialogFragment newInstance(String effectName, String packName) {
+    UnlockPackDialogFragment f = new UnlockPackDialogFragment();
 
     Bundle args = new Bundle();
     args.putString(Constants.EFFECT_NAME, effectName);
@@ -56,7 +52,7 @@ public class BuyToUnlockDialogFragment extends DialogFragment {
     mPackName = packName;
 
     mContentView = new BuyToUnlockDialogView(getContext(), effectName, packName);
-    mContentView.setMinimumHeight(getResources().getDimensionPixelOffset(R.dimen.buy_dialog_effect_height));
+    mContentView.setMinimumHeight(getResources().getDimensionPixelOffset(R.dimen.unlock_pack_dialog_effect_height));
 //    mContentView.setLayoutParams(new LinearLayout.LayoutParams(
 //        ViewGroup.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelOffset(R.dimen.buy_dialog_effect_height)));
 
@@ -64,7 +60,7 @@ public class BuyToUnlockDialogFragment extends DialogFragment {
     icon.setColorFilter(ContextCompat.getColor(getActivity(), R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
     Dialog dialog = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.SlamzoomDialog))
         .setIcon(icon)
-        .setTitle(R.string.buy_dialog_title)
+        .setTitle(R.string.unlock_pack_dialog_title)
         .setView(mContentView)
         .create();
 

@@ -10,9 +10,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.Constants;
+import com.slamzoom.android.common.FontLoader;
+import com.slamzoom.android.common.LifecycleLoggingActivity;
+import com.slamzoom.android.common.SzAnalytics;
 import com.slamzoom.android.common.utils.BitmapUtils;
 import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.ui.create.CreateActivity;
@@ -25,21 +29,31 @@ import butterknife.ButterKnife;
 /**
  * Created by clocksmith on 3/5/16.
  */
-public class HotspotChooserActivity extends AppCompatActivity {
+public class HotspotChooserActivity extends LifecycleLoggingActivity {
   private static final String TAG = HotspotChooserActivity.class.getSimpleName();
 
-  @Bind(R.id.imageCropView)
-  CropRectProvidingImageCropView mImageCropView;
+  @Bind(R.id.title) TextView mTitle;
+  @Bind(R.id.hint) TextView mHint;
+  @Bind(R.id.imageCropView) CropRectProvidingImageCropView mImageCropView;
   @Bind(R.id.doneButton) Button mDoneButton;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    setTag(TAG);
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_cropper);
+    setContentView(R.layout.activity_hotspot_chooser);
     ButterKnife.bind(this);
+
+    mTitle.setTypeface(FontLoader.getInstance().getTitleFont());
+    mHint.setTypeface(FontLoader.getInstance().getDefaultFont());
+    mDoneButton.setTypeface(FontLoader.getInstance().getDefaultFont());
 
     final Uri uri = getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
 
+    SzAnalytics.newSelectImageEvent()
+        .withPackageName(uri.toString().replace("content://", ""))
+        .log(this);
+      
     try {
       Bitmap bitmap = BitmapUtils.readScaledBitmap(uri, this.getContentResolver());
       if (DebugUtils.USE_STATIC_RECTANGLE) {

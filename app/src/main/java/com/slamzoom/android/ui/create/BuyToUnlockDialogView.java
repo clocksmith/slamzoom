@@ -75,7 +75,7 @@ public class BuyToUnlockDialogView extends LinearLayout {
       String packNameWithPack = packName + " PACK  ";
       String paddedEffectName = "  " + effectName + "  ";
       String message = String.format(
-          getResources().getString(R.string.buy_dialog_message), packNameWithPack, paddedEffectName);
+          getResources().getString(R.string.unlock_pack_dialog_message), packNameWithPack, paddedEffectName);
       Spannable messageSpannable = new SpannableString(message);
 
       int packStart = message.indexOf(packNameWithPack);

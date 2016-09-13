@@ -2,6 +2,7 @@ package com.slamzoom.android.effects;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
+import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.group.FilterInterpolatorsProvider;
 import com.slamzoom.android.effects.interpolation.transform.TransformInterpolatorProvider;
@@ -135,12 +136,12 @@ public class EffectTemplate {
     }
 
     public SingleEffectStepBuilder withStartPauseSeconds(float startPauseSeconds) {
-      mEffectStepBuilder.withStartPauseSeconds(startPauseSeconds);
+      mEffectStepBuilder.withStartPauseSeconds(DebugUtils.SKIP_START_AND_END_PAUSE ? 0 : startPauseSeconds);
       return this;
     }
 
     public SingleEffectStepBuilder withEndPauseSeconds(float endPauseSeconds) {
-      mEffectStepBuilder.withEndPauseSeconds(endPauseSeconds);
+      mEffectStepBuilder.withEndPauseSeconds(DebugUtils.SKIP_START_AND_END_PAUSE ? 0 : endPauseSeconds);
       return this;
     }
 

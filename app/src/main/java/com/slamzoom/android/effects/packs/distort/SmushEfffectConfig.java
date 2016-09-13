@@ -2,9 +2,11 @@ package com.slamzoom.android.effects.packs.distort;
 
 import com.slamzoom.android.effects.EffectConfig;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
-import com.slamzoom.android.effects.interpolation.filter.single.UnswirlAtHotspotOnHotspotFilterInterpolator;
+import com.slamzoom.android.effects.interpolation.filter.group.SmushFilterInterpolatorsProvider;
 import com.slamzoom.android.interpolators.Interpolator;
 import com.slamzoom.android.interpolators.LinearInterpolator;
+
+import java.util.List;
 
 
 /**
@@ -22,7 +24,7 @@ public class SmushEfffectConfig extends EffectConfig {
   }
 
   @Override
-  public FilterInterpolator getFilterInterpolator() {
-    return new UnswirlAtHotspotOnHotspotFilterInterpolator();
+  public List<FilterInterpolator> getFilterInterpolators() {
+    return new SmushFilterInterpolatorsProvider().getFilterInterpolators();
   }
 }

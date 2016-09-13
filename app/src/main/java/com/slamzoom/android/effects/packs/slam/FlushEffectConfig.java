@@ -7,7 +7,7 @@ import com.slamzoom.android.effects.interpolation.transform.scale.EaseInSlamHard
 /**
  * Created by clocksmith on 3/16/16.
  */
-public class FlushslamEffectConfig extends EffectConfig {
+public class FlushEffectConfig extends EffectConfig {
   private static final float RADIUS = 0.15f;
   private static final float FREQUENCY = 4;
   private static final float EXPONENT_0 = 2f;
@@ -16,7 +16,7 @@ public class FlushslamEffectConfig extends EffectConfig {
 
   @Override
   public String getName() {
-    return "flushslam";
+    return "flush";
   }
 
   @Override

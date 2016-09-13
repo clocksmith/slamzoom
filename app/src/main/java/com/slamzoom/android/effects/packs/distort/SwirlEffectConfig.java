@@ -3,6 +3,7 @@ package com.slamzoom.android.effects.packs.distort;
 import com.slamzoom.android.effects.EffectConfig;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.group.SmushFilterInterpolatorsProvider;
+import com.slamzoom.android.effects.interpolation.filter.single.UnswirlAtHotspotOnHotspotFilterInterpolator;
 import com.slamzoom.android.interpolators.Interpolator;
 import com.slamzoom.android.interpolators.LinearInterpolator;
 
@@ -11,10 +12,10 @@ import java.util.List;
 /**
  * Created by clocksmith on 9/6/16.
  */
-public class SwirlspotEffectConfig extends EffectConfig {
+public class SwirlEffectConfig extends EffectConfig {
   @Override
   public String getName() {
-    return "swirlspot";
+    return "swirl";
   }
 
   @Override
@@ -23,7 +24,7 @@ public class SwirlspotEffectConfig extends EffectConfig {
   }
 
   @Override
-  public List<FilterInterpolator> getFilterInterpolators() {
-    return new SmushFilterInterpolatorsProvider().getFilterInterpolators();
+  public FilterInterpolator getFilterInterpolator() {
+    return new UnswirlAtHotspotOnHotspotFilterInterpolator();
   }
 }

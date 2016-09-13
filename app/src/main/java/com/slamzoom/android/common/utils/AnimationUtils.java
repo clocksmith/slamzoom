@@ -130,5 +130,4 @@ public class AnimationUtils {
     set.setDuration(durationMillis);
     return set;
   }
-
 }

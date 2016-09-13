@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
+  <LinearLayout
+      android:orientation="vertical"
+      android:layout_width="match_parent"
+      android:layout_height="?android:attr/actionBarSize"
+      android:background="@android:color/black"
+      android:gravity="center">
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/pack_name_text_size"
+        android:gravity="center"
+        android:textColor="@color/colorAccent"
+        android:text="@string/hotspot_chooser_title"/>
+    <TextView
+        android:id="@+id/hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/effect_name_text_size"
+        android:gravity="center"
+        android:textColor="@color/colorAccent"
+        android:text="@string/hotspot_chooser_hint"/>
+  </LinearLayout>
+  <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="1">
+    <com.slamzoom.android.ui.create.hotspotchooser.CropRectProvidingImageCropView
+        android:id="@+id/imageCropView"
+        xmlns:imagecrop="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        imagecrop:setInnerGridMode="on"
+        imagecrop:gridInnerStroke="1dp"
+        imagecrop:gridInnerColor="#66ffffff"
+        imagecrop:setOuterGridMode="on"
+        imagecrop:gridOuterStroke="1dp"
+        imagecrop:gridOuterColor="#ffffff"/>
+  </FrameLayout>
+  <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="?android:attr/actionBarSize">
+    <Button
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:id="@+id/doneButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/action_done"
+        android:textColor="@color/colorAccent"/>
+  </FrameLayout>
+</LinearLayout>
+
+
+

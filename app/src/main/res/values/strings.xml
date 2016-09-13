@@ -1,6 +1,9 @@
 <resources>
   <string name="app_name">SlamZoom</string>
 
+  <string name="hotspot_chooser_title">pinch to zoom</string>
+  <string name="hotspot_chooser_hint">tip: faces make dank memes</string>
+
   <!-- Effect Names -->
   <string name="slamin">slamin</string>
   <string name="slamout">slamout</string>
@@ -33,8 +36,8 @@
   <string name="action_ok">ok</string>
   <string name="action_done">done</string>
 
-  <string name="buy_dialog_title">Effect is Locked!</string>
-  <string name="buy_dialog_message" formatted="false">
+  <string name="unlock_pack_dialog_title">Effect is Locked!</string>
+  <string name="unlock_pack_dialog_message" formatted="false">
     %s must be unlocked to share %s</string>
   <string name="buy_ok">UNLOCK</string>
   <string name="buy_cancel">MAYBE LATER</string>

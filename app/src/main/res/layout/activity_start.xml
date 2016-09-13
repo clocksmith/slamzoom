@@ -17,7 +17,7 @@
       android:scaleType="fitCenter"
       android:src="@drawable/sz_logo"/>
 
-  <VideoView
+  <com.slamzoom.android.common.MutedVideoView
       android:id="@+id/videoView"
       android:layout_below="@+id/logo"
       app:layout_widthPercent="100%"
@@ -26,13 +26,11 @@
 
   <Button
       android:layout_below="@+id/videoView"
-      android:id="@+id/createSlamzoomButton"
+      android:id="@+id/createButton"
       android:text="@string/create_slamzoom"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:gravity="center"
       android:textSize="36dp"
-      android:typeface="monospace"
-      android:fontFamily="serif-monospace"
       android:background="@color/colorPrimary"/>
 </android.support.percent.PercentRelativeLayout>

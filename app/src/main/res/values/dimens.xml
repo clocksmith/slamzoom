@@ -1,12 +1,12 @@
 <resources>
   <!-- Effect View Holder -->
   <dimen name="thumbnail_view_width">120dp</dimen>
-  <dimen name="effect_name_text_size">12dp</dimen>
-  <dimen name="pack_name_text_size">12dp</dimen>
+  <dimen name="effect_name_text_size">14dp</dimen>
+  <dimen name="pack_name_text_size">14dp</dimen>
   <dimen name="effect_chooser_tab_height_collapsed">18dp</dimen>
   <dimen name="effect_chooser_tab_height_expanded">36dp</dimen>
 
-  <!-- Buy Dialog -->
-  <dimen name="buy_dialog_content_padding">28dp</dimen>
-  <dimen name="buy_dialog_effect_height">260dp</dimen>
+  <!-- Unlock Pack Dialog -->
+  <dimen name="unlock_pack_dialog_content_padding">28dp</dimen>
+  <dimen name="unlock_pack_dialog_effect_height">260dp</dimen>
 </resources>

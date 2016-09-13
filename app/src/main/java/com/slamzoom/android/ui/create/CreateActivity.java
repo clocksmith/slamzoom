@@ -100,7 +100,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
   @Bind(R.id.effectChooser) EffectChooser mEffectChooser;
   private AddTextView mAddTextView; // action bar custom view.
   private View mGifAreaView;
-  private BuyToUnlockDialogFragment mBuyDialogFragment;
+  private UnlockPackDialogFragment mUnlockPackDialogFragment;
   private ProgressDialog mShareProgressDialog;
 
   // Model
@@ -143,6 +143,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    setTag(TAG);
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_create);
     ButterKnife.bind(this);
@@ -372,7 +373,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
   @Subscribe
   public void on(final BuyToUnlockDialogView.OnCancelClickedEvent event) {
-    mBuyDialogFragment.dismiss();
+    mUnlockPackDialogFragment.dismiss();
   }
 
   private void init() {
@@ -521,7 +522,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
       String effectName = effectModel.getEffectTemplate().getName();
       String packName = effectModel.getEffectTemplate().getPackName();
       SzLog.f(TAG, "Showing dialog for effectName: " + effectName + " and packName: " + packName);
-      showBuyDialog(effectName, packName);
+      showUnlockPackDialog(effectName, packName);
     }
   }
 
@@ -714,9 +715,9 @@ public class CreateActivity extends LifecycleLoggingActivity {
     mGifAreaView = mProgressBar;
   }
 
-  private void showBuyDialog(String effectName, String packName) {
-    mBuyDialogFragment = BuyToUnlockDialogFragment.newInstance(effectName, packName);
-    mBuyDialogFragment.show(getSupportFragmentManager(), BuyToUnlockDialogFragment.class.getSimpleName());
+  private void showUnlockPackDialog(String effectName, String packName) {
+    mUnlockPackDialogFragment = UnlockPackDialogFragment.newInstance(effectName, packName);
+    mUnlockPackDialogFragment.show(getSupportFragmentManager(), UnlockPackDialogFragment.class.getSimpleName());
   }
 
   private void showShareProgressDialog(String message) {
@@ -739,7 +740,9 @@ public class CreateActivity extends LifecycleLoggingActivity {
   }
 
   private void dismissShareProgressDialog() {
-    mShareProgressDialog.dismiss();
+    if (mShareProgressDialog != null) {
+      mShareProgressDialog.dismiss();
+    }
   }
 
   private void exportCurrentEffect() {
@@ -757,7 +760,6 @@ public class CreateActivity extends LifecycleLoggingActivity {
     if (PermissionUtils.checkReadwriteExternalStorage(this)) {
       PermissionUtils.requestReadWriteExternalStorage(this);
     } else {
-      showShareProgressDialog("Preparing gif...");
       mExportGifTask = new ExportGifTask();
       mExportGifTask.execute();
     }
@@ -786,7 +788,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
               baseIntent.putExtra(Intent.EXTRA_STREAM, uri);
 
               if (Build.VERSION.SDK_INT >= 22) {
-                Intent receiver = new Intent(CreateActivity.this, GifSharedReceiver.class);
+                Intent receiver = new Intent(CreateActivity.this, VideoSharedReceiver.class);
                 receiver.putExtra(Constants.SELECTED_EFFECT_NAME, mSelectedEffectName);
                 receiver.putExtra(Constants.HOTSPOT_SCALE, (float) mSelectedHotspot.width() / mSelectedBitmap.getWidth());
                 receiver.putExtra(Constants.END_TEXT_LENGTH, mSelectedEndText == null ? 0 : mSelectedEndText.length());
@@ -978,7 +980,6 @@ public class CreateActivity extends LifecycleLoggingActivity {
       } else {
         Snackbar.make(mCoordinatorLayout, "Unable to save GIF!", Snackbar.LENGTH_SHORT).show();
       }
-      dismissShareProgressDialog();
     }
   }
 
