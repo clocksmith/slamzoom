@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Created by clocksmith on 3/17/16.
  */
 public class ExecutorFactory {
-  private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
+  public static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
   private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
   private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
   private static final int KEEP_ALIVE = 1;

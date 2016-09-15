@@ -11,7 +11,9 @@ public class ExecutorProvider {
 
   public static ThreadPoolExecutor getCollectFramesExecutor() {
     if (COLLECT_FRAMES_EXECUTOR == null) {
-      COLLECT_FRAMES_EXECUTOR = ExecutorFactory.create(2, 4);
+      COLLECT_FRAMES_EXECUTOR = ExecutorFactory.create(
+          ExecutorFactory.CPU_COUNT / 4 + 1,
+          ExecutorFactory.CPU_COUNT / 2 + 1);
     }
     return COLLECT_FRAMES_EXECUTOR;
   }

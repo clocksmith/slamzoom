@@ -9,7 +9,7 @@ import android.widget.EditText;
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.BackInterceptingEditText;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -17,7 +17,7 @@ import butterknife.ButterKnife;
  */
 public class AddTextView extends LinearLayoutCompat {
 
-  @Bind(R.id.editText) BackInterceptingEditText mEditText;
+  @BindView(R.id.editText) BackInterceptingEditText mEditText;
 
   public AddTextView(Context context) {
     this(context, null);

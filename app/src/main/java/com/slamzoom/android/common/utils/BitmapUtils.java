@@ -149,7 +149,7 @@ public class BitmapUtils {
 
     try {
       out = new FileOutputStream(file);
-      finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+      finalBitmap.compress(Bitmap.CompressFormat.JPEG, 85, out);
     } catch (Exception e) {
       SzLog.e(TAG, "Cannot compress bitmap to jpeg", e);
     } finally {

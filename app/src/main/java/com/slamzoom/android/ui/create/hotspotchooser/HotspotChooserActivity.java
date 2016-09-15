@@ -6,7 +6,6 @@ import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -23,7 +22,7 @@ import com.slamzoom.android.ui.create.CreateActivity;
 
 import java.io.FileNotFoundException;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -32,14 +31,14 @@ import butterknife.ButterKnife;
 public class HotspotChooserActivity extends LifecycleLoggingActivity {
   private static final String TAG = HotspotChooserActivity.class.getSimpleName();
 
-  @Bind(R.id.title) TextView mTitle;
-  @Bind(R.id.hint) TextView mHint;
-  @Bind(R.id.imageCropView) CropRectProvidingImageCropView mImageCropView;
-  @Bind(R.id.doneButton) Button mDoneButton;
+  @BindView(R.id.title) TextView mTitle;
+  @BindView(R.id.hint) TextView mHint;
+  @BindView(R.id.imageCropView) CropRectProvidingImageCropView mImageCropView;
+  @BindView(R.id.doneButton) Button mDoneButton;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    setTag(TAG);
+    setSubTag(TAG);
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_hotspot_chooser);
     ButterKnife.bind(this);
@@ -53,10 +52,10 @@ public class HotspotChooserActivity extends LifecycleLoggingActivity {
     SzAnalytics.newSelectImageEvent()
         .withPackageName(uri.toString().replace("content://", ""))
         .log(this);
-      
+
     try {
       Bitmap bitmap = BitmapUtils.readScaledBitmap(uri, this.getContentResolver());
-      if (DebugUtils.USE_STATIC_RECTANGLE) {
+      if (DebugUtils.USE_PREDEFINED_HOTSPOT) {
         Rect debugCropRect = DebugUtils.getDebugRect(bitmap);
         Log.d(TAG, "using debug cropRect: " + debugCropRect.toString());
         finishWithCropRect(debugCropRect, uri);
@@ -95,12 +94,7 @@ public class HotspotChooserActivity extends LifecycleLoggingActivity {
 
   @Override
   public void onBackPressed() {
-    super.onBackPressed();
-//    if (getCallingActivity() != null &&
-//        getCallingActivity().getClassName().equals(CreateActivity.class.getCanonicalName())) {
-//      Intent returnIntent = new Intent();
-//      setResult(RESULT_OK, returnIntent);
-//    }
+//    super.onBackPressed();
     finish();
   }
 }

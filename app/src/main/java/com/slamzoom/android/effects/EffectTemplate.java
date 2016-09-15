@@ -20,7 +20,6 @@ public class EffectTemplate {
   private int mColor;
   private List<EffectStep> mEffectSteps;
   private int mNumTilesInRow;
-
   public static EffectTemplate create(EffectConfig effectConfig) {
     return newSingleStepBuilder().withEffectConfig(effectConfig).build();
   }

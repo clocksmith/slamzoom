@@ -1,36 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.percent.PercentRelativeLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/start_background"
+    android:background="@color/not_quite_black"
     android:padding="0dp">
-  <ImageView
-      android:id="@+id/logo"
-      android:layout_width="match_parent"
-      android:layout_height="0dp"
-      android:layout_weight="1"
-      android:padding="16dp"
-      android:background="@color/colorPrimary"
-      android:scaleType="fitCenter"
-      android:src="@drawable/sz_logo"/>
-
-  <com.slamzoom.android.common.MutedVideoView
-      android:id="@+id/videoView"
-      android:layout_below="@+id/logo"
-      app:layout_widthPercent="100%"
-      app:layout_aspectRatio="100%"
-      android:scaleType="fitCenter"/>
-
-  <Button
-      android:layout_below="@+id/videoView"
-      android:id="@+id/createButton"
-      android:text="@string/create_slamzoom"
+  <TextureView
+      android:id="@+id/textureView"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:gravity="center"
-      android:textSize="36dp"
-      android:background="@color/colorPrimary"/>
-</android.support.percent.PercentRelativeLayout>
+      android:layout_gravity="center"/>
+  <ImageView
+      android:id="@+id/monaLisaImageView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:scaleType="centerCrop"
+      android:src="@drawable/mona_lisa_phone_smaller"/>
+  <LinearLayout
+      android:id="@+id/mainView"
+      android:orientation="vertical"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@android:color/transparent">
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:layout_marginTop="16dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/sz_logo"/>
+    <FrameLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center">
+      <LinearLayout
+          android:id="@+id/replayButton"
+          android:orientation="vertical"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:padding="16dp">
+        <ImageView
+            android:id="@+id/replayIntroIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_gfx_replay"
+            android:layout_gravity="center"/>
+        <TextView
+            android:id="@+id/replayIntroText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/replay_intro"
+            android:layout_gravity="center"/>
+      </LinearLayout>
+    </FrameLayout>
+    <TextView
+        android:id="@+id/createText"
+        android:text="@string/start_slamzoom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginBottom="32dp"
+        android:textSize="24dp"
+        android:padding="16dp"/>
+  </LinearLayout>
+</FrameLayout>

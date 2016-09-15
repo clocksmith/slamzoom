@@ -17,6 +17,7 @@ import com.slamzoom.android.common.SzLog;
 import com.slamzoom.android.common.utils.FileUtils;
 import com.slamzoom.android.mediacreation.MediaCreatorCallback;
 import com.slamzoom.android.mediacreation.MediaEncoder;
+import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,15 +32,24 @@ import java.util.List;
 public class VideoEncoder extends MediaEncoder<VideoFrame> {
   private static final String TAG = VideoEncoder.class.getSimpleName();
 
+  private static final String LOADING_FFMPEG = "loading ffmpeg";
+  private static final String EXECUTING_FFMPEG = "executing ffmpeg";
+
   private FFmpeg mFFmpeg;
+  private MultiPhaseStopwatch mTracker;
+
+  public void setTracker(MultiPhaseStopwatch tracker) {
+    mTracker = tracker;
+  }
 
   @Override
   public void encodeAsync(MediaCreatorCallback callback) {
     super.encodeAsync(callback);
 
-    FFmpeg ffmpeg = FFmpeg.getInstance(SzApp.context);
+    mTracker.start(LOADING_FFMPEG);
+    mFFmpeg = FFmpeg.getInstance(SzApp.context);
     try {
-      ffmpeg.loadBinary(new FFmpegLoadBinaryResponseHandler() {
+      mFFmpeg.loadBinary(new FFmpegLoadBinaryResponseHandler() {
         @Override
         public void onFailure() {
           Log.wtf(TAG, "loadBinary onFailure()");
@@ -48,6 +58,8 @@ public class VideoEncoder extends MediaEncoder<VideoFrame> {
         @Override
         public void onSuccess() {
           Log.wtf(TAG, "loadBinary onSuccess()");
+          mTracker.stop(LOADING_FFMPEG);
+          mTracker.start(EXECUTING_FFMPEG);
           execute();
         }
 
@@ -103,13 +115,17 @@ public class VideoEncoder extends MediaEncoder<VideoFrame> {
     cmds.add("-y");
     cmds.add("-i");
     cmds.add(concatFile.getAbsolutePath());
+    cmds.add("-an");
+    cmds.add("-c:v");
+    cmds.add("libx264");
+    cmds.add("-b:v");
+    cmds.add(Constants.VIDEO_KBPS + "k");
     cmds.add("-r");
     cmds.add(String.valueOf(Constants.MAIN_FPS));
     cmds.add(videoOutFile.getAbsolutePath());
 
     Log.wtf(TAG, Joiner.on(" ").join(cmds));
 
-    mFFmpeg = FFmpeg.getInstance(SzApp.context);
     try {
       mFFmpeg.execute(
           cmds.toArray(new String[cmds.size()]),
@@ -117,6 +133,7 @@ public class VideoEncoder extends MediaEncoder<VideoFrame> {
             @Override
             public void onSuccess(String message) {
               Log.wtf(TAG, "execute onSuccess()");
+              mTracker.stop(EXECUTING_FFMPEG);
               mCallback.onCreateVideo(videoOutFile);
             }
 

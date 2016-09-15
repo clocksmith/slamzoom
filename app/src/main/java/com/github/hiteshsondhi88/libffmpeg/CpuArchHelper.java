@@ -3,6 +3,11 @@ package com.github.hiteshsondhi88.libffmpeg;
 import android.os.Build;
 
 class CpuArchHelper {
+
+    // TODO(clocksmith): Get rid of this hack!
+    static CpuArch getCpuArchArmOnly() {
+        return CpuArch.ARMv7;
+    }
     
     static CpuArch getCpuArch() {
         Log.d("Build.CPU_ABI : " + Build.CPU_ABI);

@@ -10,52 +10,60 @@ import android.support.v7.app.AppCompatActivity;
 public class LifecycleLoggingActivity extends AppCompatActivity {
   private static final String TAG = LifecycleLoggingActivity.class.getSimpleName();
 
-  private String mTag = "";
+  private String mSubTag = "";
 
-  protected void setTag(String tag) {
-    mTag = tag;
+  protected void setSubTag(String tag) {
+    mSubTag = tag;
+  }
+
+  private String getFullTagInternal() {
+    return getFullTag(mSubTag);
+  }
+
+  public static String getFullTag(String subTag) {
+    return TAG + "/" + subTag;
   }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    SzLog.f(TAG, mTag + ":" + "onCreate()");
+    SzLog.f(getFullTagInternal(), "onCreate()");
   }
 
   @Override
   protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
-    SzLog.f(TAG, mTag + ":" + "onNewIntent()");
+    SzLog.f(getFullTagInternal(), "onNewIntent()");
   }
 
   @Override protected void onStart() {
     super.onStart();
-    SzLog.f(TAG, mTag + ":" + "onStart()");
+//    SzLog.f(getFullTagInternal(), "onStart()");
   }
 
   @Override protected void onResume() {
     super.onResume();
-    SzLog.f(TAG, mTag + ":" + "onResume()");
+    SzLog.f(getFullTagInternal(), "onResume()");
   }
 
   @Override protected void onPause() {
     super.onPause();
-    SzLog.f(TAG, mTag + ":" + "onPause()");
+    SzLog.f(getFullTagInternal(), "onPause()");
   }
 
   @Override protected void onStop() {
     super.onStop();
-    SzLog.f(TAG, mTag + ":" + "onStop()");
+//    SzLog.f(getFullTagInternal(), "onStop()");
   }
 
   @Override
   protected void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
-    SzLog.f(TAG, mTag + ":" + "onSaveInstanceState()");
+    SzLog.f(TAG, "onSaveInstanceState()");
   }
 
   @Override protected void onDestroy() {
     super.onDestroy();
-    SzLog.f(TAG, mTag + ":" + "onDestroy()");
+    SzLog.f(TAG, "onDestroy()");
   }
 }

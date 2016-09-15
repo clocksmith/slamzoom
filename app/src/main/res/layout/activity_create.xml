@@ -23,37 +23,43 @@
         android:layout_height="wrap_content">
     </android.support.v7.widget.Toolbar>
 
-    <FrameLayout
+    <android.support.design.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/gifViewCoordinatatorLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
-      <pl.droidsonroids.gif.GifImageView
-          android:id="@+id/gifImageView"
+      <FrameLayout
           android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:scaleType="fitCenter"/>
-      <ProgressBar
-          android:id="@+id/progressBar"
-          android:visibility="gone"
-          android:layout_width="64dp"
-          android:layout_height="64dp"
-          android:layout_gravity="center"
-          android:indeterminate="false"
-          android:progressDrawable="@drawable/circular_progress_bar"
-          android:background="@drawable/circle_shape"
-          android:scaleX="0"
-          android:scaleY="0"
-          style="?android:attr/progressBarStyleHorizontal"
-          android:max="100"/>
-      <TextView
-          android:id="@+id/zeroStateMessage"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:gravity="center"
-          android:visibility="visible"
-          android:text="@string/zero_state_message"
-          android:textColor="@color/white"/>
-    </FrameLayout>
+          android:layout_height="match_parent">
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/gifImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"/>
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:visibility="gone"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center"
+            android:indeterminate="false"
+            android:progressDrawable="@drawable/circular_progress_bar"
+            android:background="@drawable/circle_shape"
+            android:scaleX="0"
+            android:scaleY="0"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:max="100"/>
+        <TextView
+            android:id="@+id/zeroStateMessage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:visibility="visible"
+            android:text="@string/zero_state_message"
+            android:textColor="@color/white"/>
+      </FrameLayout>
+    </android.support.design.widget.CoordinatorLayout>
 
     <com.slamzoom.android.ui.create.effectchooser.EffectChooser
         android:id="@+id/effectChooser"

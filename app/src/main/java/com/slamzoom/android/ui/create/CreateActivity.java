@@ -26,6 +26,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -57,9 +58,11 @@ import com.slamzoom.android.common.SzAnalytics;
 import com.slamzoom.android.common.SzLog;
 import com.slamzoom.android.common.utils.MathUtils;
 import com.slamzoom.android.common.utils.PermissionUtils;
+import com.slamzoom.android.common.utils.SnackbarUtils;
 import com.slamzoom.android.effects.Effects;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.mediacreation.MediaConfig;
+import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
 import com.slamzoom.android.mediacreation.gif.GifCreator;
 import com.slamzoom.android.mediacreation.gif.GifService;
 import com.slamzoom.android.mediacreation.video.VideoCreator;
@@ -78,7 +81,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
@@ -92,12 +95,13 @@ public class CreateActivity extends LifecycleLoggingActivity {
   }
 
   // View.
-  @Bind(R.id.coordinatatorLayout) CoordinatorLayout mCoordinatorLayout;
-  @Bind(R.id.toolbar) Toolbar mToolbar;
-  @Bind(R.id.gifImageView) GifImageView mGifImageView;
-  @Bind(R.id.progressBar) ProgressBar mProgressBar;
-  @Bind(R.id.zeroStateMessage) TextView mZeroStateMessage;
-  @Bind(R.id.effectChooser) EffectChooser mEffectChooser;
+  @BindView(R.id.coordinatatorLayout) CoordinatorLayout mCoordinatorLayout;
+  @BindView(R.id.toolbar) Toolbar mToolbar;
+  @BindView(R.id.gifViewCoordinatatorLayout) CoordinatorLayout mGifViewCoordinatorLayout;
+  @BindView(R.id.gifImageView) GifImageView mGifImageView;
+  @BindView(R.id.progressBar) ProgressBar mProgressBar;
+  @BindView(R.id.zeroStateMessage) TextView mZeroStateMessage;
+  @BindView(R.id.effectChooser) EffectChooser mEffectChooser;
   private AddTextView mAddTextView; // action bar custom view.
   private View mGifAreaView;
   private UnlockPackDialogFragment mUnlockPackDialogFragment;
@@ -143,7 +147,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    setTag(TAG);
+    setSubTag(TAG);
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_create);
     ButterKnife.bind(this);
@@ -152,11 +156,11 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
     if (getIntent() != null && getIntent().getParcelableExtra(Constants.HOTSPOT) != null) {
       // If this intent is from hotspot chooser, then we need to handle it.
-      handleIntentFromHotspotChooser(getIntent());
+      handleHotspotSelectedFromChooser(getIntent());
     } else if (savedInstanceState != null) {
       // Get the saved state is being recreated.
       unpackBundle(savedInstanceState);
-      updateView(); // TODO(clocksmith): make this not have to be called before initServices().
+      mEffectChooser.setSelectedEffect(mSelectedEffectName); // TODO(clocksmith): do this somewhere else?
     }
 
     initReceivers();
@@ -169,30 +173,21 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
     if (requestCode == Constants.REQUEST_PICK_IMAGE) {
       if (resultCode == RESULT_OK) {
-        handleIntentFromImageChooser(data);
+        handleImageSelectedFromChooser(data);
       } else {
-        // If the image chooser was cancelled and there is no hotspot or no bitmap,
-        // assume the user does not want to resume this activity.
-        if (mSelectedUri == null && mSelectedHotspot == null || mSelectedBitmap == null) {
-          finish();
-        }
+        handleImageChooserCancelled();
       }
     } else if (requestCode == Constants.REQUEST_CROP_IMAGE) {
       if (resultCode == RESULT_OK) {
-        handleIntentFromHotspotChooser(data);
+        handleHotspotSelectedFromChooser(data);
       } else {
-        // If the hotspot chooser was cancelled, invalidate the uri and assume the user wants a different image.
-        if (mSelectedHotspot == null) {
-          mSelectedUri = null;
-        }
+        handleHotspotChooserCancelled();
       }
     } else if (requestCode == Constants.REQUEST_BUY_PACK) {
       if (resultCode == RESULT_OK) {
-        updatePurchasedPackNamesAndEffectModels();
-        // continue exporting the current effect since the buy had to come from an export.
-        exportCurrentEffect();
+        handleBuyPackSuccess();
       } else {
-        // TODO(clocksmith): something;
+        handleBuyPackFailure();
       }
     } else {
       SzLog.e(TAG, "onActivityResult(): requestCode: " + requestCode + " resultCode: " + resultCode);
@@ -207,11 +202,10 @@ public class CreateActivity extends LifecycleLoggingActivity {
       launchImageChooser();
     } else if (mSelectedHotspot == null) {
       launchHotspotChooser();
-    } else if (mSelectedBitmap == null
-        || mSelectedBitmapForThumbnail == null
-        || mSelectedHotspotForThumbnail == null)  {
-      initBitmapAndGifs();
+    } else if (mSelectedBitmap == null)  {
+      initBitmapAndUpdateGifs();
     }
+    // If we still have the bitmap, then the activity was not destroyed, and nothing needs to be done in onResume.
   }
 
   @Override
@@ -299,7 +293,6 @@ public class CreateActivity extends LifecycleLoggingActivity {
   public void onDestroy() {
     super.onDestroy();
 
-    ButterKnife.unbind(this);
     BusProvider.getInstance().unregister(this);
 
     if (mGifService != null) {
@@ -376,12 +369,6 @@ public class CreateActivity extends LifecycleLoggingActivity {
     mUnlockPackDialogFragment.dismiss();
   }
 
-  private void init() {
-    initView();
-    initReceivers();
-    initServices();
-  }
-
   private void initView() {
     initToolbar();
     initGifArea();
@@ -425,10 +412,6 @@ public class CreateActivity extends LifecycleLoggingActivity {
     mEffectChooser.initForCreateActivity();
   }
 
-  private void updateView() {
-    mEffectChooser.setSelectedEffect(mSelectedEffectName);
-  }
-
   private void launchImageChooser() {
     Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
     intent.setType("image/*");
@@ -441,7 +424,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
     startActivityForResult(intent, Constants.REQUEST_CROP_IMAGE);
   }
 
-  private void initBitmapAndGifs() {
+  private void initBitmapAndUpdateGifs() {
     try {
       setSelectedBitmapsFromUri();
       setSelectedHotspotForThumbnail();
@@ -452,25 +435,52 @@ public class CreateActivity extends LifecycleLoggingActivity {
     }
   }
 
-  private void handleIntentFromImageChooser(Intent intent) {
-    Uri newUri = intent.getData();
-    if (newUri != null) {
-      mSelectedHotspot = null;
-      mSelectedUri = newUri;
+  private void handleImageSelectedFromChooser(Intent intent) {
+    mSelectedUri = intent.getData();
+
+    mSelectedEndText = null;
+
+    // The next step after choosing an image is always to start the hotspot chooser, but onResume will handle that,
+    // as long as we invalidate any existing hotspots.
+    mSelectedHotspot = null;
+  }
+
+  private void handleImageChooserCancelled() {
+    // If the image chooser was cancelled and there is no current uri, hotspot, or bitmap (i.e. the image chooser
+    // was not started by the image chooser button), assume the user does not want to resume this activity.
+    if (mSelectedUri == null || mSelectedHotspot == null || mSelectedBitmap == null) {
+      finish();
     }
   }
 
-  private void handleIntentFromHotspotChooser(Intent intent) {
+  private void handleHotspotSelectedFromChooser(Intent intent) {
+    mSelectedHotspot = intent.getParcelableExtra(Constants.HOTSPOT);
+
+    // If the image came from an external activity, we need to capture its uri at this point.
     Uri newUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
     if (newUri != null) {
       mSelectedUri = newUri;
     }
 
-    Rect newHotspot = intent.getParcelableExtra(Constants.HOTSPOT);
-    if (newHotspot != null) {
-      mSelectedBitmap = null;
-      mSelectedHotspot = newHotspot;
+    // This will force onResume to init the gif creation process.
+    mSelectedBitmap = null;
+  }
+
+  private void handleHotspotChooserCancelled() {
+    // If the hotspot chooser was cancelled, invalidate the uri and assume the user wants a different image.
+    if (mSelectedHotspot == null) {
+      mSelectedUri = null;
     }
+  }
+
+  private void handleBuyPackSuccess() {
+    updatePurchasedPackNamesAndEffectModels();
+    // continue exporting the current effect since the buy had to come from an export.
+    exportCurrentEffect();
+  }
+
+  private void handleBuyPackFailure() {
+    // TODO(clocksmith): something;
   }
 
   private void handleChangeImagePressed() {
@@ -512,10 +522,10 @@ public class CreateActivity extends LifecycleLoggingActivity {
   private void handleExportPressed() {
     EffectModel effectModel = mEffectChooser.getEffectModel(mSelectedEffectName);
     if (effectModel == null) {
+      SnackbarUtils.showErrorMessage(mGifViewCoordinatorLayout, "Choose an effect first!");
       // TODO(clocksmith): tell the user they must have an effect, or just disable share button.
-      Snackbar.make(mCoordinatorLayout, "Choose an effect first!", Snackbar.LENGTH_SHORT).show();
     } else if (mGeneratingGif) {
-      Snackbar.make(mCoordinatorLayout, "Please wait till gif preview is finished!", Snackbar.LENGTH_SHORT).show();
+      SnackbarUtils.showErrorMessage(mGifViewCoordinatorLayout, "Please wait till gif preview is finished!");
     } else if (!effectModel.isLocked()) {
       exportCurrentEffect();
     } else {
@@ -770,11 +780,14 @@ public class CreateActivity extends LifecycleLoggingActivity {
       PermissionUtils.requestReadWriteExternalStorage(this);
     } else {
       showShareProgressDialog("Preparing video...");
-      mVideoCreator = new VideoCreator(this, getMainMediaConfig());
+      final MultiPhaseStopwatch tracker = new MultiPhaseStopwatch();
+      mVideoCreator = new VideoCreator(this, getMainMediaConfig(), tracker);
       mVideoCreator.createAsync(new VideoCreatorCallback() {
         @Override
         public void onCreateVideo(File videoFile) {
           if (videoFile != null) {
+            Log.wtf(TAG, tracker.getReport());
+
             SzAnalytics.newVideoSavedEvent()
                 .withItemId(mSelectedEffectName)
                 .withHotspotScale(mSelectedHotspot.width() / mSelectedBitmap.getWidth())
@@ -800,7 +813,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
                 startActivity(Intent.createChooser(baseIntent, "Share via"));
               }
             } else if (mSelectedExportType == ExportType.SAVE) {
-              Snackbar.make(mCoordinatorLayout, "Video Saved!", Snackbar.LENGTH_SHORT).show();
+              SnackbarUtils.showSuccessMessage(mGifViewCoordinatorLayout, "Video Saved!");
             }
           }
           // TODO(clocksmith): handle null
@@ -975,10 +988,10 @@ public class CreateActivity extends LifecycleLoggingActivity {
             startActivity(Intent.createChooser(mBaseIntent, "Share via"));
           }
         } else {
-          Snackbar.make(mCoordinatorLayout, "GIF Saved!", Snackbar.LENGTH_SHORT).show();
+          SnackbarUtils.showSuccessMessage(mGifViewCoordinatorLayout, "GIF Saved!");
         }
       } else {
-        Snackbar.make(mCoordinatorLayout, "Unable to save GIF!", Snackbar.LENGTH_SHORT).show();
+        SnackbarUtils.showErrorMessage(mGifViewCoordinatorLayout, "Unable to save GIF");
       }
     }
   }

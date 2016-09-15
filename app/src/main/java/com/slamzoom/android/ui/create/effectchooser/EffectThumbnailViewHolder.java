@@ -20,7 +20,7 @@ import com.slamzoom.android.common.SzLog;
 
 import java.io.IOException;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
@@ -54,12 +54,12 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
     }
   }
 
-  @Bind(R.id.lockIcon) ImageView mLockIcon;
-  @Bind(R.id.gifImageView) GifImageView mGifImageView;
-  @Bind(R.id.progressBar) ProgressBar mProgressBar;
-  @Bind(R.id.nameTextView) TextView mNameTextView;
-  @Bind(R.id.packNameTextView) TextView mPackNameTextView;
-  @Bind(R.id.tabView) View mTabView;
+  @BindView(R.id.lockIcon) ImageView mLockIcon;
+  @BindView(R.id.gifImageView) GifImageView mGifImageView;
+  @BindView(R.id.progressBar) ProgressBar mProgressBar;
+  @BindView(R.id.nameTextView) TextView mNameTextView;
+  @BindView(R.id.packNameTextView) TextView mPackNameTextView;
+  @BindView(R.id.tabView) View mTabView;
 
   private EffectModel mModel;
   @ColorInt private int mTabColorInt;

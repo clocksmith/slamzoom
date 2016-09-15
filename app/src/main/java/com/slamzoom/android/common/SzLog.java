@@ -10,6 +10,8 @@ import com.slamzoom.android.mediacreation.gif.GifService;
 import com.slamzoom.android.mediacreation.video.VideoFrame;
 import com.slamzoom.android.ui.create.CreateActivity;
 import com.slamzoom.android.ui.create.effectchooser.EffectThumbnailViewHolder;
+import com.slamzoom.android.ui.create.hotspotchooser.HotspotChooserActivity;
+import com.slamzoom.android.ui.start.StartActivity;
 
 import java.util.Set;
 
@@ -26,7 +28,10 @@ public class SzLog {
 //      GifCreator.class.getSimpleName(),
 //      GifCreatorManager.class.getSimpleName(),
 //      GifService.class.getSimpleName(),
-      LifecycleLoggingActivity.class.getSimpleName(),
+      LifecycleLoggingActivity.getFullTag(CreateActivity.class.getSimpleName()),
+//      LifecycleLoggingActivity.getFullTag(HotspotChooserActivity.class.getSimpleName()),
+//      LifecycleLoggingActivity.getFullTag(StartActivity.class.getSimpleName()),
+//      LifecycleLoggingActivity.getFullTag(HotspotChooserActivity.class.getSimpleName()),
 //      MediaCreator.class.getSimpleName(),
 //      SzAnalytics.class.getSimpleName(),
 //      VideoFrame.class.getSimpleName(),
@@ -48,9 +53,10 @@ public class SzLog {
 
   public static void e(String tag, String message, Exception e) {
     Log.e("F/" + tag, message, e);
-    FirebaseCrash.log(message);
     if (e != null) {
       FirebaseCrash.report(e);
+    } else {
+      FirebaseCrash.report(new Exception(message));
     }
   }
 }

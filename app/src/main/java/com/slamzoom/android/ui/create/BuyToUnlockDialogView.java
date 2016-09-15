@@ -36,7 +36,7 @@ import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -54,10 +54,10 @@ public class BuyToUnlockDialogView extends LinearLayout {
 
   public class OnCancelClickedEvent {}
 
-  @Bind(R.id.message) TextView mMessage;
-  @Bind(R.id.otherEffects) EffectChooser mOtherEffects;
-  @Bind(R.id.cancelButton) Button mCancelButton;
-  @Bind(R.id.okButton) Button mOkButton;
+  @BindView(R.id.message) TextView mMessage;
+  @BindView(R.id.otherEffects) EffectChooser mOtherEffects;
+  @BindView(R.id.cancelButton) Button mCancelButton;
+  @BindView(R.id.okButton) Button mOkButton;
 
   public BuyToUnlockDialogView(Context context, final String effectName, final String packName) {
     this(context, null);

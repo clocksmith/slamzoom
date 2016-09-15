@@ -22,7 +22,7 @@ public class VideoFrame extends MediaFrame {
   public VideoFrame(Bitmap bitmap, int delayMillis, int index) {
     super(bitmap, delayMillis);
 
-    path = BitmapUtils.saveBitmapToDiskPrivatelyAsJpeg(bitmap, "video" + (index + 1));
+    path = BitmapUtils.saveBitmapToDiskAsJpeg(bitmap, "video" + (index + 1));
     Log.wtf(TAG, "saved " + index);
   }
 }

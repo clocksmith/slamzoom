@@ -52,6 +52,18 @@ public class EffectColors {
         Color.rgb(255, 119, 0));
   }
 
+  public static ImmutableList<Integer> getDarkColors() {
+    return getColorGroup("darkerRainbow");
+  }
+
+  public static int getDarkerGreen() {
+    return getDarkColors().get(2);
+  }
+
+  public static int getDarkerRed() {
+    return getDarkColors().get(6);
+  }
+
   public static ImmutableList<Integer> getColorGroup(final String colorGroup) {
     // TODO(clocksmith): extract this and get rid of the other stuff if we decide on this scheme.
     if (colorGroup.equals("darkerRainbow")) {

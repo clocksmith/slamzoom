@@ -389,9 +389,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     EffectTemplate effectTemplate = mediaConfig.effectTemplate;
     for (EffectStep step : effectTemplate.getEffectSteps()) {
       step.setHotspot(mediaConfig.hotspot);
-      if (mediaConfig.endText != null) {
-        step.setEndText(mediaConfig.endText);
-      }
+      step.setEndText(mediaConfig.endText);
     }
     return effectTemplate;
   }

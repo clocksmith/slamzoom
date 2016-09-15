@@ -15,7 +15,7 @@
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/pack_name_text_size"
+        android:textSize="18dp"
         android:gravity="center"
         android:textColor="@color/colorAccent"
         android:text="@string/hotspot_chooser_title"/>
@@ -23,6 +23,7 @@
         android:id="@+id/hint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
         android:textSize="@dimen/effect_name_text_size"
         android:gravity="center"
         android:textColor="@color/colorAccent"
