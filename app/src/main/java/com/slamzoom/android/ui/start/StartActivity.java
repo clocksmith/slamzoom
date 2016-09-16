@@ -25,6 +25,7 @@ import com.slamzoom.android.common.LifecycleLoggingActivity;
 import com.slamzoom.android.common.SzLog;
 import com.slamzoom.android.common.utils.AnimationUtils;
 import com.slamzoom.android.common.utils.DebugUtils;
+import com.slamzoom.android.common.utils.UriUtils;
 import com.slamzoom.android.ui.create.CreateActivity;
 
 import java.io.IOException;
@@ -145,9 +146,7 @@ public class StartActivity extends LifecycleLoggingActivity {
     public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
       try {
         mMediaPlayer= new MediaPlayer();
-        mMediaPlayer.setDataSource(
-            StartActivity.this,
-            Uri.parse("android.resource://" + getPackageName() + "/" + VIDEO_RES));
+        mMediaPlayer.setDataSource(StartActivity.this, UriUtils.getUriFromRes(VIDEO_RES));
         mMediaPlayer.setSurface(new Surface(surfaceTexture));
         mMediaPlayer.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
           @Override

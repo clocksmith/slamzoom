@@ -14,16 +14,16 @@ import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -48,19 +48,19 @@ import com.slamzoom.android.common.BackInterceptingEditText;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.FileType;
 import com.slamzoom.android.common.LifecycleLoggingActivity;
+import com.slamzoom.android.common.preferences.CreatorPreferences;
 import com.slamzoom.android.common.utils.FileUtils;
 import com.slamzoom.android.common.bus.BusProvider;
 import com.slamzoom.android.common.utils.AnimationUtils;
-import com.slamzoom.android.common.utils.BitmapUtils;
-import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.KeyboardUtils;
 import com.slamzoom.android.common.SzAnalytics;
 import com.slamzoom.android.common.SzLog;
-import com.slamzoom.android.common.utils.MathUtils;
 import com.slamzoom.android.common.utils.PermissionUtils;
 import com.slamzoom.android.common.utils.SnackbarUtils;
+import com.slamzoom.android.common.utils.UriUtils;
 import com.slamzoom.android.effects.Effects;
 import com.slamzoom.android.effects.EffectTemplate;
+import com.slamzoom.android.mediacreation.BitmapSet;
 import com.slamzoom.android.mediacreation.MediaConfig;
 import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
 import com.slamzoom.android.mediacreation.gif.GifCreator;
@@ -74,7 +74,6 @@ import com.slamzoom.android.ui.create.hotspotchooser.HotspotChooserActivity;
 import com.squareup.otto.Subscribe;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
@@ -94,6 +93,9 @@ public class CreateActivity extends LifecycleLoggingActivity {
     SAVE, SHARE
   }
 
+  private static final Uri MONA_LISA_URI = UriUtils.getUriFromRes(R.drawable.mona_lisa_sz);
+  private static final RectF MONA_LISA_HOTSPOT = new RectF(0.2f, 0.2f, 0.4f, 0.4f);
+
   // View.
   @BindView(R.id.coordinatatorLayout) CoordinatorLayout mCoordinatorLayout;
   @BindView(R.id.toolbar) Toolbar mToolbar;
@@ -109,15 +111,10 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
   // Model
   private Uri mSelectedUri;
-
-  private Rect mSelectedHotspot;
-  private Bitmap mSelectedBitmap;
-  private Bitmap mSelectedBitmapForThumbnail;
-  private Rect mSelectedHotspotForThumbnail;
-
+  private RectF mSelectedHotspot;
+  private BitmapSet mSelectedBitmapSet;
   private String mSelectedEffectName = Effects.listEffectTemplates().get(0).getName();
   private String mSelectedEndText;
-
   private List<String> mPurchasedPackNames = Lists.newArrayList();
 
   private byte[] mSelectedGifBytes; // TODO(clocksmith): this should be queried from the service
@@ -165,6 +162,12 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
     initReceivers();
     initServices();
+
+    if (CreatorPreferences.isFirstOpen(this)) {
+      mSelectedUri = MONA_LISA_URI;
+      mSelectedHotspot = MONA_LISA_HOTSPOT;
+      CreatorPreferences.setFirstOpen(this, false);
+    }
   }
 
   @Override
@@ -202,8 +205,9 @@ public class CreateActivity extends LifecycleLoggingActivity {
       launchImageChooser();
     } else if (mSelectedHotspot == null) {
       launchHotspotChooser();
-    } else if (mSelectedBitmap == null)  {
-      initBitmapAndUpdateGifs();
+    } else if (mSelectedBitmapSet == null)  {
+      mSelectedBitmapSet = new BitmapSet(mSelectedUri, getContentResolver(), Constants.THUMBNAIL_SIZE_PX);
+      clearAndUpdateAllGifs();
     }
     // If we still have the bitmap, then the activity was not destroyed, and nothing needs to be done in onResume.
   }
@@ -245,17 +249,17 @@ public class CreateActivity extends LifecycleLoggingActivity {
       case R.id.action_ok:
         handleAddTextConfirmed();
         return true;
-      case R.id.action_save_gif:
-        handleSavePressed(FileType.GIF);
-        return true;
-      case R.id.action_save_video:
-        handleSavePressed(FileType.VIDEO);
-        return true;
       case R.id.action_share_gif:
         handleSharePressed(FileType.GIF);
         return true;
       case R.id.action_share_video:
         handleSharePressed(FileType.VIDEO);
+        return true;
+      case R.id.action_save_gif:
+        handleSavePressed(FileType.GIF);
+        return true;
+      case R.id.action_save_video:
+        handleSavePressed(FileType.VIDEO);
         return true;
       default:
         return super.onOptionsItemSelected(item);
@@ -267,7 +271,6 @@ public class CreateActivity extends LifecycleLoggingActivity {
     menu.findItem(R.id.action_add_text).setVisible(!mIsAddTextViewShowing);
     menu.findItem(R.id.action_change_hotspot).setVisible(!mIsAddTextViewShowing);
     menu.findItem(R.id.action_change_image).setVisible(!mIsAddTextViewShowing);
-    menu.findItem(R.id.action_save).setVisible(!mIsAddTextViewShowing);
     menu.findItem(R.id.action_share).setVisible(!mIsAddTextViewShowing);
     menu.findItem(R.id.action_ok).setVisible(mIsAddTextViewShowing);
     return super.onPrepareOptionsMenu(menu);
@@ -424,17 +427,6 @@ public class CreateActivity extends LifecycleLoggingActivity {
     startActivityForResult(intent, Constants.REQUEST_CROP_IMAGE);
   }
 
-  private void initBitmapAndUpdateGifs() {
-    try {
-      setSelectedBitmapsFromUri();
-      setSelectedHotspotForThumbnail();
-      clearAndUpdateAllGifs();
-    } catch (FileNotFoundException e) {
-      SzLog.e(TAG, "Cannot consume bitmap for path: " + mSelectedUri.toString());
-      launchImageChooser();
-    }
-  }
-
   private void handleImageSelectedFromChooser(Intent intent) {
     mSelectedUri = intent.getData();
 
@@ -448,13 +440,13 @@ public class CreateActivity extends LifecycleLoggingActivity {
   private void handleImageChooserCancelled() {
     // If the image chooser was cancelled and there is no current uri, hotspot, or bitmap (i.e. the image chooser
     // was not started by the image chooser button), assume the user does not want to resume this activity.
-    if (mSelectedUri == null || mSelectedHotspot == null || mSelectedBitmap == null) {
+    if (mSelectedUri == null || mSelectedBitmapSet == null || mSelectedBitmapSet == null) {
       finish();
     }
   }
 
   private void handleHotspotSelectedFromChooser(Intent intent) {
-    mSelectedHotspot = intent.getParcelableExtra(Constants.HOTSPOT);
+    mSelectedHotspot = intent.getParcelableExtra(Constants.NORMALIZED_HOTSPOT);
 
     // If the image came from an external activity, we need to capture its uri at this point.
     Uri newUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
@@ -463,12 +455,12 @@ public class CreateActivity extends LifecycleLoggingActivity {
     }
 
     // This will force onResume to init the gif creation process.
-    mSelectedBitmap = null;
+    mSelectedBitmapSet = null;
   }
 
   private void handleHotspotChooserCancelled() {
     // If the hotspot chooser was cancelled, invalidate the uri and assume the user wants a different image.
-    if (mSelectedHotspot == null) {
+    if (mSelectedBitmapSet == null) {
       mSelectedUri = null;
     }
   }
@@ -790,7 +782,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
             SzAnalytics.newVideoSavedEvent()
                 .withItemId(mSelectedEffectName)
-                .withHotspotScale(mSelectedHotspot.width() / mSelectedBitmap.getWidth())
+                .withHotspotScale(mSelectedHotspot.width())
                 .withEndTextLength(mSelectedEndText == null ? 0 : mSelectedEndText.length())
                 .log(CreateActivity.this);
 
@@ -803,7 +795,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
               if (Build.VERSION.SDK_INT >= 22) {
                 Intent receiver = new Intent(CreateActivity.this, VideoSharedReceiver.class);
                 receiver.putExtra(Constants.SELECTED_EFFECT_NAME, mSelectedEffectName);
-                receiver.putExtra(Constants.HOTSPOT_SCALE, (float) mSelectedHotspot.width() / mSelectedBitmap.getWidth());
+                receiver.putExtra(Constants.HOTSPOT_SCALE, mSelectedHotspot.width());
                 receiver.putExtra(Constants.END_TEXT_LENGTH, mSelectedEndText == null ? 0 : mSelectedEndText.length());
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(
                     CreateActivity.this, Constants.REQUEST_SHARE_VIDEO, receiver, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -833,7 +825,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
         SzAnalytics.newGifSavedEvent()
             .withItemId(mSelectedEffectName)
-            .withHotspotScale(mSelectedHotspot.width() / mSelectedBitmap.getWidth())
+            .withHotspotScale(mSelectedHotspot.width())
             .withEndTextLength(mSelectedEndText == null ? 0 : mSelectedEndText.length())
             .log(this);
 
@@ -846,21 +838,10 @@ public class CreateActivity extends LifecycleLoggingActivity {
     return null;
   }
 
-  private void setSelectedBitmapsFromUri() throws FileNotFoundException {
-    mSelectedBitmap = BitmapUtils.readScaledBitmap(mSelectedUri, this.getContentResolver());
-    if (DebugUtils.SAVE_SRC_AS_PNG) {
-      BitmapUtils.saveBitmapToDiskAsPng(mSelectedBitmap, "src_0");
-    }
-    mSelectedBitmapForThumbnail = BitmapUtils.readScaledBitmap(
-        mSelectedUri,
-        this.getContentResolver(),
-        MathUtils.roundToEvenNumber(Constants.MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX / Constants.MEDIA_THUMBNAIL_DIVIDER));
-  }
-
   private MediaConfig getMainMediaConfig() {
     return MediaConfig.newBuilder()
         .withHotspot(mSelectedHotspot)
-        .withBitmap(mSelectedBitmap)
+        .withBitmapSet(mSelectedBitmapSet)
         .withEffectTemplate(Effects.getEffectTemplate(mSelectedEffectName))
         .withEndText(mSelectedEndText)
         .withSize(Constants.MAIN_SIZE_PX)
@@ -870,8 +851,8 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
   private MediaConfig getThumbnailMediaConfig(EffectTemplate effectTemplate) {
     return MediaConfig.newBuilder()
-        .withHotspot(mSelectedHotspotForThumbnail)
-        .withBitmap(mSelectedBitmapForThumbnail)
+        .withHotspot(mSelectedHotspot)
+        .withBitmapSet(mSelectedBitmapSet)
         .withEffectTemplate(effectTemplate)
         .withSize(Constants.THUMBNAIL_SIZE_PX)
         .withFps(Constants.THUMBNAIL_FPS)
@@ -894,18 +875,9 @@ public class CreateActivity extends LifecycleLoggingActivity {
     bindService(serviceIntent, mBillingServiceConnection, Context.BIND_AUTO_CREATE);
   }
 
-  private void setSelectedHotspotForThumbnail() {
-    float ratio = (float) mSelectedBitmap.getWidth() / mSelectedBitmapForThumbnail.getWidth();
-    mSelectedHotspotForThumbnail = new Rect(
-        (int) (mSelectedHotspot.left / ratio),
-        (int) (mSelectedHotspot.top / ratio),
-        (int) (mSelectedHotspot.right / ratio),
-        (int) (mSelectedHotspot.bottom / ratio));
-  }
-
   private void unpackBundle(Bundle bundle) {
     mSelectedUri = bundle.getParcelable(Constants.SELECTED_URI);
-    mSelectedHotspot = bundle.getParcelable(Constants.SELECTED_HOTSPOT);
+    mSelectedBitmapSet = bundle.getParcelable(Constants.SELECTED_HOTSPOT);
     mSelectedEffectName = bundle.getString(Constants.SELECTED_EFFECT_NAME);
     mSelectedEndText = bundle.getString(Constants.SELECTED_END_TEXT);
     mPurchasedPackNames = bundle.getStringArrayList(Constants.PURCHASED_PACK_NAMES);
@@ -978,7 +950,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
           if (Build.VERSION.SDK_INT >= 22) {
             Intent receiver = new Intent(CreateActivity.this, GifSharedReceiver.class);
             receiver.putExtra(Constants.SELECTED_EFFECT_NAME, mSelectedEffectName);
-            receiver.putExtra(Constants.HOTSPOT_SCALE, (float) mSelectedHotspot.width() / mSelectedBitmap.getWidth());
+            receiver.putExtra(Constants.HOTSPOT_SCALE, mSelectedHotspot.width());
             receiver.putExtra(Constants.END_TEXT_LENGTH, mSelectedEndText == null ? 0 : mSelectedEndText.length());
             PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 CreateActivity.this, Constants.REQUEST_SHARE_GIF, receiver, PendingIntent.FLAG_UPDATE_CURRENT);

@@ -8,23 +8,21 @@ import android.content.SharedPreferences;
  */
 public class CreatorPreferences {
   private static final String TAG = CreatorPreferences.class.getSimpleName();
-  private static final String BUILD_NAMESPACE = "namespace$creatorPreferences";
 
-  private static final String CYCLE_KEY = "cycle";
+  private static final String NAMESPACE_PREFIX = "$$";
+  private static final String NAMESPACE = "creatorPreferences";
+
+  private static final String FIRST_OPEN = "firstOpen";
 
   private static SharedPreferences getPreferences(Context context) {
-    return context.getSharedPreferences(BUILD_NAMESPACE, Context.MODE_PRIVATE);
+    return context.getSharedPreferences(NAMESPACE_PREFIX + NAMESPACE, Context.MODE_PRIVATE);
   }
 
-  public static void toggleCycleOn(Context context) {
-    getPreferences(context).edit().putBoolean(CYCLE_KEY, true).commit();
+  public static void setFirstOpen(Context context, boolean firstOpen) {
+    getPreferences(context).edit().putBoolean(FIRST_OPEN, firstOpen);
   }
 
-  public static void toggleCycleOff(Context context) {
-    getPreferences(context).edit().putBoolean(CYCLE_KEY, false).commit();
-  }
-
-  public static boolean isCycle(Context context) {
-    return getPreferences(context).getBoolean(CYCLE_KEY, false);
+  public static boolean isFirstOpen(Context context) {
+    return getPreferences(context).getBoolean(FIRST_OPEN, true);
   }
 }

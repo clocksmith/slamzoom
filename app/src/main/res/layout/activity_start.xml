@@ -15,7 +15,7 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:scaleType="centerCrop"
-      android:src="@drawable/mona_lisa_phone_smaller"/>
+      android:src="@drawable/mona_lisa_sz"/>
   <LinearLayout
       android:id="@+id/mainView"
       android:orientation="vertical"

@@ -77,8 +77,8 @@ public class GifCreatorManager implements Comparable {
     return mIndex;
   }
 
-  public float getEndScale() {
-    return (float) mMediaConfig.hotspot.width() / mMediaConfig.bitmap.getWidth();
+  public float getHotspotScale() {
+    return mMediaConfig.hotspot.width();
   }
 
   public String getEndText() {

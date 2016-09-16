@@ -31,7 +31,12 @@ public class FileUtils {
   }
 
   public static File createPrivateFileWithFilename(String filename) {
-    return createFileInDir(SzApp.context.getFilesDir(), filename);
+    return createFileInDir(SzApp.CONTEXT.getFilesDir(), filename);
+  }
+
+  public static boolean deletePrivateFileWithFilename(String filename) {
+    File file = new File(SzApp.CONTEXT.getFilesDir(), filename);
+    return file.delete();
   }
 
   private static File createFileWithFilename(FileType fileType, String filename) {

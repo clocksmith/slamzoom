@@ -29,7 +29,7 @@ public class DebugUtils {
 
   // Effects
   public static final boolean REVERSE_LOOP_EFFECTS = false;
-  public static final boolean ALLOW_NON_SQUARE_OUTPUT_VIDEO = false;
+  public static final boolean FORCE_SQUARE_OUTPUT_VIDEO = false;
   public static final boolean SKIP_WATERMARK = false;
   public static final boolean SKIP_START_AND_END_PAUSE = false;
   public static final boolean USE_DEBUG_EFFECTS = false;

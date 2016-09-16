@@ -1,6 +1,7 @@
 package com.slamzoom.android.effects;
 
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.Log;
 
 import com.google.common.base.Objects;
@@ -22,7 +23,7 @@ import java.util.List;
 public class EffectStep {
   private static final String TAG = EffectStep.class.getSimpleName();
 
-  private Rect mHotspot;
+  private RectF mHotspot;
   private String mEndText;
 
   private Interpolator mScaleInterpolator;
@@ -54,11 +55,11 @@ public class EffectStep {
     mEndPauseSeconds = endPauseSeconds;
   }
 
-  public Rect getHotspot() {
+  public RectF getHotspot() {
     return mHotspot;
   }
 
-  public void setHotspot(Rect hotspot) {
+  public void setHotspot(RectF hotspot) {
     mHotspot = hotspot;
   }
 

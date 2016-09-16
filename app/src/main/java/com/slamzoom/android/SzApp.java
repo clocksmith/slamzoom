@@ -20,8 +20,10 @@ public class SzApp extends Application {
     // Init the fonts.
     FontLoader.getInstance().init(getAssets());
 
-    context = this.getApplicationContext();
+    CONTEXT = this.getApplicationContext();
+    PACKAGE_NAME = this.getPackageName();
   }
 
-  public static Context context;
+  public static Context CONTEXT;
+  public static String PACKAGE_NAME;
 }

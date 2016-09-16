@@ -1,7 +1,7 @@
 package com.slamzoom.android.mediacreation;
 
-import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.graphics.RectF;
 
 import com.google.common.base.Objects;
 import com.slamzoom.android.effects.EffectTemplate;
@@ -10,8 +10,8 @@ import com.slamzoom.android.effects.EffectTemplate;
  * Created by clocksmith on 4/14/16.
  */
 public class MediaConfig {
-  public Rect hotspot;
-  public Bitmap bitmap;
+  public RectF hotspot;
+  public BitmapSet bitmapSet;
   public EffectTemplate effectTemplate;
   public String endText;
   public int size;
@@ -22,9 +22,9 @@ public class MediaConfig {
   }
 
   public MediaConfig(
-      Rect hotspot, Bitmap bitmap, EffectTemplate effectTemplate, String endText, int fps, int size) {
+      RectF hotspot, BitmapSet bitmapSet, EffectTemplate effectTemplate, String endText, int fps, int size) {
     this.hotspot = hotspot;
-    this.bitmap = bitmap;
+    this.bitmapSet = bitmapSet;
     this.effectTemplate = effectTemplate;
     this.endText = endText;
     this.size = size;
@@ -32,23 +32,22 @@ public class MediaConfig {
   }
 
   public static class Builder {
-    private Rect mHotspot;
-    private Bitmap mBitmap;
+    private RectF mHotspot;
+    private BitmapSet mBitmapSet;
     private EffectTemplate mEffectTemplate;
     private String mEndText;
     private int mFps;
     private int mSize;
 
-    public Builder() {
-    }
+    public Builder() {}
 
-    public Builder withHotspot(Rect hotspot) {
+    public Builder withHotspot(RectF hotspot) {
       mHotspot = hotspot;
       return this;
     }
 
-    public Builder withBitmap(Bitmap bitmap) {
-      mBitmap = bitmap;
+    public Builder withBitmapSet(BitmapSet bitmapSet) {
+      mBitmapSet = bitmapSet;
       return this;
     }
 
@@ -73,13 +72,13 @@ public class MediaConfig {
     }
 
     public MediaConfig build() {
-      return new MediaConfig(mHotspot, mBitmap, mEffectTemplate, mEndText, mFps, mSize);
+      return new MediaConfig(mHotspot, mBitmapSet, mEffectTemplate, mEndText, mFps, mSize);
     }
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(hotspot, bitmap, effectTemplate, endText, fps, size);
+    return Objects.hashCode(hotspot, hotspot, effectTemplate, endText, fps, size);
   }
 
   @Override
@@ -92,7 +91,7 @@ public class MediaConfig {
     }
     final MediaConfig other = (MediaConfig) obj;
     return Objects.equal(hotspot, other.hotspot) &&
-        Objects.equal(bitmap, other.bitmap) &&
+        Objects.equal(hotspot, other.hotspot) &&
         Objects.equal(effectTemplate, other.effectTemplate) &&
         Objects.equal(endText, other.endText) &&
         fps == other.fps &&

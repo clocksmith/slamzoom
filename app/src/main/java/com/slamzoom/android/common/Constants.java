@@ -20,6 +20,7 @@ public class Constants {
   public static final int REQUEST_SHARE_VIDEO = 601;
 
   // Params TODO(clocksmith): refactor to params
+  public static final String NORMALIZED_HOTSPOT = "normalizedHotspot";
   public static final String HOTSPOT = "hotspot";
   public static final String HOTSPOT_SCALE = "hotspotScale";
   public static final String END_TEXT_LENGTH = "endTextLength";
@@ -39,12 +40,13 @@ public class Constants {
   public static final int MAIN_FPS = 24;
   public static final int THUMBNAIL_FPS = 16;
   public static final int MAIN_SIZE_PX = 320; // must be even
-  public static final int THUMBNAIL_SIZE_PX = 80; // must be even
+  public static final int THUMBNAIL_SIZE_PX = MAIN_SIZE_PX / 4; // must be even
+  public static final int NUM_BITMAPS_IN_SET = 5; // 80, 160, 320, 640, 1280
   public static final float MEDIA_THUMBNAIL_DIVIDER = (float) MAIN_SIZE_PX / THUMBNAIL_SIZE_PX;
   public static final boolean DEFAULT_USE_LOCAL_COLOR_PALETTE = true;
   public static final int VIDEO_KBPS = 128;
 
-  public static final int MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX = 1024; // arbitrary
+  public static final int MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX = MAIN_SIZE_PX * 4; // arbitrary
 
   public static final String WATERMARK_TEXT = "slamzoom";
   public static final int MAX_WATERMARK_TEXT_SIZE = 20;

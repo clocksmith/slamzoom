@@ -18,7 +18,7 @@ public class CrashEffectConfig extends EffectConfig {
 
   @Override
   public float getDurationSeconds() {
-    return 0.75f;
+    return 1;
   }
 
   @Override
@@ -34,8 +34,9 @@ public class CrashEffectConfig extends EffectConfig {
   public Interpolator getXInterpolator() {
     return new LinearSplineInterpolator(PointsBuilder.create()
         .withPoint(0, 0)
-        .withPoint(0.37f, 0.40f)
-        .withPoint(0.52f, 0.05f)
+        .withPoint(0.3f, 0.40f)
+        .withPoint(0.38f, 0.05f)
+        .withPoint(0.4f, 0)
         .withPoint(1, 0)
         .build());
   }
@@ -44,8 +45,9 @@ public class CrashEffectConfig extends EffectConfig {
   public Interpolator getYInterpolator() {
     return new LinearSplineInterpolator(PointsBuilder.create()
         .withPoint(0, 0)
-        .withPoint(0.39f, -0.40f)
-        .withPoint(0.52f, 0.10f)
+        .withPoint(0.3f, -0.40f)
+        .withPoint(0.38f, 0.05f)
+        .withPoint(0.4f, 0)
         .withPoint(1, 0)
         .build());
   }
@@ -54,9 +56,8 @@ public class CrashEffectConfig extends EffectConfig {
   public FilterInterpolator getFilterInterpolator() {
     return new GaussianBlurFilterInterpolator(LinearSplineInterpolator.newBuilder()
         .withPoint(0, 0)
-        .withPoint(0.3f, 1)
-        .withPoint(0.6f, 1)
-        .withPoint(0.9f, 0)
+        .withPoint(0.4f, 0.7f)
+        .withPoint(0.5f, 1)
         .withPoint(1, 0)
         .build());
   }

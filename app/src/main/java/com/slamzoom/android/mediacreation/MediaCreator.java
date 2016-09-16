@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.AsyncTask;
 
@@ -59,7 +58,8 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   protected int mFps;
 
   protected Context mContext;
-  protected Bitmap mSelectedBitmap;
+  protected RectF mSelectedHotspot;
+  protected BitmapSet mSelectedBitmapSet;
   protected EffectTemplate mEffectTemplate;
   protected MediaCreatorCallback mCallback;
   protected int mNumTilesInRow;
@@ -71,7 +71,8 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     mIsVideo = this instanceof VideoCreator;
 
     mContext = context;
-    mSelectedBitmap = config.bitmap;
+    mSelectedHotspot = config.hotspot;
+    mSelectedBitmapSet = config.bitmapSet;
     mEffectTemplate = getAdjustedEffectTemplate(config);
 
     // TODO(clocksmith) can delete this.
@@ -79,7 +80,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
 
     int size = config.size;
     mIsPreview = size == Constants.THUMBNAIL_SIZE_PX;
-    float aspectRatio = (float) mSelectedBitmap.getWidth() / mSelectedBitmap.getHeight();
+    float aspectRatio = mSelectedBitmapSet.getAspectRatio();
     if (aspectRatio > 1) {
       mWidth = size;
       mHeight = MathUtils.roundToEvenNumber(size / aspectRatio);
@@ -128,13 +129,14 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   }
 
   protected MediaFrame getFrame(
+      Bitmap bitmap,
       Matrix transformationMatrix,
       ImmutableList<GPUImageFilter> filters,
       int delayMillis,
       String textToRender,
       int frameIndex) {
     mTracker.start(STOPWATCH_TRANSFORMING);
-    Bitmap scaledFrameBitmap = transformAndScaleSelectedBitmap(transformationMatrix);
+    Bitmap scaledFrameBitmap = transformAndScaleSelectedBitmap(bitmap, transformationMatrix);
     mTracker.stop(STOPWATCH_TRANSFORMING);
 
     if (DebugUtils.SAVE_SCALED_FRAMES_AS_PNGS && !mIsPreview) {
@@ -173,50 +175,46 @@ public abstract class MediaCreator<E extends MediaEncoder> {
 
   protected void collectFrames() {
     List<EffectStep> steps = mEffectTemplate.getEffectSteps();
-    EffectStep previousStep = null;
 
     for (int stepIndex = 0; stepIndex < steps.size(); stepIndex++) {
       final EffectStep step = steps.get(stepIndex);
 
-      // Even though in the 1 step case, the startRect top left is 0, 0 and width and height is full selected bitmap,
-      // we want to make this future proof for multiple steps.
-      final Rect startRect = previousStep == null ?
-          new Rect(0, 0, mSelectedBitmap.getWidth(), mSelectedBitmap.getHeight()) :
-          previousStep.getHotspot();
-      previousStep = step;
-      final Rect endRect = step.getHotspot();
-
-      // TODO(clocksmith): This works but we need to double check for edge cases and off by 1s.
-      final float px = endRect.left + endRect.left * endRect.width() / (startRect.width() - endRect.width() + 1);
-      final float py = endRect.top + endRect.top * endRect.height() / (startRect.height() - endRect.height() + 1);
-
-      final float startScale = 1;
-      final float endScale = (float) startRect.height() / endRect.height();
-      Interpolator scaleInterpolator = step.getScaleInterpolator();
-      Interpolator xInterpolator = step.getXInterpolator();
-      Interpolator yInterpolator = step.getYInterpolator();
-      scaleInterpolator.setRange(startScale, endScale);
-
-
-      final LinearInterpolator leftInterpolator = new LinearInterpolator(endRect.left, startRect.left);
-      final LinearInterpolator topInterpolator = new LinearInterpolator(endRect.top, startRect.top);
-      final LinearInterpolator rightInterpolator = new LinearInterpolator(endRect.right, startRect.right);
-      final LinearInterpolator bottomInterpolator = new LinearInterpolator(endRect.bottom, startRect.bottom);
-
       int numFramesForChunk = mAllFrames.get(stepIndex).size();
       String textToRender = null;
       for (int frameIndex = 0; frameIndex < numFramesForChunk; frameIndex++) {
-        final float t = ((float) frameIndex / (numFramesForChunk - 1));
+        final float t = (float) frameIndex / (numFramesForChunk - 1);
+        final float startScale = 1;
+        final float endScale = 1 / mSelectedHotspot.width();
+        Interpolator scaleInterpolator = step.getScaleInterpolator();
+        Interpolator xInterpolator = step.getXInterpolator();
+        Interpolator yInterpolator = step.getYInterpolator();
+        scaleInterpolator.setRange(startScale, endScale);
         final float scale = scaleInterpolator.getInterpolation(t);
+
+        // TODO(clocksmith): sort this out
+        Bitmap selectedBitmap = mSelectedBitmapSet.get((int) (4 * mSize * scale));
+
+        final RectF startRect = new RectF(0, 0, selectedBitmap.getWidth(), selectedBitmap.getHeight());
+        final RectF endRect = new RectF(
+            mSelectedHotspot.left * selectedBitmap.getWidth(),
+            mSelectedHotspot.top * selectedBitmap.getHeight(),
+            mSelectedHotspot.right * selectedBitmap.getWidth(),
+            mSelectedHotspot.bottom * selectedBitmap.getHeight());
+
+        // TODO(clocksmith): This works but we need to double check for edge cases and off by 1s.
+        final float px = endRect.left + endRect.left * endRect.width() / (startRect.width() - endRect.width() + 1);
+        final float py = endRect.top + endRect.top * endRect.height() / (startRect.height() - endRect.height() + 1);
+
+        final LinearInterpolator leftInterpolator = new LinearInterpolator(endRect.left, startRect.left);
+        final LinearInterpolator topInterpolator = new LinearInterpolator(endRect.top, startRect.top);
+        final LinearInterpolator rightInterpolator = new LinearInterpolator(endRect.right, startRect.right);
+        final LinearInterpolator bottomInterpolator = new LinearInterpolator(endRect.bottom, startRect.bottom);
+
         // TODO(clocksmith): we need access to scale in interpolator since sometimes we want to divide.
-//        final float intermediateWidth = startRect.width() / scale;
-//        final float intermediateHeight = startRect.height() / scale;
-//        final float dx = xInterpolator.getInterpolation(t) * intermediateWidth;
-//        final float dy = yInterpolator.getInterpolation(t) * intermediateHeight;
         final float dx = xInterpolator.getInterpolation(t) * startRect.width();
         final float dy = yInterpolator.getInterpolation(t) * startRect.height();
 
-        final RectF normalizedHotspot = new RectF(0, 0, 1, 1);
+        final RectF relativeHotspot = new RectF(0, 0, 1, 1);
         try {
           // Simple way to consume normalized scale. We could hash out a formula, but this is easier to understand.
           Interpolator normalizedScaleInterpolator = scaleInterpolator.clone();
@@ -228,14 +226,11 @@ public abstract class MediaCreator<E extends MediaEncoder> {
           float endRightFromIntermediateRight = rightInterpolator.getInterpolation(normalizedScale);
           float endBottomFromIntermediateBottom = bottomInterpolator.getInterpolation(normalizedScale);
 
-          normalizedHotspot.set(
+          relativeHotspot.set(
               endLeftFromIntermediateLeft / startRect.width(),
               endTopFromIntermediateTop / startRect.height(),
               endRightFromIntermediateRight / startRect.width(),
               endBottomFromIntermediateBottom / startRect.height());
-
-//          Log.wtf(TAG, "frame: " + frameIndex + " normRect: " + normalizedHotspot.toShortString() +
-//          " normW: " + normalizedHotspot.width() + " normH: " + normalizedHotspot.height());
         } catch (CloneNotSupportedException e) {
           SzLog.e(TAG, "unable to clone", e);
         }
@@ -245,7 +240,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
             new Function<FilterInterpolator, GPUImageFilter>() {
               @Override
               public GPUImageFilter apply(FilterInterpolator filterInterpolator) {
-                return filterInterpolator.getInterpolationFilter(t, normalizedHotspot);
+                return filterInterpolator.getInterpolationFilter(t, relativeHotspot);
               }
             }));
 
@@ -259,6 +254,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
         int delayMillis = Math.round(1000f / mFps) + extraDelayMillis;
 
         CreateFrameTask createFrameTask = new CreateFrameTask(
+            selectedBitmap,
             stepIndex,
             frameIndex,
             delayMillis,
@@ -275,19 +271,8 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     }
   }
 
-  @Deprecated
-  private Bitmap transformSelectedBitmap(Matrix transformationMatrix) {
-    Bitmap targetBitmap = Bitmap.createBitmap(
-        mSelectedBitmap.getWidth(), mSelectedBitmap.getHeight(), Bitmap.Config.ARGB_8888);
-    Canvas canvas = new Canvas(targetBitmap);
-    Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
-    paint.setFilterBitmap(true);
-    canvas.drawBitmap(mSelectedBitmap, transformationMatrix, paint);
-    return targetBitmap;
-  }
-
-  private Bitmap transformAndScaleSelectedBitmap(Matrix transformationMatrix) {
-    boolean forceSquareOutput = mIsVideo && !DebugUtils.ALLOW_NON_SQUARE_OUTPUT_VIDEO;
+  private Bitmap transformAndScaleSelectedBitmap(Bitmap bitmap, Matrix transformationMatrix) {
+    boolean forceSquareOutput = mIsVideo && DebugUtils.FORCE_SQUARE_OUTPUT_VIDEO;
 
     Bitmap targetBitmap;
     if (forceSquareOutput) {
@@ -299,8 +284,8 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     Canvas canvas = new Canvas(targetBitmap);
     Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
     transformationMatrix.postScale(
-        (float) mWidth / mSelectedBitmap.getWidth(),
-        (float) mHeight / mSelectedBitmap.getHeight(),
+        (float) mWidth / bitmap.getWidth(),
+        (float) mHeight / bitmap.getHeight(),
         0,
         0);
 
@@ -310,12 +295,13 @@ public abstract class MediaCreator<E extends MediaEncoder> {
           mHeight < mSize ? (mSize - mHeight) / 2 : 0
       );
     }
-    canvas.drawBitmap(mSelectedBitmap, transformationMatrix, paint);
+    canvas.drawBitmap(bitmap, transformationMatrix, paint);
 
     return targetBitmap;
   }
 
   protected class CreateFrameTask extends AsyncTask<Void, Void, MediaFrame> {
+    protected Bitmap mBitmap;
     protected int mStepIndex;
     protected int mFrameIndex;
     protected int mDelayMillis;
@@ -328,6 +314,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     protected String mTextToRender;
 
     CreateFrameTask(
+        Bitmap bitmap,
         int stepIndex,
         int frameIndex,
         int delayMillis,
@@ -339,6 +326,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
         ImmutableList<GPUImageFilter> filters,
         String textToRender) {
       super();
+      mBitmap = bitmap;
       mStepIndex = stepIndex;
       mFrameIndex = frameIndex;
       mDelayMillis = delayMillis;
@@ -356,7 +344,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       Matrix transformationMatrix = new Matrix();
       transformationMatrix.postScale(mScale, mScale, mPx, mPy);
       transformationMatrix.postTranslate(mDx, mDy);
-      return getFrame(transformationMatrix, mFilters, mDelayMillis, mTextToRender, mFrameIndex);
+      return getFrame(mBitmap, transformationMatrix, mFilters, mDelayMillis, mTextToRender, mFrameIndex);
     }
 
     @Override
@@ -369,8 +357,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
 
           List<MediaFrame> concatedFrames = Lists.newArrayList(Iterables.concat(mAllFrames));
 
-          if (concatedFrames.size() > 1 &&
-              (DebugUtils.REVERSE_LOOP_EFFECTS || CreatorPreferences.isCycle(mContext))) {
+          if (concatedFrames.size() > 1 && DebugUtils.REVERSE_LOOP_EFFECTS) {
             concatedFrames.get(0).delayMillis = concatedFrames.get(1).delayMillis;
             concatedFrames.get(concatedFrames.size() - 1).delayMillis =
                 concatedFrames.get(concatedFrames.size() - 2).delayMillis;

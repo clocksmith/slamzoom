@@ -273,7 +273,7 @@ public class GifService extends Service {
       SzAnalytics.Event event = thumbnail
           ? SzAnalytics.newThumbnailGifGeneratedEvent() : SzAnalytics.newMainGifGeneratedEvent();
       event.withItemId(name)
-          .withHotspotScale(currentManager.getEndScale())
+          .withHotspotScale(currentManager.getHotspotScale())
           .withEndTextLength(currentManager.getEndText() == null ? 0 : currentManager.getEndText().length())
           .withDurationMs(currentManager.getTracker().getTotal())
           .log(this);

@@ -47,7 +47,7 @@ public class VideoEncoder extends MediaEncoder<VideoFrame> {
     super.encodeAsync(callback);
 
     mTracker.start(LOADING_FFMPEG);
-    mFFmpeg = FFmpeg.getInstance(SzApp.context);
+    mFFmpeg = FFmpeg.getInstance(SzApp.CONTEXT);
     try {
       mFFmpeg.loadBinary(new FFmpegLoadBinaryResponseHandler() {
         @Override
@@ -83,6 +83,14 @@ public class VideoEncoder extends MediaEncoder<VideoFrame> {
   public void cancel() {
     super.cancel();
     mFFmpeg.killRunningProcesses();
+  }
+
+  private void clean() {
+    FileUtils.deletePrivateFileWithFilename("concat.txt");
+    for (VideoFrame frame : mFrames) {
+      File file = new File(frame.path.toString());
+      file.delete();
+    }
   }
 
   private void execute() {
@@ -133,6 +141,7 @@ public class VideoEncoder extends MediaEncoder<VideoFrame> {
             @Override
             public void onSuccess(String message) {
               Log.wtf(TAG, "execute onSuccess()");
+              clean();
               mTracker.stop(EXECUTING_FFMPEG);
               mCallback.onCreateVideo(videoOutFile);
             }

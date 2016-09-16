@@ -28,17 +28,17 @@ public abstract class BaseGuassianBlurFilterInterpolator extends FilterInterpola
   @Override
   protected GPUImageFilter getFilter() {
     return new GPUImageGaussianBlurFilter(getBlurSize()) {
-      @Override
-      public float getVerticalTexelOffsetRatio() {
-        return super.getVerticalTexelOffsetRatio() / 4;
-      }
-
-      @Override
-      public float getHorizontalTexelOffsetRatio() {
-        return super.getHorizontalTexelOffsetRatio() / 4 *
-            BaseGuassianBlurFilterInterpolator.this.getNormalizedHotspot().height() /
-            BaseGuassianBlurFilterInterpolator.this.getNormalizedHotspot().width();
-      }
+//      @Override
+//      public float getVerticalTexelOffsetRatio() {
+//        return super.getVerticalTexelOffsetRatio() / 4;
+//      }
+//
+//      @Override
+//      public float getHorizontalTexelOffsetRatio() {
+//        return super.getHorizontalTexelOffsetRatio() / 4 *
+//            BaseGuassianBlurFilterInterpolator.this.getNormalizedHotspot().height() /
+//            BaseGuassianBlurFilterInterpolator.this.getNormalizedHotspot().width();
+//      }
     };
   }
 
