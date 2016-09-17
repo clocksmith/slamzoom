@@ -10,10 +10,10 @@ import com.slamzoom.android.interpolators.Interpolator;
 /**
  * Created by clocksmith on 9/5/16.
  */
-public class PeekabooEffectConfig extends EffectConfig {
+public class FlashEffectConfig extends EffectConfig {
   @Override
   public String getName() {
-    return "peekaboo";
+    return "flash";
   }
 
   @Override

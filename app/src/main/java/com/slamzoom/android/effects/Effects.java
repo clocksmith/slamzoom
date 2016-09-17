@@ -7,12 +7,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.common.utils.DebugUtils;
-import com.slamzoom.android.effects.interpolation.filter.group.DeflateFaceFilterInterpolatorsProvider;
-import com.slamzoom.android.effects.interpolation.filter.group.InflateFaceFilterInterpolatorsProvider;
-import com.slamzoom.android.effects.interpolation.filter.single.GaussianBlurFilterInterpolator;
-import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashTaranInterpolatorProvider;
-import com.slamzoom.android.effects.interpolation.transform.scaletranslate.PopInInterpolatorProvider;
-import com.slamzoom.android.effects.interpolation.transform.scaletranslate.PopOutInterpolatorProvider;
+import com.slamzoom.android.effects.interpolation.transform.scaletranslate.PopInConfig;
 import com.slamzoom.android.effects.packs.EffectPack;
 import com.slamzoom.android.effects.packs.distort.BlockheadEffectConfig;
 import com.slamzoom.android.effects.packs.distort.BulgerinoEffectConfig;
@@ -23,16 +18,13 @@ import com.slamzoom.android.effects.packs.distort.InflateEffectConfig;
 import com.slamzoom.android.effects.packs.distort.SmushEfffectConfig;
 import com.slamzoom.android.effects.packs.distort.SwirlEffectConfig;
 import com.slamzoom.android.effects.packs.slam.CrashEffectConfig;
-import com.slamzoom.android.effects.packs.slam.FlushEffectConfig;
-import com.slamzoom.android.effects.packs.slam.PeekabooEffectConfig;
+import com.slamzoom.android.effects.packs.slam.WhirlEffectConfig;
+import com.slamzoom.android.effects.packs.slam.FlashEffectConfig;
 import com.slamzoom.android.effects.packs.slam.PounceEffectConfig;
 import com.slamzoom.android.effects.packs.slam.RumblestiltskinEffectConfig;
 import com.slamzoom.android.effects.packs.slam.SlaminEffectConfig;
-import com.slamzoom.android.effects.packs.slam.SlamioWithPauseEffectConfig;
 import com.slamzoom.android.effects.packs.slam.SlamoutEffectConfig;
 import com.slamzoom.android.effects.packs.slam.ThrowbackEffectConfig;
-import com.slamzoom.android.interpolators.LinearInterpolator;
-import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 
 import java.util.List;
@@ -62,9 +54,9 @@ public class Effects {
             .withEffectConfig(new CrashEffectConfig())
             .withEffectConfig(new RumblestiltskinEffectConfig())
             .withEffectConfig(new ThrowbackEffectConfig())
-            .withEffectConfig(new PeekabooEffectConfig())
+            .withEffectConfig(new FlashEffectConfig())
             .withEffectConfig(new PounceEffectConfig())
-            .withEffectConfig(new FlushEffectConfig())
+            .withEffectConfig(new WhirlEffectConfig())
             .build())
         .add(EffectPack.newBuilder()
             .withName(Pack.DISTORT.name())
@@ -82,30 +74,27 @@ public class Effects {
     DEBUG_EFFECT_PACKS = ImmutableList.<EffectPack>builder()
         .add(EffectPack.newBuilder()
             .withName(Pack.DEBUG.name())
-//            .withEffectTemplate(EffectTemplate.newSingleStepBuilder()
-//                .withName("debug1")
-//                .withStartDurationEndSeconds(2, 0.2f, 2)
-//                .withScaleInterpolator(new LinearInterpolator())
-//                .build())
-//            .withEffectTemplate(EffectTemplate.newSingleStepBuilder()
-//                .withName("popin")
-//                .withStartDurationEndSeconds(0, 0.175f, 0)
-//                .withTransformInterpolatorProvider(new PopInInterpolatorProvider())
-//                .build())
+            .withEffectConfig(new CrashEffectConfig() {
+              @Override
+              public float getDurationSeconds() {
+                return 1;
+              }
+            })
+//            .withEffectConfig(new PopInConfig())
 //            .withEffectTemplate(EffectTemplate.newSingleStepBuilder()
 //                .withName("popout")
 //                .withStartDurationEndSeconds(0, 0.175f, 0)
 //                .withTransformInterpolatorProvider(new PopOutInterpolatorProvider())
 //                .build())
-            .withEffectTemplate(EffectTemplate.newSingleStepBuilder()
-                .withName("slamin_no_end")
-                .withEffectConfig(new SlaminEffectConfig())
-                .withEndPauseSeconds(0)
-                .build())
-            .withEffectTemplate(EffectTemplate.newSingleStepBuilder()
-                .withName("slamio")
-                .withEffectConfig(new SlamioWithPauseEffectConfig())
-                .build())
+//            .withEffectTemplate(EffectTemplate.newSingleStepBuilder()
+//                .withName("slamin_no_end")
+//                .withEffectConfig(new SlaminEffectConfig())
+//                .withEndPauseSeconds(0)
+//                .build())
+//            .withEffectTemplate(EffectTemplate.newSingleStepBuilder()
+//                .withName("slamio")
+//                .withEffectConfig(new SlamioWithPauseEffectConfig())
+//                .build())
 //            .withEffectTemplate(EffectTemplate.newSingleStepBuilder()
 //                .withName("crashblur-show")
 //                .withStartDurationEndSeconds(0.25f, 0.75f, 1)

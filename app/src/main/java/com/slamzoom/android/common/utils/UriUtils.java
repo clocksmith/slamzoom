@@ -20,10 +20,19 @@ public class UriUtils {
     return Uri.parse(
         ContentResolver.SCHEME_ANDROID_RESOURCE
         + "://"
-        + SzApp.CONTEXT.getResources().getResourcePackageName(resId)
+        + context.getResources().getResourcePackageName(resId)
         + "/"
-        + SzApp.CONTEXT.getResources().getResourceTypeName(resId)
+        + context.getResources().getResourceTypeName(resId)
         + "/"
-        + SzApp.CONTEXT.getResources().getResourceEntryName(resId));
+        + context.getResources().getResourceEntryName(resId));
   }
+
+//  public static Uri getUriFromRes(Context context, @AnyRes int resId) {
+//    return Uri.parse(
+//        ContentResolver.SCHEME_ANDROID_RESOURCE
+//            + "://"
+//            + context.getResources().getResourcePackageName(resId)
+//            + "/"
+//            + resId);
+//  }
 }

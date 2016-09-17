@@ -34,7 +34,7 @@ public class CrashEffectConfig extends EffectConfig {
   public Interpolator getXInterpolator() {
     return new LinearSplineInterpolator(PointsBuilder.create()
         .withPoint(0, 0)
-        .withPoint(0.3f, 0.40f)
+        .withPoint(0.3f, 0.4f)
         .withPoint(0.38f, 0.05f)
         .withPoint(0.4f, 0)
         .withPoint(1, 0)
@@ -45,7 +45,7 @@ public class CrashEffectConfig extends EffectConfig {
   public Interpolator getYInterpolator() {
     return new LinearSplineInterpolator(PointsBuilder.create()
         .withPoint(0, 0)
-        .withPoint(0.3f, -0.40f)
+        .withPoint(0.3f, -0.4f)
         .withPoint(0.38f, 0.05f)
         .withPoint(0.4f, 0)
         .withPoint(1, 0)

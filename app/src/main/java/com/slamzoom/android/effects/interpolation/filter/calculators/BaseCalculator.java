@@ -21,7 +21,7 @@ public class BaseCalculator {
   }
 
   public RectF getNormalizedHotspot() {
-    return mFilterInterpolator.getNormalizedHotspot();
+    return mFilterInterpolator.getRelativeHotspot();
   }
 
   protected float getInterpolationValueCompliment() {

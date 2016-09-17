@@ -15,7 +15,7 @@ public class RumblestiltskinEffectConfig extends EffectConfig {
       .withPoint(0, 0)
       .withPoint(PERCENT_START, 3)
       .build();
-  private static final TranslateInterpolatorProvider START_SHAKE_IP = getStartShakeIP(START_INTENSITY_INTERPOLATOR, 12);
+  private static final TranslateInterpolatorProvider START_SHAKE_IP = new BaseShakeInterpolatorProvider(1, 24);
   private static final TranslateInterpolatorProvider END_SHAKE_IP = new BaseShakeInterpolatorProvider(0.5f, 24);
 
   @Override
@@ -38,7 +38,7 @@ public class RumblestiltskinEffectConfig extends EffectConfig {
     return LinearSplineInterpolator.newBuilder()
         .withPoint(0, 0)
         .withPoint(PERCENT_START, 0)
-        .withPoint(PERCENT_START + 0.0001f, 0.5f)
+        .withPoint(PERCENT_START + 0.0001f, 0.8f)
         .withPoint(1f, 1f)
         .build();
   }
@@ -67,33 +67,6 @@ public class RumblestiltskinEffectConfig extends EffectConfig {
         } else {
           return END_SHAKE_IP.getYInterpolator().getValue(t);
         }
-      }
-    };
-  }
-
-  private static TranslateInterpolatorProvider getStartShakeIP(
-      final Interpolator intensityInterpolator, final int frequency) {
-    return new TranslateInterpolatorProvider() {
-      @Override
-      public Interpolator getXInterpolator() {
-        return new Interpolator() {
-          @Override
-          public float getValue(float t) {
-            return new BaseShakeInterpolatorProvider(intensityInterpolator.getValue(t), frequency)
-                .getXInterpolator().getValue(t);
-          }
-        };
-      }
-
-      @Override
-      public Interpolator getYInterpolator() {
-        return new Interpolator() {
-          @Override
-          public float getValue(float t) {
-            return new BaseShakeInterpolatorProvider(intensityInterpolator.getValue(t), frequency)
-                .getYInterpolator().getValue(t);
-          }
-        };
       }
     };
   }

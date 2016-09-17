@@ -97,7 +97,7 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
     final @ColorInt int effectTextColorInt =  ContextCompat.getColor(itemView.getContext(), inDialog ?
         R.color.buy_dialog_effect_text : R.color.effect_text);
     final String name = mModel.getEffectTemplate().getName();
-    final String packName = mModel.getEffectTemplate().getPackName().toLowerCase() + " pack";
+    final String packName = mModel.getEffectTemplate().getPackName().toLowerCase();
 
     mNameTextView.setText(name);
     //noinspection ResourceAsColor

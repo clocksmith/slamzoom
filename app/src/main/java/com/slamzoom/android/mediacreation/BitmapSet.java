@@ -1,17 +1,19 @@
 package com.slamzoom.android.mediacreation;
 
-import android.content.ContentResolver;
+import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Rect;
-import android.graphics.RectF;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 
+import com.slamzoom.android.R;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.SzLog;
 import com.slamzoom.android.common.utils.BitmapUtils;
 import com.slamzoom.android.common.utils.DebugUtils;
+import com.slamzoom.android.common.utils.UriUtils;
 
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 /**
  * Created by clocksmith on 9/15/16.
@@ -23,11 +25,27 @@ public class BitmapSet {
   private Bitmap[] mBitmaps = new Bitmap[Constants.NUM_BITMAPS_IN_SET];
   private float mAspectRatio;
 
-  public BitmapSet(Uri imageUri, ContentResolver contentResolver, int startSize) {
+  public BitmapSet(Context context, Uri imageUri, int startSize) {
+    // Special hack case for mona lisa.
+    if (imageUri.toString().equals("mona")) {
+      try {
+        InputStream stream =
+            context.getContentResolver().openInputStream(UriUtils.getUriFromRes(context, R.drawable.mona_lisa_sz));
+        mBitmaps = new Bitmap[1];
+        mBitmaps[0] = BitmapFactory.decodeStream(stream);
+        mAspectRatio = (float) mBitmaps[0].getWidth() / mBitmaps[0].getHeight();
+        mSizes = new int[1];
+        mSizes[0] = mBitmaps[0].getHeight();
+      } catch (FileNotFoundException e) {
+        SzLog.e(TAG, "Could not read in mona lisa", e);
+      }
+      return;
+    }
+
     int size = startSize;
     for (int i = 0; i < Constants.NUM_BITMAPS_IN_SET; i++) {
       try {
-        Bitmap bitmap = BitmapUtils.readScaledBitmap(imageUri, contentResolver, size);
+        Bitmap bitmap = BitmapUtils.readScaledBitmap(imageUri, context.getContentResolver(), size);
         if (mAspectRatio == 0) {
           mAspectRatio = (float) bitmap.getWidth() / bitmap.getHeight();
         }

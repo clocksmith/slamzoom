@@ -14,24 +14,29 @@ import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ImageSpan;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -93,8 +98,11 @@ public class CreateActivity extends LifecycleLoggingActivity {
     SAVE, SHARE
   }
 
-  private static final Uri MONA_LISA_URI = UriUtils.getUriFromRes(R.drawable.mona_lisa_sz);
-  private static final RectF MONA_LISA_HOTSPOT = new RectF(0.2f, 0.2f, 0.4f, 0.4f);
+  // Hack to load in mona lisa
+  private static final Uri MONA_LISA_URI = Uri.parse("mona");
+  // Try to zoom directly on her phone
+//  private static final RectF MONA_LISA_HOTSPOT = new RectF(0.16f, 0.73f, 0.28f, 0.85f); // phone
+  private static final RectF MONA_LISA_HOTSPOT = new RectF(0.34f, 0.12f, 0.6f, 0.38f); // face
 
   // View.
   @BindView(R.id.coordinatatorLayout) CoordinatorLayout mCoordinatorLayout;
@@ -104,6 +112,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
   @BindView(R.id.progressBar) ProgressBar mProgressBar;
   @BindView(R.id.zeroStateMessage) TextView mZeroStateMessage;
   @BindView(R.id.effectChooser) EffectChooser mEffectChooser;
+  private ImageView mLogoView; // action bar custom view.
   private AddTextView mAddTextView; // action bar custom view.
   private View mGifAreaView;
   private UnlockPackDialogFragment mUnlockPackDialogFragment;
@@ -206,7 +215,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
     } else if (mSelectedHotspot == null) {
       launchHotspotChooser();
     } else if (mSelectedBitmapSet == null)  {
-      mSelectedBitmapSet = new BitmapSet(mSelectedUri, getContentResolver(), Constants.THUMBNAIL_SIZE_PX);
+      mSelectedBitmapSet = new BitmapSet(this, mSelectedUri, Constants.THUMBNAIL_SIZE_PX);
       clearAndUpdateAllGifs();
     }
     // If we still have the bitmap, then the activity was not destroyed, and nothing needs to be done in onResume.
@@ -393,13 +402,25 @@ public class CreateActivity extends LifecycleLoggingActivity {
   private void initToolbar() {
     setSupportActionBar(mToolbar);
     assert getSupportActionBar() != null;
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    getSupportActionBar().setHomeButtonEnabled(true);
-    getSupportActionBar().setDisplayShowTitleEnabled(false);
-    getSupportActionBar().setTitle(getString(R.string.app_name));
+
+    mLogoView = new ImageView(this);
+    mLogoView.setPadding(0, 0, 0, 0);
+    mLogoView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.sz_logo));
+    mLogoView.setScaleType(ImageView.ScaleType.FIT_CENTER);
     mAddTextView = new AddTextView(this);
-    getSupportActionBar().setCustomView(mAddTextView,
-        new Toolbar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    getSupportActionBar().setDisplayShowCustomEnabled(true);
+    getSupportActionBar().setDisplayShowTitleEnabled(false);
+    showAddTextView(false);
+
+//    SpannableString ss = new SpannableString("abc");
+//    Drawable d = ContextCompat.getDrawable(this, R.drawable.sz_logo);
+//    d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+//    ImageSpan span = new ImageSpan(d, ImageSpan.ALIGN_BASELINE);
+//    ss.setSpan(span, 0, 3, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+
+
+//    getSupportActionBar().setCustomView(mAddTextView,
+//        new Toolbar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
   }
 
@@ -657,8 +678,17 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
   private void showAddTextView(boolean show) {
     assert getSupportActionBar() != null;
-    getSupportActionBar().setDisplayShowCustomEnabled(show);
-    getSupportActionBar().setDisplayShowTitleEnabled(!show);
+    TypedValue tv = new TypedValue();
+    int actionBarHeight = 0;
+    if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+      actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
+    }
+
+    getSupportActionBar().setCustomView(
+        show ? mAddTextView : mLogoView,
+        new Toolbar.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            show ? ViewGroup.LayoutParams.MATCH_PARENT : actionBarHeight));
     mIsAddTextViewShowing = show;
     invalidateOptionsMenu();
   }

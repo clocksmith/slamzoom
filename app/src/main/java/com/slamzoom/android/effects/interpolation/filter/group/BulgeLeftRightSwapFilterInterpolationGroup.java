@@ -25,10 +25,9 @@ public class BulgeLeftRightSwapFilterInterpolationGroup implements FilterInterpo
     @Override
     public PointF getCenter() {
       return new PointF(
-          new LinearInterpolator(
-              getNormalizedHotspot().left,
-              getNormalizedHotspot().right).getInterpolation(getInterpolationValue()),
-          getNormalizedHotspot().centerY());
+          new LinearInterpolator(getRelativeHotspot().left, getRelativeHotspot().right)
+              .getInterpolation(getInterpolationValue()),
+          getRelativeHotspot().centerY());
     }
   }
 
@@ -36,10 +35,9 @@ public class BulgeLeftRightSwapFilterInterpolationGroup implements FilterInterpo
     @Override
     public PointF getCenter() {
       return new PointF(
-          new LinearInterpolator(
-              getNormalizedHotspot().right,
-              getNormalizedHotspot().left).getInterpolation(getInterpolationValue()),
-          getNormalizedHotspot().centerY());
+          new LinearInterpolator(getRelativeHotspot().right, getRelativeHotspot().left)
+              .getInterpolation(getInterpolationValue()),
+          getRelativeHotspot().centerY());
     }
   }
 }

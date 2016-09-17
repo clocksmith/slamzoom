@@ -32,7 +32,7 @@ public class DebugUtils {
   public static final boolean FORCE_SQUARE_OUTPUT_VIDEO = false;
   public static final boolean SKIP_WATERMARK = false;
   public static final boolean SKIP_START_AND_END_PAUSE = false;
-  public static final boolean USE_DEBUG_EFFECTS = false;
+  public static final boolean USE_DEBUG_EFFECTS = true;
 
   // Convenience
   public static final boolean SKIP_GIF_CACHE = false; // setting this to true is broken

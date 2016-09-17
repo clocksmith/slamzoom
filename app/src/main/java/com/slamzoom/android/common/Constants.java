@@ -40,7 +40,7 @@ public class Constants {
   public static final int MAIN_FPS = 24;
   public static final int THUMBNAIL_FPS = 16;
   public static final int MAIN_SIZE_PX = 320; // must be even
-  public static final int THUMBNAIL_SIZE_PX = MAIN_SIZE_PX / 4; // must be even
+  public static final int THUMBNAIL_SIZE_PX = 120; // must be even
   public static final int NUM_BITMAPS_IN_SET = 5; // 80, 160, 320, 640, 1280
   public static final float MEDIA_THUMBNAIL_DIVIDER = (float) MAIN_SIZE_PX / THUMBNAIL_SIZE_PX;
   public static final boolean DEFAULT_USE_LOCAL_COLOR_PALETTE = true;

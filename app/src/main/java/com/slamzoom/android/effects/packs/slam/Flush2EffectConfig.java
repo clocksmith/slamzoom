@@ -1,13 +1,14 @@
 package com.slamzoom.android.effects.packs.slam;
 
 import com.slamzoom.android.effects.EffectConfig;
+import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.interpolators.Interpolator;
 import com.slamzoom.android.effects.interpolation.transform.scale.EaseInSlamHardInterpolator;
 
 /**
  * Created by clocksmith on 3/16/16.
  */
-public class FlushEffectConfig extends EffectConfig {
+public class Flush2EffectConfig extends EffectConfig {
   private static final float RADIUS = 0.15f;
   private static final float FREQUENCY = 4;
   private static final float EXPONENT_0 = 2f;
@@ -55,5 +56,10 @@ public class FlushEffectConfig extends EffectConfig {
             Math.sin(FREQUENCY * 2 * Math.PI * Math.pow(newT, EXPONENT_2)));
       }
     };
+  }
+
+  @Override
+  public FilterInterpolator getFilterInterpolator() {
+    return null;
   }
 }

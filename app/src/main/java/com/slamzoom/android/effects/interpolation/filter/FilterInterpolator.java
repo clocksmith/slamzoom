@@ -46,7 +46,7 @@ public abstract class FilterInterpolator {
     return mInterpolationValue;
   }
 
-  public synchronized RectF getNormalizedHotspot() {
+  public synchronized RectF getRelativeHotspot() {
     return mNormalizedHotspot;
   }
 
