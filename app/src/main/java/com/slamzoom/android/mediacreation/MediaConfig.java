@@ -1,9 +1,9 @@
 package com.slamzoom.android.mediacreation;
 
-import android.graphics.Rect;
 import android.graphics.RectF;
 
 import com.google.common.base.Objects;
+import com.slamzoom.android.common.bitmaps.BitmapSet;
 import com.slamzoom.android.effects.EffectTemplate;
 
 /**

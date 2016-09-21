@@ -3,7 +3,7 @@ package com.slamzoom.android.effects.interpolation.filter.calculators;
 import android.graphics.PointF;
 import android.graphics.RectF;
 
-import com.slamzoom.android.common.utils.RectFUtils;
+import com.slamzoom.android.common.data.RectFUtils;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 
 /**

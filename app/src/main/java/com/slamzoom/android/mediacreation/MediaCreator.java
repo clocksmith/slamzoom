@@ -15,12 +15,12 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.common.executor.ExecutorProvider;
-import com.slamzoom.android.common.utils.BitmapUtils;
-import com.slamzoom.android.common.utils.DebugUtils;
-import com.slamzoom.android.common.utils.MathUtils;
-import com.slamzoom.android.common.utils.PostProcessorUtils;
-import com.slamzoom.android.common.SzLog;
+import com.slamzoom.android.common.bitmaps.BitmapSet;
+import com.slamzoom.android.common.threads.ExecutorProvider;
+import com.slamzoom.android.common.bitmaps.BitmapUtils;
+import com.slamzoom.android.common.BuildFlags;
+import com.slamzoom.android.common.data.MathUtils;
+import com.slamzoom.android.common.logging.SzLog;
 import com.slamzoom.android.effects.EffectStep;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
@@ -62,11 +62,11 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   protected EffectTemplate mEffectTemplate;
   protected MediaCreatorCallback mCallback;
   protected int mNumTilesInRow;
-  protected MultiPhaseStopwatch mTracker;
+  protected StopwatchTracker mTracker;
 
   protected boolean mIsVideo;
 
-  public MediaCreator(Context context, MediaConfig config, MultiPhaseStopwatch tracker) {
+  public MediaCreator(Context context, MediaConfig config, StopwatchTracker tracker) {
     mIsVideo = this instanceof VideoCreator;
 
     mContext = context;
@@ -138,7 +138,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     Bitmap scaledFrameBitmap = transformAndScaleSelectedBitmap(bitmap, transformationMatrix);
     mTracker.stop(STOPWATCH_TRANSFORMING);
 
-    if (DebugUtils.SAVE_SCALED_FRAMES_AS_PNGS && !mIsPreview) {
+    if (BuildFlags.SAVE_SCALED_FRAMES_AS_PNGS && !mIsPreview) {
       BitmapUtils.saveBitmapToDiskAsPng(scaledFrameBitmap, "scaled_" + frameIndex);
     }
 
@@ -161,11 +161,11 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       PostProcessorUtils.renderText(filteredFrameBitmap, textToRender);
     }
 
-    if (!DebugUtils.SKIP_WATERMARK && !mIsPreview) {
+    if (!BuildFlags.SKIP_WATERMARK && !mIsPreview) {
       PostProcessorUtils.renderWatermark(mContext, filteredFrameBitmap);
     }
 
-    if (DebugUtils.SAVE_FILTERED_FRAMES_AS_PNGS && !mIsPreview) {
+    if (BuildFlags.SAVE_FILTERED_FRAMES_AS_PNGS && !mIsPreview) {
       BitmapUtils.saveBitmapToDiskAsPng(filteredFrameBitmap, "filtered_" + frameIndex);
     }
 
@@ -271,7 +271,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
   }
 
   private Bitmap transformAndScaleSelectedBitmap(Bitmap bitmap, Matrix transformationMatrix) {
-    boolean forceSquareOutput = mIsVideo && DebugUtils.FORCE_SQUARE_OUTPUT_VIDEO;
+    boolean forceSquareOutput = mIsVideo && BuildFlags.FORCE_SQUARE_OUTPUT_VIDEO;
 
     Bitmap targetBitmap;
     if (forceSquareOutput) {
@@ -356,7 +356,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
 
           List<MediaFrame> concatedFrames = Lists.newArrayList(Iterables.concat(mAllFrames));
 
-          if (concatedFrames.size() > 1 && DebugUtils.REVERSE_LOOP_EFFECTS) {
+          if (concatedFrames.size() > 1 && BuildFlags.REVERSE_LOOP_EFFECTS) {
             concatedFrames.get(0).delayMillis = concatedFrames.get(1).delayMillis;
             concatedFrames.get(concatedFrames.size() - 1).delayMillis =
                 concatedFrames.get(concatedFrames.size() - 2).delayMillis;

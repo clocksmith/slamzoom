@@ -1,46 +1,30 @@
 package com.slamzoom.android.ui.start;
 
-import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.graphics.Point;
-import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.RawRes;
-import android.util.Log;
 import android.view.Display;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
-import com.google.common.io.Closeables;
 import com.slamzoom.android.R;
-import com.slamzoom.android.common.FontLoader;
-import com.slamzoom.android.common.LifecycleLoggingActivity;
-import com.slamzoom.android.common.SzLog;
-import com.slamzoom.android.common.utils.UriUtils;
+import com.slamzoom.android.common.FontProvider;
+import com.slamzoom.android.common.activities.LifecycleLoggingActivity;
+import com.slamzoom.android.common.logging.SzLog;
+import com.slamzoom.android.common.ui.LocalWebViewDialogPresenter;
+import com.slamzoom.android.common.data.UriUtils;
 import com.slamzoom.android.ui.create.CreateActivity;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import pl.droidsonroids.gif.GifImageView;
 
 /**
  * Created by clocksmith on 4/5/16.
@@ -50,6 +34,7 @@ public class StartActivity extends LifecycleLoggingActivity {
 
   private static final @RawRes int VIDEO_RES = R.raw.mona_slamio_640;
   private static final float FINAL_VIDEO_ALPHA = 0.5f;
+  private static final int VIDEO_FADE_IN_DURATION_MILLIS = 2000;
 
   @BindView(R.id.backgroundVideoView) TextureView mBackgroundVideoView;
   @BindView(R.id.tapAnywhereToBeginText) TextView mTapAnywhereToBeginText;
@@ -64,10 +49,10 @@ public class StartActivity extends LifecycleLoggingActivity {
     setContentView(R.layout.activity_start);
     ButterKnife.bind(this);
 
-    // TODO(clocksmith): Is there a way to set a custom default font yet? (Yes there is, do it idiot)
-    mTapAnywhereToBeginText.setTypeface(FontLoader.getInstance().getDefaultFont());
-    mPrivacyPolicyLink.setTypeface(FontLoader.getInstance().getDefaultFont());
-    mTermsOfUseLink.setTypeface(FontLoader.getInstance().getDefaultFont());
+    // TODO(clocksmith): Is there a way to set a custom default font yet? (Yes there is, with reflection, do it idiot)
+    mTapAnywhereToBeginText.setTypeface(FontProvider.getInstance().getTitleFont());
+    mPrivacyPolicyLink.setTypeface(FontProvider.getInstance().getDefaultFont());
+    mTermsOfUseLink.setTypeface(FontProvider.getInstance().getDefaultFont());
     // Little hack to disable all caps since these are "links", but we used buttons to get the ripple effect.
     mPrivacyPolicyLink.setTransformationMethod(null);
     mTermsOfUseLink.setTransformationMethod(null);
@@ -99,10 +84,11 @@ public class StartActivity extends LifecycleLoggingActivity {
 
   private void fadeInVideo() {
     ObjectAnimator videoFadeIn = ObjectAnimator.ofFloat(mBackgroundVideoView, "alpha", 0, FINAL_VIDEO_ALPHA);
-    videoFadeIn.setDuration(2000);
+    videoFadeIn.setDuration(VIDEO_FADE_IN_DURATION_MILLIS);
     videoFadeIn.start();
   }
 
+  // TODO(clocksmith): Refactor this, with the media player, into a widget.
   private class TextureListener implements TextureView.SurfaceTextureListener {
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {

@@ -7,7 +7,7 @@ import com.slamzoom.android.mediacreation.MediaConfig;
 import com.slamzoom.android.mediacreation.MediaCreator;
 import com.slamzoom.android.mediacreation.MediaEncoder;
 import com.slamzoom.android.mediacreation.MediaFrame;
-import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
+import com.slamzoom.android.mediacreation.StopwatchTracker;
 
 /**
  * Created by clocksmith on 3/25/16.
@@ -18,7 +18,7 @@ public class VideoCreator extends MediaCreator {
   public VideoCreator(
       Context context,
       MediaConfig config,
-      MultiPhaseStopwatch tracker) {
+      StopwatchTracker tracker) {
     super(context, config,tracker);
   }
 

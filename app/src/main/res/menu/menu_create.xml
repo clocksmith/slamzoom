@@ -42,7 +42,7 @@
   </item>
   <!--<item-->
       <!--android:id="@+id/action_loop"-->
-      <!--app:actionViewClass="com.slamzoom.android.common.LoopSwitch"-->
+      <!--app:actionViewClass="com.slamzoom.android.common.widgets.LoopSwitch"-->
       <!--app:showAsAction="always"-->
       <!--android:title="@string/action_cycle"/>-->
   <item

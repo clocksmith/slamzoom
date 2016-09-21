@@ -1,6 +1,5 @@
 package com.slamzoom.android.mediacreation.video;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
@@ -12,12 +11,12 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.SzApp;
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.common.FileType;
-import com.slamzoom.android.common.SzLog;
-import com.slamzoom.android.common.utils.FileUtils;
+import com.slamzoom.android.common.files.FileType;
+import com.slamzoom.android.common.logging.SzLog;
+import com.slamzoom.android.common.files.FileUtils;
 import com.slamzoom.android.mediacreation.MediaCreatorCallback;
 import com.slamzoom.android.mediacreation.MediaEncoder;
-import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
+import com.slamzoom.android.mediacreation.StopwatchTracker;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -36,9 +35,9 @@ public class VideoEncoder extends MediaEncoder<VideoFrame> {
   private static final String EXECUTING_FFMPEG = "executing ffmpeg";
 
   private FFmpeg mFFmpeg;
-  private MultiPhaseStopwatch mTracker;
+  private StopwatchTracker mTracker;
 
-  public void setTracker(MultiPhaseStopwatch tracker) {
+  public void setTracker(StopwatchTracker tracker) {
     mTracker = tracker;
   }
 

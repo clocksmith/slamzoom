@@ -11,8 +11,8 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.slamzoom.android.R;
-import com.slamzoom.android.common.SzLog;
-import com.slamzoom.android.common.bus.BusProvider;
+import com.slamzoom.android.common.logging.SzLog;
+import com.slamzoom.android.common.BusProvider;
 import com.slamzoom.android.effects.Effects;
 import com.slamzoom.android.mediacreation.gif.GifService;
 import com.squareup.otto.Subscribe;

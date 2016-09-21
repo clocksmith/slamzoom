@@ -12,11 +12,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.slamzoom.android.R;
-import com.slamzoom.android.common.FontLoader;
-import com.slamzoom.android.common.bus.BusProvider;
-import com.slamzoom.android.common.utils.AnimationUtils;
-import com.slamzoom.android.common.SzAnalytics;
-import com.slamzoom.android.common.SzLog;
+import com.slamzoom.android.common.FontProvider;
+import com.slamzoom.android.common.BusProvider;
+import com.slamzoom.android.common.ui.AnimationUtils;
+import com.slamzoom.android.common.logging.SzAnalytics;
+import com.slamzoom.android.common.logging.SzLog;
 
 import java.io.IOException;
 
@@ -79,8 +79,8 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
         itemView.getContext().getResources().getDimensionPixelSize(R.dimen.effect_chooser_tab_height_expanded);
     mTabExpanded = false;
 
-    mNameTextView.setTypeface(FontLoader.getInstance().getDefaultFont());
-    mPackNameTextView.setTypeface(FontLoader.getInstance().getTitleFont());
+    mNameTextView.setTypeface(FontProvider.getInstance().getDefaultFont());
+    mPackNameTextView.setTypeface(FontProvider.getInstance().getTitleFont());
   }
 
   public void rebind(final EffectModel model, boolean inDialog) {

@@ -2,7 +2,6 @@ package com.slamzoom.android.ui.create.hotspotchooser;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Rect;
@@ -21,19 +20,17 @@ import android.widget.TextView;
 
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.common.FontLoader;
-import com.slamzoom.android.common.LifecycleLoggingActivity;
-import com.slamzoom.android.common.SzAnalytics;
-import com.slamzoom.android.common.SzLog;
-import com.slamzoom.android.common.preferences.Preferences;
-import com.slamzoom.android.common.utils.BitmapUtils;
-import com.slamzoom.android.common.utils.DebugUtils;
-import com.slamzoom.android.common.utils.UriUtils;
-import com.slamzoom.android.mediacreation.BitmapSet;
+import com.slamzoom.android.common.FontProvider;
+import com.slamzoom.android.common.activities.LifecycleLoggingActivity;
+import com.slamzoom.android.common.logging.SzAnalytics;
+import com.slamzoom.android.common.settings.Preferences;
+import com.slamzoom.android.common.bitmaps.BitmapUtils;
+import com.slamzoom.android.common.BuildFlags;
+import com.slamzoom.android.common.data.UriUtils;
+import com.slamzoom.android.common.bitmaps.BitmapSet;
 import com.slamzoom.android.ui.create.CreateActivity;
 
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -59,9 +56,9 @@ public class HotspotChooserActivity extends LifecycleLoggingActivity {
     setContentView(R.layout.activity_hotspot_chooser);
     ButterKnife.bind(this);
 
-    mTitle.setTypeface(FontLoader.getInstance().getTitleFont());
-    mHint.setTypeface(FontLoader.getInstance().getDefaultFont());
-    mDoneButton.setTypeface(FontLoader.getInstance().getDefaultFont());
+    mTitle.setTypeface(FontProvider.getInstance().getTitleFont());
+    mHint.setTypeface(FontProvider.getInstance().getDefaultFont());
+    mDoneButton.setTypeface(FontProvider.getInstance().getDefaultFont());
 
     final Uri uri = getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
 
@@ -77,10 +74,10 @@ public class HotspotChooserActivity extends LifecycleLoggingActivity {
         mBitmap = BitmapUtils.readScaledBitmap(uri, this.getContentResolver());
       }
 
-      if (DebugUtils.USE_PREDEFINED_HOTSPOT) {
-        Rect debugCropRect = DebugUtils.getDebugRect(mBitmap);
+      if (BuildFlags.USE_PREDEFINED_HOTSPOT) {
+        RectF debugCropRect = BuildFlags.DEBUG_RECT;
         Log.d(TAG, "using debug cropRect: " + debugCropRect.toString());
-        finishWithCropRect(debugCropRect, uri);
+        finishWithCropRectF(debugCropRect, uri);
       } else {
         mImageCropView.setAspectRatio(mBitmap.getWidth(), mBitmap.getHeight());
         mImageCropView.setImageBitmap(mBitmap, new Matrix(), 1f, 100f);
@@ -119,6 +116,23 @@ public class HotspotChooserActivity extends LifecycleLoggingActivity {
         new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
   }
 
+  private void finishWithCropRectF(RectF hotspot, Uri imageUri) {
+    if (getCallingActivity() != null &&
+        getCallingActivity().getClassName().equals(CreateActivity.class.getCanonicalName())) {
+      Intent returnIntent = new Intent();
+      returnIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+      returnIntent.putExtra(Constants.NORMALIZED_HOTSPOT, hotspot);
+      setResult(RESULT_OK, returnIntent);
+      finish();
+    } else {
+      Intent intent = new Intent(HotspotChooserActivity.this, CreateActivity.class);
+      intent.putExtra(Intent.EXTRA_STREAM, imageUri);
+      intent.putExtra(Constants.NORMALIZED_HOTSPOT, hotspot);
+      startActivity(intent);
+    }
+  }
+
+
   private void finishWithCropRect(Rect hotspot, Uri imageUri) {
     RectF normalizedHotspot = new RectF(
         (float) hotspot.left / mBitmap.getWidth(),
@@ -126,19 +140,7 @@ public class HotspotChooserActivity extends LifecycleLoggingActivity {
         (float) hotspot.right / mBitmap.getWidth(),
         (float) hotspot.bottom / mBitmap.getHeight());
 
-    if (getCallingActivity() != null &&
-        getCallingActivity().getClassName().equals(CreateActivity.class.getCanonicalName())) {
-      Intent returnIntent = new Intent();
-      returnIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
-      returnIntent.putExtra(Constants.NORMALIZED_HOTSPOT, normalizedHotspot);
-      setResult(RESULT_OK, returnIntent);
-      finish();
-    } else {
-      Intent intent = new Intent(HotspotChooserActivity.this, CreateActivity.class);
-      intent.putExtra(Intent.EXTRA_STREAM, imageUri);
-      intent.putExtra(Constants.NORMALIZED_HOTSPOT, normalizedHotspot);
-      startActivity(intent);
-    }
+   finishWithCropRectF(normalizedHotspot, imageUri);
   }
 
   @Override

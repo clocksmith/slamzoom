@@ -4,9 +4,9 @@ import android.content.Context;
 
 import com.google.common.base.Objects;
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.common.SzLog;
+import com.slamzoom.android.common.logging.SzLog;
 import com.slamzoom.android.mediacreation.MediaConfig;
-import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
+import com.slamzoom.android.mediacreation.StopwatchTracker;
 
 /**
  * Created by clocksmith on 6/12/16.
@@ -21,7 +21,7 @@ public class GifCreatorManager implements Comparable {
   private GifCreatorCallback mCallback;
 
   private int mGifSize;
-  private MultiPhaseStopwatch mTracker;
+  private StopwatchTracker mTracker;
 
   private GifCreator mGifCreator;
   private boolean mIsRunning;
@@ -40,7 +40,7 @@ public class GifCreatorManager implements Comparable {
     mCallback = callback;
 
     mGifSize = thumbnail ? Constants.THUMBNAIL_SIZE_PX : Constants.MAIN_SIZE_PX;
-    mTracker = new MultiPhaseStopwatch();
+    mTracker = new StopwatchTracker();
   }
 
   public void start() {
@@ -85,7 +85,7 @@ public class GifCreatorManager implements Comparable {
     return mMediaConfig.endText;
   }
 
-  public MultiPhaseStopwatch getTracker() {
+  public StopwatchTracker getTracker() {
     return mTracker;
   }
 

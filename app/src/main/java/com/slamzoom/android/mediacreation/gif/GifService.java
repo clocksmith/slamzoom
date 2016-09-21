@@ -12,11 +12,11 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Queues;
-import com.slamzoom.android.common.bus.BusProvider;
-import com.slamzoom.android.common.utils.DebugUtils;
-import com.slamzoom.android.common.SzAnalytics;
-import com.slamzoom.android.common.SzLog;
-import com.slamzoom.android.common.utils.StringUtils;
+import com.slamzoom.android.common.BusProvider;
+import com.slamzoom.android.common.BuildFlags;
+import com.slamzoom.android.common.logging.SzAnalytics;
+import com.slamzoom.android.common.logging.SzLog;
+import com.slamzoom.android.common.data.StringUtils;
 import com.slamzoom.android.effects.Effects;
 import com.slamzoom.android.mediacreation.MediaConfig;
 import com.slamzoom.android.ui.create.effectchooser.EffectThumbnailViewHolder;
@@ -68,10 +68,10 @@ public class GifService extends Service {
     SzLog.f(TAG, "onCreate()");
 
     mMainGifCache = CacheBuilder.newBuilder()
-        .maximumSize(DebugUtils.SKIP_GIF_CACHE ? 0 : MAIN_CACHE_SIZE)
+        .maximumSize(BuildFlags.SKIP_GIF_CACHE ? 0 : MAIN_CACHE_SIZE)
         .build();
     mThumbnailGifCache = CacheBuilder.newBuilder()
-        .maximumSize(DebugUtils.SKIP_GIF_CACHE ? 0 : THUMBNAIL_CACHE_SIZE)
+        .maximumSize(BuildFlags.SKIP_GIF_CACHE ? 0 : THUMBNAIL_CACHE_SIZE)
         .build();
 
     mThumbnailGifCreatorsBackQueue = Queues.newPriorityBlockingQueue();
@@ -109,7 +109,7 @@ public class GifService extends Service {
   public void requestThumbnailGifs(List<MediaConfig> configs) {
     clear();
 
-    if (!DebugUtils.SKIP_GENERATE_THUMBNAIL_GIFS) {
+    if (!BuildFlags.SKIP_GENERATE_THUMBNAIL_GIFS) {
       for (int i = 0; i < configs.size(); i++) {
         mThumbnailGifCreatorsBackQueue.add(getManager(configs.get(i), mThumbnailGifCache, true, i));
       }

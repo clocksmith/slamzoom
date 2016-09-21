@@ -6,8 +6,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.slamzoom.android.common.utils.DebugUtils;
-import com.slamzoom.android.effects.interpolation.transform.scaletranslate.PopInConfig;
+import com.slamzoom.android.common.BuildFlags;
 import com.slamzoom.android.effects.packs.EffectPack;
 import com.slamzoom.android.effects.packs.distort.BlockheadEffectConfig;
 import com.slamzoom.android.effects.packs.distort.BulgerinoEffectConfig;
@@ -164,7 +163,7 @@ public class Effects {
   }
 
   public static ImmutableList<EffectTemplate> listEffectTemplates() {
-    return DebugUtils.USE_DEBUG_EFFECTS ?
+    return BuildFlags.USE_DEBUG_EFFECTS ?
         DEBUG_EFFECT_TEMPLATES_FROM_PACKS : EFFECT_TEMPLATES_FROM_PACKS_NEW_STRATEGY;
   }
 

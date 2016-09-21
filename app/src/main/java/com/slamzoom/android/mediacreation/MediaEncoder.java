@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.slamzoom.android.common.SzLog;
+import com.slamzoom.android.common.logging.SzLog;
 
 import java.util.List;
 import java.util.Set;

@@ -2,8 +2,8 @@ package com.slamzoom.android.mediacreation.gif;
 
 import android.graphics.Bitmap;
 
-import com.slamzoom.android.common.utils.BitmapUtils;
-import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
+import com.slamzoom.android.common.bitmaps.BitmapUtils;
+import com.slamzoom.android.mediacreation.StopwatchTracker;
 import com.slamzoom.android.mediacreation.MediaFrame;
 
 import java.nio.ByteBuffer;
@@ -16,7 +16,7 @@ public class GifFrame extends MediaFrame {
 
   public byte[] pixelBytes;
 
-  public GifFrame(Bitmap bitmap, int delayMillis, MultiPhaseStopwatch tracker) {
+  public GifFrame(Bitmap bitmap, int delayMillis, StopwatchTracker tracker) {
     super(bitmap, delayMillis);
 
     int[] pixelInts = new int[width * height];

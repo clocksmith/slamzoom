@@ -43,27 +43,26 @@ import com.google.common.collect.Queues;
 import com.slamzoom.android.R;
 import com.slamzoom.android.billing.GetBuyIntentCallback;
 import com.slamzoom.android.billing.GetPurchasedPacksCallback;
-import com.slamzoom.android.billing.IabUtils;
-import com.slamzoom.android.common.BackInterceptingEditText;
+import com.slamzoom.android.billing.IabHelper;
+import com.slamzoom.android.common.widgets.BackInterceptingEditText;
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.common.FileType;
-import com.slamzoom.android.common.FontLoader;
-import com.slamzoom.android.common.LifecycleLoggingActivity;
-import com.slamzoom.android.common.preferences.Preferences;
-import com.slamzoom.android.common.utils.DebugUtils;
-import com.slamzoom.android.common.utils.FileUtils;
-import com.slamzoom.android.common.bus.BusProvider;
-import com.slamzoom.android.common.utils.AnimationUtils;
-import com.slamzoom.android.common.utils.KeyboardUtils;
-import com.slamzoom.android.common.SzAnalytics;
-import com.slamzoom.android.common.SzLog;
-import com.slamzoom.android.common.utils.PermissionUtils;
-import com.slamzoom.android.common.utils.SnackbarUtils;
+import com.slamzoom.android.common.files.FileType;
+import com.slamzoom.android.common.FontProvider;
+import com.slamzoom.android.common.activities.LifecycleLoggingActivity;
+import com.slamzoom.android.common.BuildFlags;
+import com.slamzoom.android.common.files.FileUtils;
+import com.slamzoom.android.common.BusProvider;
+import com.slamzoom.android.common.ui.AnimationUtils;
+import com.slamzoom.android.common.ui.KeyboardUtils;
+import com.slamzoom.android.common.logging.SzAnalytics;
+import com.slamzoom.android.common.logging.SzLog;
+import com.slamzoom.android.common.settings.Permissions;
+import com.slamzoom.android.common.ui.SnackbarPresenter;
 import com.slamzoom.android.effects.Effects;
 import com.slamzoom.android.effects.EffectTemplate;
-import com.slamzoom.android.mediacreation.BitmapSet;
+import com.slamzoom.android.common.bitmaps.BitmapSet;
 import com.slamzoom.android.mediacreation.MediaConfig;
-import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
+import com.slamzoom.android.mediacreation.StopwatchTracker;
 import com.slamzoom.android.mediacreation.gif.GifCreator;
 import com.slamzoom.android.mediacreation.gif.GifService;
 import com.slamzoom.android.mediacreation.video.VideoCreator;
@@ -267,7 +266,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
   @Override
   public boolean onPrepareOptionsMenu(Menu menu) {
-    menu.findItem(R.id.action_add_text).setVisible(DebugUtils.ENABLED_ADD_TEXT && !mIsAddTextViewShowing);
+    menu.findItem(R.id.action_add_text).setVisible(BuildFlags.ENABLED_ADD_TEXT && !mIsAddTextViewShowing);
     menu.findItem(R.id.action_change_hotspot).setVisible(!mIsAddTextViewShowing);
     menu.findItem(R.id.action_change_image).setVisible(!mIsAddTextViewShowing);
     menu.findItem(R.id.action_share).setVisible(!mIsAddTextViewShowing);
@@ -349,7 +348,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
   @Subscribe
   public void on(final BuyToUnlockDialogView.OnBuyClickedEvent event) {
-    IabUtils.getBuyIntentByPack(event.packName, mBillingService, new GetBuyIntentCallback() {
+    IabHelper.getBuyIntentByPack(event.packName, mBillingService, new GetBuyIntentCallback() {
       @Override
       public void onSuccess(PendingIntent buyIntent) {
         try {
@@ -402,7 +401,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     getSupportActionBar().setDisplayShowTitleEnabled(false);
-    mToolbarTitle.setTypeface(FontLoader.getInstance().getTitleFont());
+    mToolbarTitle.setTypeface(FontProvider.getInstance().getTitleFont());
     showAddTextView(false);
 
 //    SpannableString ss = new SpannableString("abc");
@@ -528,10 +527,10 @@ public class CreateActivity extends LifecycleLoggingActivity {
   private void handleExportPressed() {
     EffectModel effectModel = mEffectChooser.getEffectModel(mSelectedEffectName);
     if (effectModel == null) {
-      SnackbarUtils.showErrorMessage(mGifViewCoordinatorLayout, "Choose an effect first!");
+      SnackbarPresenter.showErrorMessage(mGifViewCoordinatorLayout, "Choose an effect first!");
       // TODO(clocksmith): tell the user they must have an effect, or just disable share button.
     } else if (mGeneratingGif) {
-      SnackbarUtils.showErrorMessage(mGifViewCoordinatorLayout, "Please wait till gif preview is finished!");
+      SnackbarPresenter.showErrorMessage(mGifViewCoordinatorLayout, "Please wait till gif preview is finished!");
     } else if (!effectModel.isLocked()) {
       exportCurrentEffect();
     } else {
@@ -642,7 +641,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
   }
 
   private void updatePurchasedPackNamesAndEffectModels(final Runnable onDone) {
-    IabUtils.getPurchasedPackNames(mBillingService, new GetPurchasedPacksCallback() {
+    IabHelper.getPurchasedPackNames(mBillingService, new GetPurchasedPacksCallback() {
       @Override
       public void onSuccess(List<String> packNames) {
         mPurchasedPackNames = packNames;
@@ -782,8 +781,8 @@ public class CreateActivity extends LifecycleLoggingActivity {
   }
 
   private void exportGifAsync() {
-    if (PermissionUtils.checkReadwriteExternalStorage(this)) {
-      PermissionUtils.requestReadWriteExternalStorage(this);
+    if (Permissions.checkReadwriteExternalStorage(this)) {
+      Permissions.requestReadWriteExternalStorage(this);
     } else {
       mExportGifTask = new ExportGifTask();
       mExportGifTask.execute();
@@ -791,11 +790,11 @@ public class CreateActivity extends LifecycleLoggingActivity {
   }
 
   private void exportVideoAsync() {
-    if (PermissionUtils.checkReadwriteExternalStorage(this)) {
-      PermissionUtils.requestReadWriteExternalStorage(this);
+    if (Permissions.checkReadwriteExternalStorage(this)) {
+      Permissions.requestReadWriteExternalStorage(this);
     } else {
       showShareProgressDialog("Preparing video...");
-      final MultiPhaseStopwatch tracker = new MultiPhaseStopwatch();
+      final StopwatchTracker tracker = new StopwatchTracker();
       mVideoCreator = new VideoCreator(this, getMainMediaConfig(), tracker);
       mVideoCreator.createAsync(new VideoCreatorCallback() {
         @Override
@@ -828,7 +827,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
                 startActivity(Intent.createChooser(baseIntent, "Share via"));
               }
             } else if (mSelectedExportType == ExportType.SAVE) {
-              SnackbarUtils.showSuccessMessage(mGifViewCoordinatorLayout, "Video Saved!");
+              SnackbarPresenter.showSuccessMessage(mGifViewCoordinatorLayout, "Video Saved!");
             }
           }
           // TODO(clocksmith): handle null
@@ -983,10 +982,10 @@ public class CreateActivity extends LifecycleLoggingActivity {
             startActivity(Intent.createChooser(mBaseIntent, "Share via"));
           }
         } else {
-          SnackbarUtils.showSuccessMessage(mGifViewCoordinatorLayout, "GIF Saved!");
+          SnackbarPresenter.showSuccessMessage(mGifViewCoordinatorLayout, "GIF Saved!");
         }
       } else {
-        SnackbarUtils.showErrorMessage(mGifViewCoordinatorLayout, "Unable to save GIF");
+        SnackbarPresenter.showErrorMessage(mGifViewCoordinatorLayout, "Unable to save GIF");
       }
     }
   }

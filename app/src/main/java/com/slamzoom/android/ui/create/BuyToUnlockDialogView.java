@@ -23,10 +23,10 @@ import android.widget.TextView;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.slamzoom.android.R;
-import com.slamzoom.android.common.FontLoader;
-import com.slamzoom.android.common.SzLog;
-import com.slamzoom.android.common.bus.BusProvider;
-import com.slamzoom.android.common.utils.AnimationUtils;
+import com.slamzoom.android.common.FontProvider;
+import com.slamzoom.android.common.logging.SzLog;
+import com.slamzoom.android.common.BusProvider;
+import com.slamzoom.android.common.ui.AnimationUtils;
 import com.slamzoom.android.effects.EffectColors;
 import com.slamzoom.android.effects.packs.EffectPack;
 import com.slamzoom.android.effects.Effects;
@@ -65,7 +65,7 @@ public class BuyToUnlockDialogView extends LinearLayout {
     EffectPack pack = Effects.getPack(packName);
     EffectTemplate effect = Effects.getEffectTemplate(effectName);
 
-    mMessage.setTypeface(FontLoader.getInstance().getDefaultFont());
+    mMessage.setTypeface(FontProvider.getInstance().getDefaultFont());
 
     if (pack == null) {
       SzLog.e(TAG, "effectPack: " + packName + " is null!");
@@ -86,7 +86,7 @@ public class BuyToUnlockDialogView extends LinearLayout {
           packEnd,
           Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
       messageSpannable.setSpan(
-          new CustomTypefaceSpan("sans-serif", FontLoader.getInstance().getTitleFont()),
+          new CustomTypefaceSpan("sans-serif", FontProvider.getInstance().getTitleFont()),
           packStart,
           packEnd,
           Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);

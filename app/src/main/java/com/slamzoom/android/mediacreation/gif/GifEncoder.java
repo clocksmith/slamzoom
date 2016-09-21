@@ -4,10 +4,10 @@ import android.os.AsyncTask;
 
 import com.google.common.collect.Lists;
 import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.common.executor.ExecutorProvider;
-import com.slamzoom.android.common.SzLog;
+import com.slamzoom.android.common.threads.ExecutorProvider;
+import com.slamzoom.android.common.logging.SzLog;
 import com.slamzoom.android.mediacreation.MediaCreatorCallback;
-import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
+import com.slamzoom.android.mediacreation.StopwatchTracker;
 import com.slamzoom.android.mediacreation.MediaEncoder;
 
 import java.io.ByteArrayOutputStream;
@@ -44,7 +44,7 @@ public class GifEncoder extends MediaEncoder<GifFrame> {
 
   private ProgressUpdateListener mProgressUpdateListener;
 
-  private MultiPhaseStopwatch mTracker;
+  private StopwatchTracker mTracker;
 
   public GifEncoder() {
     this(Constants.DEFAULT_USE_LOCAL_COLOR_PALETTE);
@@ -56,7 +56,7 @@ public class GifEncoder extends MediaEncoder<GifFrame> {
     mUserLocalColorTables = useLocalColorTables;
   }
 
-  public void setTracker(MultiPhaseStopwatch tracker) {
+  public void setTracker(StopwatchTracker tracker) {
     mTracker = tracker;
   }
 

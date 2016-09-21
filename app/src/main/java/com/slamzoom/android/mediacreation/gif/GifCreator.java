@@ -3,10 +3,10 @@ package com.slamzoom.android.mediacreation.gif;
 import android.content.Context;
 import android.graphics.Bitmap;
 
-import com.slamzoom.android.common.bus.BusProvider;
+import com.slamzoom.android.common.BusProvider;
 import com.slamzoom.android.mediacreation.MediaConfig;
 import com.slamzoom.android.mediacreation.MediaCreator;
-import com.slamzoom.android.mediacreation.MultiPhaseStopwatch;
+import com.slamzoom.android.mediacreation.StopwatchTracker;
 
 /**
  * Created by clocksmith on 3/25/16.
@@ -33,7 +33,7 @@ public class GifCreator extends MediaCreator implements GifEncoder.ProgressUpdat
   public GifCreator(
       Context context,
       MediaConfig mediaConfig,
-      MultiPhaseStopwatch tracker) {
+      StopwatchTracker tracker) {
     super(context, mediaConfig, tracker);
   }
 

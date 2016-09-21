@@ -3,7 +3,7 @@ package com.slamzoom.android;
 import android.app.Application;
 import android.content.Context;
 
-import com.slamzoom.android.common.FontLoader;
+import com.slamzoom.android.common.FontProvider;
 import com.slamzoom.android.effects.Effects;
 
 /**
@@ -18,7 +18,7 @@ public class SzApp extends Application {
     Effects.init(this.getApplicationContext());
 
     // Init the fonts.
-    FontLoader.getInstance().init(getAssets());
+    FontProvider.getInstance().init(getAssets());
 
     CONTEXT = this.getApplicationContext();
     PACKAGE_NAME = this.getPackageName();

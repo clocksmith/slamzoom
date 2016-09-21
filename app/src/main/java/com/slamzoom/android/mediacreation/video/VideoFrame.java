@@ -4,8 +4,7 @@ import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.util.Log;
 
-import com.slamzoom.android.common.SzLog;
-import com.slamzoom.android.common.utils.BitmapUtils;
+import com.slamzoom.android.common.bitmaps.BitmapUtils;
 import com.slamzoom.android.mediacreation.MediaFrame;
 
 import java.io.File;

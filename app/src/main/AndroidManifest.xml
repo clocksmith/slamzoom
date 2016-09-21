@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.slamzoom.android" >
+    package="com.slamzoom.android" >
 
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -16,6 +16,7 @@
       android:supportsRtl="true"
       android:theme="@style/SlamzoomTheme"
       android:name=".SzApp">
+
     <!-- Activities -->
 
     <activity
@@ -23,8 +24,8 @@
         android:theme="@style/SplashTheme"
         android:screenOrientation="portrait">
       <intent-filter>
-        <action android:name="android.intent.action.MAIN" />
-        <category android:name="android.intent.category.LAUNCHER" />
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
 
@@ -50,15 +51,15 @@
         android:screenOrientation="portrait"
         android:launchMode="singleTop">
       <intent-filter>
-        <action android:name="android.intent.action.SEND" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <data android:mimeType="image/*" />
+        <action android:name="android.intent.action.SEND"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:mimeType="image/*"/>
       </intent-filter>
     </activity>
 
     <!-- Services -->
 
-    <service android:name=".mediacreation.gif.GifService" />
+    <service android:name=".mediacreation.gif.GifService"/>
 
     <!-- Receivers -->
 
