@@ -27,7 +27,7 @@ public class DebugUtils {
   // Superuser
   public static final boolean UNLOCK_UNPAID_PACKS = false;
   public static final boolean ENABLED_ADD_TEXT = false;
-  public static final boolean SKIP_WATERMARK = true;
+  public static final boolean SKIP_WATERMARK = false;
   public static final boolean USE_MONA_TEMPLATE = false;
 
   // Effects
@@ -48,7 +48,7 @@ public class DebugUtils {
   public static final boolean SAVE_SCALED_FRAMES_AS_PNGS = false;
   public static final boolean SAVE_FILTERED_FRAMES_AS_PNGS = false;
 
-  // Static rectangle params
+  // Static rectangle params TODO(clocksmith): Can use relative rect now.
   public static final float DEBUG_RECT_LEFT_FRACTION = 0.33f;
   public static final float DEBUG_RECT_TOP_FRACTION = 0.22f;
   public static final float DEBUG_RECT_SIZE_FRACTION = 0.3333f;

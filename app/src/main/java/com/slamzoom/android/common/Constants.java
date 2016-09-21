@@ -40,7 +40,7 @@ public class Constants {
   public static final float DEFAULT_END_PAUSE_SECONDS = 2;
   public static final int MAIN_FPS = 24;
   public static final int THUMBNAIL_FPS = 16;
-  public static final int MAIN_SIZE_PX = 640; // must be even
+  public static final int MAIN_SIZE_PX = 320; // must be even
   public static final int THUMBNAIL_SIZE_PX = 120; // must be even
   // TODO(clocksmith): change this value, make it easier to config.
   public static final int NUM_BITMAPS_IN_SET = 5; // 80, 160, 320, 640, 1280

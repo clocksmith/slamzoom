@@ -134,7 +134,7 @@ public class StartActivity extends LifecycleLoggingActivity {
               mBackgroundVideoView.getLayoutParams().height = (int) (screenWidth * videoAspect);
               ((ViewGroup.MarginLayoutParams) mBackgroundVideoView.getLayoutParams()).setMargins(
                   0,
-                  screenHeight - (mBackgroundVideoView.getLayoutParams().height - screenHeight) / 2,
+                    screenHeight - (mBackgroundVideoView.getLayoutParams().height - screenHeight) / 2,
                   0,
                   0
               );
