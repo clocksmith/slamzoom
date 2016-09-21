@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Created by clocksmith on 3/7/16.
@@ -59,6 +60,28 @@ public class BitmapUtils {
     } else {
       throw new FileNotFoundException("Could not load bitmap for path: " + uri.toString());
     }
+  }
+
+  public static Bitmap readScaledBitmap(InputStream boundsStream, InputStream finalStream, int maxDimen)
+      throws IOException {
+    BitmapFactory.Options options = new BitmapFactory.Options();
+    options.inJustDecodeBounds = true;
+    BitmapFactory.decodeStream(boundsStream, null, options);
+    boundsStream.close();
+    int selectedBitmapWidth = options.outWidth;
+    int selectedBitmapHeight = options.outHeight;
+    float aspectRatio = (float) selectedBitmapWidth / selectedBitmapHeight;
+    int scaledSelectedBitmapWidth =
+        aspectRatio > 1 ? maxDimen : Math.round(maxDimen * aspectRatio);
+    int scaledSelectedBitmapHeight =
+        aspectRatio > 1 ? Math.round(maxDimen / aspectRatio) : maxDimen;
+    options.inSampleSize =
+        BitmapUtils.calculateInSampleSize(options, scaledSelectedBitmapWidth, scaledSelectedBitmapHeight);;
+    options.inJustDecodeBounds = false;
+    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+    Bitmap bitmap = BitmapFactory.decodeStream(finalStream, null, options);
+    finalStream.close();
+    return bitmap;
   }
 
   // TODO(clocksmith): trying to make this better than Bitmap.createScaledBitmap,

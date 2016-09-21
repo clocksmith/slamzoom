@@ -103,18 +103,8 @@ public class SzAnalytics {
       return this;
     }
 
-    public Event withItemCategory(String itemCategory) {
-      mBundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, itemCategory);
-      return this;
-    }
-
     public Event withItemId(String itemId) {
-      mBundle.putString(FirebaseAnalytics.Param.ITEM_ID, itemId);
-      return this;
-    }
-
-    public Event withItemName(String itemName) {
-      mBundle.putString(FirebaseAnalytics.Param.ITEM_NAME, itemName);
+      mBundle.putString(FirebaseAnalytics.Param.ITEM_ID, reduceStringForFirebase(itemId));
       return this;
     }
 
@@ -122,10 +112,7 @@ public class SzAnalytics {
 
     public Event withPackageName(String packageName) {
       // Firebase apparently fails silently here if we don't do this. Bad.
-      if (packageName.length() > 36) {
-        packageName = packageName.substring(0, 36);
-      }
-      mBundle.putString(CustomParam.PACKAGE_NAME, packageName);
+      mBundle.putString(CustomParam.PACKAGE_NAME, reduceStringForFirebase(packageName));
       return this;
     }
 
@@ -159,6 +146,13 @@ public class SzAnalytics {
         bundleStrings.add(key + ": " + value);
       }
       SzLog.f(TAG, "EVENT: " + mEvent + ":\n" + Joiner.on("\n").join(bundleStrings));
+    }
+
+    private String reduceStringForFirebase(String string) {
+      if (string.length() > 36) {
+        string = string.substring(0, 36);
+      }
+      return string;
     }
   }
 }

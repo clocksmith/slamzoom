@@ -18,33 +18,43 @@
       android:name=".SzApp">
     <!-- Activities -->
 
-    <activity android:name=".ui.start.SplashActivity"
-              android:theme="@style/SplashTheme"
-              android:screenOrientation="portrait">
+    <activity
+        android:name=".ui.start.SplashActivity"
+        android:theme="@style/SplashTheme"
+        android:screenOrientation="portrait">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
-    
-    <activity android:name=".ui.start.StartActivity"
-              android:theme="@style/Theme.AppCompat.NoActionBar"
-              android:screenOrientation="portrait">
+
+    <activity
+        android:name=".ui.start.TutorialActivity"
+        android:theme="@style/Theme.AppCompat.NoActionBar"
+        android:screenOrientation="portrait">
+    </activity>
+
+    <activity
+        android:name=".ui.start.StartActivity"
+        android:theme="@style/Theme.AppCompat.NoActionBar"
+        android:screenOrientation="portrait">
     </activity>
 
     <activity
         android:name=".ui.create.CreateActivity"
-        android:screenOrientation="portrait">
+        android:screenOrientation="portrait"
+        android:launchMode="singleTop">
       <intent-filter>
-        <action android:name="android.intent.action.CHOOSER" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <data android:mimeType="image/*" />
+        <action android:name="android.intent.action.CHOOSER"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:mimeType="image/*"/>
       </intent-filter>
     </activity>
 
     <activity
         android:name=".ui.create.hotspotchooser.HotspotChooserActivity"
-        android:screenOrientation="portrait">
+        android:screenOrientation="portrait"
+        android:launchMode="singleTop">
       <intent-filter>
         <action android:name="android.intent.action.SEND" />
         <category android:name="android.intent.category.DEFAULT" />

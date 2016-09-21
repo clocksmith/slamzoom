@@ -1,10 +1,19 @@
 <resources>
-  <string name="app_name">SlamZoom</string>
-  <string name="start_slamzoom">tap anywhere\n to begin</string>
-  <string name="replay_intro">replay intro</string>
+  <string name="app_name">slamzoom</string>
 
-  <string name="hotspot_chooser_title">pinch to zoom</string>
-  <string name="hotspot_chooser_hint">tip: faces make great hotspots</string>
+  <string name="tap_anywhere_to_begin">tap anywhere to begin</string>
+
+  <string name="create_from_template">START WITH MONA LISA</string>
+  <string name="create_from_custom">CREATE YOUR OWN</string>
+
+  <string name="privacy_policy_link"><u>privacy policy</u></string>
+  <string name="privacy_policy_title">Privacy Policy</string>
+  <string name="terms_of_use_link"><u>terms of use</u></string>
+  <string name="terms_of_use_title">Terms of Use</string>
+  <string name="tutorial_link"><u>tutorial</u></string>
+
+  <string name="hotspot_chooser_title">Hotspot Chooser</string>
+  <string name="hotspot_chooser_hint">tip: zoom in on a face</string>
 
   <string name="zero_state_message">select an effect</string>
 

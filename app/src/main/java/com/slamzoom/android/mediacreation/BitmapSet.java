@@ -4,8 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.util.Log;
 
-import com.slamzoom.android.R;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.SzLog;
 import com.slamzoom.android.common.utils.BitmapUtils;
@@ -13,10 +13,13 @@ import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.UriUtils;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
  * Created by clocksmith on 9/15/16.
+ *
+ * Set of the same bitmaps of various sizes to try to optimize the gif creation process.
  */
 public class BitmapSet {
   private static final String TAG = BitmapSet.class.getSimpleName();
@@ -26,29 +29,27 @@ public class BitmapSet {
   private float mAspectRatio;
 
   public BitmapSet(Context context, Uri imageUri, int startSize) {
-    // Special hack case for mona lisa.
-    if (imageUri.toString().equals("mona")) {
-      try {
-        InputStream stream =
-            context.getContentResolver().openInputStream(UriUtils.getUriFromRes(context, R.drawable.mona_lisa_sz));
-        mBitmaps = new Bitmap[1];
-        mBitmaps[0] = BitmapFactory.decodeStream(stream);
-        mAspectRatio = (float) mBitmaps[0].getWidth() / mBitmaps[0].getHeight();
-        mSizes = new int[1];
-        mSizes[0] = mBitmaps[0].getHeight();
-      } catch (FileNotFoundException e) {
-        SzLog.e(TAG, "Could not read in mona lisa", e);
-      }
-      return;
-    }
-
     int size = startSize;
     for (int i = 0; i < Constants.NUM_BITMAPS_IN_SET; i++) {
       try {
-        Bitmap bitmap = BitmapUtils.readScaledBitmap(imageUri, context.getContentResolver(), size);
+        Bitmap bitmap;
+        if (UriUtils.isResUri(imageUri)) {
+          try {
+            InputStream boundsStream = context.getContentResolver().openInputStream(imageUri);
+            InputStream finalStream = context.getContentResolver().openInputStream(imageUri);
+            bitmap = BitmapUtils.readScaledBitmap(boundsStream, finalStream, size);
+          } catch (Exception e) {
+            SzLog.e(TAG, "Cannot read in stream", e);
+            return;
+          }
+        } else {
+          bitmap = BitmapUtils.readScaledBitmap(imageUri, context.getContentResolver(), size);
+        }
+
         if (mAspectRatio == 0) {
           mAspectRatio = (float) bitmap.getWidth() / bitmap.getHeight();
         }
+
         mSizes[i] = Math.max(bitmap.getWidth(), bitmap.getHeight());
         mBitmaps[i] = bitmap;
 
@@ -62,11 +63,10 @@ public class BitmapSet {
     }
   }
 
-  public Bitmap getForNormalizedScaled(float normScale) {
-    return get((int) (mSizes[mSizes.length - 1] * normScale));
-  }
 
   public Bitmap get(int targetSize) {
+    // TODO(clocksmith): fine tune this multiplier (should be 1?)
+    targetSize *= 2;
     if (mBitmaps == null || mBitmaps.length == 0 || mSizes == null || mSizes.length == 0) {
       return null;
     } else {

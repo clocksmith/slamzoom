@@ -3,14 +3,20 @@ package com.slamzoom.android.ui.create.hotspotchooser;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.slamzoom.android.R;
@@ -19,10 +25,10 @@ import com.slamzoom.android.common.FontLoader;
 import com.slamzoom.android.common.LifecycleLoggingActivity;
 import com.slamzoom.android.common.SzAnalytics;
 import com.slamzoom.android.common.SzLog;
+import com.slamzoom.android.common.preferences.Preferences;
 import com.slamzoom.android.common.utils.BitmapUtils;
 import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.UriUtils;
-import com.slamzoom.android.interpolators.LinearInterpolator;
 import com.slamzoom.android.mediacreation.BitmapSet;
 import com.slamzoom.android.ui.create.CreateActivity;
 
@@ -40,6 +46,7 @@ public class HotspotChooserActivity extends LifecycleLoggingActivity {
 
   @BindView(R.id.title) TextView mTitle;
   @BindView(R.id.hint) TextView mHint;
+  @BindView(R.id.imageCropViewContainer) FrameLayout mImageCropViewContainer;
   @BindView(R.id.imageCropView) CropRectProvidingImageCropView mImageCropView;
   @BindView(R.id.doneButton) Button mDoneButton;
 
@@ -63,13 +70,9 @@ public class HotspotChooserActivity extends LifecycleLoggingActivity {
         .log(this);
 
     try {
-      if (uri.toString().equals("mona")) {
-        try {
-          InputStream stream = getContentResolver().openInputStream(UriUtils.getUriFromRes(this, R.drawable.mona_lisa_sz));
-          mBitmap = BitmapFactory.decodeStream(stream);
-        } catch (FileNotFoundException e) {
-          SzLog.e(TAG, "Could not read in mona lisa", e);
-        }
+      if (UriUtils.isResUri(uri)) {
+        // TODO(clocksmith): Make generic method in BitmapUtils and replace BitmapSet fork.
+        mBitmap = new BitmapSet(this, uri, 80).get(80);
       } else {
         mBitmap = BitmapUtils.readScaledBitmap(uri, this.getContentResolver());
       }
@@ -93,6 +96,27 @@ public class HotspotChooserActivity extends LifecycleLoggingActivity {
         finishWithCropRect(mImageCropView.getCropRect(), uri);
       }
     });
+
+    if (Preferences.isFirstHotspotOpen(this)) {
+      showHelpOverlay();
+      Preferences.setFirstHotspotOpen(this, false);
+    }
+  }
+
+  private void showHelpOverlay() {
+    final ImageView overlay = new ImageView(this);
+    overlay.setBackgroundColor(Color.argb(128, 0, 0, 0));
+    overlay.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.pinch_zoom_light_transparent));
+    overlay.setScaleType(ImageView.ScaleType.CENTER);
+    overlay.setOnTouchListener(new View.OnTouchListener() {
+      @Override
+      public boolean onTouch(View v, MotionEvent event) {
+        mImageCropViewContainer.removeView(overlay);
+        return false;
+      }
+    });
+    mImageCropViewContainer.addView(overlay,
+        new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
   }
 
   private void finishWithCropRect(Rect hotspot, Uri imageUri) {

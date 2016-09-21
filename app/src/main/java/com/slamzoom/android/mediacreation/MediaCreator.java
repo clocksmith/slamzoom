@@ -16,7 +16,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.executor.ExecutorProvider;
-import com.slamzoom.android.common.preferences.CreatorPreferences;
 import com.slamzoom.android.common.utils.BitmapUtils;
 import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.MathUtils;
@@ -192,7 +191,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
         final float scale = scaleInterpolator.getInterpolation(t);
 
         // TODO(clocksmith): sort this out
-        Bitmap selectedBitmap = mSelectedBitmapSet.get((int) (4 * mSize * scale));
+        Bitmap selectedBitmap = mSelectedBitmapSet.get((int) (mSize * scale));
 
         final RectF startRect = new RectF(0, 0, selectedBitmap.getWidth(), selectedBitmap.getHeight());
         final RectF endRect = new RectF(

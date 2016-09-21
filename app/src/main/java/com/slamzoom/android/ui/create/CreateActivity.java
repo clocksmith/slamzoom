@@ -15,7 +15,6 @@ import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -24,11 +23,7 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ImageSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -52,8 +47,10 @@ import com.slamzoom.android.billing.IabUtils;
 import com.slamzoom.android.common.BackInterceptingEditText;
 import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.FileType;
+import com.slamzoom.android.common.FontLoader;
 import com.slamzoom.android.common.LifecycleLoggingActivity;
-import com.slamzoom.android.common.preferences.CreatorPreferences;
+import com.slamzoom.android.common.preferences.Preferences;
+import com.slamzoom.android.common.utils.DebugUtils;
 import com.slamzoom.android.common.utils.FileUtils;
 import com.slamzoom.android.common.bus.BusProvider;
 import com.slamzoom.android.common.utils.AnimationUtils;
@@ -62,7 +59,6 @@ import com.slamzoom.android.common.SzAnalytics;
 import com.slamzoom.android.common.SzLog;
 import com.slamzoom.android.common.utils.PermissionUtils;
 import com.slamzoom.android.common.utils.SnackbarUtils;
-import com.slamzoom.android.common.utils.UriUtils;
 import com.slamzoom.android.effects.Effects;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.mediacreation.BitmapSet;
@@ -76,6 +72,7 @@ import com.slamzoom.android.ui.create.effectchooser.EffectChooser;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 import com.slamzoom.android.ui.create.effectchooser.EffectThumbnailViewHolder;
 import com.slamzoom.android.ui.create.hotspotchooser.HotspotChooserActivity;
+import com.slamzoom.android.ui.start.CreateTemplate;
 import com.squareup.otto.Subscribe;
 
 import java.io.File;
@@ -98,15 +95,10 @@ public class CreateActivity extends LifecycleLoggingActivity {
     SAVE, SHARE
   }
 
-  // Hack to load in mona lisa
-  private static final Uri MONA_LISA_URI = Uri.parse("mona");
-  // Try to zoom directly on her phone
-//  private static final RectF MONA_LISA_HOTSPOT = new RectF(0.16f, 0.73f, 0.28f, 0.85f); // phone
-  private static final RectF MONA_LISA_HOTSPOT = new RectF(0.34f, 0.12f, 0.6f, 0.38f); // face
-
   // View.
   @BindView(R.id.coordinatatorLayout) CoordinatorLayout mCoordinatorLayout;
   @BindView(R.id.toolbar) Toolbar mToolbar;
+  @BindView(R.id.toolbarTitle) TextView mToolbarTitle;
   @BindView(R.id.gifViewCoordinatatorLayout) CoordinatorLayout mGifViewCoordinatorLayout;
   @BindView(R.id.gifImageView) GifImageView mGifImageView;
   @BindView(R.id.progressBar) ProgressBar mProgressBar;
@@ -163,7 +155,11 @@ public class CreateActivity extends LifecycleLoggingActivity {
     if (getIntent() != null && getIntent().getParcelableExtra(Constants.HOTSPOT) != null) {
       // If this intent is from hotspot chooser, then we need to handle it.
       handleHotspotSelectedFromChooser(getIntent());
-    } else if (savedInstanceState != null) {
+    } else if (getIntent() != null && getIntent().getParcelableExtra(Constants.CREATE_TEMPLATE) != null) {
+      CreateTemplate createTemplate = getIntent().getParcelableExtra(Constants.CREATE_TEMPLATE);
+      mSelectedUri = createTemplate.uri;
+      mSelectedHotspot = createTemplate.hotspot;
+    } if (savedInstanceState != null) {
       // Get the saved state is being recreated.
       unpackBundle(savedInstanceState);
       mEffectChooser.setSelectedEffect(mSelectedEffectName); // TODO(clocksmith): do this somewhere else?
@@ -171,12 +167,6 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
     initReceivers();
     initServices();
-
-    if (CreatorPreferences.isFirstOpen(this)) {
-      mSelectedUri = MONA_LISA_URI;
-      mSelectedHotspot = MONA_LISA_HOTSPOT;
-      CreatorPreferences.setFirstOpen(this, false);
-    }
   }
 
   @Override
@@ -277,7 +267,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
   @Override
   public boolean onPrepareOptionsMenu(Menu menu) {
-    menu.findItem(R.id.action_add_text).setVisible(!mIsAddTextViewShowing);
+    menu.findItem(R.id.action_add_text).setVisible(DebugUtils.ENABLED_ADD_TEXT && !mIsAddTextViewShowing);
     menu.findItem(R.id.action_change_hotspot).setVisible(!mIsAddTextViewShowing);
     menu.findItem(R.id.action_change_image).setVisible(!mIsAddTextViewShowing);
     menu.findItem(R.id.action_share).setVisible(!mIsAddTextViewShowing);
@@ -403,13 +393,16 @@ public class CreateActivity extends LifecycleLoggingActivity {
     setSupportActionBar(mToolbar);
     assert getSupportActionBar() != null;
 
-    mLogoView = new ImageView(this);
-    mLogoView.setPadding(0, 0, 0, 0);
-    mLogoView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.sz_logo));
-    mLogoView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-    mAddTextView = new AddTextView(this);
-    getSupportActionBar().setDisplayShowCustomEnabled(true);
+//    mLogoView = new ImageView(this);
+//    mLogoView.setPadding(0, 0, 0, 0);
+//    mLogoView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.sz_logo));
+//    mLogoView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+//    mAddTextView = new AddTextView(this);
+//    getSupportActionBar().setDisplayShowCustomEnabled(false);
+
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     getSupportActionBar().setDisplayShowTitleEnabled(false);
+    mToolbarTitle.setTypeface(FontLoader.getInstance().getTitleFont());
     showAddTextView(false);
 
 //    SpannableString ss = new SpannableString("abc");

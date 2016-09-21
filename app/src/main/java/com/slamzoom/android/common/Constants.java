@@ -20,6 +20,7 @@ public class Constants {
   public static final int REQUEST_SHARE_VIDEO = 601;
 
   // Params TODO(clocksmith): refactor to params
+  public static final String CREATE_TEMPLATE = "createTemplate";
   public static final String NORMALIZED_HOTSPOT = "normalizedHotspot";
   public static final String HOTSPOT = "hotspot";
   public static final String HOTSPOT_SCALE = "hotspotScale";
@@ -39,12 +40,13 @@ public class Constants {
   public static final float DEFAULT_END_PAUSE_SECONDS = 2;
   public static final int MAIN_FPS = 24;
   public static final int THUMBNAIL_FPS = 16;
-  public static final int MAIN_SIZE_PX = 320; // must be even
-  public static final int THUMBNAIL_SIZE_PX = 120; // must be even
-  public static final int NUM_BITMAPS_IN_SET = 5; // 80, 160, 320, 640, 1280
-  public static final float MEDIA_THUMBNAIL_DIVIDER = (float) MAIN_SIZE_PX / THUMBNAIL_SIZE_PX;
+  public static final int MAIN_SIZE_PX = 640; // must be even
+  public static final int THUMBNAIL_SIZE_PX = 80; // must be even
+  // TODO(clocksmith): change this value, make it easier to config.
+  public static final int NUM_BITMAPS_IN_SET = 6; // 80, 160, 320, 640, 1280
   public static final boolean DEFAULT_USE_LOCAL_COLOR_PALETTE = true;
-  public static final int VIDEO_KBPS = 128;
+  // TODO(clocksmith): Figure out this value
+  public static final int VIDEO_KBPS = 256;
 
   public static final int MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX = MAIN_SIZE_PX * 4; // arbitrary
 

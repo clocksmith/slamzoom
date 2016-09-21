@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageFilterGroup;
+import jp.co.cyberagent.android.gpuimage.GPUImageTwoPassTextureSamplingFilter;
 
 /**
  * Created by clocksmith on 9/6/16.
@@ -37,21 +38,10 @@ public class GPUImageGoodGaussianBlurFilter extends GPUImageFilterGroup {
 
     addFilter(new GPUImageFilter(vertexShader, fragmentShader));
     addFilter(new GPUImageFilter(vertexShader, fragmentShader));
+    initTexelOffsets();
   }
 
   //region From GPUImageTwoPassTextureSamplingFilter
-
-  @Override
-  public void onInit() {
-    super.onInit();
-    initTexelOffsets();
-  }
-
-  @Override
-  public void onOutputSizeChanged(int width, int height) {
-    super.onOutputSizeChanged(width, height);
-    initTexelOffsets();
-  }
 
   protected float getVerticalTexelOffsetRatio() {
     return 1f;

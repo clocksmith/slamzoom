@@ -1,4 +1,6 @@
 <resources>
+  <dimen name="legal_text_size">10dp</dimen>
+
   <!-- Effect View Holder -->
   <dimen name="thumbnail_view_width">120dp</dimen>
   <dimen name="effect_name_text_size">14dp</dimen>

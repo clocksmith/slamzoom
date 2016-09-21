@@ -3,17 +3,11 @@ package com.slamzoom.android.common;
 import android.util.Log;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.firebase.crash.FirebaseCrash;
-import com.slamzoom.android.mediacreation.MediaCreator;
-import com.slamzoom.android.mediacreation.gif.GifCreator;
-import com.slamzoom.android.mediacreation.gif.GifService;
-import com.slamzoom.android.mediacreation.video.VideoFrame;
 import com.slamzoom.android.ui.create.CreateActivity;
-import com.slamzoom.android.ui.create.effectchooser.EffectThumbnailViewHolder;
-import com.slamzoom.android.ui.create.hotspotchooser.HotspotChooserActivity;
-import com.slamzoom.android.ui.start.StartActivity;
 
 import java.util.Set;
+
+//import com.google.firebase.crash.FirebaseCrash;
 
 /**
  * Created by clocksmith on 6/14/16.
@@ -54,9 +48,9 @@ public class SzLog {
   public static void e(String tag, String message, Exception e) {
     Log.e("F/" + tag, message, e);
     if (e != null) {
-      FirebaseCrash.report(e);
+//      FirebaseCrash.report(e);
     } else {
-      FirebaseCrash.report(new Exception(message));
+//      FirebaseCrash.report(new Exception(message));
     }
   }
 }

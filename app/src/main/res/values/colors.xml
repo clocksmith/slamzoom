@@ -3,6 +3,7 @@
   <color name="white">#ffffff</color>
   <color name="off_white">#f0f0f0</color>
   <color name="light_gray">#b0b0b0</color>
+  <color name="gray">#808080</color>
   <color name="dark_gray">#505050</color>
   <color name="darkest_gray">#303030</color>
   <color name="not_quite_black">#202020</color>
@@ -16,6 +17,8 @@
   <color name="menu_icon_color">@color/colorAccent</color>
   <color name="menu_ripple_color">@color/colorAccentDark</color>
 
+  <color name="default_text">@color/white</color>
+  <color name="legal_link_text">@color/gray</color>
   <color name="effect_text">@color/white</color>
 
   <color name="dialog_lock_icon">@color/not_quite_black</color>

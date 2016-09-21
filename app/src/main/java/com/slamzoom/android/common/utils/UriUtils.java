@@ -12,6 +12,10 @@ import com.slamzoom.android.SzApp;
  * Created by clocksmith on 9/16/16.
  */
 public class UriUtils {
+  public static boolean isResUri(Uri uri) {
+    return uri.toString().startsWith(ContentResolver.SCHEME_ANDROID_RESOURCE);
+  }
+
   public static Uri getUriFromRes(@AnyRes int resId) {
     return getUriFromRes(SzApp.CONTEXT, resId);
   }
@@ -27,12 +31,7 @@ public class UriUtils {
         + context.getResources().getResourceEntryName(resId));
   }
 
-//  public static Uri getUriFromRes(Context context, @AnyRes int resId) {
-//    return Uri.parse(
-//        ContentResolver.SCHEME_ANDROID_RESOURCE
-//            + "://"
-//            + context.getResources().getResourcePackageName(resId)
-//            + "/"
-//            + resId);
-//  }
+  public static String getUrlStringFromAssets(String name) {
+    return "file:///android_asset/" + name;
+  }
 }
