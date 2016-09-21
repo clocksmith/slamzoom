@@ -3,7 +3,7 @@ package com.slamzoom.android.mediacreation.gif;
 import android.content.Context;
 import android.graphics.Bitmap;
 
-import com.slamzoom.android.common.BusProvider;
+import com.slamzoom.android.common.events.BusProvider;
 import com.slamzoom.android.mediacreation.MediaConfig;
 import com.slamzoom.android.mediacreation.MediaCreator;
 import com.slamzoom.android.mediacreation.StopwatchTracker;

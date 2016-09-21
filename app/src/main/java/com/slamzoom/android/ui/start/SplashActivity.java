@@ -4,8 +4,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.slamzoom.android.common.logging.SzLog;
-import com.slamzoom.android.common.BuildFlags;
-import com.slamzoom.android.common.activities.IntentUtils;
+import com.slamzoom.android.BuildFlags;
+import com.slamzoom.android.common.intents.IntentUtils;
 
 /**
  * Created by clocksmith on 9/1/16.

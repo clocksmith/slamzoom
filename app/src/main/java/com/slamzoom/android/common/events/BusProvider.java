@@ -1,4 +1,4 @@
-package com.slamzoom.android.common;
+package com.slamzoom.android.common.events;
 
 import android.os.Handler;
 import android.os.Looper;

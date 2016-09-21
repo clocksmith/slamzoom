@@ -44,14 +44,16 @@ import com.slamzoom.android.R;
 import com.slamzoom.android.billing.GetBuyIntentCallback;
 import com.slamzoom.android.billing.GetPurchasedPacksCallback;
 import com.slamzoom.android.billing.IabHelper;
+import com.slamzoom.android.common.intents.Params;
+import com.slamzoom.android.common.intents.RequestCodes;
 import com.slamzoom.android.common.widgets.BackInterceptingEditText;
-import com.slamzoom.android.common.Constants;
+import com.slamzoom.android.mediacreation.MediaConstants;
 import com.slamzoom.android.common.files.FileType;
-import com.slamzoom.android.common.FontProvider;
+import com.slamzoom.android.common.fonts.FontProvider;
 import com.slamzoom.android.common.activities.LifecycleLoggingActivity;
-import com.slamzoom.android.common.BuildFlags;
+import com.slamzoom.android.BuildFlags;
 import com.slamzoom.android.common.files.FileUtils;
-import com.slamzoom.android.common.BusProvider;
+import com.slamzoom.android.common.events.BusProvider;
 import com.slamzoom.android.common.ui.AnimationUtils;
 import com.slamzoom.android.common.ui.KeyboardUtils;
 import com.slamzoom.android.common.logging.SzAnalytics;
@@ -151,11 +153,11 @@ public class CreateActivity extends LifecycleLoggingActivity {
     BusProvider.getInstance().register(this);
     initView();
 
-    if (getIntent() != null && getIntent().getParcelableExtra(Constants.HOTSPOT) != null) {
+    if (getIntent() != null && getIntent().getParcelableExtra(Params.HOTSPOT) != null) {
       // If this intent is from hotspot chooser, then we need to handle it.
       handleHotspotSelectedFromChooser(getIntent());
-    } else if (getIntent() != null && getIntent().getParcelableExtra(Constants.CREATE_TEMPLATE) != null) {
-      CreateTemplate createTemplate = getIntent().getParcelableExtra(Constants.CREATE_TEMPLATE);
+    } else if (getIntent() != null && getIntent().getParcelableExtra(Params.CREATE_TEMPLATE) != null) {
+      CreateTemplate createTemplate = getIntent().getParcelableExtra(Params.CREATE_TEMPLATE);
       mSelectedUri = createTemplate.uri;
       mSelectedHotspot = createTemplate.hotspot;
     } if (savedInstanceState != null) {
@@ -172,19 +174,19 @@ public class CreateActivity extends LifecycleLoggingActivity {
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     SzLog.f(TAG, "onActivityResult(): requestCode: " + requestCode + " resultCode: " + resultCode);
 
-    if (requestCode == Constants.REQUEST_PICK_IMAGE) {
+    if (requestCode == RequestCodes.REQUEST_PICK_IMAGE) {
       if (resultCode == RESULT_OK) {
         handleImageSelectedFromChooser(data);
       } else {
         handleImageChooserCancelled();
       }
-    } else if (requestCode == Constants.REQUEST_CROP_IMAGE) {
+    } else if (requestCode == RequestCodes.REQUEST_CROP_IMAGE) {
       if (resultCode == RESULT_OK) {
         handleHotspotSelectedFromChooser(data);
       } else {
         handleHotspotChooserCancelled();
       }
-    } else if (requestCode == Constants.REQUEST_BUY_PACK) {
+    } else if (requestCode == RequestCodes.REQUEST_BUY_PACK) {
       if (resultCode == RESULT_OK) {
         handleBuyPackSuccess();
       } else {
@@ -204,7 +206,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
     } else if (mSelectedHotspot == null) {
       launchHotspotChooser();
     } else if (mSelectedBitmapSet == null)  {
-      mSelectedBitmapSet = new BitmapSet(this, mSelectedUri, Constants.THUMBNAIL_SIZE_PX);
+      mSelectedBitmapSet = new BitmapSet(this, mSelectedUri, MediaConstants.THUMBNAIL_SIZE_PX);
       clearAndUpdateAllGifs();
     }
     // If we still have the bitmap, then the activity was not destroyed, and nothing needs to be done in onResume.
@@ -212,7 +214,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
   @Override
   public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull  int[] grantResults) {
-    if (requestCode == Constants.REQUEST_SHARE_GIF_PERMISSIONS) {
+    if (requestCode == RequestCodes.REQUEST_SHARE_GIF_PERMISSIONS) {
       if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
         exportCurrentEffect();
       } else {
@@ -352,7 +354,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
       @Override
       public void onSuccess(PendingIntent buyIntent) {
         try {
-          startIntentSenderForResult(buyIntent.getIntentSender(), Constants.REQUEST_BUY_PACK, new Intent(), 0, 0, 0);
+          startIntentSenderForResult(buyIntent.getIntentSender(), RequestCodes.REQUEST_BUY_PACK, new Intent(), 0, 0, 0);
         } catch (IntentSender.SendIntentException e) {
           SzLog.e(TAG, "Could not start buy intent", e);
         }
@@ -431,13 +433,13 @@ public class CreateActivity extends LifecycleLoggingActivity {
   private void launchImageChooser() {
     Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
     intent.setType("image/*");
-    startActivityForResult(Intent.createChooser(intent, "Select Image"), Constants.REQUEST_PICK_IMAGE);
+    startActivityForResult(Intent.createChooser(intent, "Select Image"), RequestCodes.REQUEST_PICK_IMAGE);
   }
 
   private void launchHotspotChooser() {
     Intent intent = new Intent(CreateActivity.this, HotspotChooserActivity.class);
     intent.putExtra(Intent.EXTRA_STREAM, mSelectedUri);
-    startActivityForResult(intent, Constants.REQUEST_CROP_IMAGE);
+    startActivityForResult(intent, RequestCodes.REQUEST_CROP_IMAGE);
   }
 
   private void handleImageSelectedFromChooser(Intent intent) {
@@ -459,7 +461,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
   }
 
   private void handleHotspotSelectedFromChooser(Intent intent) {
-    mSelectedHotspot = intent.getParcelableExtra(Constants.NORMALIZED_HOTSPOT);
+    mSelectedHotspot = intent.getParcelableExtra(Params.NORMALIZED_HOTSPOT);
 
     // If the image came from an external activity, we need to capture its uri at this point.
     Uri newUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
@@ -816,11 +818,11 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
               if (Build.VERSION.SDK_INT >= 22) {
                 Intent receiver = new Intent(CreateActivity.this, VideoSharedReceiver.class);
-                receiver.putExtra(Constants.SELECTED_EFFECT_NAME, mSelectedEffectName);
-                receiver.putExtra(Constants.HOTSPOT_SCALE, mSelectedHotspot.width());
-                receiver.putExtra(Constants.END_TEXT_LENGTH, mSelectedEndText == null ? 0 : mSelectedEndText.length());
+                receiver.putExtra(Params.SELECTED_EFFECT_NAME, mSelectedEffectName);
+                receiver.putExtra(Params.HOTSPOT_SCALE, mSelectedHotspot.width());
+                receiver.putExtra(Params.END_TEXT_LENGTH, mSelectedEndText == null ? 0 : mSelectedEndText.length());
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                    CreateActivity.this, Constants.REQUEST_SHARE_VIDEO, receiver, PendingIntent.FLAG_UPDATE_CURRENT);
+                    CreateActivity.this, RequestCodes.REQUEST_SHARE_VIDEO, receiver, PendingIntent.FLAG_UPDATE_CURRENT);
                 Intent chooserIntent = Intent.createChooser(baseIntent, "Share via", pendingIntent.getIntentSender());
                 startActivity(chooserIntent);
               } else {
@@ -866,8 +868,8 @@ public class CreateActivity extends LifecycleLoggingActivity {
         .withBitmapSet(mSelectedBitmapSet)
         .withEffectTemplate(Effects.getEffectTemplate(mSelectedEffectName))
         .withEndText(mSelectedEndText)
-        .withSize(Constants.MAIN_SIZE_PX)
-        .withFps(Constants.MAIN_FPS)
+        .withSize(MediaConstants.MAIN_SIZE_PX)
+        .withFps(MediaConstants.MAIN_FPS)
         .build();
   }
 
@@ -876,8 +878,8 @@ public class CreateActivity extends LifecycleLoggingActivity {
         .withHotspot(mSelectedHotspot)
         .withBitmapSet(mSelectedBitmapSet)
         .withEffectTemplate(effectTemplate)
-        .withSize(Constants.THUMBNAIL_SIZE_PX)
-        .withFps(Constants.THUMBNAIL_FPS)
+        .withSize(MediaConstants.THUMBNAIL_SIZE_PX)
+        .withFps(MediaConstants.THUMBNAIL_FPS)
         .build();
   }
 
@@ -898,21 +900,21 @@ public class CreateActivity extends LifecycleLoggingActivity {
   }
 
   private void unpackBundle(Bundle bundle) {
-    mSelectedUri = bundle.getParcelable(Constants.SELECTED_URI);
-    mSelectedBitmapSet = bundle.getParcelable(Constants.SELECTED_HOTSPOT);
-    mSelectedEffectName = bundle.getString(Constants.SELECTED_EFFECT_NAME);
-    mSelectedEndText = bundle.getString(Constants.SELECTED_END_TEXT);
-    mPurchasedPackNames = bundle.getStringArrayList(Constants.PURCHASED_PACK_NAMES);
-    mNeedsUpdatePurchasePackNames = bundle.getBoolean(Constants.NEEDS_UPDATE_PURCHASED_PACK_NAMES);
+    mSelectedUri = bundle.getParcelable(Params.SELECTED_URI);
+    mSelectedBitmapSet = bundle.getParcelable(Params.SELECTED_HOTSPOT);
+    mSelectedEffectName = bundle.getString(Params.SELECTED_EFFECT_NAME);
+    mSelectedEndText = bundle.getString(Params.SELECTED_END_TEXT);
+    mPurchasedPackNames = bundle.getStringArrayList(Params.PURCHASED_PACK_NAMES);
+    mNeedsUpdatePurchasePackNames = bundle.getBoolean(Params.NEEDS_UPDATE_PURCHASED_PACK_NAMES);
   }
 
   private void packBundle(Bundle bundle) {
-    bundle.putParcelable(Constants.SELECTED_URI, mSelectedUri);
-    bundle.putParcelable(Constants.SELECTED_HOTSPOT, mSelectedHotspot);
-    bundle.putString(Constants.SELECTED_EFFECT_NAME, mSelectedEffectName);
-    bundle.putString(Constants.SELECTED_END_TEXT, mSelectedEndText);
-    bundle.putStringArrayList(Constants.PURCHASED_PACK_NAMES, Lists.newArrayList(mPurchasedPackNames));
-    bundle.putBoolean(Constants.NEEDS_UPDATE_PURCHASED_PACK_NAMES, mNeedsUpdatePurchasePackNames);
+    bundle.putParcelable(Params.SELECTED_URI, mSelectedUri);
+    bundle.putParcelable(Params.SELECTED_HOTSPOT, mSelectedHotspot);
+    bundle.putString(Params.SELECTED_EFFECT_NAME, mSelectedEffectName);
+    bundle.putString(Params.SELECTED_END_TEXT, mSelectedEndText);
+    bundle.putStringArrayList(Params.PURCHASED_PACK_NAMES, Lists.newArrayList(mPurchasedPackNames));
+    bundle.putBoolean(Params.NEEDS_UPDATE_PURCHASED_PACK_NAMES, mNeedsUpdatePurchasePackNames);
   }
 
   private class GifServiceConnection implements ServiceConnection {
@@ -971,11 +973,11 @@ public class CreateActivity extends LifecycleLoggingActivity {
         if (mSelectedExportType == ExportType.SHARE) {
           if (Build.VERSION.SDK_INT >= 22) {
             Intent receiver = new Intent(CreateActivity.this, GifSharedReceiver.class);
-            receiver.putExtra(Constants.SELECTED_EFFECT_NAME, mSelectedEffectName);
-            receiver.putExtra(Constants.HOTSPOT_SCALE, mSelectedHotspot.width());
-            receiver.putExtra(Constants.END_TEXT_LENGTH, mSelectedEndText == null ? 0 : mSelectedEndText.length());
+            receiver.putExtra(Params.SELECTED_EFFECT_NAME, mSelectedEffectName);
+            receiver.putExtra(Params.HOTSPOT_SCALE, mSelectedHotspot.width());
+            receiver.putExtra(Params.END_TEXT_LENGTH, mSelectedEndText == null ? 0 : mSelectedEndText.length());
             PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                CreateActivity.this, Constants.REQUEST_SHARE_GIF, receiver, PendingIntent.FLAG_UPDATE_CURRENT);
+                CreateActivity.this, RequestCodes.REQUEST_SHARE_GIF, receiver, PendingIntent.FLAG_UPDATE_CURRENT);
             Intent chooserIntent = Intent.createChooser(mBaseIntent, "Share via", pendingIntent.getIntentSender());
             startActivity(chooserIntent);
           } else {
@@ -1010,9 +1012,9 @@ public class CreateActivity extends LifecycleLoggingActivity {
   private static void handleOnSharedReceive(Context context, Intent intent, FileType fileType) {
     ComponentName componentName = intent.getParcelableExtra(Intent.EXTRA_CHOSEN_COMPONENT);
 
-    String selectedEffectName = intent.getStringExtra(Constants.SELECTED_EFFECT_NAME);
-    float hotspotScale = intent.getFloatExtra(Constants.HOTSPOT_SCALE, 0);
-    int endTextLength = intent.getIntExtra(Constants.END_TEXT_LENGTH, -1);
+    String selectedEffectName = intent.getStringExtra(Params.SELECTED_EFFECT_NAME);
+    float hotspotScale = intent.getFloatExtra(Params.HOTSPOT_SCALE, 0);
+    int endTextLength = intent.getIntExtra(Params.END_TEXT_LENGTH, -1);
 
     SzAnalytics.Event event;
     if (fileType == FileType.GIF) {

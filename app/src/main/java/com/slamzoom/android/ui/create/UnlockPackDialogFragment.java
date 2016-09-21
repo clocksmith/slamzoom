@@ -12,7 +12,7 @@ import android.support.v7.view.ContextThemeWrapper;
 import android.view.WindowManager;
 
 import com.slamzoom.android.R;
-import com.slamzoom.android.common.Constants;
+import com.slamzoom.android.common.intents.Params;
 
 /**
  * Created by clocksmith on 7/16/16.
@@ -37,8 +37,8 @@ public class UnlockPackDialogFragment extends DialogFragment {
     UnlockPackDialogFragment f = new UnlockPackDialogFragment();
 
     Bundle args = new Bundle();
-    args.putString(Constants.EFFECT_NAME, effectName);
-    args.putString(Constants.PACK_NAME, packName);
+    args.putString(Params.EFFECT_NAME, effectName);
+    args.putString(Params.PACK_NAME, packName);
     f.setArguments(args);
 
     return f;
@@ -46,8 +46,8 @@ public class UnlockPackDialogFragment extends DialogFragment {
 
   @Override
   public @NonNull Dialog onCreateDialog(Bundle savedInstanceState) {
-    final String effectName = getArguments().getString(Constants.EFFECT_NAME);
-    final String packName = getArguments().getString(Constants.PACK_NAME);
+    final String effectName = getArguments().getString(Params.EFFECT_NAME);
+    final String packName = getArguments().getString(Params.PACK_NAME);
     mEffectName = effectName;
     mPackName = packName;
 

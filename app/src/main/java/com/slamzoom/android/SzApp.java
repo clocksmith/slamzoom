@@ -3,7 +3,7 @@ package com.slamzoom.android;
 import android.app.Application;
 import android.content.Context;
 
-import com.slamzoom.android.common.FontProvider;
+import com.slamzoom.android.common.fonts.FontProvider;
 import com.slamzoom.android.effects.Effects;
 
 /**

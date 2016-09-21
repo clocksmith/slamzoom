@@ -3,7 +3,7 @@ package com.slamzoom.android.mediacreation.gif;
 import android.os.AsyncTask;
 
 import com.google.common.collect.Lists;
-import com.slamzoom.android.common.Constants;
+import com.slamzoom.android.mediacreation.MediaConstants;
 import com.slamzoom.android.common.threads.ExecutorProvider;
 import com.slamzoom.android.common.logging.SzLog;
 import com.slamzoom.android.mediacreation.MediaCreatorCallback;
@@ -47,7 +47,7 @@ public class GifEncoder extends MediaEncoder<GifFrame> {
   private StopwatchTracker mTracker;
 
   public GifEncoder() {
-    this(Constants.DEFAULT_USE_LOCAL_COLOR_PALETTE);
+    this(MediaConstants.DEFAULT_USE_LOCAL_COLOR_PALETTE);
   }
 
   public GifEncoder(boolean useLocalColorTables) {

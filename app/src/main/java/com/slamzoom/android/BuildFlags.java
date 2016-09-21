@@ -1,4 +1,4 @@
-package com.slamzoom.android.common;
+package com.slamzoom.android;
 
 import android.graphics.RectF;
 

@@ -10,7 +10,7 @@ import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegNotSupportedExceptio
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.slamzoom.android.SzApp;
-import com.slamzoom.android.common.Constants;
+import com.slamzoom.android.mediacreation.MediaConstants;
 import com.slamzoom.android.common.files.FileType;
 import com.slamzoom.android.common.logging.SzLog;
 import com.slamzoom.android.common.files.FileUtils;
@@ -102,7 +102,7 @@ public class VideoEncoder extends MediaEncoder<VideoFrame> {
       PrintWriter pw = new PrintWriter(concatFile);
       for (VideoFrame frame : mFrames) {
         // TODO(clocksmith): used passed in FPS
-        int frameDuration = (int) (1000.0 / Constants.MAIN_FPS);
+        int frameDuration = (int) (1000.0 / MediaConstants.MAIN_FPS);
         int numFrames = frame.delayMillis / frameDuration;
         for (int i = 0; i < numFrames; i++) {
           pw.println("file '" + frame.path.getAbsolutePath() + "'");
@@ -126,9 +126,9 @@ public class VideoEncoder extends MediaEncoder<VideoFrame> {
     cmds.add("-c:v");
     cmds.add("libx264");
     cmds.add("-b:v");
-    cmds.add(Constants.VIDEO_KBPS + "k");
+    cmds.add(MediaConstants.VIDEO_KBPS + "k");
     cmds.add("-r");
-    cmds.add(String.valueOf(Constants.MAIN_FPS));
+    cmds.add(String.valueOf(MediaConstants.MAIN_FPS));
     cmds.add(videoOutFile.getAbsolutePath());
 
     Log.wtf(TAG, Joiner.on(" ").join(cmds));

@@ -14,11 +14,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.bitmaps.BitmapSet;
 import com.slamzoom.android.common.threads.ExecutorProvider;
 import com.slamzoom.android.common.bitmaps.BitmapUtils;
-import com.slamzoom.android.common.BuildFlags;
+import com.slamzoom.android.BuildFlags;
 import com.slamzoom.android.common.data.MathUtils;
 import com.slamzoom.android.common.logging.SzLog;
 import com.slamzoom.android.effects.EffectStep;
@@ -78,7 +77,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
     mNumTilesInRow = mEffectTemplate.getNumTilesInRow();
 
     int size = config.size;
-    mIsPreview = size == Constants.THUMBNAIL_SIZE_PX;
+    mIsPreview = size == MediaConstants.THUMBNAIL_SIZE_PX;
     float aspectRatio = mSelectedBitmapSet.getAspectRatio();
     if (aspectRatio > 1) {
       mWidth = size;

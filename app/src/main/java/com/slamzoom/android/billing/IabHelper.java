@@ -13,8 +13,8 @@ import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.common.BuildFlags;
+import com.slamzoom.android.SzApp;
+import com.slamzoom.android.BuildFlags;
 import com.slamzoom.android.common.logging.SzLog;
 import com.slamzoom.android.effects.Effects;
 
@@ -63,7 +63,7 @@ public class IabHelper {
           }
           SzLog.f(TAG, "getBuyIntent for productId: " + productId);
           Bundle buyIntentBundle = service.getBuyIntent(
-              3, Constants.PACKAGE_NAME, productId, "inapp", LicenseKeyUtils.getLicenseKey());
+              3, SzApp.PACKAGE_NAME, productId, "inapp", LicenseKeyUtils.getLicenseKey());
           int responseCode = buyIntentBundle.getInt("RESPONSE_CODE");
           if (responseCode == 0) {
             PendingIntent buyIntent = buyIntentBundle.getParcelable("BUY_INTENT");
@@ -136,7 +136,7 @@ public class IabHelper {
             SzLog.e(TAG, "Trying to update purchases but billing service is null!");
             return null;
           }
-          Bundle purchasesBundle = service.getPurchases(3, Constants.PACKAGE_NAME, "inapp", null);
+          Bundle purchasesBundle = service.getPurchases(3, SzApp.PACKAGE_NAME, "inapp", null);
           int responseCode = purchasesBundle.getInt("RESPONSE_CODE");
           if (responseCode == 0) {
             List<String> productIds = purchasesBundle.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");

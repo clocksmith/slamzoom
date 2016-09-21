@@ -19,13 +19,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.slamzoom.android.R;
-import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.common.FontProvider;
+import com.slamzoom.android.common.fonts.FontProvider;
 import com.slamzoom.android.common.activities.LifecycleLoggingActivity;
+import com.slamzoom.android.common.intents.Params;
 import com.slamzoom.android.common.logging.SzAnalytics;
 import com.slamzoom.android.common.settings.Preferences;
 import com.slamzoom.android.common.bitmaps.BitmapUtils;
-import com.slamzoom.android.common.BuildFlags;
+import com.slamzoom.android.BuildFlags;
 import com.slamzoom.android.common.data.UriUtils;
 import com.slamzoom.android.common.bitmaps.BitmapSet;
 import com.slamzoom.android.ui.create.CreateActivity;
@@ -121,13 +121,13 @@ public class HotspotChooserActivity extends LifecycleLoggingActivity {
         getCallingActivity().getClassName().equals(CreateActivity.class.getCanonicalName())) {
       Intent returnIntent = new Intent();
       returnIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
-      returnIntent.putExtra(Constants.NORMALIZED_HOTSPOT, hotspot);
+      returnIntent.putExtra(Params.NORMALIZED_HOTSPOT, hotspot);
       setResult(RESULT_OK, returnIntent);
       finish();
     } else {
       Intent intent = new Intent(HotspotChooserActivity.this, CreateActivity.class);
       intent.putExtra(Intent.EXTRA_STREAM, imageUri);
-      intent.putExtra(Constants.NORMALIZED_HOTSPOT, hotspot);
+      intent.putExtra(Params.NORMALIZED_HOTSPOT, hotspot);
       startActivity(intent);
     }
   }

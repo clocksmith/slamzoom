@@ -7,7 +7,7 @@ import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
-import com.slamzoom.android.common.Constants;
+import com.slamzoom.android.common.intents.RequestCodes;
 
 /**
  * Created by clocksmith on 8/29/16.
@@ -25,6 +25,6 @@ public class Permissions {
     ActivityCompat.requestPermissions
         (activity,
             new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
-            Constants.REQUEST_SHARE_GIF_PERMISSIONS);
+            RequestCodes.REQUEST_SHARE_GIF_PERMISSIONS);
   }
 }

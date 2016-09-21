@@ -16,7 +16,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.slamzoom.android.R;
-import com.slamzoom.android.common.FontProvider;
+import com.slamzoom.android.common.fonts.FontProvider;
 import com.slamzoom.android.common.activities.LifecycleLoggingActivity;
 import com.slamzoom.android.common.logging.SzLog;
 import com.slamzoom.android.common.ui.LocalWebViewDialogPresenter;

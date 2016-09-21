@@ -4,7 +4,6 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.slamzoom.android.SzApp;
-import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.common.logging.SzLog;
 
 import java.io.File;
@@ -16,15 +15,16 @@ import java.io.IOException;
 public class FileUtils {
   public static final String TAG = FileUtils.class.getSimpleName();
 
-  private static final String PREFIX = "slamzoom_";
+  private static final String PUBLIC_DIRECTORY = "/Slamzoom";
+  private static final String FILE_PREFIX = "slamzoom_";
 
   public static File createTimestampedFileWithId(FileType fileType, String id) {
-    String filename = PREFIX + id + "_" + System.currentTimeMillis() + "." + fileType.ext;
+    String filename = FILE_PREFIX + id + "_" + System.currentTimeMillis() + "." + fileType.ext;
     return createFileWithFilename(fileType, filename);
   }
 
   public static File createFileWithId(FileType fileType, String id) {
-    String filename = PREFIX + id + "." + fileType.ext;
+    String filename = FILE_PREFIX + id + "." + fileType.ext;
     return createFileWithFilename(fileType, filename);
   }
 
@@ -52,7 +52,7 @@ public class FileUtils {
   }
 
   private static File createFileInEnvDir(String envDir, String filename) {
-    File dir = new File(Environment.getExternalStoragePublicDirectory(envDir).getPath(), Constants.PUBLIC_DIRECTORY);
+    File dir = new File(Environment.getExternalStoragePublicDirectory(envDir).getPath(), PUBLIC_DIRECTORY);
     return createFileInDir(dir, filename);
   }
 

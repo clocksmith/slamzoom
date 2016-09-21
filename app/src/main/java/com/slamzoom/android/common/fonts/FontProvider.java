@@ -1,4 +1,4 @@
-package com.slamzoom.android.common;
+package com.slamzoom.android.common.fonts;
 
 import android.content.res.AssetManager;
 import android.graphics.Typeface;

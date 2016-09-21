@@ -9,8 +9,8 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.net.Uri;
 
-import com.slamzoom.android.common.Constants;
-import com.slamzoom.android.common.BuildFlags;
+import com.slamzoom.android.mediacreation.MediaConstants;
+import com.slamzoom.android.BuildFlags;
 import com.slamzoom.android.common.files.FileType;
 import com.slamzoom.android.common.logging.SzLog;
 import com.slamzoom.android.common.files.FileUtils;
@@ -25,10 +25,12 @@ import java.io.InputStream;
  * Created by clocksmith on 3/7/16.
  */
 public class BitmapUtils {
+  // TODO(clocksmith): change this value, make it easier to config.
+  public static final int NUM_BITMAPS_IN_SET = 5; // doubles every change.
   private static final String TAG = BitmapUtils.class.getSimpleName();
 
   public static Bitmap readScaledBitmap(Uri uri , ContentResolver contentResolver) throws FileNotFoundException  {
-    return readScaledBitmap(uri, contentResolver, Constants.MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX);
+    return readScaledBitmap(uri, contentResolver, MediaConstants.MAX_DIMEN_FOR_MIN_SELECTED_DIMEN_PX);
   }
 
   public static void recycleIfSupposedTo(Bitmap bitmap) {

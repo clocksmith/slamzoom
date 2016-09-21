@@ -1,13 +1,11 @@
 package com.slamzoom.android.effects;
 
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.Log;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.slamzoom.android.common.Constants;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.TransformInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.TranslateInterpolatorProvider;
@@ -109,9 +107,9 @@ public class EffectStep {
     private Interpolator mXInterpolator;
     private Interpolator mYInterpolator;
     private List<FilterInterpolator> mFilterInterpolators = Lists.newArrayList();
-    private float mDurationSeconds = Constants.DEFAULT_DURATION_SECONDS;
-    private float mStartPauseSeconds = Constants.DEFAULT_START_PAUSE_SECONDS;
-    private float mEndPauseSeconds = Constants.DEFAULT_END_PAUSE_SECONDS;
+    private float mDurationSeconds = EffectConfig.DEFAULT_DURATION_SECONDS;
+    private float mStartPauseSeconds = EffectConfig.DEFAULT_START_PAUSE_SECONDS;
+    private float mEndPauseSeconds = EffectConfig.DEFAULT_END_PAUSE_SECONDS;
 
     public Builder withScaleInterpolator(Interpolator interpolator) {
       mScaleInterpolator = interpolator;

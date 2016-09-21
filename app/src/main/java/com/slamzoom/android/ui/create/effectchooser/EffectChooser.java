@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.logging.SzLog;
-import com.slamzoom.android.common.BusProvider;
+import com.slamzoom.android.common.events.BusProvider;
 import com.slamzoom.android.effects.Effects;
 import com.slamzoom.android.mediacreation.gif.GifService;
 import com.squareup.otto.Subscribe;

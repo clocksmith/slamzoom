@@ -2,14 +2,14 @@ package com.slamzoom.android.effects.interpolation.filter.calculators;
 
 import android.graphics.PointF;
 
-import com.slamzoom.android.common.Constants;
+import com.slamzoom.android.common.data.RectFUtils;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 
 /**
  * Created by clocksmith on 6/4/16.
  */
 public class CenterCalculator extends BaseCalculator {
-  private PointF mBaseValue = Constants.NORMAL_CENTER_POINT;
+  private PointF mBaseValue = RectFUtils.NORMAL_CENTER_POINT;
 
   public CenterCalculator(FilterInterpolator filterInterpolator) {
     super(filterInterpolator);

@@ -3,7 +3,7 @@ package com.slamzoom.android.mediacreation.gif;
 import android.content.Context;
 
 import com.google.common.base.Objects;
-import com.slamzoom.android.common.Constants;
+import com.slamzoom.android.mediacreation.MediaConstants;
 import com.slamzoom.android.common.logging.SzLog;
 import com.slamzoom.android.mediacreation.MediaConfig;
 import com.slamzoom.android.mediacreation.StopwatchTracker;
@@ -39,7 +39,7 @@ public class GifCreatorManager implements Comparable {
     mIndex = index;
     mCallback = callback;
 
-    mGifSize = thumbnail ? Constants.THUMBNAIL_SIZE_PX : Constants.MAIN_SIZE_PX;
+    mGifSize = thumbnail ? MediaConstants.THUMBNAIL_SIZE_PX : MediaConstants.MAIN_SIZE_PX;
     mTracker = new StopwatchTracker();
   }
 

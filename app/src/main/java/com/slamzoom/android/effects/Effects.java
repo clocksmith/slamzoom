@@ -6,7 +6,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.slamzoom.android.common.BuildFlags;
+import com.slamzoom.android.BuildFlags;
 import com.slamzoom.android.effects.packs.EffectPack;
 import com.slamzoom.android.effects.packs.distort.BlockheadEffectConfig;
 import com.slamzoom.android.effects.packs.distort.BulgerinoEffectConfig;

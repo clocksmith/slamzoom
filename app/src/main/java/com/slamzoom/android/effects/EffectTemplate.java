@@ -2,7 +2,7 @@ package com.slamzoom.android.effects;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
-import com.slamzoom.android.common.BuildFlags;
+import com.slamzoom.android.BuildFlags;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.group.FilterInterpolatorsProvider;
 import com.slamzoom.android.effects.interpolation.transform.TransformInterpolatorProvider;
