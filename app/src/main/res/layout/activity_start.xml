@@ -3,33 +3,26 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-  <!--<WebView-->
-      <!--android:id="@+id/backgroundWebView"-->
-      <!--android:layout_width="match_parent"-->
-      <!--android:layout_height="match_parent"/>-->
-  <pl.droidsonroids.gif.GifImageView
-      android:id="@+id/backgroundGifView"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:scaleType="centerCrop"/>
   <TextureView
       android:id="@+id/backgroundVideoView"
       android:layout_width="match_parent"
       android:layout_height="match_parent"/>
-  <!--<ImageView-->
-      <!--android:id="@+id/logo"-->
-      <!--android:layout_width="match_parent"-->
-      <!--android:layout_height="wrap_content"-->
-      <!--android:padding="16dp"-->
-      <!--android:scaleType="fitCenter"-->
-      <!--android:src="@drawable/sz_logo"-->
-      <!--android:alpha="1"/>-->
+  <ImageView
+      android:id="@+id/logo"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:padding="16dp"
+      android:scaleType="fitCenter"
+      android:src="@drawable/sz_logo"
+      android:alpha="1"/>
   <TextView
       android:id="@+id/tapAnywhereToBeginText"
       android:text="@string/tap_anywhere_to_begin"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:gravity="center"
+      android:textSize="16dp"
+      android:gravity="bottom|center_horizontal"
+      android:paddingBottom="16dp"
       android:layout_gravity="center_horizontal"
       android:background="@android:color/transparent"/>
 
@@ -60,15 +53,5 @@
         android:textSize="@dimen/legal_text_size"
         android:textColor="@color/legal_link_text"
         android:text="@string/terms_of_use_link"/>
-    <Button
-        android:id="@+id/tutorialLink"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:padding="0dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/legal_text_size"
-        android:textColor="@color/legal_link_text"
-        android:text="@string/tutorial_link"
-        android:gravity="start|center_vertical" />
   </LinearLayout>
 </FrameLayout>

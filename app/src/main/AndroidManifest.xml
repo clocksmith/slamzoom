@@ -29,12 +29,6 @@
     </activity>
 
     <activity
-        android:name=".ui.start.TutorialActivity"
-        android:theme="@style/Theme.AppCompat.NoActionBar"
-        android:screenOrientation="portrait">
-    </activity>
-
-    <activity
         android:name=".ui.start.StartActivity"
         android:theme="@style/Theme.AppCompat.NoActionBar"
         android:screenOrientation="portrait">

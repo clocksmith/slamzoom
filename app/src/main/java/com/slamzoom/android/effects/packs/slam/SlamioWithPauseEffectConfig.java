@@ -13,6 +13,7 @@ import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
  * Created by clocksmith on 9/13/16.
  */
 public class SlamioWithPauseEffectConfig extends EffectConfig {
+  private static final float SLAM_DURATION = 0.6f;
   @Override
   public String getName() {
     return "slamio";
@@ -20,12 +21,12 @@ public class SlamioWithPauseEffectConfig extends EffectConfig {
 
   @Override
   public float getStartPauseSeconds() {
-    return 1f;
+    return 2.5f;
   }
 
   @Override
   public float getDurationSeconds() {
-    return 2.2f;
+    return 3.7f;
   }
 
   @Override
@@ -38,13 +39,14 @@ public class SlamioWithPauseEffectConfig extends EffectConfig {
     return new Interpolator() {
       @Override
       public float getValue(float t) {
-        float newT = t * 2.2f;
-        if (newT < 0.6f) {
-          return new SlaminEffectConfig().getScaleInterpolator().getValue(newT / 0.6f);
-        } else if (newT < 1.6f) {
+        float newT = t * getDurationSeconds();
+        if (newT < SLAM_DURATION) {
+          return new SlaminEffectConfig().getScaleInterpolator().getValue(newT / SLAM_DURATION);
+        } else if (newT <= getDurationSeconds() - SLAM_DURATION) {
           return new SlaminEffectConfig().getScaleInterpolator().getValue(1);
         } else {
-          return new SlamoutEffectConfig().getScaleInterpolator().getValue((newT - 1.6f) / 0.6f);
+          return new SlamoutEffectConfig().getScaleInterpolator().getValue(
+              (newT - (getDurationSeconds() - SLAM_DURATION)) / SLAM_DURATION);
         }
       }
     };
@@ -55,13 +57,14 @@ public class SlamioWithPauseEffectConfig extends EffectConfig {
     return new ZoomBlurAtHotspotFilterInterpolator(new Interpolator() {
       @Override
       public float getValue(float t) {
-        float newT = t * 2.2f;
-        if (newT < 0.6f) {
-          return new SlaminEffectConfig().getFilterInterpolator().getInterpolator().getValue(newT / 0.6f);
-        } else if (newT < 1.6f) {
+        float newT = t * getDurationSeconds();
+        if (newT < SLAM_DURATION) {
+          return new SlaminEffectConfig().getFilterInterpolator().getInterpolator().getValue(newT / SLAM_DURATION);
+        } else if (newT <= getDurationSeconds() - SLAM_DURATION) {
           return new SlaminEffectConfig().getFilterInterpolator().getInterpolator().getValue(1);
         } else {
-          return new SlamoutEffectConfig().getFilterInterpolator().getInterpolator().getValue((newT - 1.6f) / 0.6f);
+          return new SlamoutEffectConfig().getFilterInterpolator().getInterpolator().getValue(
+              ((newT - (getDurationSeconds() - SLAM_DURATION)) / SLAM_DURATION) * 0.99f);
         }
       }
     });

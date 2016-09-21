@@ -18,6 +18,7 @@ import com.slamzoom.android.effects.packs.distort.InflateEffectConfig;
 import com.slamzoom.android.effects.packs.distort.SmushEfffectConfig;
 import com.slamzoom.android.effects.packs.distort.SwirlEffectConfig;
 import com.slamzoom.android.effects.packs.slam.CrashEffectConfig;
+import com.slamzoom.android.effects.packs.slam.SlamioWithPauseEffectConfig;
 import com.slamzoom.android.effects.packs.slam.WhirlEffectConfig;
 import com.slamzoom.android.effects.packs.slam.FlashEffectConfig;
 import com.slamzoom.android.effects.packs.slam.PounceEffectConfig;
@@ -74,12 +75,13 @@ public class Effects {
     DEBUG_EFFECT_PACKS = ImmutableList.<EffectPack>builder()
         .add(EffectPack.newBuilder()
             .withName(Pack.DEBUG.name())
-            .withEffectConfig(new CrashEffectConfig() {
-              @Override
-              public float getDurationSeconds() {
-                return 1;
-              }
-            })
+            .withEffectConfig(new SlamioWithPauseEffectConfig())
+//            .withEffectConfig(new CrashEffectConfig() {
+//              @Override
+//              public float getDurationSeconds() {
+//                return 1;
+//              }
+//            })
 //            .withEffectConfig(new PopInConfig())
 //            .withEffectTemplate(EffectTemplate.newSingleStepBuilder()
 //                .withName("popout")

@@ -26,23 +26,18 @@ public class SplashActivity extends AppCompatActivity {
       SzLog.e("NOT A REAL ERROR", "NOT A REAL ERROR");
     }
 
-    // TODO(clocksmith): Remove this hack to get mona video
-    final RectF MONA_LISA_PHONE_HOTSPOT = new RectF(0.16f, 0.75f, 0.28f, 0.87f);
-    final CreateTemplate CREATE_TEMPLATE =
-        new CreateTemplate(UriUtils.getUriFromRes(R.drawable.mona_lisa_sz_1920x2560), MONA_LISA_PHONE_HOTSPOT);
-    Intent intent = new Intent(this, CreateActivity.class);
-    intent.putExtra(Constants.CREATE_TEMPLATE, CREATE_TEMPLATE);
-    this.startActivity(intent);
-    finish();
-
-//    Intent intent;
-//    if (Preferences.isFirstAppOpen(this)) {
-//      intent = new Intent(this, TutorialActivity.class);
-//      Preferences.setFirstAppOpen(this, false);
-//    } else {
-//      intent = new Intent(this, DebugUtils.SKIP_START_SCREEN ? CreateActivity.class : StartActivity.class);
-//    }
-//    startActivity(intent);
-//    finish();
+    if (DebugUtils.USE_MONA_TEMPLATE) {
+      final RectF MONA_LISA_PHONE_HOTSPOT = new RectF(0.16f, 0.75f, 0.28f, 0.87f);
+      final CreateTemplate CREATE_TEMPLATE =
+          new CreateTemplate(UriUtils.getUriFromRes(R.drawable.mona_lisa_sz_1920x2560), MONA_LISA_PHONE_HOTSPOT);
+      Intent intent = new Intent(this, CreateActivity.class);
+      intent.putExtra(Constants.CREATE_TEMPLATE, CREATE_TEMPLATE);
+      this.startActivity(intent);
+      finish();
+    } else {
+      Intent intent = new Intent(this, DebugUtils.SKIP_START_SCREEN ? CreateActivity.class : StartActivity.class);
+      startActivity(intent);
+      finish();
+    }
   }
 }
