@@ -155,6 +155,8 @@ public class CreateActivity extends AppCompatActivity {
       handleCreateTemplateIntent(getIntent());
     } else if (savedInstanceState != null) {
       unpackBundle(savedInstanceState);
+    } else {
+      Intents.startImageChooser(this);
     }
 
     init();
@@ -277,9 +279,7 @@ public class CreateActivity extends AppCompatActivity {
   @Override protected void onResume() {
     super.onResume();
 
-    if (mSelectedUri == null || mSelectedHotspot == null) {
-      Intents.startImageChooser(this);
-    } else if (mSelectedBitmapSet == null)  {
+    if (mSelectedUri != null && mSelectedHotspot != null && mSelectedBitmapSet == null)  {
       mSelectedBitmapSet = new BitmapSet(this, mSelectedUri, MediaConstants.THUMBNAIL_SIZE_PX);
       clearAndUpdateAllGifs();
     }
