@@ -18,6 +18,10 @@ public class Params {
 
   public static final String SELECTED_HOTSPOT = "selectedHotspot";
   public static final String SELECTED_URI = "selectedUri";
+  public static final String SELECTED_HOTSPOT_CANDIDATE = "selectedHotspotCandidate";
+  public static final String SELECTED_URI_CANDIDATE = "selectedUriCandidate";
+
+
   public static final String SELECTED_EFFECT_NAME = "selectedEffectName";
   public static final String SELECTED_END_TEXT = "selectedEndText";
   public static final String PURCHASED_PACK_NAMES = "purchasedPackNames";

@@ -53,7 +53,7 @@ public class HotspotChooserActivity extends LifecycleLoggingActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     SzLog.f(TAG, "onCreate");
-    setSubTag(TAG);
+    setLifecycleLoggingActivitySubTag(TAG);
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_hotspot_chooser);
     ButterKnife.bind(this);

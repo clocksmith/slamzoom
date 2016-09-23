@@ -117,24 +117,22 @@ public class CreateActivity extends LifecycleLoggingActivity {
   private BitmapSet mSelectedBitmapSet;
   private String mSelectedEffectName = Effects.listEffectTemplates().get(0).getName();
   private String mSelectedEndText;
-  private List<String> mPurchasedPackNames = Lists.newArrayList();
 
   private byte[] mSelectedGifBytes; // TODO(clocksmith): this should be queried from the service
   private Map<String, Double> mGifProgresses;
   private boolean mGeneratingGif = false;
+  private List<String> mPurchasedPackNames = Lists.newArrayList();
   private boolean mNeedsUpdatePurchasePackNames;
   private boolean mIsAddTextViewShowing = false;
 
-  // Media Exports
-  private VideoCreator mVideoCreator;
-  private ExportGifTask mExportGifTask;
-
-  // Services
+  // Services, Creators, Tasks
   private GifService mGifService;
   private GifServiceConnection mGifServiceConnection;
   private IInAppBillingService mBillingService;
   private BillingServiceConnection mBillingServiceConnection;
   private Queue<Runnable> mDeferredGifServiceRunnables = Queues.newConcurrentLinkedQueue();
+  private VideoCreator mVideoCreator;
+  private ExportGifTask mExportGifTask;
 
   // Receivers
   private GifSharedReceiver mGifSharedReceiver;
@@ -146,34 +144,72 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    SzLog.f(TAG, "onCreate");
-    setSubTag(TAG);
+    setLifecycleLoggingActivitySubTag(TAG);
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_create);
     ButterKnife.bind(this);
     BusProvider.getInstance().register(this);
+
     initView();
 
+    // TODO(clocksmith): refactor this to be more readable.
     if (getIntent() != null && getIntent().getParcelableExtra(Params.HOTSPOT) != null) {
-      // If this intent is from hotspot chooser, then we need to handle it.
+      // If this intent has a hotspot, then its from the from hotspot chooser, and we need to handle it here.
       handleHotspotSelectedFromChooser(getIntent());
     } else if (getIntent() != null && getIntent().getParcelableExtra(Params.CREATE_TEMPLATE) != null) {
       CreateTemplate createTemplate = getIntent().getParcelableExtra(Params.CREATE_TEMPLATE);
       mSelectedUri = createTemplate.uri;
       mSelectedHotspot = createTemplate.hotspot;
-    } if (savedInstanceState != null) {
+    } else if (savedInstanceState != null) {
       // Get the saved state is being recreated.
       unpackBundle(savedInstanceState);
-      mEffectChooser.setSelectedEffect(mSelectedEffectName); // TODO(clocksmith): do this somewhere else?
+    } else {
+      launchImageChooser();
     }
 
+    mEffectChooser.setSelectedEffect(mSelectedEffectName); // TODO(clocksmith): do this somewhere else?
     initReceivers();
     initServices();
   }
 
-  @Override
-  protected void onNewIntent(Intent intent) {
-    SzLog.f(TAG, "onNewIntent");
+  private void initView() {
+    initToolbar();
+    initGifArea();
+    initEffectChooser();
+  }
+
+  private void initServices() {
+    bindGifService();
+    bindBillingService();
+  }
+
+  private void initReceivers() {
+    mGifSharedReceiver = new GifSharedReceiver();
+    mVideoSharedReceiver = new VideoSharedReceiver();
+    registerReceiver(mGifSharedReceiver, new IntentFilter(Intent.ACTION_SEND));
+    registerReceiver(mVideoSharedReceiver, new IntentFilter(Intent.ACTION_SEND));
+  }
+
+  private void initToolbar() {
+    setSupportActionBar(mToolbar);
+    assert getSupportActionBar() != null;
+
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    getSupportActionBar().setDisplayShowTitleEnabled(false);
+    mToolbarTitle.setTypeface(FontProvider.getInstance().getTitleFont());
+    showAddTextView(false);
+  }
+
+  private void initGifArea() {
+    mGifProgresses = Maps.newHashMap();
+    for (EffectTemplate template : Effects.listEffectTemplates()) {
+      mGifProgresses.put(template.getName(), 0d);
+    }
+    mGifAreaView = mZeroStateMessage;
+  }
+
+  private void initEffectChooser() {
+    mEffectChooser.initForCreateActivity();
   }
 
   @Override
@@ -207,15 +243,10 @@ public class CreateActivity extends LifecycleLoggingActivity {
   @Override protected void onResume() {
     super.onResume();
 
-    if (mSelectedUri == null) {
-      launchImageChooser();
-    } else if (mSelectedHotspot == null) {
-      launchHotspotChooser();
-    } else if (mSelectedBitmapSet == null)  {
+    if (mSelectedUri != null && mSelectedHotspot != null && mSelectedBitmapSet == null)  {
       mSelectedBitmapSet = new BitmapSet(this, mSelectedUri, MediaConstants.THUMBNAIL_SIZE_PX);
       clearAndUpdateAllGifs();
     }
-    // If we still have the bitmap, then the activity was not destroyed, and nothing needs to be done in onResume.
   }
 
   @Override
@@ -378,64 +409,6 @@ public class CreateActivity extends LifecycleLoggingActivity {
     mUnlockPackDialogFragment.dismiss();
   }
 
-  private void initView() {
-    initToolbar();
-    initGifArea();
-    initEffectChooser();
-  }
-
-  private void initServices() {
-    bindGifService();
-    bindBillingService();
-  }
-
-  private void initReceivers() {
-    mGifSharedReceiver = new GifSharedReceiver();
-    mVideoSharedReceiver = new VideoSharedReceiver();
-    registerReceiver(mGifSharedReceiver, new IntentFilter(Intent.ACTION_SEND));
-    registerReceiver(mVideoSharedReceiver, new IntentFilter(Intent.ACTION_SEND));
-  }
-
-  private void initToolbar() {
-    setSupportActionBar(mToolbar);
-    assert getSupportActionBar() != null;
-
-//    mLogoView = new ImageView(this);
-//    mLogoView.setPadding(0, 0, 0, 0);
-//    mLogoView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.sz_logo));
-//    mLogoView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-//    mAddTextView = new AddTextView(this);
-//    getSupportActionBar().setDisplayShowCustomEnabled(false);
-
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    getSupportActionBar().setDisplayShowTitleEnabled(false);
-    mToolbarTitle.setTypeface(FontProvider.getInstance().getTitleFont());
-    showAddTextView(false);
-
-//    SpannableString ss = new SpannableString("abc");
-//    Drawable d = ContextCompat.getDrawable(this, R.drawable.sz_logo);
-//    d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
-//    ImageSpan span = new ImageSpan(d, ImageSpan.ALIGN_BASELINE);
-//    ss.setSpan(span, 0, 3, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-
-
-//    getSupportActionBar().setCustomView(mAddTextView,
-//        new Toolbar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-  }
-
-  private void initGifArea() {
-    mGifProgresses = Maps.newHashMap();
-    for (EffectTemplate template : Effects.listEffectTemplates()) {
-      mGifProgresses.put(template.getName(), 0d);
-    }
-    mGifAreaView = mZeroStateMessage;
-  }
-
-  private void initEffectChooser() {
-    mEffectChooser.initForCreateActivity();
-  }
-
   private void launchImageChooser() {
     Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
     intent.setType("image/*");
@@ -451,17 +424,17 @@ public class CreateActivity extends LifecycleLoggingActivity {
   private void handleImageSelectedFromChooser(Intent intent) {
     mSelectedUri = intent.getData();
 
+    // Invalidate the selected text since the image has changed.
     mSelectedEndText = null;
 
-    // The next step after choosing an image is always to start the hotspot chooser, but onResume will handle that,
-    // as long as we invalidate any existing hotspots.
-    mSelectedHotspot = null;
+    // The next step after choosing an image is always to start the hotspot chooser
+    launchHotspotChooser();
   }
 
   private void handleImageChooserCancelled() {
-    // If the image chooser was cancelled and there is no current uri, hotspot, or bitmap (i.e. the image chooser
-    // was not started by the image chooser button), assume the user does not want to resume this activity.
-    if (mSelectedUri == null || mSelectedBitmapSet == null || mSelectedBitmapSet == null) {
+    // If the image chooser was cancelled and there is no current uri,
+    // assume the user does not want to resume this activity.
+    if (mSelectedUri == null || mSelectedHotspot == null) {
       finish();
     }
   }
@@ -475,14 +448,13 @@ public class CreateActivity extends LifecycleLoggingActivity {
       mSelectedUri = newUri;
     }
 
-    // This will force onResume to init the gif creation process.
+    // Invalidate the bitmap set to force onResume to init the gif creation process.
     mSelectedBitmapSet = null;
   }
 
   private void handleHotspotChooserCancelled() {
-    // If the hotspot chooser was cancelled, invalidate the uri and assume the user wants a different image.
-    if (mSelectedBitmapSet == null) {
-      mSelectedUri = null;
+    if (mSelectedHotspot == null) {
+      launchImageChooser();
     }
   }
 

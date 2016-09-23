@@ -14,7 +14,7 @@ public class LifecycleLoggingActivity extends AppCompatActivity {
 
   private String mSubTag = "";
 
-  protected void setSubTag(String tag) {
+  protected void setLifecycleLoggingActivitySubTag(String tag) {
     mSubTag = tag;
   }
 
@@ -40,7 +40,7 @@ public class LifecycleLoggingActivity extends AppCompatActivity {
 
   @Override protected void onStart() {
     super.onStart();
-//    SzLog.f(getFullTagInternal(), "onStart()");
+    SzLog.f(getFullTagInternal(), "onStart()");
   }
 
   @Override protected void onResume() {
@@ -55,7 +55,7 @@ public class LifecycleLoggingActivity extends AppCompatActivity {
 
   @Override protected void onStop() {
     super.onStop();
-//    SzLog.f(getFullTagInternal(), "onStop()");
+    SzLog.f(getFullTagInternal(), "onStop()");
   }
 
   @Override
