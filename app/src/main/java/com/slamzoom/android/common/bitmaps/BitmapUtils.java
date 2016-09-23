@@ -26,7 +26,7 @@ import java.io.InputStream;
  */
 public class BitmapUtils {
   // TODO(clocksmith): change this value, make it easier to config.
-  public static final int NUM_BITMAPS_IN_SET = 5; // doubles every change.
+  public static final int NUM_BITMAPS_IN_SET = 4; // doubles every change.
   private static final String TAG = BitmapUtils.class.getSimpleName();
 
   public static Bitmap readScaledBitmap(Uri uri , ContentResolver contentResolver) throws FileNotFoundException  {

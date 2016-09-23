@@ -23,6 +23,7 @@ import com.slamzoom.android.common.fonts.FontProvider;
 import com.slamzoom.android.common.activities.LifecycleLoggingActivity;
 import com.slamzoom.android.common.intents.Params;
 import com.slamzoom.android.common.logging.SzAnalytics;
+import com.slamzoom.android.common.logging.SzLog;
 import com.slamzoom.android.common.settings.Preferences;
 import com.slamzoom.android.common.bitmaps.BitmapUtils;
 import com.slamzoom.android.BuildFlags;
@@ -51,6 +52,7 @@ public class HotspotChooserActivity extends LifecycleLoggingActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    SzLog.f(TAG, "onCreate");
     setSubTag(TAG);
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_hotspot_chooser);
@@ -60,7 +62,18 @@ public class HotspotChooserActivity extends LifecycleLoggingActivity {
     mHint.setTypeface(FontProvider.getInstance().getDefaultFont());
     mDoneButton.setTypeface(FontProvider.getInstance().getDefaultFont());
 
-    final Uri uri = getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
+    handleIntent(getIntent());
+  }
+
+  @Override
+  protected void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    SzLog.f(TAG, "onNewIntent");
+    handleIntent(intent);
+  }
+
+  private void handleIntent(Intent intent) {
+    final Uri uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
 
     SzAnalytics.newSelectImageEvent()
         .withPackageName(uri.toString().replace("content://", ""))
@@ -120,18 +133,17 @@ public class HotspotChooserActivity extends LifecycleLoggingActivity {
     if (getCallingActivity() != null &&
         getCallingActivity().getClassName().equals(CreateActivity.class.getCanonicalName())) {
       Intent returnIntent = new Intent();
-      returnIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
-      returnIntent.putExtra(Params.NORMALIZED_HOTSPOT, hotspot);
+      returnIntent.putExtra(Params.IMAGE_URI, imageUri);
+      returnIntent.putExtra(Params.HOTSPOT, hotspot);
       setResult(RESULT_OK, returnIntent);
       finish();
     } else {
       Intent intent = new Intent(HotspotChooserActivity.this, CreateActivity.class);
-      intent.putExtra(Intent.EXTRA_STREAM, imageUri);
-      intent.putExtra(Params.NORMALIZED_HOTSPOT, hotspot);
+      intent.putExtra(Params.IMAGE_URI, imageUri);
+      intent.putExtra(Params.HOTSPOT, hotspot);
       startActivity(intent);
     }
   }
-
 
   private void finishWithCropRect(Rect hotspot, Uri imageUri) {
     RectF normalizedHotspot = new RectF(
@@ -145,7 +157,6 @@ public class HotspotChooserActivity extends LifecycleLoggingActivity {
 
   @Override
   public void onBackPressed() {
-//    super.onBackPressed();
     finish();
   }
 }

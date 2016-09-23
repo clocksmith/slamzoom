@@ -146,6 +146,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    SzLog.f(TAG, "onCreate");
     setSubTag(TAG);
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_create);
@@ -168,6 +169,11 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
     initReceivers();
     initServices();
+  }
+
+  @Override
+  protected void onNewIntent(Intent intent) {
+    SzLog.f(TAG, "onNewIntent");
   }
 
   @Override
@@ -461,10 +467,10 @@ public class CreateActivity extends LifecycleLoggingActivity {
   }
 
   private void handleHotspotSelectedFromChooser(Intent intent) {
-    mSelectedHotspot = intent.getParcelableExtra(Params.NORMALIZED_HOTSPOT);
+    mSelectedHotspot = intent.getParcelableExtra(Params.HOTSPOT);
 
     // If the image came from an external activity, we need to capture its uri at this point.
-    Uri newUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+    Uri newUri = intent.getParcelableExtra(Params.IMAGE_URI);
     if (newUri != null) {
       mSelectedUri = newUri;
     }
@@ -901,7 +907,7 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
   private void unpackBundle(Bundle bundle) {
     mSelectedUri = bundle.getParcelable(Params.SELECTED_URI);
-    mSelectedBitmapSet = bundle.getParcelable(Params.SELECTED_HOTSPOT);
+    mSelectedHotspot = bundle.getParcelable(Params.SELECTED_HOTSPOT);
     mSelectedEffectName = bundle.getString(Params.SELECTED_EFFECT_NAME);
     mSelectedEndText = bundle.getString(Params.SELECTED_END_TEXT);
     mPurchasedPackNames = bundle.getStringArrayList(Params.PURCHASED_PACK_NAMES);

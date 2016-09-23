@@ -118,13 +118,13 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
 
     setSelected(model.isSelected());
 
-    // Either show the gif or request it.
+    // Either showLocalHtmlFromAssets the gif or request it.
     if (model.getGifThumbnailBytes() != null && model.getGifThumbnailBytes().length > 0) {
       try {
         mProgressBar.setVisibility(View.GONE);
         mGifImageView.setImageDrawable(new GifDrawable(mModel.getGifThumbnailBytes()));
       } catch (IOException e) {
-        SzLog.e(TAG, "Could not show gif", e);
+        SzLog.e(TAG, "Could not showLocalHtmlFromAssets gif", e);
       }
     } else {
       BusProvider.getInstance().post(new RequestThumbnailGifEvent(name));

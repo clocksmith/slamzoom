@@ -7,10 +7,8 @@
   <string name="create_from_custom">CREATE YOUR OWN</string>
 
   <string name="privacy_policy_link"><u>privacy policy</u></string>
-  <string name="privacy_policy_title">Privacy Policy</string>
   <string name="terms_of_use_link"><u>terms of use</u></string>
-  <string name="terms_of_use_title">Terms of Use</string>
-  <string name="tutorial_link"><u>tutorial</u></string>
+  <string name="licenses_link"><u>licenses</u></string>
 
   <string name="hotspot_chooser_title">Hotspot Chooser</string>
   <string name="hotspot_chooser_hint">tip: zoom in on a face</string>

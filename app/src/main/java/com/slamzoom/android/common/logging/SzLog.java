@@ -5,6 +5,7 @@ import android.util.Log;
 import com.google.common.collect.ImmutableSet;
 import com.slamzoom.android.common.activities.LifecycleLoggingActivity;
 import com.slamzoom.android.ui.create.CreateActivity;
+import com.slamzoom.android.ui.create.hotspotchooser.HotspotChooserActivity;
 
 import java.util.Set;
 
@@ -18,12 +19,13 @@ import java.util.Set;
 public class SzLog {
   // NOTE: Please keep in alphabetical order.
   private static Set<String> mAcceptedTags = ImmutableSet.of(
-//      CreateActivity.class.getSimpleName(),
+      CreateActivity.class.getSimpleName(),
 //      EffectThumbnailViewHolder.class.getSimpleName(),
 //      GifCreator.class.getSimpleName(),
 //      GifCreatorManager.class.getSimpleName(),
 //      GifService.class.getSimpleName(),
-      LifecycleLoggingActivity.getFullTag(CreateActivity.class.getSimpleName()),
+      HotspotChooserActivity.class.getSimpleName(),
+//      LifecycleLoggingActivity.getFullTag(CreateActivity.class.getSimpleName()),
 //      LifecycleLoggingActivity.getFullTag(HotspotChooserActivity.class.getSimpleName()),
 //      LifecycleLoggingActivity.getFullTag(StartActivity.class.getSimpleName()),
 //      LifecycleLoggingActivity.getFullTag(HotspotChooserActivity.class.getSimpleName()),

@@ -20,7 +20,7 @@ public class KeyboardUtils {
   }
 
   /**
-   * Force show the keyboard and attach it to the view in focus in the activity.
+   * Force showLocalHtmlFromAssets the keyboard and attach it to the view in focus in the activity.
    */
   public static void showKeyboard(Activity activity) {
     if (activity.getCurrentFocus() != null) {

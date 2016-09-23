@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.RawRes;
 import android.view.Display;
@@ -40,6 +41,7 @@ public class StartActivity extends LifecycleLoggingActivity {
   @BindView(R.id.tapAnywhereToBeginText) TextView mTapAnywhereToBeginText;
   @BindView(R.id.privacyPolicyLink) Button mPrivacyPolicyLink;
   @BindView(R.id.termsOfUseLink) Button mTermsOfUseLink;
+  @BindView(R.id.licensesLink) Button mLicensesLink;
 
   private MediaPlayer mMediaPlayer;
 
@@ -49,13 +51,14 @@ public class StartActivity extends LifecycleLoggingActivity {
     setContentView(R.layout.activity_start);
     ButterKnife.bind(this);
 
-    // TODO(clocksmith): Is there a way to set a custom default font yet? (Yes there is, with reflection, do it idiot)
     mTapAnywhereToBeginText.setTypeface(FontProvider.getInstance().getTitleFont());
     mPrivacyPolicyLink.setTypeface(FontProvider.getInstance().getDefaultFont());
     mTermsOfUseLink.setTypeface(FontProvider.getInstance().getDefaultFont());
+    mLicensesLink.setTypeface(FontProvider.getInstance().getDefaultFont());
     // Little hack to disable all caps since these are "links", but we used buttons to get the ripple effect.
     mPrivacyPolicyLink.setTransformationMethod(null);
     mTermsOfUseLink.setTransformationMethod(null);
+    mLicensesLink.setTransformationMethod(null);
 
     mMediaPlayer = new MediaPlayer();
     mBackgroundVideoView.setSurfaceTextureListener(new TextureListener());
@@ -70,14 +73,21 @@ public class StartActivity extends LifecycleLoggingActivity {
     mPrivacyPolicyLink.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        LocalWebViewDialogPresenter.show(StartActivity.this, "privacy.html");
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://slamzoom.com/privacy")));
       }
     });
 
     mTermsOfUseLink.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        LocalWebViewDialogPresenter.show(StartActivity.this, "terms.html");
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://slamzoom.com/terms")));
+      }
+    });
+
+    mLicensesLink.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://slamzoom.com/licenses")));
       }
     });
   }
@@ -128,16 +138,11 @@ public class StartActivity extends LifecycleLoggingActivity {
             mBackgroundVideoView.requestLayout();
           }
         });
-        mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-          @Override
-          public void onCompletion(MediaPlayer mp) {
-            mMediaPlayer.start();
-          }
-        });
         mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
           @Override
           public void onPrepared(MediaPlayer mp) {
             fadeInVideo();
+            mMediaPlayer.setLooping(true);
             mMediaPlayer.start();
           }
         });
