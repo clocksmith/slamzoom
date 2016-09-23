@@ -10,8 +10,8 @@
   <string name="terms_of_use_link"><u>terms of use</u></string>
   <string name="licenses_link"><u>licenses</u></string>
 
-  <string name="hotspot_chooser_title">Hotspot Chooser</string>
-  <string name="hotspot_chooser_hint">tip: zoom in on a face</string>
+  <string name="hotspot_chooser_hint_zoom_in_on_face">tip: zoom in on a face</string>
+  <string name="hotspot_chooser_hint_zoom_in_close">tip: zoom in close</string>
 
   <string name="zero_state_message">select an effect</string>
 

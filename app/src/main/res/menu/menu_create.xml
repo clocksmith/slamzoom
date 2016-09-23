@@ -23,22 +23,22 @@
       app:showAsAction="always">
     <menu>
       <item
-          android:id="@+id/action_share_video"
-          android:icon="@drawable/ic_menu_share"
-          android:title="Share Video" />
-      <item
           android:id="@+id/action_share_gif"
           android:icon="@drawable/ic_menu_share"
           android:title="Share GIF" />
       <item
-          android:id="@+id/action_save_video"
-          android:icon="@drawable/ic_menu_save"
-          android:title="Save Video" />
+          android:id="@+id/action_share_video"
+          android:icon="@drawable/ic_menu_share"
+          android:title="Share Video" />
       <item
           android:id="@+id/action_save_gif"
           android:icon="@drawable/ic_menu_save"
           android:title="Save GIF" />
     </menu>
+      <item
+          android:id="@+id/action_save_video"
+          android:icon="@drawable/ic_menu_save"
+          android:title="Save Video" />
   </item>
   <!--<item-->
       <!--android:id="@+id/action_loop"-->

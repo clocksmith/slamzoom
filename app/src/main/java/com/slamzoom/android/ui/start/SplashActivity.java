@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.slamzoom.android.common.logging.SzLog;
 import com.slamzoom.android.BuildFlags;
-import com.slamzoom.android.common.intents.IntentUtils;
+import com.slamzoom.android.common.intents.Intents;
 
 /**
  * Created by clocksmith on 9/1/16.
@@ -21,9 +21,9 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     if (BuildFlags.USE_MONA_TEMPLATE) {
-      IntentUtils.startCreateActivityWithMonaTemplate(this);
+      Intents.startCreateActivityWithMonaTemplate(this);
     } else {
-      IntentUtils.startNextActivityAfterSplash(this);
+      Intents.startNextActivityAfterSplash(this);
     }
 
     // We never want to be able to go back to the splash screen.

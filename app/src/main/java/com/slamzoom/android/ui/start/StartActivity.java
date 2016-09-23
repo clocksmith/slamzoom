@@ -8,6 +8,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.RawRes;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Display;
 import android.view.Surface;
 import android.view.TextureView;
@@ -18,7 +19,6 @@ import android.widget.TextView;
 
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.fonts.FontProvider;
-import com.slamzoom.android.common.activities.LifecycleLoggingActivity;
 import com.slamzoom.android.common.logging.SzLog;
 import com.slamzoom.android.common.ui.LocalWebViewDialogPresenter;
 import com.slamzoom.android.common.data.UriUtils;
@@ -30,7 +30,7 @@ import butterknife.ButterKnife;
 /**
  * Created by clocksmith on 4/5/16.
  */
-public class StartActivity extends LifecycleLoggingActivity {
+public class StartActivity extends AppCompatActivity {
   private static final String TAG = StartActivity.class.getSimpleName();
 
   private static final @RawRes int VIDEO_RES = R.raw.mona_slamio_640;

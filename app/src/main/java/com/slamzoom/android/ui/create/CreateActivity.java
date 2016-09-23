@@ -23,6 +23,7 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
@@ -44,13 +45,13 @@ import com.slamzoom.android.R;
 import com.slamzoom.android.billing.GetBuyIntentCallback;
 import com.slamzoom.android.billing.GetPurchasedPacksCallback;
 import com.slamzoom.android.billing.IabHelper;
+import com.slamzoom.android.common.intents.Intents;
 import com.slamzoom.android.common.intents.Params;
 import com.slamzoom.android.common.intents.RequestCodes;
 import com.slamzoom.android.common.widgets.BackInterceptingEditText;
 import com.slamzoom.android.mediacreation.MediaConstants;
 import com.slamzoom.android.common.files.FileType;
 import com.slamzoom.android.common.fonts.FontProvider;
-import com.slamzoom.android.common.activities.LifecycleLoggingActivity;
 import com.slamzoom.android.BuildFlags;
 import com.slamzoom.android.common.files.FileUtils;
 import com.slamzoom.android.common.events.BusProvider;
@@ -72,7 +73,6 @@ import com.slamzoom.android.mediacreation.video.VideoCreatorCallback;
 import com.slamzoom.android.ui.create.effectchooser.EffectChooser;
 import com.slamzoom.android.ui.create.effectchooser.EffectModel;
 import com.slamzoom.android.ui.create.effectchooser.EffectThumbnailViewHolder;
-import com.slamzoom.android.ui.create.hotspotchooser.HotspotChooserActivity;
 import com.slamzoom.android.ui.start.CreateTemplate;
 import com.squareup.otto.Subscribe;
 
@@ -89,7 +89,7 @@ import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 
 // TODO(clocksmith): make this class smaller. extract services, etc.
-public class CreateActivity extends LifecycleLoggingActivity {
+public class CreateActivity extends AppCompatActivity {
   private static final String TAG = CreateActivity.class.getSimpleName();
 
   private enum ExportType {
@@ -144,30 +144,24 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    setLifecycleLoggingActivitySubTag(TAG);
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_create);
     ButterKnife.bind(this);
     BusProvider.getInstance().register(this);
 
-    initView();
-
-    // TODO(clocksmith): refactor this to be more readable.
-    if (getIntent() != null && getIntent().getParcelableExtra(Params.HOTSPOT) != null) {
-      // If this intent has a hotspot, then its from the from hotspot chooser, and we need to handle it here.
-      handleHotspotSelectedFromChooser(getIntent());
-    } else if (getIntent() != null && getIntent().getParcelableExtra(Params.CREATE_TEMPLATE) != null) {
-      CreateTemplate createTemplate = getIntent().getParcelableExtra(Params.CREATE_TEMPLATE);
-      mSelectedUri = createTemplate.uri;
-      mSelectedHotspot = createTemplate.hotspot;
+    if (getIntent().getParcelableExtra(Params.HOTSPOT) != null) {
+      handleHotspotSelected(getIntent());
+    } else if (getIntent().getParcelableExtra(Params.CREATE_TEMPLATE) != null) {
+      handleCreateTemplateIntent(getIntent());
     } else if (savedInstanceState != null) {
-      // Get the saved state is being recreated.
       unpackBundle(savedInstanceState);
-    } else {
-      launchImageChooser();
     }
 
-    mEffectChooser.setSelectedEffect(mSelectedEffectName); // TODO(clocksmith): do this somewhere else?
+    init();
+  }
+
+  private void init() {
+    initView();
     initReceivers();
     initServices();
   }
@@ -210,21 +204,22 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
   private void initEffectChooser() {
     mEffectChooser.initForCreateActivity();
+    mEffectChooser.setSelectedEffect(mSelectedEffectName);
   }
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     SzLog.f(TAG, "onActivityResult(): requestCode: " + requestCode + " resultCode: " + resultCode);
 
-    if (requestCode == RequestCodes.REQUEST_PICK_IMAGE) {
+    if (requestCode == RequestCodes.REQUEST_SELECT_IMAGE) {
       if (resultCode == RESULT_OK) {
-        handleImageSelectedFromChooser(data);
+        handleImageSelected(data);
       } else {
         handleImageChooserCancelled();
       }
-    } else if (requestCode == RequestCodes.REQUEST_CROP_IMAGE) {
+    } else if (requestCode == RequestCodes.REQUEST_SELECT_HOTSPOT) {
       if (resultCode == RESULT_OK) {
-        handleHotspotSelectedFromChooser(data);
+        handleHotspotSelected(data);
       } else {
         handleHotspotChooserCancelled();
       }
@@ -240,10 +235,51 @@ public class CreateActivity extends LifecycleLoggingActivity {
     }
   }
 
+  private void handleImageSelected(Intent intent) {
+    // Invalidate the selected text since the image has changed.
+    mSelectedEndText = null;
+
+    // The next step after choosing an image is always to start the hotspot chooser
+    Intents.startHotspotChooser(this, intent.getData());
+  }
+
+  private void handleImageChooserCancelled() {
+    // If there is no selcted uri, assume the user does not want to resume this activity.
+    // Else this was a cancel from a change image request and we can simply resume.
+    if (mSelectedUri == null) {
+      finish();
+    }
+  }
+
+  private void handleHotspotSelected(Intent intent) {
+    // Once the hotspot is selected, both the uri and the hotspot become valid.
+    mSelectedUri = intent.getParcelableExtra(Params.IMAGE_URI);
+    mSelectedHotspot = intent.getParcelableExtra(Params.HOTSPOT);
+
+    // Invalidate the bitmap set to force the gif creation process when resumed.
+    mSelectedBitmapSet = null;
+  }
+
+  private void handleHotspotChooserCancelled() {
+    // If either the selected uri or hotspot is null, the user has not yet confirmed an image so reluanch image chooser.
+    // This is overly cautious since if one of these is null, they should both be null anyways.
+    if (mSelectedUri == null || mSelectedHotspot == null) {
+      Intents.startImageChooser(this);
+    }
+  }
+
+  private void handleCreateTemplateIntent(Intent intent) {
+    CreateTemplate createTemplate = intent.getParcelableExtra(Params.CREATE_TEMPLATE);
+    mSelectedUri = createTemplate.uri;
+    mSelectedHotspot = createTemplate.hotspot;
+  }
+
   @Override protected void onResume() {
     super.onResume();
 
-    if (mSelectedUri != null && mSelectedHotspot != null && mSelectedBitmapSet == null)  {
+    if (mSelectedUri == null || mSelectedHotspot == null) {
+      Intents.startImageChooser(this);
+    } else if (mSelectedBitmapSet == null)  {
       mSelectedBitmapSet = new BitmapSet(this, mSelectedUri, MediaConstants.THUMBNAIL_SIZE_PX);
       clearAndUpdateAllGifs();
     }
@@ -409,55 +445,6 @@ public class CreateActivity extends LifecycleLoggingActivity {
     mUnlockPackDialogFragment.dismiss();
   }
 
-  private void launchImageChooser() {
-    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-    intent.setType("image/*");
-    startActivityForResult(Intent.createChooser(intent, "Select Image"), RequestCodes.REQUEST_PICK_IMAGE);
-  }
-
-  private void launchHotspotChooser() {
-    Intent intent = new Intent(CreateActivity.this, HotspotChooserActivity.class);
-    intent.putExtra(Intent.EXTRA_STREAM, mSelectedUri);
-    startActivityForResult(intent, RequestCodes.REQUEST_CROP_IMAGE);
-  }
-
-  private void handleImageSelectedFromChooser(Intent intent) {
-    mSelectedUri = intent.getData();
-
-    // Invalidate the selected text since the image has changed.
-    mSelectedEndText = null;
-
-    // The next step after choosing an image is always to start the hotspot chooser
-    launchHotspotChooser();
-  }
-
-  private void handleImageChooserCancelled() {
-    // If the image chooser was cancelled and there is no current uri,
-    // assume the user does not want to resume this activity.
-    if (mSelectedUri == null || mSelectedHotspot == null) {
-      finish();
-    }
-  }
-
-  private void handleHotspotSelectedFromChooser(Intent intent) {
-    mSelectedHotspot = intent.getParcelableExtra(Params.HOTSPOT);
-
-    // If the image came from an external activity, we need to capture its uri at this point.
-    Uri newUri = intent.getParcelableExtra(Params.IMAGE_URI);
-    if (newUri != null) {
-      mSelectedUri = newUri;
-    }
-
-    // Invalidate the bitmap set to force onResume to init the gif creation process.
-    mSelectedBitmapSet = null;
-  }
-
-  private void handleHotspotChooserCancelled() {
-    if (mSelectedHotspot == null) {
-      launchImageChooser();
-    }
-  }
-
   private void handleBuyPackSuccess() {
     updatePurchasedPackNamesAndEffectModels();
     // continue exporting the current effect since the buy had to come from an export.
@@ -470,12 +457,12 @@ public class CreateActivity extends LifecycleLoggingActivity {
 
   private void handleChangeImagePressed() {
     SzAnalytics.newSelectChangeImageEvent().log(this);
-    launchImageChooser();
+    Intents.startImageChooser(this);
   }
 
   private void handleChangeHotspotPressed() {
     SzAnalytics.newSelectChangeHotspotEvent().log(this);
-    launchHotspotChooser();
+    Intents.startHotspotChooser(this, mSelectedUri);
   }
 
   private void handleAddTextPressed() {
@@ -601,11 +588,6 @@ public class CreateActivity extends LifecycleLoggingActivity {
       mGifProgresses.put(template.getName(), 0d);
     }
   }
-
-//  private void resetEndText() {
-//    mSelectedEndText = "";
-//    mAddTextView.getEditText().setText("");
-//  }
 
   private void updatePurchasedPacksThenUpdateThumbnailGifs() {
     updatePurchasedPackNamesAndEffectModels(new Runnable() {

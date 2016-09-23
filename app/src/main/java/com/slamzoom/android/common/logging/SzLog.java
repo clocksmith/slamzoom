@@ -3,7 +3,6 @@ package com.slamzoom.android.common.logging;
 import android.util.Log;
 
 import com.google.common.collect.ImmutableSet;
-import com.slamzoom.android.common.activities.LifecycleLoggingActivity;
 import com.slamzoom.android.ui.create.CreateActivity;
 import com.slamzoom.android.ui.create.hotspotchooser.HotspotChooserActivity;
 
@@ -25,10 +24,6 @@ public class SzLog {
 //      GifCreatorManager.class.getSimpleName(),
 //      GifService.class.getSimpleName(),
       HotspotChooserActivity.class.getSimpleName(),
-//      LifecycleLoggingActivity.getFullTag(CreateActivity.class.getSimpleName()),
-//      LifecycleLoggingActivity.getFullTag(HotspotChooserActivity.class.getSimpleName()),
-//      LifecycleLoggingActivity.getFullTag(StartActivity.class.getSimpleName()),
-//      LifecycleLoggingActivity.getFullTag(HotspotChooserActivity.class.getSimpleName()),
 //      MediaCreator.class.getSimpleName(),
 //      SzAnalytics.class.getSimpleName(),
 //      VideoFrame.class.getSimpleName(),

@@ -9,6 +9,7 @@ import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,9 +19,10 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.common.collect.ImmutableList;
 import com.slamzoom.android.R;
+import com.slamzoom.android.common.data.MathUtils;
 import com.slamzoom.android.common.fonts.FontProvider;
-import com.slamzoom.android.common.activities.LifecycleLoggingActivity;
 import com.slamzoom.android.common.intents.Params;
 import com.slamzoom.android.common.logging.SzAnalytics;
 import com.slamzoom.android.common.logging.SzLog;
@@ -39,10 +41,14 @@ import butterknife.ButterKnife;
 /**
  * Created by clocksmith on 3/5/16.
  */
-public class HotspotChooserActivity extends LifecycleLoggingActivity {
+public class HotspotChooserActivity extends AppCompatActivity {
   private static final String TAG = HotspotChooserActivity.class.getSimpleName();
 
-  @BindView(R.id.title) TextView mTitle;
+  private static ImmutableList<Integer> TIP_STRING_RES_IDS = ImmutableList.of(
+      R.string.hotspot_chooser_hint_zoom_in_on_face,
+      R.string.hotspot_chooser_hint_zoom_in_close
+  );
+
   @BindView(R.id.hint) TextView mHint;
   @BindView(R.id.imageCropViewContainer) FrameLayout mImageCropViewContainer;
   @BindView(R.id.imageCropView) CropRectProvidingImageCropView mImageCropView;
@@ -52,13 +58,10 @@ public class HotspotChooserActivity extends LifecycleLoggingActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    SzLog.f(TAG, "onCreate");
-    setLifecycleLoggingActivitySubTag(TAG);
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_hotspot_chooser);
     ButterKnife.bind(this);
 
-    mTitle.setTypeface(FontProvider.getInstance().getTitleFont());
     mHint.setTypeface(FontProvider.getInstance().getDefaultFont());
     mDoneButton.setTypeface(FontProvider.getInstance().getDefaultFont());
 
@@ -70,6 +73,12 @@ public class HotspotChooserActivity extends LifecycleLoggingActivity {
     super.onNewIntent(intent);
     SzLog.f(TAG, "onNewIntent");
     handleIntent(intent);
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    mHint.setText(MathUtils.getRandomElement(TIP_STRING_RES_IDS));
   }
 
   private void handleIntent(Intent intent) {
