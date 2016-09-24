@@ -437,7 +437,7 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   @Subscribe
-  public void on(final BuyToUnlockDialogView.OnBuyClickedEvent event) {
+  public void on(final UnlockPackDialogView.OnBuyClickedEvent event) {
     IabHelper.getBuyIntentByPack(event.packName, mBillingService, new GetBuyIntentCallback() {
       @Override
       public void onSuccess(PendingIntent buyIntent) {
@@ -456,7 +456,7 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   @Subscribe
-  public void on(final BuyToUnlockDialogView.OnCancelClickedEvent event) {
+  public void on(final UnlockPackDialogView.OnCancelClickedEvent event) {
     mUnlockPackDialogFragment.dismiss();
   }
 

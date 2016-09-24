@@ -20,7 +20,6 @@
   <string name="zero_state_message">select an effect</string>
 
   <!-- Create Menu -->
-  <string name="action_cycle">cycle</string>
   <string name="action_add_text">add text</string>
   <string name="action_change_hotspot">change hotspot</string>
   <string name="action_change_image">change image</string>
@@ -32,8 +31,8 @@
   <!-- Unlock Dialog -->
   <string name="unlock_pack_dialog_title">Effect is Locked!</string>
   <string name="unlock_pack_dialog_message" formatted="false">%s must be unlocked to share %s</string>
-  <string name="unlock_dialog_ok">UNLOCK</string>
-  <string name="unlock_dialog_cancel">MAYBE LATER</string>
+  <string name="unlock_pack_dialog_ok">UNLOCK</string>
+    <string name="unlock_pack_dialog_cancel">MAYBE LATER</string>
 
   <!-- Permissions Dialog -->
   <string name="permissions_warning_dialog_title">Need Storage Permission to Share!</string>

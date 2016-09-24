@@ -13,4 +13,8 @@
   <!-- Unlock Pack Dialog -->
   <dimen name="unlock_pack_dialog_content_padding">28dp</dimen>
   <dimen name="unlock_pack_dialog_effect_height">260dp</dimen>
+
+  <!-- Watermark -->
+  <dimen name="max_watermark_text_size">20px</dimen>
+  <dimen name="watermark_margin">6px</dimen>
 </resources>

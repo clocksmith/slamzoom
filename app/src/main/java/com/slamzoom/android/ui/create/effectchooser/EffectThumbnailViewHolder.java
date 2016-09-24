@@ -103,7 +103,6 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
     mNameTextView.setTextColor(model.isSelected() ?
         ContextCompat.getColor(itemView.getContext(), R.color.effect_text) : effectTextColorInt);
 
-//    mPackNameTextView.setVisibility(inDialog ? View.GONE : View.VISIBLE);
     mPackNameTextView.setText(packName);
     mPackNameTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.effect_text));
 

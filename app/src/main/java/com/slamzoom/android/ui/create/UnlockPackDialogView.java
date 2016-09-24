@@ -42,8 +42,8 @@ import butterknife.ButterKnife;
 /**
  * Created by clocksmith on 7/20/16.
  */
-public class BuyToUnlockDialogView extends LinearLayout {
-  public static final String TAG = BuyToUnlockDialogView.class.getSimpleName();
+public class UnlockPackDialogView extends LinearLayout {
+  public static final String TAG = UnlockPackDialogView.class.getSimpleName();
 
   public class OnBuyClickedEvent {
     public String packName;
@@ -59,7 +59,7 @@ public class BuyToUnlockDialogView extends LinearLayout {
   @BindView(R.id.cancelButton) Button mCancelButton;
   @BindView(R.id.okButton) Button mOkButton;
 
-  public BuyToUnlockDialogView(Context context, final String effectName, final String packName) {
+  public UnlockPackDialogView(Context context, final String effectName, final String packName) {
     this(context, null);
 
     EffectPack pack = Effects.getPack(packName);
@@ -139,13 +139,13 @@ public class BuyToUnlockDialogView extends LinearLayout {
     mOtherEffects.initForDialog(effectModelsForPack, selectedPosition);
   }
 
-  public BuyToUnlockDialogView(Context context, AttributeSet attrs) {
+  public UnlockPackDialogView(Context context, AttributeSet attrs) {
     this(context, attrs, 0);
   }
 
-  public BuyToUnlockDialogView(Context context, AttributeSet attrs, int defStyleAttr) {
+  public UnlockPackDialogView(Context context, AttributeSet attrs, int defStyleAttr) {
     super(context, attrs, defStyleAttr);
-    LayoutInflater.from(context).inflate(R.layout.view_buy_to_unlock_dialog, this);
+    LayoutInflater.from(context).inflate(R.layout.view_unlock_pack_dialog, this);
     ButterKnife.bind(this);
   }
 

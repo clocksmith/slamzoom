@@ -126,7 +126,7 @@ public class HotspotChooserActivity extends AppCompatActivity {
 
   private void showFirstOpenDialog() {
     final ImageView view = new ImageView(this);
-    view.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.pinch_to_zoom));
+    view.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.sz_pinch_to_zoom));
     view.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
     DismissableDialogPresenter.show(this, getString(R.string.hotspot_chooser_first_open_title), view);
   }

@@ -20,28 +20,19 @@ import com.slamzoom.android.common.intents.Params;
 public class UnlockPackDialogFragment extends DialogFragment {
   private static final String TAG = UnlockPackDialogFragment.class.getSimpleName();
 
-//  public class OnBuyClickedEvent {
-//    public String packName;
-//    public OnBuyClickedEvent(String packName) {
-//      this.packName = packName;
-//    }
-//  }
-//
-//  public class OnCancelClickedEvent {}
-
   private String mEffectName;
   private String mPackName;
-  private BuyToUnlockDialogView mContentView;
+  private UnlockPackDialogView mContentView;
 
   public static UnlockPackDialogFragment newInstance(String effectName, String packName) {
-    UnlockPackDialogFragment f = new UnlockPackDialogFragment();
+    UnlockPackDialogFragment fragment = new UnlockPackDialogFragment();
 
     Bundle args = new Bundle();
     args.putString(Params.EFFECT_NAME, effectName);
     args.putString(Params.PACK_NAME, packName);
-    f.setArguments(args);
+    fragment.setArguments(args);
 
-    return f;
+    return fragment;
   }
 
   @Override
@@ -51,12 +42,10 @@ public class UnlockPackDialogFragment extends DialogFragment {
     mEffectName = effectName;
     mPackName = packName;
 
-    mContentView = new BuyToUnlockDialogView(getContext(), effectName, packName);
+    mContentView = new UnlockPackDialogView(getContext(), effectName, packName);
     mContentView.setMinimumHeight(getResources().getDimensionPixelOffset(R.dimen.unlock_pack_dialog_effect_height));
-//    mContentView.setLayoutParams(new LinearLayout.LayoutParams(
-//        ViewGroup.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelOffset(R.dimen.buy_dialog_effect_height)));
 
-    Drawable icon = ContextCompat.getDrawable(getActivity(), R.drawable.ic_gfx_buy_dialog_lock);
+    Drawable icon = ContextCompat.getDrawable(getActivity(), R.drawable.sz_ic_dialog_lock);
     icon.setColorFilter(ContextCompat.getColor(getActivity(), R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
     Dialog dialog = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.SlamzoomDialog))
         .setIcon(icon)

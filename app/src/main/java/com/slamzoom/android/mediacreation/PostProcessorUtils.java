@@ -9,6 +9,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 
+import com.slamzoom.android.R;
 import com.slamzoom.android.common.fonts.FontProvider;
 
 import java.util.List;
@@ -69,9 +70,9 @@ public class PostProcessorUtils {
   public static void renderWatermark(Context context, Bitmap original) {
     Canvas canvas = new Canvas(original);
 
-    Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
+    Paint textPaint = new Paint(Paint.DITHER_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
     textPaint.setColor(Color.WHITE); // Text Color
-    textPaint.setTextSize(MediaConstants.MAX_WATERMARK_TEXT_SIZE);
+    textPaint.setTextSize(context.getResources().getDimensionPixelSize(R.dimen.max_watermark_text_size));
     textPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)); // Text Overlapping Pattern
     textPaint.setTextAlign(Paint.Align.LEFT);
     textPaint.setTypeface(FontProvider.getInstance().getTitleFont());
@@ -80,10 +81,11 @@ public class PostProcessorUtils {
     Rect textBounds = new Rect();
     textPaint.getTextBounds(MediaConstants.WATERMARK_TEXT, 0, MediaConstants.WATERMARK_TEXT.length(), textBounds);
 
+    float margin = context.getResources().getDimensionPixelOffset(R.dimen.watermark_margin);
     canvas.drawText(
         MediaConstants.WATERMARK_TEXT,
-        original.getWidth() - textBounds.width() - MediaConstants.WATERMARK_TEXT_PADDING,
-        original.getHeight() - MediaConstants.WATERMARK_TEXT_PADDING,
+        original.getWidth() - textBounds.width() - margin,
+        original.getHeight() - margin,
         textPaint);
   }
 

@@ -128,7 +128,7 @@ public class EffectChooser extends RecyclerView {
     @Override
     public EffectThumbnailViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
       return new EffectThumbnailViewHolder(
-          LayoutInflater.from(parent.getContext()).inflate(R.layout.vh_effect, parent, false));
+          LayoutInflater.from(parent.getContext()).inflate(R.layout.view_holder_effect, parent, false));
     }
 
     @Override

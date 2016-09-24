@@ -26,7 +26,7 @@ public class SplashActivity extends AppCompatActivity {
       Intents.startNextActivityAfterSplash(this);
     }
 
-    // We never want to be able to go back to the splash screen.
+    // We never want to be able to go back to the sz_splash screen.
     finish();
   }
 }

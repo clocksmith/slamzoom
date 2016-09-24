@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-
   <item android:drawable="@color/not_quite_black"/>
 
-
   <item
+      android:gravity="top|center_vertical"
       android:top="@dimen/logo_padding_plus_status_bar"
-      android:left="@dimen/logo_padding"
-      android:right="@dimen/logo_padding">
+      android:adjustViewBounds="true"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
     <bitmap
-        android:gravity="top"
+        android:adjustViewBounds="true"
         android:src="@drawable/sz_logo_transparent"/>
   </item>
 

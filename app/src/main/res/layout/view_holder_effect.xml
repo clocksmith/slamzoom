@@ -53,7 +53,7 @@
             android:id="@+id/lockIcon"
             android:layout_width="16dp"
             android:layout_height="16dp"
-            android:src="@drawable/ic_gfx_effect_lock"
+            android:src="@drawable/sz_ic_view_effect_lock"
             android:tint="@color/effect_text"
             android:layout_toLeftOf="@+id/packNameTextView"
             android:layout_centerVertical="true"

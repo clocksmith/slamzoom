@@ -2,7 +2,8 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/not_quite_black">
   <TextureView
       android:id="@+id/backgroundVideoView"
       android:layout_width="match_parent"
@@ -12,9 +13,9 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginTop="@dimen/logo_padding"
+      android:adjustViewBounds="true"
       android:scaleType="fitCenter"
       android:src="@drawable/sz_logo_transparent"/>
-
 
   <TextView
       android:id="@+id/tapAnywhereToBeginText"

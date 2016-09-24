@@ -23,7 +23,7 @@ public class PermissionsWarningDialogFragment extends DialogFragment {
   @NonNull
   public Dialog onCreateDialog(Bundle savedInstanceState) {
     Dialog dialog = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.SlamzoomDialog))
-        .setIcon(R.drawable.ic_gfx_dialog_warning)
+        .setIcon(R.drawable.sz_ic_dialog_warning)
         .setTitle(R.string.permissions_warning_dialog_title)
         .setMessage(R.string.permissions_warning_dialog_message)
         .setPositiveButton(R.string.permissions_dialog_ok, new DialogInterface.OnClickListener() {
