@@ -58,6 +58,7 @@ public class HotspotChooserActivity extends AppCompatActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    SzLog.f(TAG, "onCreate");
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_hotspot_chooser);
     ButterKnife.bind(this);
@@ -70,8 +71,8 @@ public class HotspotChooserActivity extends AppCompatActivity {
 
   @Override
   protected void onNewIntent(Intent intent) {
-    super.onNewIntent(intent);
     SzLog.f(TAG, "onNewIntent");
+    super.onNewIntent(intent);
     handleIntent(intent);
   }
 

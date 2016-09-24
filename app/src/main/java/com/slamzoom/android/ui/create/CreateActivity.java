@@ -145,6 +145,7 @@ public class CreateActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    SzLog.f(TAG, "onCreate");
     setContentView(R.layout.activity_create);
     ButterKnife.bind(this);
     BusProvider.getInstance().register(this);
@@ -207,6 +208,18 @@ public class CreateActivity extends AppCompatActivity {
   private void initEffectChooser() {
     mEffectChooser.initForCreateActivity();
     mEffectChooser.setSelectedEffect(mSelectedEffectName);
+  }
+
+  @Override
+  protected void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    SzLog.f(TAG, "onNewIntent");
+    // TODO(clocksmith): merge with code in create activity
+    if (intent.getParcelableExtra(Params.HOTSPOT) != null) {
+      handleHotspotSelected(intent);
+    } else if (intent.getParcelableExtra(Params.CREATE_TEMPLATE) != null) {
+      handleCreateTemplateIntent(intent);
+    }
   }
 
   @Override
@@ -394,7 +407,6 @@ public class CreateActivity extends AppCompatActivity {
   @Subscribe
   public void on(GifService.GifReadyEvent event) throws IOException {
     if (!event.thumbnail) {
-      SzLog.f(TAG, "main gif ready: " + event.effectName);
       if (mSelectedEffectName.equals(event.effectName)) {
         mZeroStateMessage.setVisibility(View.GONE);
         mSelectedGifBytes = event.gifBytes;
