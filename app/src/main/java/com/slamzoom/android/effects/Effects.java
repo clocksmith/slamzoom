@@ -167,11 +167,13 @@ public class Effects {
         DEBUG_EFFECT_TEMPLATES_FROM_PACKS : EFFECT_TEMPLATES_FROM_PACKS_NEW_STRATEGY;
   }
 
-  // TODO(clocksmith): use more efficeint method.
+  // TODO(clocksmith): use more efficient method.
   public static EffectTemplate getEffectTemplate(String effectName) {
-    for (EffectTemplate effectTemplate : listEffectTemplates()) {
-      if (effectName.equals(effectTemplate.getName())) {
-        return effectTemplate;
+    if (effectName != null) {
+      for (EffectTemplate effectTemplate : listEffectTemplates()) {
+        if (effectName.equals(effectTemplate.getName())) {
+          return effectTemplate;
+        }
       }
     }
     return null;

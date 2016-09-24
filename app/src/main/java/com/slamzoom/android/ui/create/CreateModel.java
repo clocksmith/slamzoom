@@ -7,9 +7,11 @@ import android.os.Parcelable;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.slamzoom.android.SzApp;
 import com.slamzoom.android.common.bitmaps.BitmapSet;
 import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.effects.Effects;
+import com.slamzoom.android.mediacreation.MediaConstants;
 
 import java.util.List;
 import java.util.Map;
@@ -36,8 +38,8 @@ public class CreateModel implements Parcelable {
     return mSelectedBitmapSet;
   }
 
-  public void setSelectedBitmapSet(BitmapSet mSelectedBitmapSet) {
-    this.mSelectedBitmapSet = mSelectedBitmapSet;
+  public void setSelectedBitmapSet(BitmapSet selectedBitmapSet) {
+    mSelectedBitmapSet = selectedBitmapSet;
   }
 
   public Uri getSelectedUri() {
@@ -57,6 +59,9 @@ public class CreateModel implements Parcelable {
   }
 
   public String getSelectedEffectName() {
+    if (mSelectedEffectName == null) {
+      mSelectedEffectName = Effects.listEffectTemplates().get(0).getName();
+    }
     return mSelectedEffectName;
   }
 

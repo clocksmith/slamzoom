@@ -242,7 +242,7 @@ public class MutedVideoView extends SurfaceView
 //      AudioManager am = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
 //      am.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 
-    // we shouldn't clear the target state, because somebody might have
+    // we shouldn't clearGifService the target state, because somebody might have
     // called start() previously
     release(false);
     try {

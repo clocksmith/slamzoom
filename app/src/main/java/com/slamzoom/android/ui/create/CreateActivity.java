@@ -39,7 +39,6 @@ import android.widget.TextView;
 import com.android.vending.billing.IInAppBillingService;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Queues;
 import com.slamzoom.android.R;
 import com.slamzoom.android.billing.GetBuyIntentCallback;
 import com.slamzoom.android.billing.GetPurchasedPacksCallback;
@@ -65,6 +64,7 @@ import com.slamzoom.android.effects.EffectTemplate;
 import com.slamzoom.android.common.bitmaps.BitmapSet;
 import com.slamzoom.android.mediacreation.MediaConfig;
 import com.slamzoom.android.mediacreation.StopwatchTracker;
+import com.slamzoom.android.mediacreation.gif.DeferrableGifService;
 import com.slamzoom.android.mediacreation.gif.GifCreator;
 import com.slamzoom.android.mediacreation.gif.GifService;
 import com.slamzoom.android.mediacreation.video.VideoCreator;
@@ -79,7 +79,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Queue;
+import java.util.concurrent.Callable;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -97,7 +97,7 @@ public class CreateActivity extends AppCompatActivity {
   // Model
   private CreateModel mModel;
 
-  // View.
+  // View
   @BindView(R.id.coordinatatorLayout) CoordinatorLayout mCoordinatorLayout;
   @BindView(R.id.toolbar) Toolbar mToolbar;
   @BindView(R.id.toolbarTitle) TextView mToolbarTitle;
@@ -106,6 +106,7 @@ public class CreateActivity extends AppCompatActivity {
   @BindView(R.id.progressBar) ProgressBar mProgressBar;
   @BindView(R.id.zeroStateMessage) TextView mZeroStateMessage;
   @BindView(R.id.effectChooser) EffectChooser mEffectChooser;
+
   private ImageView mLogoView; // action bar custom view.
   private AddTextView mAddTextView; // action bar custom view.
   private View mGifAreaView;
@@ -113,12 +114,10 @@ public class CreateActivity extends AppCompatActivity {
   private ProgressDialog mShareProgressDialog;
 
   // Services
-  private GifService mGifService;
-  private GifServiceConnection mGifServiceConnection;
+  // TODO(clocksmith): try to encapsulate this
+  private DeferrableGifService mDeferredGifService;
   private IInAppBillingService mBillingService;
   private BillingServiceConnection mBillingServiceConnection;
-  // TODO(clocksmith): move this to GifService?
-  private Queue<Runnable> mDeferredGifServiceRunnables = Queues.newConcurrentLinkedQueue();
 
   // Receivers
   private GifSharedReceiver mGifSharedReceiver;
@@ -128,6 +127,7 @@ public class CreateActivity extends AppCompatActivity {
   private VideoCreator mVideoCreator;
   private ExportGifTask mExportGifTask;
 
+  // Other temporary state
   // TODO(clocksmith): get rid of need for these.
   private FileType mSelectedFileType;
   private ExportType mSelectedExportType;
@@ -138,18 +138,18 @@ public class CreateActivity extends AppCompatActivity {
     SzLog.f(TAG, "onCreate");
     super.onCreate(savedInstanceState);
 
-    initModel(savedInstanceState);
+    initModel(getIntent(), savedInstanceState);
     initView();
     initServices();
     initReceivers();
     initEventBus();
   }
 
-  private void initModel(Bundle savedInstanceState) {
+  private void initModel(Intent intent, Bundle savedInstanceState) {
     mModel = new CreateModel();
-    if (getIntent().getParcelableExtra(Params.HOTSPOT) != null) {
-      handleHotspotSelected(getIntent());
-    } else if (getIntent().getParcelableExtra(Params.CREATE_TEMPLATE) != null) {
+    if (intent.getParcelableExtra(Params.HOTSPOT) != null) {
+      handleHotspotSelected(intent);
+    } else if (intent.getParcelableExtra(Params.CREATE_TEMPLATE) != null) {
       handleCreateTemplateIntent(getIntent());
     } else if (savedInstanceState != null) {
       unpackSavedInstanceState(savedInstanceState);
@@ -184,7 +184,8 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   private void initServices() {
-    bindGifService();
+    mDeferredGifService = new DeferrableGifService(this);
+    mDeferredGifService.bind();
     bindBillingService();
   }
 
@@ -210,7 +211,7 @@ public class CreateActivity extends AppCompatActivity {
   protected void onNewIntent(Intent intent) {
     SzLog.f(TAG, "onNewIntent");
     super.onNewIntent(intent);
-    initModel(null);
+    initModel(intent, null);
   }
 
   @Override
@@ -264,13 +265,14 @@ public class CreateActivity extends AppCompatActivity {
     mModel.setSelectedBitmapSet(null);
     // Invalidate the selected text since the image/hotspot has changed.
     // TODO(clocksmith): maybe only do this if both the uri and hotspot changed?
-    mModel.setSelectedEffectName(null);
+    mModel.setSelectedEndText(null);
   }
 
   private void handleHotspotChooserCancelled() {
     // If either the selected uri or hotspot is null, the user has not yet confirmed an image so reluanch image chooser.
     // This is overly cautious since if one of these is null, they should both be null anyways.
-    if (mModel.getSelectedUri() == null || mModel.getSelectedHotspot() == null) {
+    if (mModel.getSelectedUri() == null) {
+      mSkipResume = true;
       Intents.startImageChooser(this);
     }
   }
@@ -385,9 +387,7 @@ public class CreateActivity extends AppCompatActivity {
 
     BusProvider.getInstance().unregister(this);
 
-    if (mGifService != null) {
-      unbindService(mGifServiceConnection);
-    }
+    mDeferredGifService.unbind();
     if (mBillingService != null) {
       unbindService(mBillingServiceConnection);
     }
@@ -398,7 +398,7 @@ public class CreateActivity extends AppCompatActivity {
 
   @Subscribe
   public void on(EffectThumbnailViewHolder.ItemClickEvent event) throws IOException {
-    // TODO(clocksmith): this could be decouples.
+    // TODO(clocksmith): this could be decoupled.
     mModel.setSelectedEffectName(event.effectName);
     mEffectChooser.setSelectedEffect(event.effectName);
     updateProgressBar();
@@ -525,41 +525,54 @@ public class CreateActivity extends AppCompatActivity {
     // TODO(clocksmith): localize this and some other methods to model
     mModel.getGifProgresses().put(mModel.getSelectedEffectName(), 0d);
 
-    final MediaConfig mediaConfig = getMainMediaConfig();
-    if (mGifService != null) {
-      mGifService.requestMainGif(mediaConfig);
-    } else {
-      mDeferredGifServiceRunnables.add(new Runnable() {
-        @Override
-        public void run() {
-          mGifService.requestMainGif(mediaConfig);
-        }
-      });
-    }
+    mDeferredGifService.requestMainGif(new Callable<MediaConfig>() {
+      @Override
+      public MediaConfig call() {
+        return getMainMediaConfig();
+      }
+    });
   }
 
   private void updateThumbnailGifs() {
     if (mModel.needsUpdatePurchasePackNames()) {
       updatePurchasedPacksThenUpdateThumbnailGifs();
     } else {
-      final List<MediaConfig> mediaConfigs = Lists.transform(Effects.listEffectTemplates(),
-          new Function<EffectTemplate, MediaConfig>() {
-            @Override
-            public MediaConfig apply(EffectTemplate effectTemplate) {
-              return getThumbnailMediaConfig(effectTemplate);
-            }
-          });
-      if (mGifService != null) {
-        mGifService.requestThumbnailGifs(mediaConfigs);
-      } else {
-        mDeferredGifServiceRunnables.add(new Runnable() {
-          @Override
-          public void run() {
-            mGifService.requestThumbnailGifs(mediaConfigs);
-          }
-        });
-      }
+      mDeferredGifService.requestThumbnailGifs(new Callable<List<MediaConfig>>() {
+        @Override
+        public List<MediaConfig> call() throws Exception {
+          return Lists.transform(Effects.listEffectTemplates(),
+              new Function<EffectTemplate, MediaConfig>() {
+                @Override
+                public MediaConfig apply(EffectTemplate effectTemplate) {
+                  return getThumbnailMediaConfig(effectTemplate);
+                }
+              });
+        }
+      });
     }
+  }
+
+  private MediaConfig getMainMediaConfig() {
+    return getBaseMediaConfigBuilder()
+        .withEffectTemplate(Effects.getEffectTemplate(mModel.getSelectedEffectName()))
+        .withEndText(mModel.getSelectedEndText())
+        .withSize(MediaConstants.MAIN_SIZE_PX)
+        .withFps(MediaConstants.MAIN_FPS)
+        .build();
+  }
+
+  private MediaConfig getThumbnailMediaConfig(EffectTemplate effectTemplate) {
+    return getBaseMediaConfigBuilder()
+        .withEffectTemplate(effectTemplate)
+        .withSize(MediaConstants.THUMBNAIL_SIZE_PX)
+        .withFps(MediaConstants.THUMBNAIL_FPS)
+        .build();
+  }
+
+  private MediaConfig.Builder getBaseMediaConfigBuilder() {
+    return MediaConfig.newBuilder()
+        .withHotspot(mModel.getSelectedHotspot())
+        .withBitmapSet(mModel.getSelectedBitmapSet());
   }
 
   private void clearAndUpdateAllGifs() {
@@ -569,28 +582,12 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   public void clearAllGifs() {
-    clearGifService();
+    mDeferredGifService.clearGifService();
     clearGifsFromThumbnails();
     clearMainGif();
   }
 
-  private void clearGifService() {
-    if (mGifService != null) {
-      mGifService.clear();
-    } else {
-      mDeferredGifServiceRunnables.add(new Runnable() {
-        @Override
-        public void run() {
-          mGifService.clear();
-        }
-      });
-    }
-  }
-
-  public void clearMainGif() {
-    if (mGifService != null) {
-      mGifService.clear();
-    }
+  private void clearMainGif() {
     mGifImageView.setImageBitmap(null);
   }
 
@@ -599,13 +596,9 @@ public class CreateActivity extends AppCompatActivity {
     mModel.setGifProgresses(null);
   }
 
+  // TODO(clocksmith): make this defer properly by using event bus.
   private byte[] getSelectedGifBytes() {
-    if (mGifService != null) {
-      return mGifService.getGifBytes(mModel.getSelectedEffectName(), mModel.getSelectedEndText());
-    } else {
-      SzLog.e(TAG, "mGifService is null while trying to getSelectedGifBytes");
-      return null;
-    }
+    return mDeferredGifService.getGifBytes(mModel.getSelectedEffectName(), mModel.getSelectedEndText());
   }
 
   private void updatePurchasedPacksThenUpdateThumbnailGifs() {
@@ -845,34 +838,6 @@ public class CreateActivity extends AppCompatActivity {
     return null;
   }
 
-  private MediaConfig getMainMediaConfig() {
-    return MediaConfig.newBuilder()
-        .withHotspot(mModel.getSelectedHotspot())
-        .withBitmapSet(mModel.getSelectedBitmapSet())
-        .withEffectTemplate(Effects.getEffectTemplate(mModel.getSelectedEffectName()))
-        .withEndText(mModel.getSelectedEndText())
-        .withSize(MediaConstants.MAIN_SIZE_PX)
-        .withFps(MediaConstants.MAIN_FPS)
-        .build();
-  }
-
-  private MediaConfig getThumbnailMediaConfig(EffectTemplate effectTemplate) {
-    return MediaConfig.newBuilder()
-        .withHotspot(mModel.getSelectedHotspot())
-        .withBitmapSet(mModel.getSelectedBitmapSet())
-        .withEffectTemplate(effectTemplate)
-        .withSize(MediaConstants.THUMBNAIL_SIZE_PX)
-        .withFps(MediaConstants.THUMBNAIL_FPS)
-        .build();
-  }
-
-  private void bindGifService() {
-    if (mGifServiceConnection == null) {
-      mGifServiceConnection = new GifServiceConnection();
-    }
-    bindService(new Intent(this, GifService.class), mGifServiceConnection, Context.BIND_AUTO_CREATE);
-  }
-
   private void bindBillingService() {
     if (mBillingServiceConnection == null) {
       mBillingServiceConnection = new BillingServiceConnection();
@@ -882,25 +847,9 @@ public class CreateActivity extends AppCompatActivity {
     bindService(serviceIntent, mBillingServiceConnection, Context.BIND_AUTO_CREATE);
   }
 
-  private class GifServiceConnection implements ServiceConnection {
-    @Override
-    public void onServiceConnected(ComponentName className, IBinder iBinder) {
-      mGifService = ((GifService.GifServiceBinder) iBinder).getService();
-      while (!mDeferredGifServiceRunnables.isEmpty()) {
-        mDeferredGifServiceRunnables.remove().run();
-      }
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName arg0) {
-      mGifService = null;
-    }
-  }
-
   private class BillingServiceConnection implements ServiceConnection {
     @Override
-    public void onServiceConnected(ComponentName name,
-                                   IBinder service) {
+    public void onServiceConnected(ComponentName name, IBinder service) {
       mBillingService = IInAppBillingService.Stub.asInterface(service);
       updatePurchasedPackNamesAndEffectModels();
     }

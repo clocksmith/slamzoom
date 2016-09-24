@@ -116,7 +116,7 @@ public class LzwEncoder {
 
   // Clear out the hash table
 
-  // table clear for block compress
+  // table clearGifService for block compress
   void cl_block(OutputStream outs) throws IOException {
     cl_hash(hsize);
     free_ent = ClearCode + 2;
@@ -152,7 +152,7 @@ public class LzwEncoder {
     EOFCode = ClearCode + 1;
     free_ent = ClearCode + 2;
 
-    a_count = 0; // clear packet
+    a_count = 0; // clearGifService packet
 
     ent = nextPixel();
 
@@ -162,7 +162,7 @@ public class LzwEncoder {
     hshift = 8 - hshift; // initForCreateActivity hash code range bound
 
     hsize_reg = hsize;
-    cl_hash(hsize_reg); // clear hash table
+    cl_hash(hsize_reg); // clearGifService hash table
 
     output(ClearCode, outs);
 
