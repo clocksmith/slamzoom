@@ -44,10 +44,6 @@ public class DeferrableGifService {
     }
   }
 
-  public void clearAllDeferred() {
-    mDeferredGifServiceCallables.clear();
-  }
-
   public void clearGifService() {
     if (mGifService != null) {
       mGifService.clear();

@@ -7,6 +7,8 @@
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
   <uses-permission android:name="com.android.vending.BILLING" />
+  <uses-permission android:name="com.google.android.apps.photos.permission.GOOGLE_PHOTOS"/>
+
 
   <application
       android:largeHeap="true"
@@ -38,7 +40,8 @@
     <activity
         android:name=".ui.create.CreateActivity"
         android:screenOrientation="portrait"
-        android:launchMode="singleTask">
+        android:launchMode="singleTask"
+        android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.CHOOSER"/>
         <category android:name="android.intent.category.DEFAULT"/>
@@ -49,7 +52,7 @@
     <activity
         android:name=".ui.create.hotspotchooser.HotspotChooserActivity"
         android:screenOrientation="portrait"
-        android:launchMode="singleTop"
+        android:launchMode="singleTask"
         android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.SEND"/>
@@ -64,13 +67,15 @@
 
     <!-- Receivers -->
 
-    <receiver android:name=".ui.create.CreateActivity$GifSharedReceiver">
+    <receiver
+        android:name=".ui.create.CreateActivity$GifSharedReceiver">
       <intent-filter>
         <action android:name="android.intent.action.SEND"/>
       </intent-filter>
     </receiver>
 
-    <receiver android:name=".ui.create.CreateActivity$VideoSharedReceiver">
+    <receiver
+        android:name=".ui.create.CreateActivity$VideoSharedReceiver">
       <intent-filter>
         <action android:name="android.intent.action.SEND"/>
       </intent-filter>

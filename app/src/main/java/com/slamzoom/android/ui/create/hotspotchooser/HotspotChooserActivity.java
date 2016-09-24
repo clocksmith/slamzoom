@@ -33,6 +33,7 @@ import com.slamzoom.android.common.data.UriUtils;
 import com.slamzoom.android.common.bitmaps.BitmapSet;
 import com.slamzoom.android.ui.create.CreateActivity;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 
 import butterknife.BindView;
@@ -55,6 +56,7 @@ public class HotspotChooserActivity extends AppCompatActivity {
   @BindView(R.id.doneButton) Button mDoneButton;
 
   private Bitmap mBitmap;
+  private boolean mFromCreateAcitivty;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -83,24 +85,26 @@ public class HotspotChooserActivity extends AppCompatActivity {
   }
 
   private void handleIntent(Intent intent) {
-    final Uri uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+    mFromCreateAcitivty = getCallingActivity() != null &&
+        getCallingActivity().getClassName().equals(CreateActivity.class.getCanonicalName());
+    final Uri incomingUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
 
     SzAnalytics.newSelectImageEvent()
-        .withPackageName(uri.toString().replace("content://", ""))
+        .withPackageName(incomingUri.toString().replace("content://", ""))
         .log(this);
 
     try {
-      if (UriUtils.isResUri(uri)) {
+      if (UriUtils.isResUri(incomingUri)) {
         // TODO(clocksmith): Make generic method in BitmapUtils and replace BitmapSet fork.
-        mBitmap = new BitmapSet(this, uri, 80).get(80);
+        mBitmap = new BitmapSet(this, incomingUri, 80).get(80);
       } else {
-        mBitmap = BitmapUtils.readScaledBitmap(uri, this.getContentResolver());
+        mBitmap = BitmapUtils.readScaledBitmap(incomingUri, this.getContentResolver());
       }
 
       if (BuildFlags.USE_PREDEFINED_HOTSPOT) {
         RectF debugCropRect = BuildFlags.DEBUG_RECT;
         Log.d(TAG, "using debug cropRect: " + debugCropRect.toString());
-        finishWithCropRectF(debugCropRect, uri);
+        finishWithCropRectF(debugCropRect, incomingUri);
       } else {
         mImageCropView.setAspectRatio(mBitmap.getWidth(), mBitmap.getHeight());
         mImageCropView.setImageBitmap(mBitmap, new Matrix(), 1f, 100f);
@@ -113,7 +117,7 @@ public class HotspotChooserActivity extends AppCompatActivity {
     mDoneButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        finishWithCropRect(mImageCropView.getCropRect(), uri);
+        finishWithCropRect(mImageCropView.getCropRect(), incomingUri);
       }
     });
 
@@ -140,8 +144,7 @@ public class HotspotChooserActivity extends AppCompatActivity {
   }
 
   private void finishWithCropRectF(RectF hotspot, Uri imageUri) {
-    if (getCallingActivity() != null &&
-        getCallingActivity().getClassName().equals(CreateActivity.class.getCanonicalName())) {
+    if (mFromCreateAcitivty) {
       Intent returnIntent = new Intent();
       returnIntent.putExtra(Params.IMAGE_URI, imageUri);
       returnIntent.putExtra(Params.HOTSPOT, hotspot);
@@ -149,7 +152,7 @@ public class HotspotChooserActivity extends AppCompatActivity {
       finish();
     } else {
       Intent intent = new Intent(HotspotChooserActivity.this, CreateActivity.class);
-      intent.putExtra(Params.IMAGE_URI, imageUri);
+      intent.putExtra(Params.IMAGE_URI, Uri.fromFile(BitmapUtils.saveBitmapToDiskPrivatelyAsJpeg(mBitmap, "temp")));
       intent.putExtra(Params.HOTSPOT, hotspot);
       startActivity(intent);
     }

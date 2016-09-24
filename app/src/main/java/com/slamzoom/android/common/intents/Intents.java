@@ -13,6 +13,8 @@ import com.slamzoom.android.ui.create.hotspotchooser.HotspotChooserActivity;
 import com.slamzoom.android.ui.start.CreateTemplate;
 import com.slamzoom.android.ui.start.StartActivity;
 
+import org.apache.commons.math3.analysis.function.Constant;
+
 /**
  * Created by antrob on 9/21/16.
  */

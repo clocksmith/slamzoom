@@ -111,7 +111,7 @@ public class CreateActivity extends AppCompatActivity {
   private AddTextView mAddTextView; // action bar custom view.
   private View mGifAreaView;
   private UnlockPackDialogFragment mUnlockPackDialogFragment;
-  private ProgressDialog mShareProgressDialog;
+  private ProgressDialog mProgressDialog;
 
   // Services
   // TODO(clocksmith): try to encapsulate this
@@ -289,8 +289,8 @@ public class CreateActivity extends AppCompatActivity {
       if (mModel.getSelectedUri() == null) {
         Intents.startImageChooser(this);
       } else if (mModel.getSelectedBitmapSet() == null) {
-        mModel.setSelectedBitmapSet(new BitmapSet(this, mModel.getSelectedUri(), MediaConstants.THUMBNAIL_SIZE_PX));
-        clearAndUpdateAllGifs();
+        mModel.setSelectedBitmapSet(createBitmapSet());
+        refreshMainAndThumbnailGifs();
       }
     }
   }
@@ -521,22 +521,17 @@ public class CreateActivity extends AppCompatActivity {
     }
   }
 
-  private void updateMainGif() {
-    // TODO(clocksmith): localize this and some other methods to model
-    mModel.getGifProgresses().put(mModel.getSelectedEffectName(), 0d);
-
-    mDeferredGifService.requestMainGif(new Callable<MediaConfig>() {
-      @Override
-      public MediaConfig call() {
-        return getMainMediaConfig();
-      }
-    });
+  private void refreshMainAndThumbnailGifs() {
+    mDeferredGifService.clearGifService();
+    updateThumbnailGifs();
+    updateMainGif();
   }
 
   private void updateThumbnailGifs() {
     if (mModel.needsUpdatePurchasePackNames()) {
       updatePurchasedPacksThenUpdateThumbnailGifs();
     } else {
+      clearGifsFromThumbnails();
       mDeferredGifService.requestThumbnailGifs(new Callable<List<MediaConfig>>() {
         @Override
         public List<MediaConfig> call() throws Exception {
@@ -552,13 +547,32 @@ public class CreateActivity extends AppCompatActivity {
     }
   }
 
-  private MediaConfig getMainMediaConfig() {
-    return getBaseMediaConfigBuilder()
-        .withEffectTemplate(Effects.getEffectTemplate(mModel.getSelectedEffectName()))
-        .withEndText(mModel.getSelectedEndText())
-        .withSize(MediaConstants.MAIN_SIZE_PX)
-        .withFps(MediaConstants.MAIN_FPS)
-        .build();
+  private void updateMainGif() {
+    clearMainGif();
+
+    // TODO(clocksmith): localize this and some other methods to model
+    mModel.getGifProgresses().put(mModel.getSelectedEffectName(), 0d);
+
+    mDeferredGifService.requestMainGif(new Callable<MediaConfig>() {
+      @Override
+      public MediaConfig call() {
+        return getMainMediaConfig();
+      }
+    });
+  }
+
+  private void clearGifsFromView() {
+    clearGifsFromThumbnails();
+    clearMainGif();
+  }
+
+  private void clearGifsFromThumbnails() {
+    mEffectChooser.clearAllGifBytes();
+    mModel.setGifProgresses(null);
+  }
+
+  private void clearMainGif() {
+    mGifImageView.setImageBitmap(null);
   }
 
   private MediaConfig getThumbnailMediaConfig(EffectTemplate effectTemplate) {
@@ -569,36 +583,28 @@ public class CreateActivity extends AppCompatActivity {
         .build();
   }
 
+  private MediaConfig getMainMediaConfig() {
+    return getBaseMediaConfigBuilder()
+        .withEffectTemplate(Effects.getEffectTemplate(mModel.getSelectedEffectName()))
+        .withEndText(mModel.getSelectedEndText())
+        .withSize(MediaConstants.MAIN_SIZE_PX)
+        .withFps(MediaConstants.MAIN_FPS)
+        .build();
+  }
+
   private MediaConfig.Builder getBaseMediaConfigBuilder() {
     return MediaConfig.newBuilder()
         .withHotspot(mModel.getSelectedHotspot())
         .withBitmapSet(mModel.getSelectedBitmapSet());
   }
 
-  private void clearAndUpdateAllGifs() {
-    clearAllGifs();
-    updateThumbnailGifs();
-    updateMainGif();
-  }
-
-  public void clearAllGifs() {
-    mDeferredGifService.clearGifService();
-    clearGifsFromThumbnails();
-    clearMainGif();
-  }
-
-  private void clearMainGif() {
-    mGifImageView.setImageBitmap(null);
-  }
-
-  private void clearGifsFromThumbnails() {
-    mEffectChooser.clearAllGifBytes();
-    mModel.setGifProgresses(null);
-  }
-
   // TODO(clocksmith): make this defer properly by using event bus.
   private byte[] getSelectedGifBytes() {
     return mDeferredGifService.getGifBytes(mModel.getSelectedEffectName(), mModel.getSelectedEndText());
+  }
+
+  private BitmapSet createBitmapSet() {
+    return new BitmapSet(this, mModel.getSelectedUri(), MediaConstants.THUMBNAIL_SIZE_PX);
   }
 
   private void updatePurchasedPacksThenUpdateThumbnailGifs() {
@@ -721,10 +727,10 @@ public class CreateActivity extends AppCompatActivity {
     mUnlockPackDialogFragment.show(getSupportFragmentManager(), UnlockPackDialogFragment.class.getSimpleName());
   }
 
-  private void showShareProgressDialog(String message) {
-    mShareProgressDialog = new ProgressDialog(this);
-    mShareProgressDialog.setMessage(message);
-    mShareProgressDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+  private void showProgressDialog(String message) {
+    mProgressDialog = new ProgressDialog(this);
+    mProgressDialog.setMessage(message);
+    mProgressDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
       @Override
       public void onDismiss(DialogInterface dialog) {
         if (mVideoCreator != null) {
@@ -737,12 +743,12 @@ public class CreateActivity extends AppCompatActivity {
         }
       }
     });
-    mShareProgressDialog.show();
+    mProgressDialog.show();
   }
 
-  private void dismissShareProgressDialog() {
-    if (mShareProgressDialog != null) {
-      mShareProgressDialog.dismiss();
+  private void dismissProgressDialog() {
+    if (mProgressDialog != null) {
+      mProgressDialog.dismiss();
     }
   }
 
@@ -770,7 +776,7 @@ public class CreateActivity extends AppCompatActivity {
     if (Permissions.checkReadwriteExternalStorage(this)) {
       Permissions.requestReadWriteExternalStorage(this);
     } else {
-      showShareProgressDialog("Preparing video...");
+      showProgressDialog("Preparing video...");
       final StopwatchTracker tracker = new StopwatchTracker();
       mVideoCreator = new VideoCreator(this, getMainMediaConfig(), tracker);
       mVideoCreator.createAsync(new VideoCreatorCallback() {
@@ -808,7 +814,7 @@ public class CreateActivity extends AppCompatActivity {
             }
           }
           // TODO(clocksmith): handle null
-          dismissShareProgressDialog();
+          dismissProgressDialog();
         }});
     }
   }
