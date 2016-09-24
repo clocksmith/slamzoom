@@ -5,7 +5,7 @@
               android:layout_height="match_parent"
               android:orientation="horizontal">
 
-  <com.slamzoom.android.common.widgets.BackInterceptingEditText
+  <com.slamzoom.android.common.ui.widgets.BackInterceptingEditText
       android:id="@+id/editText"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"

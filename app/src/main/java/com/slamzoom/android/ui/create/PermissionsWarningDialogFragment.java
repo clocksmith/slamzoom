@@ -26,7 +26,7 @@ public class PermissionsWarningDialogFragment extends DialogFragment {
         .setIcon(R.drawable.ic_gfx_dialog_warning)
         .setTitle(R.string.permissions_warning_dialog_title)
         .setMessage(R.string.permissions_warning_dialog_message)
-        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+        .setPositiveButton(R.string.permissions_dialog_ok, new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int whichButton) {
             dialog.dismiss();
           }

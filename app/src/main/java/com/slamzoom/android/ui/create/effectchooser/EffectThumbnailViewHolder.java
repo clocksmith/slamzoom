@@ -92,8 +92,7 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
     SzLog.f(TAG, "bind: " + getAdapterPosition());
     mModel = model;
 
-    final @ColorInt int newTabColorInt = model.isLocked() ?
-        Color.rgb(128, 128, 128) : model.getEffectTemplate().getColor();
+    final @ColorInt int newTabColorInt = model.getEffectTemplate().getColor();
     final @ColorInt int effectTextColorInt =  ContextCompat.getColor(itemView.getContext(), inDialog ?
         R.color.buy_dialog_effect_text : R.color.effect_text);
     final String name = mModel.getEffectTemplate().getName();

@@ -46,7 +46,7 @@ import com.slamzoom.android.billing.IabHelper;
 import com.slamzoom.android.common.intents.Intents;
 import com.slamzoom.android.common.intents.Params;
 import com.slamzoom.android.common.intents.RequestCodes;
-import com.slamzoom.android.common.widgets.BackInterceptingEditText;
+import com.slamzoom.android.common.ui.widgets.BackInterceptingEditText;
 import com.slamzoom.android.mediacreation.MediaConstants;
 import com.slamzoom.android.common.files.FileType;
 import com.slamzoom.android.common.fonts.FontProvider;
@@ -170,6 +170,7 @@ public class CreateActivity extends AppCompatActivity {
 
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     getSupportActionBar().setDisplayShowTitleEnabled(false);
+    getSupportActionBar().setTitle(getString(R.string.app_name_lowercase));
     mToolbarTitle.setTypeface(FontProvider.getInstance().getTitleFont());
     showAddTextView(false);
   }
@@ -344,7 +345,7 @@ public class CreateActivity extends AppCompatActivity {
 
   @Override
   public boolean onPrepareOptionsMenu(Menu menu) {
-    menu.findItem(R.id.action_add_text).setVisible(BuildFlags.ENABLED_ADD_TEXT && !mModel.isAddTextViewShowing());
+    menu.findItem(R.id.action_add_text).setVisible(BuildFlags.ENABLE_ADD_TEXT && !mModel.isAddTextViewShowing());
     menu.findItem(R.id.action_change_hotspot).setVisible(!mModel.isAddTextViewShowing());
     menu.findItem(R.id.action_change_image).setVisible(!mModel.isAddTextViewShowing());
     menu.findItem(R.id.action_share).setVisible(!mModel.isAddTextViewShowing());

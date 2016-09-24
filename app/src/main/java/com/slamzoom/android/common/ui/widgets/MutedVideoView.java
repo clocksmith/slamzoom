@@ -1,4 +1,4 @@
-package com.slamzoom.android.common.widgets;
+package com.slamzoom.android.common.ui.widgets;
 
 import android.annotation.TargetApi;
 import android.content.Context;

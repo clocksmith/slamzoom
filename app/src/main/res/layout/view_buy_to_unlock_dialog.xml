@@ -28,7 +28,7 @@
         android:id="@+id/cancelButton"
         android:layout_width="wrap_content"
         android:layout_height="36dp"
-        android:text="@string/buy_cancel"
+        android:text="@string/unlock_dialog_cancel"
         android:textColor="@color/dark_gray"
         style="@style/Widget.AppCompat.Button.Borderless"/>
     <View
@@ -39,7 +39,7 @@
         android:id="@+id/okButton"
         android:layout_width="wrap_content"
         android:layout_height="36dp"
-        android:text="@string/buy_ok"
+        android:text="@string/unlock_dialog_ok"
         android:textColor="@color/dark_gray"
         style="@style/Widget.AppCompat.Button.Borderless"/>
   </LinearLayout>

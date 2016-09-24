@@ -34,17 +34,12 @@
           android:id="@+id/action_save_gif"
           android:icon="@drawable/ic_menu_save"
           android:title="Save GIF" />
-    </menu>
       <item
           android:id="@+id/action_save_video"
           android:icon="@drawable/ic_menu_save"
           android:title="Save Video" />
+    </menu>
   </item>
-  <!--<item-->
-      <!--android:id="@+id/action_loop"-->
-      <!--app:actionViewClass="com.slamzoom.android.common.widgets.LoopSwitch"-->
-      <!--app:showAsAction="always"-->
-      <!--android:title="@string/action_cycle"/>-->
   <item
       android:id="@+id/action_ok"
       android:icon="@drawable/ic_menu_ok"

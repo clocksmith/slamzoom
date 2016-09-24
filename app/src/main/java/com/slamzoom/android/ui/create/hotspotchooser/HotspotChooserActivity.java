@@ -2,7 +2,6 @@ package com.slamzoom.android.ui.create.hotspotchooser;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -11,9 +10,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -26,14 +23,14 @@ import com.slamzoom.android.common.fonts.FontProvider;
 import com.slamzoom.android.common.intents.Params;
 import com.slamzoom.android.common.logging.SzAnalytics;
 import com.slamzoom.android.common.logging.SzLog;
-import com.slamzoom.android.common.settings.Preferences;
 import com.slamzoom.android.common.bitmaps.BitmapUtils;
 import com.slamzoom.android.BuildFlags;
 import com.slamzoom.android.common.data.UriUtils;
 import com.slamzoom.android.common.bitmaps.BitmapSet;
+import com.slamzoom.android.common.settings.Preferences;
+import com.slamzoom.android.common.ui.DismissableDialogPresenter;
 import com.slamzoom.android.ui.create.CreateActivity;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 
 import butterknife.BindView;
@@ -101,7 +98,7 @@ public class HotspotChooserActivity extends AppCompatActivity {
         mBitmap = BitmapUtils.readScaledBitmap(incomingUri, this.getContentResolver());
       }
 
-      if (BuildFlags.USE_PREDEFINED_HOTSPOT) {
+      if (BuildFlags.USE_DEBUG_HOTSPOT) {
         RectF debugCropRect = BuildFlags.DEBUG_RECT;
         Log.d(TAG, "using debug cropRect: " + debugCropRect.toString());
         finishWithCropRectF(debugCropRect, incomingUri);
@@ -121,26 +118,17 @@ public class HotspotChooserActivity extends AppCompatActivity {
       }
     });
 
-    if (Preferences.isFirstHotspotOpen(this)) {
-      showHelpOverlay();
+    if (BuildFlags.ACT_AS_FIRST_OPEN || Preferences.isFirstHotspotOpen(this)) {
+      showFirstOpenDialog();
       Preferences.setFirstHotspotOpen(this, false);
     }
   }
 
-  private void showHelpOverlay() {
-    final ImageView overlay = new ImageView(this);
-    overlay.setBackgroundColor(Color.argb(128, 0, 0, 0));
-    overlay.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.pinch_zoom_light_transparent));
-    overlay.setScaleType(ImageView.ScaleType.CENTER);
-    overlay.setOnTouchListener(new View.OnTouchListener() {
-      @Override
-      public boolean onTouch(View v, MotionEvent event) {
-        mImageCropViewContainer.removeView(overlay);
-        return false;
-      }
-    });
-    mImageCropViewContainer.addView(overlay,
-        new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+  private void showFirstOpenDialog() {
+    final ImageView view = new ImageView(this);
+    view.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.pinch_to_zoom));
+    view.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+    DismissableDialogPresenter.show(this, getString(R.string.hotspot_chooser_first_open_title), view);
   }
 
   private void finishWithCropRectF(RectF hotspot, Uri imageUri) {

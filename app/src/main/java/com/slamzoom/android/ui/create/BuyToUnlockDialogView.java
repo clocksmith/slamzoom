@@ -119,17 +119,6 @@ public class BuyToUnlockDialogView extends LinearLayout {
           BusProvider.getInstance().post(new OnCancelClickedEvent());
         }
       });
-
-//      mOkButton.setBackgroundColor(effect.getColor());
-//      UiUtils.onGlobalLayout(mOkButton, new ViewTreeObserver.OnGlobalLayoutListener() {
-//        @Override
-//        public void onGlobalLayout() {
-//          mOkButton.setPivotX(mOkButton.getWidth() / 2);
-//          mOkButton.setPivotY(mOkButton.getHeight() / 2);
-//          AnimationUtils.getUniformScaleSet(mOkButton, 1.2f, 1000).start();
-//          rotateColorsOkButton(0);
-//        }
-//      });
     }
 
     List<EffectModel> effectModelsForPack = FluentIterable.from(Effects.createEffectModels())

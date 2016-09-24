@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.widget.EditText;
 
 import com.slamzoom.android.R;
-import com.slamzoom.android.common.widgets.BackInterceptingEditText;
+import com.slamzoom.android.common.ui.widgets.BackInterceptingEditText;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

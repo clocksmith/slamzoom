@@ -1,40 +1,45 @@
 <resources>
-  <string name="app_name">slamzoom</string>
+  <!-- App -->
+  <string name="app_name">Slamzoom</string>
+  <string name="app_name_lowercase">slamzoom</string>
 
+  <string name="dismissable_dialog_ok">DISMISS</string>
+
+  <!-- Start -->
   <string name="tap_anywhere_to_begin">tap anywhere to begin</string>
-
-  <string name="create_from_template">START WITH MONA LISA</string>
-  <string name="create_from_custom">CREATE YOUR OWN</string>
-
   <string name="privacy_policy_link"><u>privacy policy</u></string>
   <string name="terms_of_use_link"><u>terms of use</u></string>
   <string name="licenses_link"><u>licenses</u></string>
 
+  <!-- Hotspot Chooser -->
+  <string name="hotspot_chooser_first_open_title">Pinch to Zoom</string>
   <string name="hotspot_chooser_hint_zoom_in_on_face">tip: zoom in on a face</string>
   <string name="hotspot_chooser_hint_zoom_in_close">tip: zoom in close</string>
 
+  <!-- Create -->
   <string name="zero_state_message">select an effect</string>
 
+  <!-- Create Menu -->
   <string name="action_cycle">cycle</string>
   <string name="action_add_text">add text</string>
   <string name="action_change_hotspot">change hotspot</string>
   <string name="action_change_image">change image</string>
   <string name="action_save">save</string>
   <string name="action_share">share</string>
-
   <string name="action_ok">ok</string>
   <string name="action_done">done</string>
 
+  <!-- Unlock Dialog -->
   <string name="unlock_pack_dialog_title">Effect is Locked!</string>
-  <string name="unlock_pack_dialog_message" formatted="false">
-    %s must be unlocked to share %s</string>
-  <string name="buy_ok">UNLOCK</string>
-  <string name="buy_cancel">MAYBE LATER</string>
+  <string name="unlock_pack_dialog_message" formatted="false">%s must be unlocked to share %s</string>
+  <string name="unlock_dialog_ok">UNLOCK</string>
+  <string name="unlock_dialog_cancel">MAYBE LATER</string>
 
+  <!-- Permissions Dialog -->
   <string name="permissions_warning_dialog_title">Need Storage Permission to Share!</string>
   <string name="permissions_warning_dialog_message">
     If you do not see the option to allow storage permission,
     you must go to "Settings > Apps > Slamzoom > App permissions" to enable permission.
   </string>
-  <string name="ok">OK</string>
+  <string name="permissions_dialog_ok">OK</string>
 </resources>
