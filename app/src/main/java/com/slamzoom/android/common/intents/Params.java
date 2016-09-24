@@ -7,6 +7,8 @@ package com.slamzoom.android.common.intents;
 public class Params {
   public static final String CREATE_TEMPLATE = "createTemplate";
 
+  public static final String CREATE_MODEL = "createModel";
+
   public static final String IMAGE_URI = "imageUri";
   public static final String HOTSPOT = "hotspot";
 

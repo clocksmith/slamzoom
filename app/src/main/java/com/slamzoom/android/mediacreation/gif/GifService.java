@@ -78,13 +78,6 @@ public class GifService extends Service {
     mThumbnailGifCreatorRunQueue = Queues.newConcurrentLinkedQueue();
   }
 
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-    SzLog.f(TAG, "onDestroy()");
-    stopCreatorsAndClearCaches();
-  }
-
   @Nullable
   @Override
   public IBinder onBind(Intent intent) {
@@ -100,10 +93,22 @@ public class GifService extends Service {
     return super.onUnbind(intent);
   }
 
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+    SzLog.f(TAG, "onDestroy()");
+    stopCreatorsAndClearCaches();
+  }
+
   public void clear() {
     stopCreatorsAndClearCaches();
     mThumbnailGifCreatorsBackQueue.clear();
     mThumbnailGifCreatorRunQueue.clear();
+  }
+
+  // TODO(clocksmith): make this more future proof by defining what a key is
+  public byte[] getGifBytes(String effectName, String endText) {
+    return mMainGifCache.asMap().get(getKey(effectName, endText));
   }
 
   public void requestThumbnailGifs(List<MediaConfig> configs) {
@@ -120,7 +125,6 @@ public class GifService extends Service {
 
   public void requestMainGif(final MediaConfig config) {
     final String key = getKeyFromConfig(config);
-    final String name = config.effectTemplate.getName();
 
     if (mMainGifCache.asMap().containsKey(key)) {
       fireGifReadyEvent(key, false, false);
@@ -179,9 +183,13 @@ public class GifService extends Service {
   }
 
   public static String getKeyFromConfig(MediaConfig config) {
+    return getKey(config.effectTemplate.getName(), config.endText);
+  }
+
+  private static String getKey(String effectName, String endText) {
     return Joiner.on(":").join(ImmutableList.of(
-        StringUtils.deNull(config.effectTemplate.getName()),
-        StringUtils.deNull(config.endText)));
+        StringUtils.deNull(effectName),
+        StringUtils.deNull(endText)));
   }
 
   public static String getNameFromKey(String key) {
