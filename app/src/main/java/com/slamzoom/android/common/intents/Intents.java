@@ -13,8 +13,6 @@ import com.slamzoom.android.ui.create.hotspotchooser.HotspotChooserActivity;
 import com.slamzoom.android.ui.start.CreateTemplate;
 import com.slamzoom.android.ui.start.StartActivity;
 
-import org.apache.commons.math3.analysis.function.Constant;
-
 /**
  * Created by antrob on 9/21/16.
  */
@@ -23,7 +21,7 @@ public class Intents {
   public static void startCreateActivityWithMonaTemplate(Activity currentActivity) {
     final RectF MONA_LISA_PHONE_HOTSPOT = new RectF(0.16f, 0.75f, 0.28f, 0.87f);
     final CreateTemplate CREATE_TEMPLATE =
-        new CreateTemplate(UriUtils.getUriFromRes(R.drawable.sz_logo_transparent), MONA_LISA_PHONE_HOTSPOT);
+        new CreateTemplate(UriUtils.getUriFromRes(R.drawable.sz_logo_transparent_big), MONA_LISA_PHONE_HOTSPOT);
     Intent intent = new Intent(currentActivity, CreateActivity.class);
     intent.putExtra(Params.CREATE_TEMPLATE,CREATE_TEMPLATE);
     currentActivity.startActivity(intent);

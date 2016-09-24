@@ -33,12 +33,6 @@ public class IabHelper {
       ImmutableList.of(Effects.Pack.DEBUG.name());
 
   // TODO(clocksmith): This would be perfect for remote config. Maybe Extract elsewhere to also hide packs not for sale.
-//  private static final BiMap<String, String> PURCHASE_IDS_TO_PACK_NAMES = ImmutableBiMap.of(
-//      "packs.v1.2", EffectPacks.PackOldStrategy.TWO.getName(),
-//      "packs.v1.3", EffectPacks.PackOldStrategy.THREE.getName(),
-//      "packs.v1.4", EffectPacks.PackOldStrategy.FOUR.getName(),
-//      "packs.v1.5", EffectPacks.PackOldStrategy.FIVE.getName());
-
   private static final BiMap<String, String> PURCHASE_IDS_TO_PACK_NAMES = ImmutableBiMap.of(
       "packs.distort", Effects.Pack.DISTORT.name());
 

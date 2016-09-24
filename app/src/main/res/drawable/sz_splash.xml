@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<nine-patch
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:src="@drawable/sz_logo_transparent_np"/>
-<!--<layer-list xmlns:android="http://schemas.android.com/apk/res/android">-->
-  <!--<item android:drawable="@color/not_quite_black"/>-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+  <item android:drawable="@color/not_quite_black"/>
 
-  <!--<item android:top="@dimen/logo_padding_plus_status_bar">-->
-    <!--&lt;!&ndash;<bitmap&ndash;&gt;-->
-        <!--&lt;!&ndash;android:adjustViewBounds="true"&ndash;&gt;-->
-        <!--&lt;!&ndash;android:gravity="top|fill_horizontal"&ndash;&gt;-->
-        <!--&lt;!&ndash;android:src="@drawable/sz_logo_transparent"/>&ndash;&gt;-->
-  <!--</item>-->
-<!--</layer-list>-->
+  <item android:top="@dimen/logo_padding_plus_status_bar">
+    <bitmap
+        android:gravity="top|clip_horizontal"
+        android:src="@drawable/sz_logo_transparent_small"/>
+  </item>
+</layer-list>
