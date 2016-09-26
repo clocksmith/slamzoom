@@ -101,6 +101,7 @@ public class GifService extends Service {
   }
 
   public void clear() {
+    SzLog.f(TAG, "clear");
     stopCreatorsAndClearCaches();
     mThumbnailGifCreatorsBackQueue.clear();
     mThumbnailGifCreatorRunQueue.clear();
@@ -112,6 +113,7 @@ public class GifService extends Service {
   }
 
   public void requestThumbnailGifs(List<MediaConfig> configs) {
+    SzLog.f(TAG, "requestThumbnailGifs");
     clear();
 
     if (!BuildFlags.SKIP_GENERATE_THUMBNAIL_GIFS) {
@@ -124,6 +126,7 @@ public class GifService extends Service {
   }
 
   public void requestMainGif(final MediaConfig config) {
+    SzLog.f(TAG, "requestMainGif");
     final String key = getKeyFromConfig(config);
 
     if (mMainGifCache.asMap().containsKey(key)) {
@@ -253,8 +256,6 @@ public class GifService extends Service {
   }
 
   private void continueThumbnailGifGeneration() {
-    SzLog.f(TAG, "continueThumbnailGifGeneration()");
-
     if (mThumbnailGifCreatorRunQueue.isEmpty() && !mThumbnailGifCreatorsBackQueue.isEmpty()) {
       mThumbnailGifCreatorRunQueue.add(mThumbnailGifCreatorsBackQueue.remove());
     }

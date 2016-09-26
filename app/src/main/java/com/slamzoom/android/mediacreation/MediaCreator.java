@@ -182,6 +182,7 @@ public abstract class MediaCreator<E extends MediaEncoder> {
       for (int frameIndex = 0; frameIndex < numFramesForChunk; frameIndex++) {
         final float t = (float) frameIndex / (numFramesForChunk - 1);
         final float startScale = 1;
+        // Could use width or height here. They are the same since the are normalized.
         final float endScale = 1 / mSelectedHotspot.width();
         Interpolator scaleInterpolator = step.getScaleInterpolator();
         Interpolator xInterpolator = step.getXInterpolator();

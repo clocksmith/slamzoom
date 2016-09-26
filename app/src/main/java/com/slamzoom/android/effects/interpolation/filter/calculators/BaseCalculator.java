@@ -20,7 +20,7 @@ public class BaseCalculator {
     return mFilterInterpolator.getInterpolationValue();
   }
 
-  public RectF getNormalizedHotspot() {
+  public RectF getRelativeHotspot() {
     return mFilterInterpolator.getRelativeHotspot();
   }
 
@@ -29,10 +29,10 @@ public class BaseCalculator {
   }
 
   protected PointF getCenterOfHotspot() {
-    return RectFUtils.getCenterPointF(getNormalizedHotspot());
+    return RectFUtils.getCenterPointF(getRelativeHotspot());
   }
 
   protected float getMinHotspotDimen() {
-    return RectFUtils.getMinDimen(getNormalizedHotspot());
+    return RectFUtils.getMinDimen(getRelativeHotspot());
   }
 }

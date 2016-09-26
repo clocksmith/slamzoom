@@ -3,6 +3,9 @@ package com.slamzoom.android.common.logging;
 import android.util.Log;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.firebase.crash.FirebaseCrash;
+import com.slamzoom.android.mediacreation.gif.DeferrableGifService;
+import com.slamzoom.android.mediacreation.gif.GifService;
 import com.slamzoom.android.ui.create.CreateActivity;
 import com.slamzoom.android.ui.create.hotspotchooser.HotspotChooserActivity;
 
@@ -18,12 +21,13 @@ import java.util.Set;
 public class SzLog {
   // NOTE: Please keep in alphabetical order.
   private static Set<String> mAcceptedTags = ImmutableSet.of(
-      CreateActivity.class.getSimpleName(),
+//      CreateActivity.class.getSimpleName(),
+      DeferrableGifService.class.getSimpleName(),
 //      EffectThumbnailViewHolder.class.getSimpleName(),
 //      GifCreator.class.getSimpleName(),
 //      GifCreatorManager.class.getSimpleName(),
-//      GifService.class.getSimpleName(),
-      HotspotChooserActivity.class.getSimpleName(),
+      GifService.class.getSimpleName(),
+//      HotspotChooserActivity.class.getSimpleName(),
 //      MediaCreator.class.getSimpleName(),
 //      SzAnalytics.class.getSimpleName(),
 //      VideoFrame.class.getSimpleName(),
@@ -46,9 +50,9 @@ public class SzLog {
   public static void e(String tag, String message, Exception e) {
     Log.e("F/" + tag, message, e);
     if (e != null) {
-//      FirebaseCrash.report(e);
+      FirebaseCrash.report(e);
     } else {
-//      FirebaseCrash.report(new Exception(message));
+      FirebaseCrash.report(new Exception(message));
     }
   }
 }

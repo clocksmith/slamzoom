@@ -79,11 +79,12 @@ public class PostProcessorUtils {
     textPaint.setShadowLayer(2, 0, 0, Color.BLACK);
 
     Rect textBounds = new Rect();
-    textPaint.getTextBounds(MediaConstants.WATERMARK_TEXT, 0, MediaConstants.WATERMARK_TEXT.length(), textBounds);
+    String watermarkText = context.getString(R.string.app_name_lowercase);
+    textPaint.getTextBounds(watermarkText, 0, watermarkText.length(), textBounds);
 
     float margin = context.getResources().getDimensionPixelOffset(R.dimen.watermark_margin);
     canvas.drawText(
-        MediaConstants.WATERMARK_TEXT,
+        watermarkText,
         original.getWidth() - textBounds.width() - margin,
         original.getHeight() - margin,
         textPaint);

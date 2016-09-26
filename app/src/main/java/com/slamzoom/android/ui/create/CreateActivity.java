@@ -285,6 +285,7 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   @Override protected void onResume() {
+    SzLog.f(TAG, "onResume");
     super.onResume();
     if (!mSkipResume) {
       if (mModel.getSelectedUri() == null) {
@@ -560,11 +561,6 @@ public class CreateActivity extends AppCompatActivity {
         return getMainMediaConfig();
       }
     });
-  }
-
-  private void clearGifsFromView() {
-    clearGifsFromThumbnails();
-    clearMainGif();
   }
 
   private void clearGifsFromThumbnails() {

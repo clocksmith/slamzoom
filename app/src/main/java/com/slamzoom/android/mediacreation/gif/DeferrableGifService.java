@@ -8,6 +8,7 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 
 import com.google.common.collect.Queues;
+import com.google.common.util.concurrent.Runnables;
 import com.slamzoom.android.common.logging.SzLog;
 import com.slamzoom.android.mediacreation.MediaConfig;
 
@@ -25,7 +26,7 @@ public class DeferrableGifService {
   private Activity mActivity;
   private GifService mGifService;
   private GifServiceConnection mGifServiceConnection;
-  private Queue<Callable> mDeferredGifServiceCallables = Queues.newConcurrentLinkedQueue();
+  private Queue<Runnable> mDeferredGifServiceRunnable = Queues.newConcurrentLinkedQueue();
 
   public DeferrableGifService(Activity activity) {
     mActivity = activity;
@@ -39,26 +40,28 @@ public class DeferrableGifService {
   }
 
   public void unbind() {
+    mDeferredGifServiceRunnable.clear();
     if (mGifService != null) {
       mActivity.unbindService(mGifServiceConnection);
     }
   }
 
   public void clearGifService() {
+    SzLog.f(TAG, "clearGifService");
     if (mGifService != null) {
       mGifService.clear();
     } else {
-      mDeferredGifServiceCallables.add(new Callable<Void>() {
+      mDeferredGifServiceRunnable.add(new Runnable() {
         @Override
-        public Void call() {
+        public void run() {
           mGifService.clear();
-          return null;
         }
       });
     }
   }
 
   public void requestMainGif(final Callable<MediaConfig> getMediaConfigCallable) {
+    SzLog.f(TAG, "requestMainGif");
     if (mGifService != null) {
       try {
         mGifService.requestMainGif(getMediaConfigCallable.call());
@@ -66,19 +69,38 @@ public class DeferrableGifService {
         SzLog.e(TAG, "Could not get media config", e);
       }
     } else {
-      mDeferredGifServiceCallables.add(getMediaConfigCallable);
+      mDeferredGifServiceRunnable.add(new Runnable() {
+        @Override
+        public void run() {
+          try {
+            mGifService.requestMainGif(getMediaConfigCallable.call());
+          } catch (Exception e) {
+            SzLog.e(TAG, "Could not get media config", e);
+          }
+        }
+      });
     }
   }
 
   public void requestThumbnailGifs(final Callable<List<MediaConfig>> getMediaConfigsCallable) {
+    SzLog.f(TAG, "requestThumbnailGifs");
     if (mGifService != null) {
       try {
         mGifService.requestThumbnailGifs(getMediaConfigsCallable.call());
       } catch (Exception e) {
-        SzLog.e(TAG, "Could not get media config", e);
+        SzLog.e(TAG, "Could not get media configs", e);
       }
     } else {
-      mDeferredGifServiceCallables.add(getMediaConfigsCallable);
+      mDeferredGifServiceRunnable.add(new Runnable() {
+        @Override
+        public void run() {
+          try {
+            mGifService.requestThumbnailGifs(getMediaConfigsCallable.call());
+          } catch (Exception e) {
+            SzLog.e(TAG, "Could not get media configs", e);
+          }
+        }
+      });
     }
   }
 
@@ -91,10 +113,12 @@ public class DeferrableGifService {
     }
   }
 
-  private void callAllDeferred() {
-    while (!mDeferredGifServiceCallables.isEmpty()) {
+  private synchronized void callAllDeferred() {
+    SzLog.f(TAG, "callAllDeferred");
+    while (!mDeferredGifServiceRunnable.isEmpty()) {
       try {
-        mDeferredGifServiceCallables.remove().call();
+        SzLog.f(TAG, "dequeuing and running");
+        mDeferredGifServiceRunnable.remove().run();
       } catch (Exception e) {
         SzLog.e(TAG, "Could not call deferred callable", e);
       }
@@ -104,6 +128,7 @@ public class DeferrableGifService {
   private class GifServiceConnection implements ServiceConnection {
     @Override
     public void onServiceConnected(ComponentName className, IBinder iBinder) {
+      SzLog.f(TAG, "onServiceConnected");
       mGifService = ((GifService.GifServiceBinder) iBinder).getService();
       callAllDeferred();
     }

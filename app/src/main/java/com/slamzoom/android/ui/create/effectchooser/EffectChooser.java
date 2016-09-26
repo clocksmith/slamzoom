@@ -133,7 +133,6 @@ public class EffectChooser extends RecyclerView {
 
     @Override
     public void onBindViewHolder(EffectThumbnailViewHolder holder, int position) {
-      SzLog.f(TAG, "binding position: " + position);
       holder.rebind(mModels.get(position), mInDialog);
     }
 

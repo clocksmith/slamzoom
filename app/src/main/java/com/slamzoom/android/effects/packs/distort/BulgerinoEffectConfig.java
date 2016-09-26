@@ -5,6 +5,7 @@ import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.BulgeInAtHotspotFilterInterpolator;
 import com.slamzoom.android.interpolators.Interpolator;
 import com.slamzoom.android.interpolators.LinearInterpolator;
+import com.slamzoom.android.interpolators.SquareInterpolator;
 
 /**
  * Created by clocksmith on 9/6/16.
@@ -17,7 +18,7 @@ public class BulgerinoEffectConfig extends EffectConfig {
 
   @Override
   public Interpolator getScaleInterpolator() {
-    return new LinearInterpolator();
+    return new SquareInterpolator();
   }
 
   @Override

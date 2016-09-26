@@ -20,12 +20,12 @@ public class CenterCalculator extends BaseCalculator {
   }
 
   public PointF getHotspotCenter() {
-    return new PointF(getNormalizedHotspot().centerX(), getNormalizedHotspot().centerY());
+    return new PointF(getRelativeHotspot().centerX(), getRelativeHotspot().centerY());
   }
 
   public PointF getHotspotPoint(float left, float top) {
     return new PointF(
-        getNormalizedHotspot().left + getNormalizedHotspot().width() * left,
-        getNormalizedHotspot().top + getNormalizedHotspot().height() * top);
+        getRelativeHotspot().left + getRelativeHotspot().width() * left,
+        getRelativeHotspot().top + getRelativeHotspot().height() * top);
   }
 }

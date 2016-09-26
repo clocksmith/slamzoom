@@ -89,7 +89,6 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
   }
 
   public void bind(final EffectModel model, boolean inDialog) {
-    SzLog.f(TAG, "bind: " + getAdapterPosition());
     mModel = model;
 
     final @ColorInt int newTabColorInt = model.getEffectTemplate().getColor();
@@ -145,7 +144,6 @@ public class EffectThumbnailViewHolder extends RecyclerView.ViewHolder {
   }
 
   public void unbind() {
-    SzLog.f(TAG, "unbind: " + getAdapterPosition());
     collapseTab(false);
 
     if (mModel != null && (mModel.getGifThumbnailBytes() == null || mModel.getGifThumbnailBytes().length == 0)) {

@@ -59,7 +59,7 @@ public class LzwEncoder {
   // algorithm D (vol. 3, sec. 6.4) along with G. Knott's relatively-prime
   // secondary probe. Here, the modular division first probe is gives way
   // to a faster exclusive-or manipulation. Also do block compression with
-  // an adaptive reset, whereby the code table is cleared when the compression
+  // an adaptive clear, whereby the code table is cleared when the compression
   // ratio decreases, but after the table fills. The variable-length output
   // codes are re-sized at this point, and a special CLEAR code is generated
   // for the decompressor. Late addition: construct the table according to
@@ -125,7 +125,7 @@ public class LzwEncoder {
     output(ClearCode, outs);
   }
 
-  // reset code table
+  // clear code table
   void cl_hash(int hsize) {
     for (int i = 0; i < hsize; ++i)
       htab[i] = -1;
@@ -204,13 +204,13 @@ public class LzwEncoder {
   // ----------------------------------------------------------------------------
   void encode(OutputStream os) throws IOException {
     os.write(initCodeSize); // write "initial code SIZE" byte
-    remaining = imgW * imgH; // reset navigation variables
+    remaining = imgW * imgH; // clear navigation variables
     curPixel = 0;
     compress(initCodeSize + 1, os); // compress and write the pixel data
     os.write(0); // write block terminator
   }
 
-  // Flush the packet to disk, and reset the accumulator
+  // Flush the packet to disk, and clear the accumulator
   void flush_char(OutputStream outs) throws IOException {
     if (a_count > 0) {
       outs.write(a_count);

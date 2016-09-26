@@ -6,6 +6,7 @@ import com.slamzoom.android.effects.interpolation.filter.group.BulgeDoubleLeftRi
 import com.slamzoom.android.effects.interpolation.filter.group.DeflateFaceFilterInterpolatorsProvider;
 import com.slamzoom.android.interpolators.Interpolator;
 import com.slamzoom.android.interpolators.LinearInterpolator;
+import com.slamzoom.android.interpolators.SquareInterpolator;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class DoublebulgeEffectConfig extends EffectConfig {
 
   @Override
   public Interpolator getScaleInterpolator() {
-    return new LinearInterpolator();
+    return new SquareInterpolator();
   }
 
   @Override
