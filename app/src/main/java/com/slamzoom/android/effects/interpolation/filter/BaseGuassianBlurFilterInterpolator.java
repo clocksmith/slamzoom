@@ -1,6 +1,5 @@
 package com.slamzoom.android.effects.interpolation.filter;
 
-import com.slamzoom.android.effects.imagefilters.GPUImageGoodGaussianBlurFilter;
 import com.slamzoom.android.effects.interpolation.filter.calculators.FloatCalculator;
 import com.slamzoom.android.effects.interpolation.filter.parameters.HasBlurSize;
 import com.slamzoom.android.interpolators.Interpolator;

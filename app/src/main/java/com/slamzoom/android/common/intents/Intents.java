@@ -20,8 +20,9 @@ import com.slamzoom.android.ui.start.StartActivity;
 public class Intents {
   public static void startCreateActivityWithMonaTemplate(Activity currentActivity) {
     final RectF MONA_LISA_PHONE_HOTSPOT = new RectF(0.16f, 0.75f, 0.28f, 0.87f);
+    final RectF MONA_LISA_FACE_HOTSPOT = new RectF(0.35f, 0.15f, 0.55f, 0.35f);
     final CreateTemplate CREATE_TEMPLATE =
-        new CreateTemplate(UriUtils.getUriFromRes(R.drawable.sz_logo_transparent_big), MONA_LISA_PHONE_HOTSPOT);
+        new CreateTemplate(UriUtils.getUriFromRes(R.drawable.sz_mona_lisa_960x1280), MONA_LISA_FACE_HOTSPOT);
     Intent intent = new Intent(currentActivity, CreateActivity.class);
     intent.putExtra(Params.CREATE_TEMPLATE,CREATE_TEMPLATE);
     currentActivity.startActivity(intent);
@@ -41,9 +42,10 @@ public class Intents {
         RequestCodes.REQUEST_SELECT_IMAGE);
   }
 
-  public static void startHotspotChooser(Activity currentActivity, Uri imageUri) {
+  public static void startHotspotChooser(Activity currentActivity, Uri imageUri, boolean fromChangeHotspotRequest) {
     Intent intent = new Intent(currentActivity, HotspotChooserActivity.class);
     intent.putExtra(Intent.EXTRA_STREAM, imageUri);
+    intent.putExtra(Params.FROM_CHANGE_HOTSPOT_REQUEST, fromChangeHotspotRequest);
     currentActivity.startActivityForResult(intent, RequestCodes.REQUEST_SELECT_HOTSPOT);
   }
 }

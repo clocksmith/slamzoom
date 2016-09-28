@@ -4,7 +4,6 @@ import com.slamzoom.android.effects.EffectConfig;
 import com.slamzoom.android.effects.interpolation.filter.FilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.group.SumoBulgeFilterInterpolator;
 import com.slamzoom.android.interpolators.Interpolator;
-import com.slamzoom.android.interpolators.LinearInterpolator;
 import com.slamzoom.android.interpolators.SquareInterpolator;
 
 import java.util.List;

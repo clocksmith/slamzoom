@@ -6,9 +6,10 @@ package com.slamzoom.android.common.intents;
 
 public class RequestCodes {
   public static final int REQUEST_SELECT_IMAGE = 101;
-  public static final int REQUEST_SELECT_HOTSPOT = 201;
-  public static final int REQUEST_BUY_PACK = 301;
-  public static final int REQUEST_SHARE_GIF_PERMISSIONS= 401;
-  public static final int REQUEST_SHARE_GIF = 501;
-  public static final int REQUEST_SHARE_VIDEO = 601;
+  public static final int REQUEST_SELECT_HOTSPOT = 102;
+  public static final int REQUEST_BUY_PACK = 201;
+  public static final int REQUEST_SHARE_GIF_PERMISSIONS= 301;
+  public static final int REQUEST_SHARE_GIF = 401;
+  public static final int REQUEST_SHARE_VIDEO = 402;
+  public static final int REQUEST_GOOGLE_PLAY_SERVICES_ERROR_DIALOG = 501;
 }

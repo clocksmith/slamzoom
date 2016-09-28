@@ -13,7 +13,6 @@ public class BuildFlags {
 
   // Superuser
   public static final boolean UNLOCK_UNPAID_PACKS = false;
-  public static final boolean ENABLE_ADD_TEXT = false;
   public static final boolean SKIP_WATERMARK = false;
   public static final boolean USE_MONA_TEMPLATE = false;
 
@@ -25,6 +24,7 @@ public class BuildFlags {
   // Debug
   public static final boolean USE_DEBUG_EFFECTS = false;
   public static final boolean USE_DEBUG_HOTSPOT = false;
+  public static final RectF DEBUG_HOTSPOT = new RectF(0.3f, 0.2f, 0.6f, 0.5f);
   public static final boolean ACT_AS_FIRST_OPEN = false;
 
   // Convenience
@@ -37,7 +37,4 @@ public class BuildFlags {
   public static final boolean SAVE_SRC_AS_PNG = false;
   public static final boolean SAVE_SCALED_FRAMES_AS_PNGS = false;
   public static final boolean SAVE_FILTERED_FRAMES_AS_PNGS = false;
-
-  // Static rectangle params TODO(clocksmith): Can use relative rect now.
-  public static final RectF DEBUG_RECT = new RectF(0.3f, 0.2f, 0.6f, 0.5f);
 }

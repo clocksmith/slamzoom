@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.RectF;
 
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.fonts.FontProvider;
@@ -60,11 +61,34 @@ public class PostProcessorUtils {
   public static void renderText(Bitmap original, String text) {
     Canvas textCanvas = new Canvas(original);
     Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    textPaint.setColor(Color.WHITE); // Text Color
-    textPaint.setTextSize(getTextSizeToFitWidth(text, original.getWidth(), 3 * original.getWidth() / 4));
-    textPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)); // Text Overlapping Pattern
+    textPaint.setColor(Color.WHITE);
+    int desiredWidth = original.getWidth() - 20;
+    int maxTextSize = 60;
+    textPaint.setTextSize(Math.min(maxTextSize, getTextSizeToFitWidth(text, original.getWidth(), desiredWidth)));
+    Rect bounds = new Rect();
+    textPaint.getTextBounds(text, 0, text.length(), bounds);
+    textPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OVER));
     textPaint.setTextAlign(Paint.Align.CENTER);
-    textCanvas.drawText(text, original.getWidth() / 2, original.getHeight() / 2, textPaint);
+    textPaint.setTypeface(FontProvider.getInstance().getDefaultFont());
+    int x = original.getWidth() / 2;
+    int y = (original.getHeight() + bounds.height()) / 2;
+    textCanvas.drawText(text, x, y, textPaint);
+  }
+
+  private static int getTextSizeToFitWidth(String text, int textSize, int desiredWidth) {
+    Paint paint = new Paint();
+    Rect bounds = new Rect();
+
+    paint.setTextSize(textSize);
+    paint.getTextBounds(text, 0, text.length(), bounds);
+
+    while (bounds.width() > desiredWidth) {
+      textSize--;
+      paint.setTextSize(textSize);
+      paint.getTextBounds(text, 0, text.length(), bounds);
+    }
+
+    return textSize;
   }
 
   public static void renderWatermark(Context context, Bitmap original) {
@@ -88,21 +112,5 @@ public class PostProcessorUtils {
         original.getWidth() - textBounds.width() - margin,
         original.getHeight() - margin,
         textPaint);
-  }
-
-  private static int getTextSizeToFitWidth(String text, int textSize, int desiredWidth) {
-    Paint paint = new Paint();
-    Rect bounds = new Rect();
-
-    paint.setTextSize(textSize);
-    paint.getTextBounds(text, 0, text.length(), bounds);
-
-    while (bounds.width() > desiredWidth) {
-      textSize--;
-      paint.setTextSize(textSize);
-      paint.getTextBounds(text, 0, text.length(), bounds);
-    }
-
-    return textSize;
   }
 }

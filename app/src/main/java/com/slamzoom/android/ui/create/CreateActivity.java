@@ -26,13 +26,11 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -50,7 +48,6 @@ import com.slamzoom.android.common.ui.widgets.BackInterceptingEditText;
 import com.slamzoom.android.mediacreation.MediaConstants;
 import com.slamzoom.android.common.files.FileType;
 import com.slamzoom.android.common.fonts.FontProvider;
-import com.slamzoom.android.BuildFlags;
 import com.slamzoom.android.common.files.FileUtils;
 import com.slamzoom.android.common.events.BusProvider;
 import com.slamzoom.android.common.ui.AnimationUtils;
@@ -94,6 +91,10 @@ public class CreateActivity extends AppCompatActivity {
     SAVE, SHARE
   }
 
+  private enum CustomToolbarView {
+    ADD_TEXT, TITLE
+  }
+
   // Model
   private CreateModel mModel;
 
@@ -107,7 +108,6 @@ public class CreateActivity extends AppCompatActivity {
   @BindView(R.id.zeroStateMessage) TextView mZeroStateMessage;
   @BindView(R.id.effectChooser) EffectChooser mEffectChooser;
 
-  private ImageView mLogoView; // action bar custom view.
   private AddTextView mAddTextView; // action bar custom view.
   private View mGifAreaView;
   private UnlockPackDialogFragment mUnlockPackDialogFragment;
@@ -168,11 +168,15 @@ public class CreateActivity extends AppCompatActivity {
     setSupportActionBar(mToolbar);
     assert getSupportActionBar() != null;
 
+    mToolbarTitle.setTypeface(FontProvider.getInstance().getTitleFont());
+
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     getSupportActionBar().setDisplayShowTitleEnabled(false);
-    getSupportActionBar().setTitle(getString(R.string.app_name_lowercase));
-    mToolbarTitle.setTypeface(FontProvider.getInstance().getTitleFont());
-    showAddTextView(false);
+    mAddTextView = new AddTextView(this);
+    getSupportActionBar().setCustomView(mAddTextView,
+        new Toolbar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+    showCustomToolbarView(CustomToolbarView.TITLE);
   }
 
   private void initGifArea() {
@@ -206,6 +210,16 @@ public class CreateActivity extends AppCompatActivity {
     MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.menu_create, menu);
     return super.onCreateOptionsMenu(menu);
+  }
+
+  @Override
+  public boolean onPrepareOptionsMenu(Menu menu) {
+    menu.findItem(R.id.action_add_text).setVisible(!mModel.isAddTextViewShowing());
+    menu.findItem(R.id.action_change_hotspot).setVisible(!mModel.isAddTextViewShowing());
+    menu.findItem(R.id.action_change_image).setVisible(!mModel.isAddTextViewShowing());
+    menu.findItem(R.id.action_share).setVisible(!mModel.isAddTextViewShowing());
+    menu.findItem(R.id.action_ok).setVisible(mModel.isAddTextViewShowing());
+    return super.onPrepareOptionsMenu(menu);
   }
 
   @Override
@@ -246,7 +260,7 @@ public class CreateActivity extends AppCompatActivity {
   private void handleImageSelected(Intent intent) {
     // The next step after choosing an image is always to start the hotspot chooser.
     mSkipResume = true;
-    Intents.startHotspotChooser(this, intent.getData());
+    Intents.startHotspotChooser(this, intent.getData(), false);
   }
 
   private void handleImageChooserCancelled() {
@@ -265,8 +279,11 @@ public class CreateActivity extends AppCompatActivity {
     // Invalidate the bitmap set to force the gif creation process when resumed.
     mModel.setSelectedBitmapSet(null);
     // Invalidate the selected text since the image/hotspot has changed.
-    // TODO(clocksmith): maybe only do this if both the uri and hotspot changed?
-    mModel.setSelectedEndText(null);
+
+    // Clear the text only if it was not from a hotspot change.
+    if (!intent.getBooleanExtra(Params.FROM_CHANGE_HOTSPOT_REQUEST, false)) {
+      mModel.setSelectedEndText(null);
+    }
   }
 
   private void handleHotspotChooserCancelled() {
@@ -345,20 +362,10 @@ public class CreateActivity extends AppCompatActivity {
   }
 
   @Override
-  public boolean onPrepareOptionsMenu(Menu menu) {
-    menu.findItem(R.id.action_add_text).setVisible(BuildFlags.ENABLE_ADD_TEXT && !mModel.isAddTextViewShowing());
-    menu.findItem(R.id.action_change_hotspot).setVisible(!mModel.isAddTextViewShowing());
-    menu.findItem(R.id.action_change_image).setVisible(!mModel.isAddTextViewShowing());
-    menu.findItem(R.id.action_share).setVisible(!mModel.isAddTextViewShowing());
-    menu.findItem(R.id.action_ok).setVisible(mModel.isAddTextViewShowing());
-    return super.onPrepareOptionsMenu(menu);
-  }
-
-  @Override
   public void onBackPressed() {
     if (mModel.isAddTextViewShowing()) {
       KeyboardUtils.hideKeyboard(this);
-      showAddTextView(false);
+      showCustomToolbarView(CustomToolbarView.TITLE);
     } else {
       super.onBackPressed();
     }
@@ -478,20 +485,20 @@ public class CreateActivity extends AppCompatActivity {
 
   private void handleChangeHotspotPressed() {
     SzAnalytics.newSelectChangeHotspotEvent().log(this);
-    Intents.startHotspotChooser(this, mModel.getSelectedUri());
+    Intents.startHotspotChooser(this, mModel.getSelectedUri(), true);
   }
 
   private void handleAddTextPressed() {
     mAddTextView.getEditText().requestFocus();
     KeyboardUtils.showKeyboard(this);
-    showAddTextView(true);
+    showCustomToolbarView(CustomToolbarView.ADD_TEXT);
   }
 
   private void handleAddTextConfirmed() {
     mModel.setSelectedEndText(mAddTextView.getEditText().getText().toString());
     updateMainGif();
     KeyboardUtils.hideKeyboard(this);
-    showAddTextView(false);
+    showCustomToolbarView(CustomToolbarView.TITLE);
   }
 
   private void handleSavePressed(FileType fileType) {
@@ -645,20 +652,19 @@ public class CreateActivity extends AppCompatActivity {
     }
   }
 
-  private void showAddTextView(boolean show) {
+  private void showCustomToolbarView(CustomToolbarView toolbarView) {
     assert getSupportActionBar() != null;
-    TypedValue tv = new TypedValue();
-    int actionBarHeight = 0;
-    if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
-      actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
+
+    if (toolbarView == CustomToolbarView.TITLE){
+      mModel.setAddTextViewShowing(false);
+      mToolbarTitle.setVisibility(View.VISIBLE);
+      getSupportActionBar().setDisplayShowCustomEnabled(false);
+    } else  if (toolbarView == CustomToolbarView.ADD_TEXT) {
+      mModel.setAddTextViewShowing(true);
+      mToolbarTitle.setVisibility(View.GONE);
+      getSupportActionBar().setDisplayShowCustomEnabled(true);
     }
 
-    getSupportActionBar().setCustomView(
-        show ? mAddTextView : mLogoView,
-        new Toolbar.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            show ? ViewGroup.LayoutParams.MATCH_PARENT : actionBarHeight));
-    mModel.setAddTextViewShowing(show);
     invalidateOptionsMenu();
   }
 

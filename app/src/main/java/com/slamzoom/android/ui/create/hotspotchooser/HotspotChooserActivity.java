@@ -54,6 +54,7 @@ public class HotspotChooserActivity extends AppCompatActivity {
 
   private Bitmap mBitmap;
   private boolean mFromCreateAcitivty;
+  private boolean mFromChangeHotspotRequest;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +86,7 @@ public class HotspotChooserActivity extends AppCompatActivity {
     mFromCreateAcitivty = getCallingActivity() != null &&
         getCallingActivity().getClassName().equals(CreateActivity.class.getCanonicalName());
     final Uri incomingUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+    mFromChangeHotspotRequest = intent.getBooleanExtra(Params.FROM_CHANGE_HOTSPOT_REQUEST, false);
 
     SzAnalytics.newSelectImageEvent()
         .withPackageName(incomingUri.toString().replace("content://", ""))
@@ -99,7 +101,7 @@ public class HotspotChooserActivity extends AppCompatActivity {
       }
 
       if (BuildFlags.USE_DEBUG_HOTSPOT) {
-        RectF debugCropRect = BuildFlags.DEBUG_RECT;
+        RectF debugCropRect = BuildFlags.DEBUG_HOTSPOT;
         Log.d(TAG, "using debug cropRect: " + debugCropRect.toString());
         finishWithCropRectF(debugCropRect, incomingUri);
       } else {
@@ -136,12 +138,14 @@ public class HotspotChooserActivity extends AppCompatActivity {
       Intent returnIntent = new Intent();
       returnIntent.putExtra(Params.IMAGE_URI, imageUri);
       returnIntent.putExtra(Params.HOTSPOT, hotspot);
+      returnIntent.putExtra(Params.FROM_CHANGE_HOTSPOT_REQUEST, mFromChangeHotspotRequest);
       setResult(RESULT_OK, returnIntent);
       finish();
     } else {
       Intent intent = new Intent(HotspotChooserActivity.this, CreateActivity.class);
       intent.putExtra(Params.IMAGE_URI, Uri.fromFile(BitmapUtils.saveBitmapToDiskPrivatelyAsJpeg(mBitmap, "temp")));
       intent.putExtra(Params.HOTSPOT, hotspot);
+      intent.putExtra(Params.FROM_CHANGE_HOTSPOT_REQUEST, mFromChangeHotspotRequest);
       startActivity(intent);
     }
   }

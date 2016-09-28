@@ -10,7 +10,7 @@ import com.slamzoom.android.BuildFlags;
 import com.slamzoom.android.effects.packs.EffectPack;
 import com.slamzoom.android.effects.packs.distort.BlockheadEffectConfig;
 import com.slamzoom.android.effects.packs.distort.BulgerinoEffectConfig;
-import com.slamzoom.android.effects.packs.distort.BulgeSwapEffectConfig;
+import com.slamzoom.android.effects.packs.distort.BulgeswapEffectConfig;
 import com.slamzoom.android.effects.packs.distort.ShrinkEffectConfig;
 import com.slamzoom.android.effects.packs.distort.DoublebulgeEffectConfig;
 import com.slamzoom.android.effects.packs.distort.InflateEffectConfig;
@@ -67,7 +67,7 @@ public class Effects {
             .withEffectConfig(new SmushEfffectConfig())
             .withEffectConfig(new SwirlEffectConfig())
             .withEffectConfig(new DoublebulgeEffectConfig())
-            .withEffectConfig(new BulgeSwapEffectConfig())
+            .withEffectConfig(new BulgeswapEffectConfig())
             .build())
         .build();
 
@@ -123,7 +123,7 @@ public class Effects {
 //            .withEffectTemplate(EffectTemplate.newSingleStepBuilder()
 //                .withName("rumblestiltskin-showLocalHtmlFromAssets")
 //                .withStartDurationEndSeconds(0, 3, 0)
-//                .withEffectConfig(new RumblestiltskinEffectConfig())
+//                .withEffectConfig(new Rumblestiltskin2EffectConfig())
 //                .build())
 //            .withEffectTemplate(EffectTemplate.newSingleStepBuilder()
 //                .withName("slamin-showLocalHtmlFromAssets")

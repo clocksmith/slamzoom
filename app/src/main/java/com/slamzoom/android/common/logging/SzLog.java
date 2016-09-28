@@ -22,11 +22,11 @@ public class SzLog {
   // NOTE: Please keep in alphabetical order.
   private static Set<String> mAcceptedTags = ImmutableSet.of(
 //      CreateActivity.class.getSimpleName(),
-      DeferrableGifService.class.getSimpleName(),
+//      DeferrableGifService.class.getSimpleName(),
 //      EffectThumbnailViewHolder.class.getSimpleName(),
 //      GifCreator.class.getSimpleName(),
 //      GifCreatorManager.class.getSimpleName(),
-      GifService.class.getSimpleName(),
+//      GifService.class.getSimpleName(),
 //      HotspotChooserActivity.class.getSimpleName(),
 //      MediaCreator.class.getSimpleName(),
 //      SzAnalytics.class.getSimpleName(),

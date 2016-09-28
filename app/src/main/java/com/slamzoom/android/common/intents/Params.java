@@ -11,6 +11,7 @@ public class Params {
 
   public static final String IMAGE_URI = "imageUri";
   public static final String HOTSPOT = "hotspot";
+  public static final String FROM_CHANGE_HOTSPOT_REQUEST = "fromChangeHotspotRequest";
 
   public static final String HOTSPOT_SCALE = "hotspotScale";
   public static final String END_TEXT_LENGTH = "endTextLength";

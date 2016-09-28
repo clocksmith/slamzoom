@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by clocksmith on 9/6/16.
  */
-public class BulgeSwapEffectConfig extends EffectConfig {
+public class BulgeswapEffectConfig extends EffectConfig {
   @Override
   public String getName() {
     return "bulgeswap";
