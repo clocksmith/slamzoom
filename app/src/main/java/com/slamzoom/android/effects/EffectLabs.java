@@ -12,7 +12,6 @@ import com.slamzoom.android.effects.interpolation.filter.single.UnswirlFilterInt
 import com.slamzoom.android.effects.interpolation.filter.single.UnswirlTurntableAtHotspotOnHotspotFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.filter.single.ZoomBlurAtHotspotFilterInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.TranslateInterpolatorProvider;
-import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashBounceBottomInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashMissInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashRumbleInterpolatorProvider;
 import com.slamzoom.android.effects.interpolation.transform.scaletranslate.CrashTaranInterpolatorProvider;
@@ -25,13 +24,11 @@ import com.slamzoom.android.interpolators.LinearInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.scale.HalfInAndOutInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.scale.InAndOutInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.scale.OutAndInInterpolator;
-import com.slamzoom.android.effects.interpolation.transform.scale.OvershootInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.scale.SlamHardInAndOutInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.scale.SlamHardInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.scale.SlamHardNoPauseInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.scale.SlamSoftOutInterpolator;
 import com.slamzoom.android.effects.interpolation.transform.scale.SlamSoftOutNoPauseInterpolator;
-import com.slamzoom.android.interpolators.spline.CubicSplineInterpolator;
 import com.slamzoom.android.interpolators.spline.LinearSplineInterpolator;
 import com.slamzoom.android.interpolators.spline.PointsBuilder;
 
@@ -472,24 +469,6 @@ public class EffectLabs {
             .build())
         .build());
     packModels.add(EffectTemplate.newBuilder()
-        .withName("crashin")
-        .addEffectStep(EffectStep.newBuilder()
-            .withStartPauseSeconds(0.5f)
-            .withDurationSeconds(1f)
-            .withEndPauseSeconds(2f)
-            .withTransformInterpolatorProvider(new CrashBounceBottomInterpolatorProvider())
-            .build())
-        .build());
-    packModels.add(EffectTemplate.newBuilder()
-        .withName("overcrash")
-        .addEffectStep(EffectStep.newBuilder()
-            .withStartPauseSeconds(0.5f)
-            .withDurationSeconds(1f)
-            .withEndPauseSeconds(2f)
-            .withScaleInterpolator(new OvershootInterpolator())
-            .build())
-        .build());
-    packModels.add(EffectTemplate.newBuilder()
         .withName("crashblur")
         .addEffectStep(EffectStep.newBuilder()
             .withStartPauseSeconds(0.75f)
@@ -681,26 +660,6 @@ public class EffectLabs {
                     .withPoint(1f, 0)
                     .build())))
             .withFilterInterpolator(new DesaturateFilterInterpolator())
-            .withEndPauseSeconds(2f)
-            .build())
-        .build());
-
-    packModels.add(EffectTemplate.newBuilder()
-        .withName("grayfreeze")
-        .addEffectStep(EffectStep.newBuilder()
-            .withStartPauseSeconds(0.5f)
-            .withDurationSeconds(2f)
-            .withScaleInterpolator(new CubicSplineInterpolator(PointsBuilder.create()
-                .withPoint(0, 0)
-                .withPoint(0.15f, 1f)
-                .withPoint(1f, 1f)
-                .build()))
-            .withFilterInterpolator(new DesaturateFilterInterpolator(
-                new CubicSplineInterpolator(PointsBuilder.create()
-                    .withPoint(0, 0)
-                    .withPoint(0.5f, 0)
-                    .withPoint(1f, 1f)
-                    .build())))
             .withEndPauseSeconds(2f)
             .build())
         .build());

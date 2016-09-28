@@ -2,13 +2,11 @@ package com.slamzoom.android.interpolators.spline;
 
 import android.graphics.PointF;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Doubles;
 import com.slamzoom.android.interpolators.Interpolator;
+import com.slamzoom.android.interpolators.LinearInterpolator;
 
-import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;
-import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 
 import java.util.List;
 
@@ -16,22 +14,12 @@ import java.util.List;
  * Created by clocksmith on 3/16/16.
  */
 public class LinearSplineInterpolator extends Interpolator {
-  PolynomialSplineFunction mPolynomialSplineFunction;
+  private static LinearInterpolator LINEAR_INTERPOLATOR = new LinearInterpolator();
+
+  List<PointF> mPointList;
 
   public LinearSplineInterpolator(List<PointF> pointList) {
-    double[] xArray = Doubles.toArray(Lists.transform(pointList, new Function<PointF, Double>() {
-      @Override
-      public Double apply(PointF input) {
-        return (double) input.x;
-      }
-    }));
-    double[] yArray = Doubles.toArray(Lists.transform(pointList, new Function<PointF, Double>() {
-      @Override
-      public Double apply(PointF input) {
-        return (double) input.y;
-      }
-    }));
-    mPolynomialSplineFunction = new LinearInterpolator().interpolate(xArray, yArray);
+    mPointList = pointList;
   }
 
   public static Builder newBuilder() {
@@ -57,6 +45,19 @@ public class LinearSplineInterpolator extends Interpolator {
 
   @Override
   public float getValue(float t) {
-    return (float) mPolynomialSplineFunction.value(t);
+    for (int i = 0; i < mPointList.size() - 1; i++) {
+      PointF left = mPointList.get(i);
+      PointF right = mPointList.get(i + 1);
+
+      if (left.x <= t && t <= right.x) {
+        float percent = (t - left.x) / (right.x - left.x);
+
+        LINEAR_INTERPOLATOR.setRange(left.y, right.y);
+        return LINEAR_INTERPOLATOR.getInterpolation(percent);
+      }
+    }
+
+    // TODO(clocksmith): figure this out - input is out of the range
+    return 0;
   }
 }

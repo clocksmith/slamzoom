@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.google.android.gms.common.ConnectionResult;
+//import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.slamzoom.android.common.intents.RequestCodes;
 import com.slamzoom.android.common.logging.SzLog;
@@ -21,6 +22,7 @@ public class SplashActivity extends AppCompatActivity {
 
     super.onCreate(savedInstanceState);
 
+    // TODO(clocksmith): Is this effective?
     int code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
     if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) != ConnectionResult.SUCCESS) {
       SzLog.e(TAG, "User does not have google play services.");
@@ -33,11 +35,7 @@ public class SplashActivity extends AppCompatActivity {
       SzLog.e("NOT A REAL ERROR", "NOT A REAL ERROR");
     }
 
-    if (BuildFlags.USE_MONA_TEMPLATE) {
-      Intents.startCreateActivityWithMonaTemplate(this);
-    } else {
-      Intents.startNextActivityAfterSplash(this);
-    }
+    Intents.startNextActivityAfterSplash(this);
 
     // We never want to be able to go back to the splash screen.
     finish();

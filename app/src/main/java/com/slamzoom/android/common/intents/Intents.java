@@ -18,6 +18,11 @@ import com.slamzoom.android.ui.start.StartActivity;
  */
 
 public class Intents {
+  public static void startCreateActivity(Activity currentActivity) {
+    Intent intent = new Intent(currentActivity, CreateActivity.class);
+    currentActivity.startActivity(intent);
+  }
+
   public static void startCreateActivityWithMonaTemplate(Activity currentActivity) {
     final RectF MONA_LISA_PHONE_HOTSPOT = new RectF(0.16f, 0.75f, 0.28f, 0.87f);
     final RectF MONA_LISA_FACE_HOTSPOT = new RectF(0.35f, 0.15f, 0.55f, 0.35f);

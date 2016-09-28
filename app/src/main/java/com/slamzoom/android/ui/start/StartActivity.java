@@ -17,8 +17,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.slamzoom.android.BuildFlags;
 import com.slamzoom.android.R;
 import com.slamzoom.android.common.fonts.FontProvider;
+import com.slamzoom.android.common.intents.Intents;
 import com.slamzoom.android.common.logging.SzLog;
 import com.slamzoom.android.common.data.UriUtils;
 import com.slamzoom.android.ui.create.CreateActivity;
@@ -65,7 +67,11 @@ public class StartActivity extends AppCompatActivity {
     mTapAnywhereToBeginText.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        startActivity(new Intent(StartActivity.this, CreateActivity.class));
+        if (BuildFlags.USE_MONA_TEMPLATE) {
+          Intents.startCreateActivityWithMonaTemplate(StartActivity.this);
+        } else {
+          Intents.startCreateActivity(StartActivity.this);
+        }
       }
     });
 
