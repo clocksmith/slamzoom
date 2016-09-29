@@ -57,7 +57,6 @@ public class LinearSplineInterpolator extends Interpolator {
       }
     }
 
-    // TODO(clocksmith): figure this out - input is out of the range
     return 0;
   }
 }

@@ -61,8 +61,11 @@ public class StartActivity extends AppCompatActivity {
     mTermsOfUseLink.setTransformationMethod(null);
     mLicensesLink.setTransformationMethod(null);
 
-    mMediaPlayer = new MediaPlayer();
-    mBackgroundVideoView.setSurfaceTextureListener(new TextureListener());
+    TextureListener textureListener = new TextureListener();
+    mBackgroundVideoView.setSurfaceTextureListener(textureListener);
+    if (mBackgroundVideoView.getSurfaceTexture() != null) {
+      textureListener.onSurfaceTextureDestroyed(mBackgroundVideoView.getSurfaceTexture());
+    }
 
     mTapAnywhereToBeginText.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -135,7 +138,7 @@ public class StartActivity extends AppCompatActivity {
               mBackgroundVideoView.getLayoutParams().height = (int) (screenWidth * videoAspect);
               ((ViewGroup.MarginLayoutParams) mBackgroundVideoView.getLayoutParams()).setMargins(
                   0,
-                    screenHeight - (mBackgroundVideoView.getLayoutParams().height - screenHeight) / 2,
+                  screenHeight - (mBackgroundVideoView.getLayoutParams().height - screenHeight) / 2,
                   0,
                   0
               );

@@ -14,6 +14,7 @@ import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.graphics.PorterDuff;
 import android.graphics.RectF;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -23,6 +24,7 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -170,7 +172,7 @@ public class CreateActivity extends AppCompatActivity {
 
     mToolbarTitle.setTypeface(FontProvider.getInstance().getTitleFont());
 
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    getSupportActionBar().setDisplayHomeAsUpEnabled(false);
     getSupportActionBar().setDisplayShowTitleEnabled(false);
     mAddTextView = new AddTextView(this);
     getSupportActionBar().setCustomView(mAddTextView,
@@ -209,6 +211,22 @@ public class CreateActivity extends AppCompatActivity {
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.menu_create, menu);
+
+    // Set icon colors for older devices that do not support tint.
+    // TODO(clocksmith): Drop this and just change the icon png files to the accent color.
+    if (Build.VERSION.SDK_INT < 21) {
+      int color = ContextCompat.getColor(this, R.color.colorAccent);
+      menu.findItem(R.id.action_add_text).getIcon().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+      menu.findItem(R.id.action_change_hotspot).getIcon().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+      menu.findItem(R.id.action_change_image).getIcon().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+      menu.findItem(R.id.action_share).getIcon().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+      menu.findItem(R.id.action_ok).getIcon().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+      menu.findItem(R.id.action_share_gif).getIcon().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+      menu.findItem(R.id.action_share_video).getIcon().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+      menu.findItem(R.id.action_save_gif).getIcon().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+      menu.findItem(R.id.action_save_video).getIcon().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+    }
+
     return super.onCreateOptionsMenu(menu);
   }
 
