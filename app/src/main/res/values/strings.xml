@@ -30,7 +30,7 @@
 
   <!-- Unlock Dialog -->
   <string name="unlock_pack_dialog_title">Effect is Locked!</string>
-  <string name="unlock_pack_dialog_message" formatted="false">%s must be unlocked to share %s</string>
+  <string name="unlock_pack_dialog_message" formatted="false">%s must be unlocked to share\n %s</string>
   <string name="unlock_pack_dialog_ok">UNLOCK</string>
     <string name="unlock_pack_dialog_cancel">MAYBE LATER</string>
 

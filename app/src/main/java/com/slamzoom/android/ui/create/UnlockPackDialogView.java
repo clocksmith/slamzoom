@@ -72,7 +72,7 @@ public class UnlockPackDialogView extends LinearLayout {
     } else if (effect == null) {
       SzLog.e(TAG, "effectName: " + effectName + " is null!");
     } else {
-      String packNameWithPack = packName + " PACK  ";
+      String packNameWithPack = packName + " PACK ";
       String paddedEffectName = "  " + effectName + "  ";
       String message = String.format(
           getResources().getString(R.string.unlock_pack_dialog_message), packNameWithPack, paddedEffectName);

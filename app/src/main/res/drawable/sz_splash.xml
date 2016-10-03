@@ -2,9 +2,9 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
   <item android:drawable="@color/not_quite_black"/>
 
-  <item android:top="@dimen/logo_padding_plus_status_bar">
+  <item>
     <bitmap
-        android:gravity="top|clip_horizontal"
-        android:src="@drawable/sz_logo_transparent_small"/>
+        android:gravity="center"
+        android:src="@mipmap/ic_launcher"/>
   </item>
 </layer-list>

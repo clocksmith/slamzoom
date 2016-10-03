@@ -146,7 +146,7 @@ public class IabHelper {
               return null;
             }
           } else {
-            SzLog.e(TAG, "getPurchases() error code: " + responseCode);
+            SzLog.e(TAG, "getPurchases() response code: " + responseCode);
             return null;
           }
         } catch (RemoteException e) {

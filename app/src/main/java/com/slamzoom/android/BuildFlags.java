@@ -6,7 +6,7 @@ import android.graphics.RectF;
  * Created by clocksmith on 6/2/16.
  */
 public class BuildFlags {
-    // TODO(cloksmith): convert these to actual build flags.
+  // TODO(cloksmith): convert these to actual build flags.
 
   // Firebase Crash hack
   public static final boolean REPORT_FAKE_ERROR_ON_START = false;
