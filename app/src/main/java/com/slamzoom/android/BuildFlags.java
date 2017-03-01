@@ -13,7 +13,7 @@ public class BuildFlags {
 
   // Superuser
   public static final boolean UNLOCK_UNPAID_PACKS = false;
-  public static final boolean SKIP_WATERMARK = false;
+  public static final boolean SKIP_WATERMARK = true;
   public static final boolean USE_MONA_TEMPLATE = false;
 
   // Effect Modifications
