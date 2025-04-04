@@ -1,0 +1,20 @@
+<resources>
+  <dimen name="logo_padding_plus_status_bar">40dp</dimen>
+  <dimen name="logo_padding">16dp</dimen>
+  <dimen name="legal_text_size">10dp</dimen>
+
+  <!-- Effect View Holder -->
+  <dimen name="thumbnail_view_width">120dp</dimen>
+  <dimen name="effect_name_text_size">14dp</dimen>
+  <dimen name="pack_name_text_size">14dp</dimen>
+  <dimen name="effect_chooser_tab_height_collapsed">18dp</dimen>
+  <dimen name="effect_chooser_tab_height_expanded">36dp</dimen>
+
+  <!-- Unlock Pack Dialog -->
+  <dimen name="unlock_pack_dialog_content_padding">28dp</dimen>
+  <dimen name="unlock_pack_dialog_effect_height">260dp</dimen>
+
+  <!-- Watermark -->
+  <dimen name="max_watermark_text_size">20px</dimen>
+  <dimen name="watermark_margin">8px</dimen>
+</resources>

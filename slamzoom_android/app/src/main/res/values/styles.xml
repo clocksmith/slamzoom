@@ -1,0 +1,48 @@
+<resources>
+  <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
+    <item name="android:windowBackground">@drawable/sz_splash</item>
+  </style>
+
+  <style name="SlamzoomTheme" parent="Theme.AppCompat.NoActionBar">
+    <item name="colorPrimary">@color/colorPrimary</item>
+    <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+    <item name="colorAccent">@color/colorAccent</item>
+  </style>
+
+  <style name="SlamzoomActionBar" parent="Widget.AppCompat.Toolbar">
+    <item name="android:background">@color/colorPrimary</item>
+    <item name="android:textColorPrimary">@color/menu_icon_color</item>
+    <item name="colorControlNormal">@color/menu_icon_color</item>
+    <item name="selectableItemBackground">?android:selectableItemBackground</item>
+    <item name="selectableItemBackgroundBorderless">?android:selectableItemBackground</item>
+
+    <item name="android:textAppearance">@style/SlamzoomActionBarText</item>
+  </style>
+
+  <style name="PopupMenu" parent="Widget.AppCompat.PopupMenu">
+    <item name="android:background">@color/dark_gray</item>
+    <item name="android:textColorPrimary">@color/white</item>
+    <item name="android:gravity">center_vertical</item>
+  </style>
+
+  <style name="SlamzoomActionBarText" parent="TextAppearance.AppCompat">
+    <item name="android:textColor">@color/menu_icon_color</item>
+    <item name="android:textSize">24dp</item>
+  </style>
+
+  <style name="SlamzoomDialog" parent="Theme.AppCompat.Dialog">
+    <item name="android:background">@color/dialog_background</item>
+    <item name="android:textColor">@color/dialog_text</item>
+    <item name="android:textColorPrimary">@color/dialog_text</item>
+    <item name="android:windowNoTitle">true</item>
+  </style>
+
+  <style name="SwitchTextAppearance" parent="@android:style/TextAppearance.Small">
+    <item name="android:textColor">@color/black</item>
+  </style>
+
+  <style name="SwitchStyle">
+    <item name="android:textColor">@color/black</item>
+  </style>
+
+</resources>
