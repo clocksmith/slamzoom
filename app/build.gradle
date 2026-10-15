@@ -1,13 +1,23 @@
 apply plugin: 'com.android.application'
 apply plugin: 'android-apt'
 
+def keystorePropertiesFile = rootProject.file('keystore.properties')
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+}
+
 android {
     signingConfigs {
         config {
-            keyAlias 'slamzoom'
-            keyPassword 'boxSocial5358'
-            storeFile file('/Users/antrob/keystore/slamzoom.jks')
-            storePassword 'boxSocial5358'
+            // Signing values live in an untracked keystore.properties at the project root
+            // (see keystore.properties.example); release builds need it.
+            if (keystoreProperties['storeFile']) {
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+            }
         }
     }
     compileSdkVersion 24
